@@ -946,7 +946,7 @@
     } catch(e) { console.warn('Supabase not configured yet, using demo mode'); }
 
     // Always use Edge Function — never call Anthropic directly from browser
-    const response = await fetch(SUPABASE_URL + '/functions/v1/abibot', {
+    const response = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
