@@ -564,36 +564,36 @@
       <div class="cat-list" id="cat-list">
         <div class="cat-item active" data-cat="legal" data-price="5" data-icon="⚖️" onclick="selectCat(this)">
           <span class="cat-icon">⚖️</span>
-          <div class="cat-info"><div class="cat-name">Hukuki</div><div class="cat-price">€5 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Hukuki</div><div class="cat-price">Ücretsiz</div></div>
           <span class="cat-badge">Popüler</span>
         </div>
         <div class="cat-item" data-cat="medical" data-price="4" data-icon="🏥" onclick="selectCat(this)">
           <span class="cat-icon">🏥</span>
-          <div class="cat-info"><div class="cat-name">Tıbbi</div><div class="cat-price">€4 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Tıbbi</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="tax" data-price="4" data-icon="💶" onclick="selectCat(this)">
           <span class="cat-icon">💶</span>
-          <div class="cat-info"><div class="cat-name">Vergi & Finans</div><div class="cat-price">€4 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Vergi & Finans</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="visa" data-price="5" data-icon="🛂" onclick="selectCat(this)">
           <span class="cat-icon">🛂</span>
-          <div class="cat-info"><div class="cat-name">Vize & Oturma</div><div class="cat-price">€5 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Vize & Oturma</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="housing" data-price="3" data-icon="🏠" onclick="selectCat(this)">
           <span class="cat-icon">🏠</span>
-          <div class="cat-info"><div class="cat-name">Konut & Kira</div><div class="cat-price">€3 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Konut & Kira</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="employment" data-price="3" data-icon="💼" onclick="selectCat(this)">
           <span class="cat-icon">💼</span>
-          <div class="cat-info"><div class="cat-name">İş & Çalışma</div><div class="cat-price">€3 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">İş & Çalışma</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="school" data-price="2" data-icon="👶" onclick="selectCat(this)">
           <span class="cat-icon">👶</span>
-          <div class="cat-info"><div class="cat-name">Okul & Yardımlar</div><div class="cat-price">€2 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Okul & Yardımlar</div><div class="cat-price">Ücretsiz</div></div>
         </div>
         <div class="cat-item" data-cat="insurance" data-price="2" data-icon="🚗" onclick="selectCat(this)">
           <span class="cat-icon">🚗</span>
-          <div class="cat-info"><div class="cat-name">Sigorta & Araç</div><div class="cat-price">€2 / soru</div></div>
+          <div class="cat-info"><div class="cat-name">Sigorta & Araç</div><div class="cat-price">Ücretsiz</div></div>
         </div>
       </div>
     </div>
@@ -620,7 +620,7 @@
     </div>
 
     <div class="escalate-box">
-      <div class="eb-tag">✦ İnsan Uzman</div>
+      <div class="eb-tag">💳 Ücretli Hizmet</div>
       <div class="eb-title">AbiBOT cevabını bir uzmana onaylat</div>
       <div class="eb-desc">Önemli kararlar için AbiBOT cevabını Türkçe konuşan gerçek bir uzman doğrulasın.</div>
       <button class="eb-btn" id="escalate-sidebar-btn" disabled onclick="openEscalate()">Uzman İncelesin →</button>
@@ -640,7 +640,7 @@
         <div class="abibot-sub" id="abibot-sub">Hukuki kategoride yanıtlıyor · TR / DE / EN</div>
       </div>
       <span class="active-cat-badge" id="active-cat-badge">⚖️ Hukuki</span>
-      <span class="cost-badge" id="cost-badge">€5 / soru</span>
+      <span class="cost-badge" id="cost-badge" style="background:rgba(30,123,75,.1);color:#1E7B4B;border-color:rgba(30,123,75,.2)">✓ Ücretsiz</span>
     </div>
 
     <div class="messages" id="messages">
@@ -901,7 +901,8 @@
     if (t) t.remove();
   }
 
-  function showCostToast(price) {
+  function showCostToast(price) { return; // AbiBOT is now free
+  //disabled:
     credits -= price;
     const toast = document.getElementById('cost-toast');
     document.getElementById('toast-amount').textContent = '€' + price;
@@ -944,21 +945,23 @@
       sessionToken = session?.access_token;
     } catch(e) { console.warn('Supabase not configured yet, using demo mode'); }
 
-    const response = await fetch(sessionToken
-      ? SUPABASE_URL + '/functions/v1/abibot'
-      : 'https://api.anthropic.com/v1/messages', {
+    // Always use Edge Function — never call Anthropic directly from browser
+    const response = await fetch(SUPABASE_URL + '/functions/v1/abibot', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (sessionToken || SUPABASE_ANON),
+          'apikey': SUPABASE_ANON,
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: systemPrompt,
+          category: selectedCat,
+          language: selectedLang,
           messages: messageHistory,
         }),
       });
 
       const data = await response.json();
-      const reply = data.content?.[0]?.text || 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.';
+      const reply = data.answer || data.error || 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.';
 
       removeTyping();
       addMessage('assistant', reply, true);
