@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <script>
+    // Smart routing: logged-in users go straight to dashboard
+    (function() {
+      try {
+        const token = localStorage.getItem('bb_auth_token');
+        const user  = localStorage.getItem('bb_user');
+        if (token && user) {
+          window.location.replace('/mahallem.html');
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Avrupa'daki Türk Topluluğu</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="BizdenBize — Gurbet Hayatını Kolaylaştırıyoruz">
+  <meta property="og:description" content="Gurbet Hayatını Kolaylaştırıyoruz için platform. Topluluk, ilan, etkinlik ve AbiBOT.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com">
+  <link rel="canonical" href="https://bizdenbize.com">
+  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:    #D42B2B;
+      --red2:   #E8393A;
+      --cream:  #FAF7F2;
+      --warm:   #F0EAE0;
+      --sand:   #D4C5A9;
+      --ink:    #1A1208;
+      --muted:  #6B5E4E;
+      --white:  #FFFFFF;
+      --gold:   #C9A84C;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(250,247,242,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,197,169,0.3);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 900;
+      color: var(--ink); letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-size: 14px; color: var(--muted); text-decoration: none;
+      letter-spacing: 0.02em; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 9px 22px; border-radius: 6px;
+      font-weight: 600; font-size: 13px !important;
+      transition: background .2s !important;
+    }
+    .nav-cta:hover { background: var(--red2) !important; color: var(--white) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 48px 80px 80px;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 28px;
+    }
+    .hero-tag::before {
+      content: ''; width: 24px; height: 2px; background: var(--red);
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 5vw, 68px);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    h1 em { color: var(--red); font-style: normal; }
+    .hero-sub {
+      font-size: 17px; color: var(--muted); line-height: 1.65;
+      max-width: 420px; margin-bottom: 44px;
+    }
+    .hero-actions { display: flex; flex-direction: column; gap: 14px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--red); color: var(--white);
+      padding: 16px 32px; border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      border: none; cursor: pointer;
+      transition: background .2s, transform .15s;
+      text-decoration: none; width: fit-content;
+    }
+    .btn-primary:hover { background: var(--red2); transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      background: none; border: none; padding: 4px 0;
+      transition: color .2s; text-decoration: none; width: fit-content;
+    }
+    .btn-secondary:hover { color: var(--ink); }
+    .btn-secondary svg { transition: transform .2s; }
+    .btn-secondary:hover svg { transform: translateX(3px); }
+
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 52px;
+      padding-top: 36px; border-top: 1px solid var(--sand);
+    }
+    .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700; color: var(--ink);
+    }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .hero-right {
+      background: var(--ink);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-map-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(192,57,43,0.25) 0%, transparent 60%);
+    }
+    .hero-cards {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 40px;
+    }
+    .preview-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 16px 20px;
+      backdrop-filter: blur(8px);
+      min-width: 280px;
+      animation: float 3s ease-in-out infinite;
+    }
+    .preview-card:nth-child(2) { animation-delay: 1s; margin-left: 32px; }
+    .preview-card:nth-child(3) { animation-delay: 2s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; flex-shrink: 0;
+    }
+    .card-meta { flex: 1; }
+    .card-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+    .card-city { font-size: 11px; color: rgba(255,255,255,0.45); }
+    .card-body { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    .card-tag {
+      display: inline-block; margin-top: 8px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      padding: 3px 8px; border-radius: 20px;
+    }
+
+    /* ── SECTION: HOW IT WORKS ── */
+    .section { padding: 100px 80px; }
+    .section-tag {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 16px; display: block;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700; line-height: 1.15;
+      letter-spacing: -0.8px; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 16px; color: var(--muted); line-height: 1.6;
+      max-width: 520px; margin-bottom: 60px;
+    }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .step {
+      padding: 36px 32px;
+      background: var(--white);
+      border: 1px solid var(--warm);
+      border-radius: 16px;
+      position: relative;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .step:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(26,18,8,0.08); }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px; font-weight: 900;
+      color: var(--warm); line-height: 1;
+      margin-bottom: 20px;
+    }
+    .step h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── SECTION: MODULES ── */
+    .modules-section { background: var(--ink); padding: 100px 80px; }
+    .modules-section .section-tag { color: var(--gold); }
+    .modules-section h2 { color: var(--white); }
+    .modules-section .section-sub { color: rgba(255,255,255,0.5); }
+    .modules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+    .module-tile {
+      background: rgba(255,255,255,0.04);
+      padding: 40px;
+      transition: background .2s;
+      cursor: pointer;
+    }
+    .module-tile:hover { background: rgba(255,255,255,0.08); }
+    .module-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 20px;
+    }
+    .module-tile h3 { font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+    .module-tile p { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .module-tile .coming {
+      display: inline-block; margin-top: 12px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+      background: rgba(201,168,76,0.15); color: var(--gold);
+    }
+
+    /* ── WAITLIST FORM ── */
+    .waitlist-section {
+      padding: 100px 80px;
+      background: var(--warm);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: start;
+    }
+    .waitlist-left { padding-top: 8px; }
+    .waitlist-left h2 { margin-bottom: 16px; }
+    .waitlist-left p { font-size: 16px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; }
+    .trust-items { display: flex; flex-direction: column; gap: 16px; }
+    .trust-item { display: flex; align-items: flex-start; gap: 14px; }
+    .trust-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0; margin-top: 6px;
+    }
+    .trust-text { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+    .waitlist-form {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid var(--sand);
+    }
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .form-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 7px;
+    }
+    input, select, textarea {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--sand);
+      border-radius: 8px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px; color: var(--ink);
+      background: var(--cream);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+    select { cursor: pointer; }
+    textarea { resize: vertical; min-height: 90px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .invite-field {
+      background: rgba(201,168,76,0.08);
+      border-color: rgba(201,168,76,0.4);
+    }
+    .invite-field:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    }
+    .invite-hint {
+      font-size: 11px; color: var(--muted); margin-top: 5px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .submit-btn {
+      width: 100%; padding: 15px;
+      background: var(--red); color: var(--white);
+      border: none; border-radius: 8px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background .2s, transform .15s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { background: var(--red2); transform: translateY(-1px); }
+    .submit-btn:active { transform: scale(0.98); }
+    .form-footer {
+      text-align: center; font-size: 12px; color: var(--muted);
+      margin-top: 16px; line-height: 1.5;
+    }
+
+    /* ── SUCCESS STATE ── */
+    .success-state {
+      display: none; text-align: center; padding: 20px 0;
+    }
+    .success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(192,57,43,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin: 0 auto 20px;
+    }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px; font-weight: 700; margin-bottom: 10px;
+    }
+    .success-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .position-badge {
+      display: inline-block; margin-top: 20px;
+      background: var(--red); color: var(--white);
+      font-size: 13px; font-weight: 600;
+      padding: 10px 24px; border-radius: 30px;
+    }
+
+    /* ── INVITE MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(26,18,8,0.7);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 20px; padding: 48px;
+      max-width: 480px; width: 90%;
+      position: relative;
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px;
+      background: none; border: none; cursor: pointer;
+      font-size: 22px; color: var(--muted); line-height: 1;
+    }
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700; margin-bottom: 8px;
+    }
+    .modal p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .invite-code-display {
+      background: var(--cream); border: 2px dashed var(--sand);
+      border-radius: 12px; padding: 20px;
+      text-align: center; margin-bottom: 20px;
+    }
+    .invite-code {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px; font-weight: 900;
+      letter-spacing: 6px; color: var(--ink);
+    }
+    .copy-btn {
+      width: 100%; padding: 13px;
+      background: var(--ink); color: var(--white);
+      border: none; border-radius: 8px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .copy-btn:hover { background: #2d2010; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      padding: 48px 80px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 900; color: var(--white);
+    }
+    .footer-logo span { color: var(--red); }
+    .footer-text { font-size: 13px; color: rgba(255,255,255,0.35); }
+    .lang-switcher { display: flex; gap: 12px; }
+    .lang-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600;
+      padding: 6px 12px; border-radius: 6px; cursor: pointer;
+      transition: all .2s; font-family: 'Instrument Sans', sans-serif;
+    }
+    .lang-btn.active, .lang-btn:hover {
+      border-color: var(--red); color: var(--white); background: var(--red);
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 60px 24px 40px; }
+      .hero-right { min-height: 340px; }
+      .section { padding: 60px 24px; }
+      .steps { grid-template-columns: 1fr; }
+      .modules-section { padding: 60px 24px; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .waitlist-section { grid-template-columns: 1fr; padding: 60px 24px; gap: 40px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; padding: 40px 24px; }
+    }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:36px;width:auto;display:block;"></a>
+  <div class="nav-links">
+    <a href="#nasil-calisir">Nasıl çalışır?</a>
+    <a href="#ozellikler">Özellikler</a>
+    <a href="login.html?tab=register" class="nav-cta">Listeye katıl →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Gurbet Hayatını Kolaylaştırıyoruz</span>
+    <h1>Senin<br><em>mahallen</em>,<br>tüm Avrupa'da.</h1>
+    <p class="hero-sub">
+      Güvenilir Türk komşularınla bağlan. İkinci el al-sat yap, etkinliklere katıl, yerel işletmeleri keşfet — hepsi tek platformda.
+    </p>
+    <div class="hero-actions">
+      <a href="#bekle" class="btn-primary">
+        Bekleme listesine katıl
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#nasil-calisir" class="btn-secondary">
+        Nasıl çalışır?
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-val">4M+</div>
+        <div class="stat-label">Avrupa'daki Türk</div>
+      </div>
+      <div>
+        <div class="stat-val">12</div>
+        <div class="stat-label">Ülke</div>
+      </div>
+      <div>
+        <div class="stat-val">Ücretsiz</div>
+        <div class="stat-label">Temel kullanım</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-map-bg"></div>
+    <div class="hero-cards">
+      <div class="preview-card">
+        <div class="card-header">
+          <div class="avatar" style="background:rgba(192,57,43,0.3);color:#E8393A">AY</div>
+          <div class="card-meta">
+            <div class="card-name">Ayşe Yılmaz</div>
+            <div class="card-city">📍 Frankfurt, Deutschland</div>
+          </div>
+        </div>
+        <div class="card-body">Audi A3 satılık, 2019 model, 68.000 km. Bakımlı, hasar kaydı yok.</div>
+        <span class="card-tag" style="background:rgba(192,57,43,0.2);color:#E8393A">İlan · €18.500</span>
+      </div>
+      <div class="preview-card">
+        <div class="card-header">
+          <div class="avatar" style="background:rgba(201,168,76,0.2);color:#C9A84C">MK</div>
+          <div class="card-meta">
+            <div class="card-name">Mustafa Kaya</div>
+            <div class="card-city">📍 Amsterdam, Nederland</div>
+          </div>
+        </div>
+        <div class="card-body">Bu pazar Türk Festivali var! Herkesi bekliyoruz 🎉</div>
+        <span class="card-tag" style="background:rgba(201,168,76,0.15);color:#C9A84C">Etkinlik · 14 Haziran</span>
+      </div>
+      <div class="preview-card">
+        <div class="card-header">
+          <div class="avatar" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)">ZD</div>
+          <div class="card-meta">
+            <div class="card-name">Zeynep Demir</div>
+            <div class="card-city">📍 Wien, Österreich</div>
+          </div>
+        </div>
+        <div class="card-body">Türkçe-Almanca tercüman arıyorum, noter işlemleri için. Acil.</div>
+        <span class="card-tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)">Mahallem</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="nasil-calisir">
+  <span class="section-tag">Nasıl çalışır?</span>
+  <h2>Güven, davet ile<br>başlar.</h2>
+  <p class="section-sub">
+    BizdenBize'ye herkes giremez. Bir arkadaşın davet etmeli ya da bekleme listesinden onay almalısın. Bu şekilde topluluğumuz güvenilir kalır.
+  </p>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">01</div>
+      <h3>Davet al veya başvur</h3>
+      <p>Bir üye seni davet ederse direkt katılırsın. Ya da bekleme listesine başvurarak topluluğun onayını bekleyebilirsin.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:.1s">
+      <div class="step-num">02</div>
+      <h3>Profilini oluştur</h3>
+      <p>Şehrin, ilgi alanların ve konuştuğun diller. Sadece senin bilmeni istediğin kişiler seni görebilir.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:.2s">
+      <div class="step-num">03</div>
+      <h3>Topluluğuna katıl</h3>
+      <p>Şehir bazında mahalleni keşfet. İlan ver, etkinliğe git, işletme bul — hepsi güvenilir insanlarla.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="modules-section" id="ozellikler">
+  <span class="section-tag">Özellikler</span>
+  <h2 style="color:var(--white)">Dört dünya,<br>bir platform.</h2>
+  <p class="section-sub">nebenan.de'nin güvenini + Kleinanzeigen'ın pratikliğini + Türk kültürünü bir araya getirdik.</p>
+  <div class="modules-grid">
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(192,57,43,0.2)">🏘️</div>
+      <h3>Mahallem</h3>
+      <p>Şehrindeki Türklerle paylaş, yardımlaş, tanış. Mahalle gruplarında lokal haberler ve duyurular.</p>
+    </div>
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(201,168,76,0.2)">🛍️</div>
+      <h3>İlan & Alışveriş</h3>
+      <p>Güvendiğin insanlarla al-sat yap. Araç, ev eşyası, elektronik — Kleinanzeigen gibi ama güvenli.</p>
+    </div>
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🏢</div>
+      <h3>Türk İşletmeleri</h3>
+      <p>Şehrindeki Türk restoranları, avukatlar, doktorlar, ustalar. Gerçek yorumlar, gerçek insanlardan.</p>
+      <span class="coming">Yakında</span>
+    </div>
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎉</div>
+      <h3>Etkinlikler</h3>
+      <p>Avrupa genelindeki Türk etkinlikleri, festivaller, buluşmalar. Oluştur, katıl, haberdar ol.</p>
+      <span class="coming">Yakında</span>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist-section" id="bekle">
+  <div class="waitlist-left">
+    <span class="section-tag">Bekleme listesi</span>
+    <h2>İlk sen<br>haberdar ol.</h2>
+    <p>BizdenBize şu an davetiye ile büyüyor. Bekleme listesine katıl, topluluğun onayını al ve platform açılır açılmaz erişim kazan.</p>
+    <div class="trust-items">
+      <div class="trust-item">
+        <div class="trust-dot"></div>
+        <div class="trust-text">Davetiye kodun varsa direkt onaylanırsın</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-dot"></div>
+        <div class="trust-text">Başvurun 48 saat içinde değerlendirilir</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-dot"></div>
+        <div class="trust-text">Onaylandığında 5 davetiye kodu alırsın</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-dot"></div>
+        <div class="trust-text">Kişisel bilgilerin asla üçüncü şahıslarla paylaşılmaz</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="waitlist-form" id="the-form">
+    <!-- FORM STATE -->
+    <div id="form-state">
+      <p class="form-title">Listeye katıl</p>
+      <p class="form-sub">Kısa başvurunu doldur, topluluğun seni onaylasın.</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ad</label>
+          <input type="text" id="fname" placeholder="Ayşe" required>
+        </div>
+        <div class="form-group">
+          <label>Soyad</label>
+          <input type="text" id="lname" placeholder="Yılmaz" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>E-posta</label>
+        <input type="email" id="email" placeholder="ayse@email.com" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Şehir</label>
+          <input type="text" id="city" placeholder="Frankfurt" required>
+        </div>
+        <div class="form-group">
+          <label>Ülke</label>
+          <select id="country">
+            <option value="">Seç...</option>
+            <option>Almanya 🇩🇪</option>
+            <option>Hollanda 🇳🇱</option>
+            <option>Avusturya 🇦🇹</option>
+            <option>Belçika 🇧🇪</option>
+            <option>İsviçre 🇨🇭</option>
+            <option>Fransa 🇫🇷</option>
+            <option>İngiltere 🇬🇧</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Türk topluluğuyla bağlantın nedir?</label>
+        <textarea id="connection" placeholder="Örn: İkinci nesil, Frankfurt'ta büyüdüm. Türk arkadaşlarımla bağlantıda kalmak istiyorum..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Davetiye kodu <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sand)">(varsa)</span></label>
+        <input type="text" id="invite-code" class="invite-field" placeholder="BZBXXXX" style="text-transform:uppercase;letter-spacing:3px">
+        <p class="invite-hint">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Davetiye kodun varsa başvurun otomatik onaylanır
+        </p>
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">Bekleme listesine katıl →</button>
+      <p class="form-footer">Spam yok. İstediğin zaman çıkabilirsin. 🤝</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="success-state" class="success-state">
+      <div class="success-icon">🎉</div>
+      <p class="success-title">Harika, başvurun alındı!</p>
+      <p class="success-sub">
+        48 saat içinde e-postana onay bildirimi göndereceğiz.<br>
+        Onaylandığında <strong>5 davetiye kodu</strong> alacaksın.
+      </p>
+      <div class="position-badge" id="position-badge">Listedeki sıran: #247</div>
+      <br><br>
+      <p style="font-size:13px;color:var(--muted)">Arkadaşlarını da davet et, sıran yükselsin 👇</p>
+      <button class="btn-primary" style="margin:12px auto 0;font-size:13px;padding:11px 24px" onclick="openShareModal()">
+        Arkadaşını davet et
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><img src="logo.png" alt="BizdenBize" style="height:28px;width:auto;filter:brightness(0) invert(1);"></div>
+  <p class="footer-text"><a href="legal.html" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Yasal</a><a href="legal.html#privacy" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Gizlilik</a>© 2025 BizdenBize · Gurbet Hayatını Kolaylaştırıyoruz</p>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('tr')">TR</button>
+    <button class="lang-btn" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+</footer>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="share-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeShareModal()">×</button>
+    <h3>Arkadaşını davet et</h3>
+    <p>Bu kodu arkadaşınla paylaş. Kod ile başvurursa direkt onaylanır ve ikisi birden kazanır.</p>
+    <div class="invite-code-display">
+      <div class="invite-code" id="generated-code">BZB2847</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Kişisel davetiye kodun</div>
+    </div>
+    <button class="copy-btn" onclick="copyCode()">📋 Kodu kopyala</button>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="copy-btn" style="background:var(--red);flex:1" onclick="shareWhatsApp()">WhatsApp'ta paylaş</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Scroll animations
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  // Form submission
+  function submitForm() {
+    const fname = document.getElementById('fname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const country = document.getElementById('country').value;
+    const connection = document.getElementById('connection').value.trim();
+
+    if (!fname || !email || !country || !connection) {
+      alert('Lütfen zorunlu alanları doldurun.');
+      return;
+    }
+
+    const inviteCode = document.getElementById('invite-code').value.trim();
+    const position = inviteCode ? '⚡ Öncelikli onay' : '#' + (Math.floor(Math.random() * 300) + 200);
+
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('success-state').style.display = 'block';
+    document.getElementById('position-badge').textContent = 'Listedeki sıran: ' + position;
+  }
+
+  // Share modal
+  function openShareModal() {
+    document.getElementById('share-modal').classList.add('open');
+  }
+  function closeShareModal() {
+    document.getElementById('share-modal').classList.remove('open');
+  }
+  document.getElementById('share-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeShareModal();
+  });
+
+  function copyCode() {
+    const code = document.getElementById('generated-code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = event.target;
+      btn.textContent = '✓ Kopyalandı!';
+      setTimeout(() => btn.textContent = '📋 Kodu kopyala', 2000);
+    });
+  }
+
+  function shareWhatsApp() {
+    const code = document.getElementById('generated-code').textContent;
+    const msg = encodeURIComponent(`Seni BizdenBize'ye davet ediyorum — Gurbet Hayatını Kolaylaştırıyoruz platformu 🇹🇷\n\nDavetiye kodun: ${code}\n\nhttps://bizdenbize.sobhoy.com`);
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  }
+
+  // Language switcher (placeholder)
+  function setLang(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Invite code auto-uppercase
+  document.getElementById('invite-code').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+</script>
+
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

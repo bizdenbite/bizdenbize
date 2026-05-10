@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Mahallem</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="BizdenBize — Gurbet Hayatını Kolaylaştırıyoruz">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğu için platform. Topluluk, ilan, etkinlik ve AbiBOT.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com">
+  <link rel="canonical" href="https://bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;
+      --sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;
+      --gold:#C9A84C;--green:#1E7B4B;--blue:#185FA5;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+    /* TOP NAV */
+    .topnav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      background:rgba(250,247,242,0.92);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(212,197,169,0.4);
+      display:flex;align-items:center;gap:0;height:58px;
+    }
+    .nav-logo{
+      font-family:'Playfair Display',serif;font-size:18px;font-weight:900;
+      color:var(--ink);padding:0 24px;white-space:nowrap;
+    }
+    .nav-logo span{color:var(--red);}
+    .nav-search{
+      flex:1;max-width:360px;
+      display:flex;align-items:center;gap:8px;
+      background:var(--warm);border:1px solid var(--sand);
+      border-radius:8px;padding:8px 14px;margin:0 16px;
+    }
+    .nav-search input{
+      border:none;background:none;outline:none;font-size:13px;
+      font-family:'Instrument Sans',sans-serif;color:var(--ink);width:100%;
+    }
+    .nav-search input::placeholder{color:var(--sand);}
+    .nav-tabs{display:flex;gap:2px;margin-left:8px;flex:1;}
+    .nav-tab{
+      padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;
+      color:var(--muted);cursor:pointer;border:none;background:none;
+      font-family:'Instrument Sans',sans-serif;transition:all .15s;
+      text-decoration:none;display:flex;align-items:center;gap:6px;
+    }
+    .nav-tab:hover{background:var(--warm);color:var(--ink);}
+    .nav-tab.active{background:var(--red);color:var(--white);}
+    .nav-right{display:flex;align-items:center;gap:10px;padding:0 20px;}
+    .nav-notif{
+      width:36px;height:36px;border-radius:50%;border:1.5px solid var(--sand);
+      background:none;cursor:pointer;font-size:16px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;transition:border-color .2s;
+    }
+    .nav-notif:hover{border-color:var(--red);}
+    .notif-dot{
+      position:absolute;top:4px;right:4px;width:8px;height:8px;
+      border-radius:50%;background:var(--red);border:2px solid var(--cream);
+    }
+    .nav-avatar{
+      width:36px;height:36px;border-radius:50%;
+      background:var(--red);color:var(--white);
+      display:flex;align-items:center;justify-content:center;
+      font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;
+    }
+
+    /* LAYOUT */
+    .layout{
+      display:grid;grid-template-columns:260px 1fr 300px;
+      gap:0;padding-top:58px;min-height:100vh;
+    }
+
+    /* LEFT SIDEBAR */
+    .left-sidebar{
+      padding:24px 20px;border-right:1px solid rgba(212,197,169,0.3);
+      position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;
+    }
+    .user-card{
+      background:var(--ink);border-radius:14px;padding:20px;
+      margin-bottom:20px;text-align:center;
+    }
+    .user-card-avatar{
+      width:56px;height:56px;border-radius:50%;
+      background:var(--red);color:var(--white);
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;font-weight:700;margin:0 auto 10px;
+    }
+    .user-card-name{font-size:14px;font-weight:600;color:var(--white);}
+    .user-card-city{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+    .user-card-stats{
+      display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;
+    }
+    .uc-stat{
+      background:rgba(255,255,255,0.06);border-radius:8px;padding:8px 6px;
+    }
+    .uc-val{font-size:18px;font-weight:700;color:var(--white);}
+    .uc-label{font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px;}
+
+    .sidebar-section{margin-bottom:24px;}
+    .sidebar-label{
+      font-size:10px;font-weight:600;letter-spacing:.1em;
+      text-transform:uppercase;color:var(--muted);
+      margin-bottom:8px;padding:0 8px;
+    }
+    .sidebar-link{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 10px;border-radius:8px;cursor:pointer;
+      font-size:13px;font-weight:500;color:var(--muted);
+      transition:all .15s;text-decoration:none;
+    }
+    .sidebar-link:hover,.sidebar-link.active{background:var(--warm);color:var(--ink);}
+    .sidebar-link.active{font-weight:600;}
+    .sidebar-link-icon{font-size:16px;width:20px;text-align:center;}
+    .sidebar-badge{
+      margin-left:auto;font-size:10px;font-weight:600;
+      padding:2px 7px;border-radius:20px;
+      background:var(--red);color:var(--white);
+    }
+
+    .mahalle-list{display:flex;flex-direction:column;gap:4px;}
+    .mahalle-item{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 10px;border-radius:8px;cursor:pointer;
+      font-size:13px;color:var(--muted);transition:all .15s;
+    }
+    .mahalle-item:hover{background:var(--warm);color:var(--ink);}
+    .mahalle-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .mahalle-count{margin-left:auto;font-size:11px;color:var(--sand);}
+
+    /* FEED */
+    .feed{padding:24px 32px;max-width:680px;margin:0 auto;width:100%;}
+
+    /* Location filter */
+    .loc-filter{
+      display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;
+    }
+    .loc-btn{
+      padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;
+      border:1.5px solid var(--sand);background:var(--white);color:var(--muted);
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;
+    }
+    .loc-btn:hover{border-color:var(--red);color:var(--red);}
+    .loc-btn.active{border-color:var(--red);background:var(--red);color:var(--white);}
+
+    /* Compose */
+    .compose{
+      background:var(--white);border:1px solid var(--sand);border-radius:14px;
+      padding:16px;margin-bottom:16px;
+    }
+    .compose-top{display:flex;gap:12px;align-items:flex-start;}
+    .compose-avatar{
+      width:38px;height:38px;border-radius:50%;
+      background:var(--red);color:var(--white);
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:700;flex-shrink:0;
+    }
+    .compose-input{
+      flex:1;border:none;outline:none;resize:none;
+      font-family:'Instrument Sans',sans-serif;font-size:14px;
+      color:var(--ink);background:none;min-height:44px;
+      line-height:1.5;padding-top:10px;
+    }
+    .compose-input::placeholder{color:var(--sand);}
+    .compose-actions{
+      display:flex;gap:8px;padding-top:12px;
+      border-top:1px solid var(--warm);margin-top:12px;
+      align-items:center;
+    }
+    .compose-action{
+      display:flex;align-items:center;gap:5px;
+      font-size:12px;font-weight:500;color:var(--muted);
+      padding:6px 10px;border-radius:6px;border:none;background:none;
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;
+    }
+    .compose-action:hover{background:var(--warm);color:var(--ink);}
+    .compose-submit{
+      margin-left:auto;background:var(--red);color:var(--white);
+      border:none;border-radius:7px;padding:8px 18px;
+      font-size:13px;font-weight:600;cursor:pointer;
+      font-family:'Instrument Sans',sans-serif;transition:background .2s;
+    }
+    .compose-submit:hover{background:var(--red2);}
+
+    /* Post card */
+    .post-card{
+      background:var(--white);border:1px solid var(--sand);border-radius:14px;
+      padding:20px;margin-bottom:12px;transition:box-shadow .2s;
+    }
+    .post-card:hover{box-shadow:0 4px 20px rgba(26,18,8,0.06);}
+    .post-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+    .post-avatar{
+      width:40px;height:40px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:700;color:var(--white);
+    }
+    .post-meta{flex:1;}
+    .post-name{font-size:14px;font-weight:600;color:var(--ink);}
+    .post-info{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;}
+    .post-dot{width:3px;height:3px;border-radius:50%;background:var(--sand);}
+    .post-type-badge{
+      font-size:10px;font-weight:600;letter-spacing:.04em;
+      padding:2px 8px;border-radius:20px;
+    }
+    .post-body{font-size:14px;line-height:1.65;color:var(--ink);margin-bottom:14px;}
+    .post-image{
+      width:100%;border-radius:10px;object-fit:cover;
+      max-height:260px;margin-bottom:14px;background:var(--warm);
+      display:flex;align-items:center;justify-content:center;
+      font-size:40px;min-height:140px;
+    }
+    .post-actions{
+      display:flex;gap:4px;border-top:1px solid var(--warm);
+      padding-top:12px;
+    }
+    .post-action{
+      display:flex;align-items:center;gap:5px;
+      font-size:12px;font-weight:500;color:var(--muted);
+      padding:6px 10px;border-radius:6px;border:none;background:none;
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;
+    }
+    .post-action:hover{background:var(--warm);color:var(--ink);}
+    .post-action.liked{color:var(--red);}
+
+    /* Classifieds mini card */
+    .listing-card{
+      background:var(--white);border:1px solid var(--sand);border-radius:14px;
+      padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;
+      transition:box-shadow .2s;cursor:pointer;
+    }
+    .listing-card:hover{box-shadow:0 4px 20px rgba(26,18,8,0.06);}
+    .listing-img{
+      width:72px;height:72px;border-radius:10px;background:var(--warm);
+      display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;
+    }
+    .listing-body{flex:1;}
+    .listing-title{font-size:14px;font-weight:600;color:var(--ink);}
+    .listing-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+    .listing-price{
+      font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+      color:var(--ink);white-space:nowrap;
+    }
+
+    /* Event mini */
+    .event-card{
+      background:var(--white);border:1px solid var(--sand);border-radius:14px;
+      padding:16px;margin-bottom:12px;display:flex;gap:14px;
+      transition:box-shadow .2s;cursor:pointer;
+    }
+    .event-card:hover{box-shadow:0 4px 20px rgba(26,18,8,0.06);}
+    .event-date{
+      width:52px;flex-shrink:0;text-align:center;
+      background:var(--red);border-radius:10px;padding:8px 6px;
+    }
+    .event-month{font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);text-transform:uppercase;}
+    .event-day{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--white);line-height:1;}
+    .event-body{flex:1;}
+    .event-title{font-size:14px;font-weight:600;color:var(--ink);}
+    .event-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+    .event-rsvp{
+      background:var(--warm);border:1px solid var(--sand);border-radius:7px;
+      padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;
+      font-family:'Instrument Sans',sans-serif;color:var(--ink);
+      transition:all .15s;white-space:nowrap;align-self:center;flex-shrink:0;
+    }
+    .event-rsvp:hover,.event-rsvp.going{background:var(--green);color:var(--white);border-color:var(--green);}
+
+    /* Section header */
+    .section-header{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .section-title{font-size:13px;font-weight:600;color:var(--ink);}
+    .section-link{font-size:12px;color:var(--red);cursor:pointer;text-decoration:none;}
+    .section-link:hover{text-decoration:underline;}
+
+    /* RIGHT SIDEBAR */
+    .right-sidebar{
+      padding:24px 20px;border-left:1px solid rgba(212,197,169,0.3);
+      position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;
+    }
+    .widget{
+      background:var(--white);border:1px solid var(--sand);border-radius:14px;
+      padding:16px;margin-bottom:16px;
+    }
+    .widget-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px;}
+    .nearby-user{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 0;border-bottom:1px solid var(--warm);
+    }
+    .nearby-user:last-child{border-bottom:none;}
+    .nu-avatar{
+      width:34px;height:34px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:700;color:var(--white);flex-shrink:0;
+    }
+    .nu-name{font-size:13px;font-weight:500;color:var(--ink);}
+    .nu-city{font-size:11px;color:var(--muted);}
+    .connect-btn{
+      margin-left:auto;font-size:11px;font-weight:600;
+      padding:4px 10px;border-radius:6px;
+      background:var(--warm);border:1px solid var(--sand);
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;
+      color:var(--ink);transition:all .15s;
+    }
+    .connect-btn:hover{background:var(--red);color:var(--white);border-color:var(--red);}
+
+    .trend-tag{
+      display:inline-flex;margin:0 4px 6px 0;
+      padding:5px 12px;border-radius:20px;
+      background:var(--warm);font-size:12px;font-weight:500;
+      color:var(--muted);cursor:pointer;transition:all .15s;
+    }
+    .trend-tag:hover{background:var(--red);color:var(--white);}
+
+    .premium-widget{
+      background:var(--ink);border-radius:14px;padding:20px;margin-bottom:16px;
+      text-align:center;
+    }
+    .pw-icon{font-size:28px;margin-bottom:10px;}
+    .pw-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:6px;}
+    .pw-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:14px;line-height:1.5;}
+    .pw-btn{
+      width:100%;padding:10px;background:var(--gold);color:var(--ink);
+      border:none;border-radius:8px;font-size:13px;font-weight:600;
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;
+    }
+    .pw-btn:hover{opacity:.9;}
+
+    .left-sidebar::-webkit-scrollbar,.right-sidebar::-webkit-scrollbar{width:3px;}
+    .left-sidebar::-webkit-scrollbar-thumb,.right-sidebar::-webkit-scrollbar-thumb{background:var(--sand);border-radius:2px;}
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:36px;width:auto;display:block;"></a>
+  <div class="nav-search">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:#D4C5A9;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input placeholder="Mahallende ara...">
+  </div>
+  <div class="nav-tabs">
+    <a class="nav-tab active" href="mahallem.html">🏘️ Mahallem</a>
+    <a class="nav-tab" href="classifieds.html">🛍️ İlanlar</a>
+    <a class="nav-tab" href="event-detail.html">🎉 Etkinlikler</a>
+    <a class="nav-tab" href="business.html">🏢 İşletmeler</a>
+    <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-notif">
+      🔔<div class="notif-dot"></div>
+    </button>
+    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="left-sidebar">
+    <div class="user-card">
+      <div class="user-card-avatar">AY</div>
+      <div class="user-card-name">Ayşe Yılmaz</div>
+      <div class="user-card-city">📍 Frankfurt, Almanya</div>
+      <div class="user-card-stats">
+        <div class="uc-stat"><div class="uc-val">47</div><div class="uc-label">Bağlantı</div></div>
+        <div class="uc-stat"><div class="uc-val">3</div><div class="uc-label">İlan</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Menü</div>
+      <a class="sidebar-link active" href="mahallem.html"><span class="sidebar-link-icon">🏠</span>Mahallem</a>
+      <a class="sidebar-link" href="#"><span class="sidebar-link-icon">👤</span>Profilim</a>
+      <a class="sidebar-link" href="messages.html"><span class="sidebar-link-icon">💬</span>Mesajlar<span class="sidebar-badge">3</span></a>
+      <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🔔</span>Bildirimler<span class="sidebar-badge">7</span></a>
+      <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🎟️</span>Davetiyelerim</a>
+      <a class="sidebar-link" href="admin.html"><span class="sidebar-link-icon">⚙️</span>Admin Paneli</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Mahallelerim</div>
+      <div class="mahalle-list">
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#D42B2B"></div>Frankfurt<span class="mahalle-count">142</span></div>
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#185FA5"></div>Tüm Almanya<span class="mahalle-count">891</span></div>
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#C9A84C"></div>Tüm Avrupa<span class="mahalle-count">4.2k</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- FEED -->
+  <main class="feed">
+    <!-- Location filter -->
+    <div class="loc-filter">
+      <button class="loc-btn active">📍 Frankfurt</button>
+      <button class="loc-btn">🇩🇪 Almanya</button>
+      <button class="loc-btn">🌍 Tüm Avrupa</button>
+    </div>
+
+    <!-- Compose -->
+    <div class="compose">
+      <div class="compose-top">
+        <div class="compose-avatar">AY</div>
+        <textarea class="compose-input" placeholder="Mahallenle bir şey paylaş..."></textarea>
+      </div>
+      <div class="compose-actions">
+        <button class="compose-action">📷 Fotoğraf</button>
+        <button class="compose-action">🛍️ İlan</button>
+        <button class="compose-action">🎉 Etkinlik</button>
+        <button class="compose-submit">Paylaş</button>
+      </div>
+    </div>
+
+    <!-- Post 1 -->
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-avatar" style="background:#185FA5">MK</div>
+        <div class="post-meta">
+          <div class="post-name">Mustafa Kaya</div>
+          <div class="post-info">
+            📍 Frankfurt
+            <div class="post-dot"></div>
+            2 saat önce
+            <div class="post-dot"></div>
+            <span class="post-type-badge" style="background:rgba(24,95,165,0.1);color:#185FA5">Mahallem</span>
+          </div>
+        </div>
+      </div>
+      <div class="post-body">Frankfurt'ta güvenilir Türkçe bilen bir vergi danışmanı arıyorum. Küçük işletme kurmak istiyorum, yardımcı olabilecek var mı? 🙏</div>
+      <div class="post-actions">
+        <button class="post-action" onclick="likePost(this)">👍 Beğen <span>12</span></button>
+        <button class="post-action">💬 Yorum <span>5</span></button>
+        <button class="post-action">↗️ Paylaş</button>
+      </div>
+    </div>
+
+    <!-- Section: Yakındaki ilanlar -->
+    <div class="section-header" style="margin-top:8px">
+      <span class="section-title">🛍️ Yakındaki İlanlar</span>
+      <a class="section-link" href="classifieds.html">Tümünü gör →</a>
+    </div>
+
+    <div class="listing-card" onclick="window.location='listing-detail.html'">
+      <div class="listing-img">🚗</div>
+      <div class="listing-body">
+        <div class="listing-title">Audi A3 Satılık — 2019</div>
+        <div class="listing-meta">📍 Frankfurt · 68.000 km · 3 saat önce</div>
+      </div>
+      <div class="listing-price">€18.500</div>
+    </div>
+
+    <div class="listing-card" onclick="window.location='listing-detail.html'">
+      <div class="listing-img">🛋️</div>
+      <div class="listing-body">
+        <div class="listing-title">IKEA Koltuk Takımı — Temiz</div>
+        <div class="listing-meta">📍 Frankfurt · Dün · Zeynep D.</div>
+      </div>
+      <div class="listing-price">€180</div>
+    </div>
+
+    <!-- Section: Etkinlikler -->
+    <div class="section-header" style="margin-top:8px">
+      <span class="section-title">🎉 Bu Haftaki Etkinlikler</span>
+      <a class="section-link" href="events.html">Tümünü gör →</a>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date"><div class="event-month">Haz</div><div class="event-day">14</div></div>
+      <div class="event-body">
+        <div class="event-title">Frankfurt Türk Festivali 2025</div>
+        <div class="event-meta">📍 Römerberg · 43 katılımcı</div>
+      </div>
+      <button class="event-rsvp" onclick="rsvp(this)">Katıl</button>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date" style="background:var(--blue)"><div class="event-month">Haz</div><div class="event-day">18</div></div>
+      <div class="event-body">
+        <div class="event-title">Türk Girişimciler Buluşması</div>
+        <div class="event-meta">📍 Coworking Space Mitte · 22 katılımcı</div>
+      </div>
+      <button class="event-rsvp" onclick="rsvp(this)">Katıl</button>
+    </div>
+
+    <!-- Post 2 -->
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-avatar" style="background:#1E7B4B">ZD</div>
+        <div class="post-meta">
+          <div class="post-name">Zeynep Demir</div>
+          <div class="post-info">
+            📍 Frankfurt
+            <div class="post-dot"></div>
+            5 saat önce
+            <div class="post-dot"></div>
+            <span class="post-type-badge" style="background:rgba(30,123,75,0.1);color:#1E7B4B">Tavsiye</span>
+          </div>
+        </div>
+      </div>
+      <div class="post-body">Sachsenhausen'daki Türk berberi Ahmet Usta'yı herkese tavsiye ederim! 3 yıldır gidiyorum, hem ucuz hem kaliteli. Adres: Darmstädter Landstr. 12 ✂️</div>
+      <div class="post-actions">
+        <button class="post-action liked">👍 Beğen <span>34</span></button>
+        <button class="post-action">💬 Yorum <span>8</span></button>
+        <button class="post-action">↗️ Paylaş</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar">
+
+    <div class="premium-widget">
+      <div class="pw-icon">⭐</div>
+      <div class="pw-title">Premium'a Geç</div>
+      <div class="pw-sub">Sınırsız ilan, öne çıkan profil ve çok daha fazlası.</div>
+      <button class="pw-btn" onclick="window.location='premium.html'">Premium'a Geç</button>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">👥 Frankfurt'tan Yeni Üyeler</div>
+      <div class="nearby-user">
+        <div class="nu-avatar" style="background:#D42B2B">AK</div>
+        <div><div class="nu-name">Ali Korkmaz</div><div class="nu-city">Frankfurt · 2 ortak bağlantı</div></div>
+        <button class="connect-btn">Bağlan</button>
+      </div>
+      <div class="nearby-user">
+        <div class="nu-avatar" style="background:#185FA5">SE</div>
+        <div><div class="nu-name">Selin Erdoğan</div><div class="nu-city">Frankfurt · 1 ortak bağlantı</div></div>
+        <button class="connect-btn">Bağlan</button>
+      </div>
+      <div class="nearby-user">
+        <div class="nu-avatar" style="background:#1E7B4B">BT</div>
+        <div><div class="nu-name">Berk Taşkın</div><div class="nu-city">Frankfurt · Yeni üye</div></div>
+        <button class="connect-btn">Bağlan</button>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">🔥 Gündemdekiler</div>
+      <div>
+        <span class="trend-tag">#VergiDanışmanı</span>
+        <span class="trend-tag">#Frankfurt</span>
+        <span class="trend-tag">#TürkFestivali</span>
+        <span class="trend-tag">#Girişimci</span>
+        <span class="trend-tag">#Kiralık</span>
+        <span class="trend-tag">#Berber</span>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+  // Location filter
+  document.querySelectorAll('.loc-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  function likePost(btn) { btn.classList.toggle('liked'); }
+  function rsvp(btn) {
+    btn.classList.toggle('going');
+    btn.textContent = btn.classList.contains('going') ? '✓ Katılıyorum' : 'Katıl';
+  }
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

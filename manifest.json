@@ -1,0 +1,111 @@
+{
+  "name": "BizdenBize — Gurbet Hayatını Kolaylaştırıyoruz",
+  "short_name": "BizdenBize",
+  "description": "Avrupa'daki Türk topluluğu için platform. Topluluk, ilan, etkinlik ve AbiBOT.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FAF7F2",
+  "theme_color": "#1B3A8C",
+  "lang": "tr",
+  "categories": ["social", "lifestyle", "news"],
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "BizdenBize Ana Sayfa"
+    },
+    {
+      "src": "screenshots/abibot.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AbiBOT — AI Asistan"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Topluluk",
+      "short_name": "Topluluk",
+      "description": "Ana akışa git",
+      "url": "/mahallem.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "AbiBOT",
+      "short_name": "AbiBOT",
+      "description": "AI asistana sor",
+      "url": "/abibot.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "İlanlar",
+      "short_name": "İlanlar",
+      "description": "Al-sat ilanlarına bak",
+      "url": "/classifieds.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mesajlar",
+      "short_name": "Mesajlar",
+      "description": "Mesajlarına bak",
+      "url": "/messages.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

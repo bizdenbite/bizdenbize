@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Sultanahmet Restoran Frankfurt</title>
+  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:16px;}
+    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo-link img{height:34px;width:auto;}
+    .nav-tabs{display:flex;gap:2px;}
+    .nav-tab{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;text-decoration:none;}
+    .nav-tab:hover{background:var(--warm);color:var(--ink);}
+    .nav-tab.active{background:var(--navy);color:var(--white);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+
+    .breadcrumb{padding:72px 40px 0;max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
+    .breadcrumb a:hover{color:var(--navy);}
+    .breadcrumb span{color:var(--sand);}
+
+    .page{padding:16px 40px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;}
+
+    /* Hero */
+    .biz-hero{height:240px;background:linear-gradient(135deg,#6B0C20,var(--red));border-radius:18px;display:flex;align-items:flex-end;padding:24px;position:relative;overflow:hidden;margin-bottom:-20px;}
+    .biz-hero-emoji{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:72px;opacity:.3;}
+    .biz-logo-wrap{width:72px;height:72px;border-radius:16px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid var(--white);box-shadow:0 4px 12px rgba(0,0,0,.15);flex-shrink:0;z-index:1;}
+    .hero-actions{position:absolute;top:16px;right:16px;display:flex;gap:8px;}
+    .hero-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.25);color:var(--white);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+    .hero-btn:hover{background:rgba(255,255,255,.3);}
+
+    /* Biz header */
+    .biz-header{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px 24px 20px;margin-bottom:16px;padding-top:32px;}
+    .bh-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;}
+    .bh-info{flex:1;}
+    .bh-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--ink);letter-spacing:-.3px;margin-bottom:4px;}
+    .bh-cat{font-size:13px;color:var(--muted);margin-bottom:8px;}
+    .bh-tags{display:flex;flex-wrap:wrap;gap:5px;}
+    .bh-tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+    .bh-tag.featured{background:rgba(201,168,76,.12);color:#854F0B;border-color:rgba(201,168,76,.3);}
+    .bh-rating{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--warm);}
+    .stars{color:var(--gold);font-size:16px;letter-spacing:1px;}
+    .rating-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);}
+    .rating-count{font-size:13px;color:var(--muted);}
+    .bh-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;}
+    .bs-item{text-align:center;padding:10px 6px;background:var(--cream);border-radius:9px;}
+    .bs-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
+    .bs-label{font-size:10px;color:var(--muted);margin-top:2px;}
+
+    /* Info rows */
+    .info-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;margin-bottom:16px;}
+    .ic-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+    .info-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--warm);}
+    .info-row:last-child{border-bottom:none;}
+    .ir-icon{width:32px;height:32px;border-radius:8px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+    .ir-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:2px;}
+    .ir-val{font-size:13px;color:var(--ink);}
+    .ir-val a{color:var(--navy);text-decoration:none;}
+    .ir-val a:hover{text-decoration:underline;}
+
+    /* Hours */
+    .hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .hour-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;}
+    .hour-day{color:var(--muted);}
+    .hour-time{color:var(--ink);font-weight:500;}
+    .hour-row.today .hour-day{color:var(--green);font-weight:600;}
+    .hour-row.today .hour-time{color:var(--green);}
+    .open-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:var(--green);margin-bottom:12px;}
+    .open-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+
+    /* Reviews */
+    .reviews-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;margin-bottom:16px;}
+    .rc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+    .rc-title{font-size:14px;font-weight:600;color:var(--ink);}
+    .write-review-btn{font-size:12px;font-weight:600;color:var(--navy);background:none;border:1.5px solid var(--navy);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .write-review-btn:hover{background:var(--navy);color:var(--white);}
+
+    /* Rating bars */
+    .rating-bars{margin-bottom:20px;}
+    .rb-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+    .rb-label{font-size:12px;color:var(--muted);width:16px;flex-shrink:0;text-align:right;}
+    .rb-bar{flex:1;height:6px;background:var(--warm);border-radius:3px;overflow:hidden;}
+    .rb-fill{height:100%;background:var(--gold);border-radius:3px;}
+    .rb-count{font-size:11px;color:var(--muted);width:24px;flex-shrink:0;}
+
+    .review{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--warm);}
+    .review:last-of-type{border-bottom:none;}
+    .rev-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .rev-name{font-size:13px;font-weight:600;color:var(--ink);}
+    .rev-stars{color:var(--gold);font-size:12px;}
+    .rev-date{font-size:11px;color:var(--muted);margin-left:4px;}
+    .rev-text{font-size:13px;color:var(--muted);line-height:1.55;margin-top:4px;}
+    .rev-useful{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Instrument Sans',sans-serif;margin-top:4px;transition:color .15s;}
+    .rev-useful:hover{color:var(--red);}
+
+    /* Write review form */
+    .write-review-form{display:none;padding:16px;background:var(--cream);border-radius:10px;margin-top:14px;}
+    .write-review-form.open{display:block;}
+    .star-select{display:flex;gap:6px;margin-bottom:10px;}
+    .star-btn{font-size:24px;cursor:pointer;background:none;border:none;opacity:.35;transition:opacity .15s;}
+    .star-btn.active,.star-btn:hover{opacity:1;}
+    .review-textarea{width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:8px;font-size:13px;font-family:'Instrument Sans',sans-serif;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:80px;margin-bottom:10px;}
+    .review-textarea:focus{border-color:var(--navy);}
+    .submit-review{padding:9px 20px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+
+    /* ── RIGHT ── */
+    .right-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px;}
+
+    .action-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .ac-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+    .action-btns{display:flex;flex-direction:column;gap:8px;}
+    .action-btn{width:100%;padding:12px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;border:none;}
+    .action-btn.primary{background:var(--navy);color:var(--white);}
+    .action-btn.primary:hover{background:var(--navy2);}
+    .action-btn.secondary{background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);}
+    .action-btn.secondary:hover{border-color:var(--navy);}
+    .action-btn.green{background:var(--green);color:var(--white);}
+    .action-btn.green:hover{opacity:.9;}
+
+    .owner-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .ow-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+    .ow-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .ow-avatar{width:44px;height:44px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+    .ow-name{font-size:14px;font-weight:600;color:var(--ink);}
+    .ow-meta{font-size:12px;color:var(--muted);}
+    .ow-verified{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:rgba(30,123,75,.1);color:var(--green);margin-top:3px;}
+    .ow-btn{width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--sand);background:var(--warm);font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--ink);transition:all .15s;}
+    .ow-btn:hover{border-color:var(--navy);color:var(--navy);}
+
+    .premium-promo{background:rgba(201,168,76,.08);border:1.5px dashed rgba(201,168,76,.4);border-radius:14px;padding:16px;text-align:center;}
+    .pp-title{font-size:13px;font-weight:600;color:#854F0B;margin-bottom:4px;}
+    .pp-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+    .pp-btn{padding:8px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+
+    @media(max-width:900px){
+      .page{grid-template-columns:1fr;padding:16px 20px 60px;}
+      .right-col{position:static;}
+      .breadcrumb{padding:72px 20px 0;}
+      .bh-stats{grid-template-columns:repeat(2,1fr);}
+    }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html">🎉 Etkinlikler</a>
+      <a class="nav-tab active" href="business.html">🏢 İşletmeler</a>
+      <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="mahallem.html">Ana Sayfa</a><span>/</span>
+  <a href="business.html">İşletmeler</a><span>/</span>
+  <a href="business.html">Restoran</a><span>/</span>
+  <span style="color:var(--ink)">Sultanahmet Restoran</span>
+</div>
+
+<div class="page">
+  <div>
+
+    <!-- Hero -->
+    <div class="biz-hero">
+      <div class="biz-hero-emoji">🍽️</div>
+      <div class="hero-actions">
+        <button class="hero-btn" id="save-biz" onclick="toggleSaveBiz()">🤍</button>
+        <button class="hero-btn" onclick="shareBiz()">↗</button>
+      </div>
+      <div class="biz-logo-wrap">🍽️</div>
+    </div>
+
+    <!-- Header -->
+    <div class="biz-header">
+      <div class="bh-top">
+        <div class="bh-info">
+          <div class="bh-name">Sultanahmet Restoran Frankfurt</div>
+          <div class="bh-cat">🍽️ Türk Mutfağı · Sachsenhausen, Frankfurt</div>
+          <div class="bh-tags">
+            <span class="bh-tag featured">⭐ Öne Çıkan</span>
+            <span class="bh-tag">🍖 Kebap</span>
+            <span class="bh-tag">🥗 Meze</span>
+            <span class="bh-tag">🍷 İçki Lisansı</span>
+            <span class="bh-tag">🅿️ Otopark</span>
+            <span class="bh-tag">♿ Engelli Erişimi</span>
+          </div>
+        </div>
+      </div>
+      <div class="bh-rating">
+        <span class="stars">★★★★★</span>
+        <span class="rating-val">4.9</span>
+        <span class="rating-count">· 127 yorum · BizdenBize topluluğundan</span>
+      </div>
+      <div class="bh-stats">
+        <div class="bs-item"><div class="bs-val">127</div><div class="bs-label">Yorum</div></div>
+        <div class="bs-item"><div class="bs-val">4.9</div><div class="bs-label">Puan</div></div>
+        <div class="bs-item"><div class="bs-val">8 yıl</div><div class="bs-label">Faaliyet</div></div>
+        <div class="bs-item"><div class="bs-val">%98</div><div class="bs-label">Tavsiye</div></div>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-card">
+      <div class="ic-title">📋 İşletme Bilgileri</div>
+      <div class="info-row">
+        <div class="ir-icon">📍</div>
+        <div><div class="ir-label">Adres</div><div class="ir-val">Darmstädter Landstr. 28, 60598 Frankfurt am Main</div></div>
+      </div>
+      <div class="info-row">
+        <div class="ir-icon">📞</div>
+        <div><div class="ir-label">Telefon</div><div class="ir-val"><a href="tel:+4969123456">+49 69 123 456</a></div></div>
+      </div>
+      <div class="info-row">
+        <div class="ir-icon">🌐</div>
+        <div><div class="ir-label">Website</div><div class="ir-val"><a href="#">sultanahmet-frankfurt.de</a></div></div>
+      </div>
+      <div class="info-row">
+        <div class="ir-icon">🕐</div>
+        <div style="flex:1">
+          <div class="ir-label">Çalışma Saatleri</div>
+          <div class="open-badge"><div class="open-dot"></div>Şu an açık · 23:00'e kadar</div>
+          <div class="hours-grid">
+            <div class="hour-row"><span class="hour-day">Pazartesi</span><span class="hour-time">09:00–23:00</span></div>
+            <div class="hour-row"><span class="hour-day">Salı</span><span class="hour-time">09:00–23:00</span></div>
+            <div class="hour-row today"><span class="hour-day">Çarşamba ●</span><span class="hour-time">09:00–23:00</span></div>
+            <div class="hour-row"><span class="hour-day">Perşembe</span><span class="hour-time">09:00–23:00</span></div>
+            <div class="hour-row"><span class="hour-day">Cuma</span><span class="hour-time">09:00–00:00</span></div>
+            <div class="hour-row"><span class="hour-day">Cumartesi</span><span class="hour-time">10:00–00:00</span></div>
+            <div class="hour-row"><span class="hour-day">Pazar</span><span class="hour-time">11:00–22:00</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="ir-icon">💳</div>
+        <div><div class="ir-label">Ödeme</div><div class="ir-val">Nakit, Kart, EC, PayPal</div></div>
+      </div>
+      <div class="info-row">
+        <div class="ir-icon">🗣️</div>
+        <div><div class="ir-label">Diller</div><div class="ir-val">Türkçe 🇹🇷 · Deutsch 🇩🇪 · English 🇬🇧</div></div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews-card">
+      <div class="rc-header">
+        <span class="rc-title">⭐ Yorumlar (127)</span>
+        <button class="write-review-btn" onclick="toggleReviewForm()">+ Yorum Yaz</button>
+      </div>
+
+      <div class="rating-bars">
+        <div class="rb-row"><span class="rb-label">5</span><div class="rb-bar"><div class="rb-fill" style="width:88%"></div></div><span class="rb-count">112</span></div>
+        <div class="rb-row"><span class="rb-label">4</span><div class="rb-bar"><div class="rb-fill" style="width:9%"></div></div><span class="rb-count">11</span></div>
+        <div class="rb-row"><span class="rb-label">3</span><div class="rb-bar"><div class="rb-fill" style="width:2%"></div></div><span class="rb-count">3</span></div>
+        <div class="rb-row"><span class="rb-label">2</span><div class="rb-bar"><div class="rb-fill" style="width:1%"></div></div><span class="rb-count">1</span></div>
+        <div class="rb-row"><span class="rb-label">1</span><div class="rb-bar"><div class="rb-fill" style="width:0%"></div></div><span class="rb-count">0</span></div>
+      </div>
+
+      <div class="review">
+        <div class="rev-avatar" style="background:#1B3A8C">MK</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="rev-name">Mustafa Kaya</span>
+            <span class="rev-stars">★★★★★</span>
+            <span class="rev-date">2 gün önce</span>
+          </div>
+          <div class="rev-text">Frankfurt'taki en iyi Türk restoranı bu! Özellikle Adana kebabı ve lahmacun mükemmel. Sahibi de çok kibar. Her gittiğimde aynı kalite. Kesinlikle tavsiye ederim! 👍</div>
+          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (13)'">Faydalı (12)</button>
+        </div>
+      </div>
+      <div class="review">
+        <div class="rev-avatar" style="background:#1E7B4B">ZD</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="rev-name">Zeynep Demir</span>
+            <span class="rev-stars">★★★★★</span>
+            <span class="rev-date">1 hafta önce</span>
+          </div>
+          <div class="rev-text">Viyana'dan geçerken uğradım, çok memnun kaldım. Türkçe konuşulması ve ev yemeği tadı insanı rahatlattı. Porsiyon büyüklüğü de süper. Fiyatlar da makul.</div>
+          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (8)'">Faydalı (7)</button>
+        </div>
+      </div>
+      <div class="review">
+        <div class="rev-avatar" style="background:#C9A84C">AK</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="rev-name">Ali Korkmaz</span>
+            <span class="rev-stars">★★★★★</span>
+            <span class="rev-date">2 hafta önce</span>
+          </div>
+          <div class="rev-text">Annelerimizin eli gibi yemekler yapıyorlar. Her gittiğimde aynı lezzet var. Çalışanlar çok sıcakkanlı, kendi ülkendeymiş gibi hissediyorsun. ❤️</div>
+          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (6)'">Faydalı (5)</button>
+        </div>
+      </div>
+
+      <div class="write-review-form" id="review-form">
+        <div class="star-select" id="star-select">
+          <button class="star-btn" onclick="setStars(1)">★</button>
+          <button class="star-btn" onclick="setStars(2)">★</button>
+          <button class="star-btn" onclick="setStars(3)">★</button>
+          <button class="star-btn" onclick="setStars(4)">★</button>
+          <button class="star-btn active" onclick="setStars(5)">★</button>
+        </div>
+        <textarea class="review-textarea" id="review-text" placeholder="Deneyiminizi paylaşın..."></textarea>
+        <button class="submit-review" onclick="submitReview()">Yorumu Gönder</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right-col">
+
+    <div class="action-card">
+      <div class="ac-title">İletişim</div>
+      <div class="action-btns">
+        <button class="action-btn primary" onclick="window.location='tel:+4969123456'">📞 Hemen Ara</button>
+        <button class="action-btn secondary" onclick="window.location='messages.html'">💬 Mesaj Gönder</button>
+        <button class="action-btn green" onclick="alert('Google Haritalar\'da açılıyor...')">🗺️ Yol Tarifi Al</button>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      <div class="ow-label">İşletme Sahibi</div>
+      <div class="ow-row">
+        <div class="ow-avatar">MŞ</div>
+        <div>
+          <div class="ow-name">Mehmet Şahin</div>
+          <div class="ow-meta">Sahibi · 8 yıldır Frankfurt</div>
+          <div class="ow-verified">✓ Onaylı Üye</div>
+        </div>
+      </div>
+      <button class="ow-btn" onclick="window.location='messages.html'">💬 Sahibiyle Konuş</button>
+    </div>
+
+    <div class="premium-promo">
+      <div class="pp-title">🌟 Bu işletme misin?</div>
+      <div class="pp-sub">Premium ile profilini öne çıkar, analitiklere eriş ve daha fazla müşteriye ulaş.</div>
+      <button class="pp-btn" onclick="window.location='premium.html'">Premium'a Geç →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let selectedStars = 5;
+  function setStars(n) {
+    selectedStars = n;
+    document.querySelectorAll('.star-btn').forEach((b,i) => b.classList.toggle('active', i < n));
+  }
+  function toggleReviewForm() {
+    const form = document.getElementById('review-form');
+    form.classList.toggle('open');
+    if (form.classList.contains('open')) form.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  function submitReview() {
+    const text = document.getElementById('review-text').value.trim();
+    if (!text) return;
+    const container = document.querySelector('.reviews-card');
+    const stars = '★'.repeat(selectedStars) + '☆'.repeat(5-selectedStars);
+    const div = document.createElement('div');
+    div.className = 'review';
+    div.innerHTML = `<div class="rev-avatar" style="background:var(--red)">AY</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="rev-name">Ayşe Yılmaz</span>
+          <span class="rev-stars">${stars}</span>
+          <span class="rev-date">Şimdi</span>
+        </div>
+        <div class="rev-text">${text}</div>
+        <button class="rev-useful">Faydalı (0)</button>
+      </div>`;
+    document.getElementById('review-form').before(div);
+    document.getElementById('review-text').value = '';
+    document.getElementById('review-form').classList.remove('open');
+  }
+  function toggleSaveBiz() {
+    const btn = document.getElementById('save-biz');
+    btn.textContent = btn.textContent === '🤍' ? '🧡' : '🤍';
+  }
+  function shareBiz() {
+    navigator.clipboard?.writeText(window.location.href);
+    alert('Bağlantı kopyalandı!');
+  }
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

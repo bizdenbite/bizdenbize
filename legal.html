@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Yasal Bilgiler</title>
+  <meta name="description" content="BizdenBize yasal bilgiler, gizlilik politikası ve kullanım şartları.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo-link img{height:34px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+
+    /* LAYOUT */
+    .shell{display:grid;grid-template-columns:260px 1fr;gap:0;padding-top:58px;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{padding:32px 24px;border-right:1px solid rgba(212,197,169,.3);position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;}
+
+    /* Lang switcher */
+    .lang-switch{display:flex;gap:6px;margin-bottom:28px;}
+    .lang-btn{flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--sand);background:var(--white);font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--muted);transition:all .15s;text-align:center;}
+    .lang-btn:hover{border-color:var(--navy);color:var(--navy);}
+    .lang-btn.active{border-color:var(--navy);background:var(--navy);color:var(--white);}
+
+    /* Tab navigation */
+    .tab-nav{display:flex;flex-direction:column;gap:2px;margin-bottom:28px;}
+    .tab-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;border:none;background:none;font-family:'Instrument Sans',sans-serif;text-align:left;width:100%;}
+    .tab-nav-item:hover{background:var(--warm);color:var(--ink);}
+    .tab-nav-item.active{background:rgba(27,58,140,.08);color:var(--navy);font-weight:600;}
+    .tab-nav-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
+
+    /* Section nav */
+    .section-nav{display:flex;flex-direction:column;gap:1px;}
+    .section-nav-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 12px;margin-bottom:6px;margin-top:8px;}
+    .section-link{font-size:12px;color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;display:block;text-decoration:none;}
+    .section-link:hover{background:var(--warm);color:var(--ink);}
+
+    .last-updated{font-size:11px;color:var(--muted);padding:16px 12px 0;border-top:1px solid var(--warm);margin-top:16px;line-height:1.5;}
+
+    /* MAIN CONTENT */
+    .main-content{padding:40px 60px 80px;max-width:820px;}
+
+    /* Tab panels */
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* Hero */
+    .legal-hero{margin-bottom:36px;}
+    .lh-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
+    .lh-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--ink);letter-spacing:-.6px;line-height:1.1;margin-bottom:10px;}
+    .lh-sub{font-size:14px;color:var(--muted);line-height:1.65;}
+
+    /* Content blocks */
+    .legal-section{margin-bottom:36px;scroll-margin-top:80px;}
+    .ls-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+    .ls-title::before{content:'';display:block;width:3px;height:22px;background:var(--navy);border-radius:2px;flex-shrink:0;}
+    .ls-body{font-size:14px;color:var(--muted);line-height:1.8;}
+    .ls-body p{margin-bottom:12px;}
+    .ls-body p:last-child{margin-bottom:0;}
+    .ls-body strong{color:var(--ink);font-weight:600;}
+    .ls-body a{color:var(--navy);text-decoration:none;}
+    .ls-body a:hover{text-decoration:underline;}
+    .ls-body ul{margin:10px 0 10px 20px;display:flex;flex-direction:column;gap:6px;}
+    .ls-body li{line-height:1.6;}
+
+    /* Info boxes */
+    .info-box{border-radius:12px;padding:16px 20px;margin-bottom:16px;border-left:3px solid;}
+    .info-box.blue{background:rgba(27,58,140,.05);border-color:var(--navy);}
+    .info-box.gold{background:rgba(201,168,76,.08);border-color:var(--gold);}
+    .info-box.green{background:rgba(30,123,75,.06);border-color:var(--green);}
+    .info-box.red{background:rgba(212,43,43,.05);border-color:var(--red);}
+    .ib-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .info-box.blue .ib-title{color:var(--navy);}
+    .info-box.gold .ib-title{color:#854F0B;}
+    .info-box.green .ib-title{color:var(--green);}
+    .info-box.red .ib-title{color:var(--red);}
+    .ib-body{font-size:13px;color:var(--muted);line-height:1.6;}
+
+    /* Contact card */
+    .contact-card{background:var(--navy);border-radius:14px;padding:24px 28px;margin-top:24px;}
+    .cc-title{font-size:15px;font-weight:600;color:var(--white);margin-bottom:12px;}
+    .cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .cc-item-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
+    .cc-item-val{font-size:13px;color:rgba(255,255,255,.8);}
+    .cc-item-val a{color:rgba(255,255,255,.8);text-decoration:none;}
+    .cc-item-val a:hover{color:var(--white);}
+
+    /* Rights table */
+    .rights-table{width:100%;border-collapse:collapse;margin-top:12px;}
+    .rights-table th{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:2px solid var(--sand);}
+    .rights-table td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--warm);color:var(--muted);vertical-align:top;}
+    .rights-table td:first-child{color:var(--ink);font-weight:500;width:35%;}
+    .rights-table tr:last-child td{border-bottom:none;}
+
+    /* Divider */
+    .section-divider{height:1px;background:var(--warm);margin:36px 0;}
+
+    /* Hidden lang sections */
+    .lang-content{display:none;}
+    .lang-content.active{display:block;}
+
+    @media(max-width:900px){
+      .shell{grid-template-columns:1fr;}
+      .sidebar{display:none;}
+      .main-content{padding:24px 20px 60px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Yasal Bilgiler</span>
+  </div>
+  <div class="nav-right">
+    <a href="mahallem.html" class="nav-back">← Geri dön</a>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 TR</button>
+      <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-nav-item active" onclick="setTab('impressum')">
+        <span class="tab-nav-icon">🏢</span>
+        <span id="tab-label-impressum">Impressum</span>
+      </button>
+      <button class="tab-nav-item" onclick="setTab('privacy')">
+        <span class="tab-nav-icon">🔒</span>
+        <span id="tab-label-privacy">Gizlilik Politikası</span>
+      </button>
+      <button class="tab-nav-item" onclick="setTab('terms')">
+        <span class="tab-nav-icon">📋</span>
+        <span id="tab-label-terms">Kullanım Şartları</span>
+      </button>
+      <button class="tab-nav-item" onclick="setTab('cookies')">
+        <span class="tab-nav-icon">🍪</span>
+        <span id="tab-label-cookies">Çerez Politikası</span>
+      </button>
+    </div>
+
+    <div class="section-nav" id="section-nav-impressum">
+      <div class="section-nav-label" id="snl-contact">İletişim</div>
+      <a class="section-link" href="#section-company">Şirket Bilgileri</a>
+      <a class="section-link" href="#section-contact">İletişim</a>
+      <a class="section-link" href="#section-responsible">Sorumlu</a>
+    </div>
+
+    <div class="section-nav" id="section-nav-privacy" style="display:none">
+      <div class="section-nav-label">Bölümler</div>
+      <a class="section-link" href="#section-data">Toplanan Veriler</a>
+      <a class="section-link" href="#section-purpose">Kullanım Amacı</a>
+      <a class="section-link" href="#section-rights">Haklarınız</a>
+      <a class="section-link" href="#section-storage">Saklama Süresi</a>
+      <a class="section-link" href="#section-third">Üçüncü Taraflar</a>
+    </div>
+
+    <div class="section-nav" id="section-nav-terms" style="display:none">
+      <div class="section-nav-label">Bölümler</div>
+      <a class="section-link" href="#section-eligibility">Üyelik</a>
+      <a class="section-link" href="#section-conduct">Davranış Kuralları</a>
+      <a class="section-link" href="#section-content">İçerik Politikası</a>
+      <a class="section-link" href="#section-payments">Ödemeler</a>
+      <a class="section-link" href="#section-termination">Fesih</a>
+    </div>
+
+    <div class="section-nav" id="section-nav-cookies" style="display:none">
+      <div class="section-nav-label">Bölümler</div>
+      <a class="section-link" href="#section-what">Çerez Nedir?</a>
+      <a class="section-link" href="#section-types">Çerez Türleri</a>
+      <a class="section-link" href="#section-manage">Yönetim</a>
+    </div>
+
+    <div class="last-updated" id="last-updated">
+      Son güncelleme:<br><strong>Haziran 2025</strong><br><br>
+      Sorularınız için:<br><a href="mailto:legal@bizdenbize.com" style="color:var(--navy)">legal@bizdenbize.com</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- ══ IMPRESSUM ══ -->
+    <div class="tab-panel active" id="tab-impressum">
+
+      <!-- TR -->
+      <div class="lang-content active" id="impressum-tr">
+        <div class="legal-hero">
+          <div class="lh-badge">🏢 Yasal Bildirim</div>
+          <h1 class="lh-title">Impressum</h1>
+          <p class="lh-sub">Almanya hukuku gereğince (§ 5 TMG) zorunlu yasal bildirim.</p>
+        </div>
+        <div class="legal-section" id="section-company">
+          <h2 class="ls-title">Şirket Bilgileri</h2>
+          <div class="ls-body">
+            <p><strong>BizdenBize UG (haftungsbeschränkt)</strong><br>
+            Musterstraße 1<br>60311 Frankfurt am Main<br>Deutschland</p>
+            <p><strong>Ticaret Sicil:</strong> Amtsgericht Frankfurt am Main, HRB 123456<br>
+            <strong>Vergi Numarası (USt-ID):</strong> DE123456789</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-contact">
+          <h2 class="ls-title">İletişim</h2>
+          <div class="ls-body">
+            <p><strong>E-posta:</strong> <a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a><br>
+            <strong>Yasal:</strong> <a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a><br>
+            <strong>Gizlilik:</strong> <a href="mailto:datenschutz@bizdenbize.com">datenschutz@bizdenbize.com</a></p>
+          </div>
+          <div class="contact-card">
+            <div class="cc-title">İletişim Bilgileri</div>
+            <div class="cc-grid">
+              <div><div class="cc-item-label">Şirket</div><div class="cc-item-val">BizdenBize UG</div></div>
+              <div><div class="cc-item-label">Adres</div><div class="cc-item-val">Musterstraße 1, 60311 Frankfurt</div></div>
+              <div><div class="cc-item-label">E-posta</div><div class="cc-item-val"><a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a></div></div>
+              <div><div class="cc-item-label">Yasal</div><div class="cc-item-val"><a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-responsible">
+          <h2 class="ls-title">İçerikten Sorumlu</h2>
+          <div class="ls-body">
+            <p>§ 55 Abs. 2 RStV uyarınca içerikten sorumlu kişi:<br><strong>[Kurucu Adı Soyadı]</strong><br>Musterstraße 1, 60311 Frankfurt am Main</p>
+          </div>
+          <div class="info-box blue">
+            <div class="ib-title">⚠️ Sorumluluk Reddi</div>
+            <div class="ib-body">BizdenBize, kullanıcılar tarafından oluşturulan içeriklerden sorumlu değildir. Hukuka aykırı içerikler bildirme formumuz aracılığıyla raporlanabilir.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DE -->
+      <div class="lang-content" id="impressum-de">
+        <div class="legal-hero">
+          <div class="lh-badge">🏢 Pflichtangaben</div>
+          <h1 class="lh-title">Impressum</h1>
+          <p class="lh-sub">Angaben gemäß § 5 TMG.</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Angaben zum Unternehmen</h2>
+          <div class="ls-body">
+            <p><strong>BizdenBize UG (haftungsbeschränkt)</strong><br>
+            Musterstraße 1<br>60311 Frankfurt am Main<br>Deutschland</p>
+            <p><strong>Handelsregister:</strong> Amtsgericht Frankfurt am Main, HRB 123456<br>
+            <strong>USt-ID:</strong> DE123456789</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Kontakt</h2>
+          <div class="ls-body">
+            <p><strong>E-Mail:</strong> <a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a><br>
+            <strong>Datenschutz:</strong> <a href="mailto:datenschutz@bizdenbize.com">datenschutz@bizdenbize.com</a></p>
+          </div>
+          <div class="contact-card">
+            <div class="cc-title">Kontaktdaten</div>
+            <div class="cc-grid">
+              <div><div class="cc-item-label">Unternehmen</div><div class="cc-item-val">BizdenBize UG</div></div>
+              <div><div class="cc-item-label">Adresse</div><div class="cc-item-val">Musterstraße 1, 60311 Frankfurt</div></div>
+              <div><div class="cc-item-label">E-Mail</div><div class="cc-item-val"><a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a></div></div>
+              <div><div class="cc-item-label">Datenschutz</div><div class="cc-item-val"><a href="mailto:datenschutz@bizdenbize.com">datenschutz@bizdenbize.com</a></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Verantwortlich für den Inhalt</h2>
+          <div class="ls-body">
+            <p>Verantwortlich i.S.d. § 55 Abs. 2 RStV:<br><strong>[Vor- und Nachname des Gründers]</strong><br>Musterstraße 1, 60311 Frankfurt am Main</p>
+          </div>
+          <div class="info-box blue">
+            <div class="ib-title">Haftungsausschluss</div>
+            <div class="ib-body">BizdenBize übernimmt keine Haftung für nutzergenerierte Inhalte. Rechtswidrige Inhalte können über unser Meldeformular gemeldet werden.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div class="lang-content" id="impressum-en">
+        <div class="legal-hero">
+          <div class="lh-badge">🏢 Legal Notice</div>
+          <h1 class="lh-title">Impressum</h1>
+          <p class="lh-sub">Legal notice as required by German law (§ 5 TMG).</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Company Information</h2>
+          <div class="ls-body">
+            <p><strong>BizdenBize UG (haftungsbeschränkt)</strong><br>
+            Musterstraße 1<br>60311 Frankfurt am Main<br>Germany</p>
+            <p><strong>Commercial Register:</strong> Amtsgericht Frankfurt am Main, HRB 123456<br>
+            <strong>VAT ID:</strong> DE123456789</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Contact</h2>
+          <div class="ls-body">
+            <p><strong>Email:</strong> <a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a><br>
+            <strong>Legal:</strong> <a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a></p>
+          </div>
+          <div class="contact-card">
+            <div class="cc-title">Contact Details</div>
+            <div class="cc-grid">
+              <div><div class="cc-item-label">Company</div><div class="cc-item-val">BizdenBize UG</div></div>
+              <div><div class="cc-item-label">Address</div><div class="cc-item-val">Musterstraße 1, 60311 Frankfurt</div></div>
+              <div><div class="cc-item-label">Email</div><div class="cc-item-val"><a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a></div></div>
+              <div><div class="cc-item-label">Legal</div><div class="cc-item-val"><a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PRIVACY POLICY ══ -->
+    <div class="tab-panel" id="tab-privacy">
+
+      <!-- TR -->
+      <div class="lang-content active" id="privacy-tr">
+        <div class="legal-hero">
+          <div class="lh-badge">🔒 GDPR / DSGVO Uyumlu</div>
+          <h1 class="lh-title">Gizlilik Politikası</h1>
+          <p class="lh-sub">Kişisel verileriniz bizim için önemlidir. Bu politika, hangi verileri topladığımızı, neden topladığımızı ve haklarınızın neler olduğunu açıklamaktadır.</p>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">📋 GDPR Kapsamında Haklarınız</div>
+          <div class="ib-body">AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında verilerinize erişim, düzeltme, silme, taşıma ve itiraz hakkına sahipsiniz. Bu hakları kullanmak için <a href="mailto:datenschutz@bizdenbize.com" style="color:var(--green)">datenschutz@bizdenbize.com</a> adresine yazabilirsiniz.</div>
+        </div>
+
+        <div class="legal-section" id="section-data">
+          <h2 class="ls-title">Topladığımız Veriler</h2>
+          <div class="ls-body">
+            <p><strong>Hesap verileri:</strong> Ad, soyad, e-posta adresi, şifre (şifrelenmiş), şehir, ülke.</p>
+            <p><strong>Profil verileri:</strong> Biyografi, dil tercihleri, ilgi alanları, profil fotoğrafı (isteğe bağlı).</p>
+            <p><strong>Kullanım verileri:</strong> Hangi sayfalara girdiğiniz, ne zaman giriş yaptığınız, hangi özellikleri kullandığınız.</p>
+            <p><strong>İlan verileri:</strong> Oluşturduğunuz ilanlar, fotoğraflar, açıklamalar.</p>
+            <p><strong>Mesaj verileri:</strong> Diğer üyelerle yaptığınız mesajlaşmalar (şifrelenmiş).</p>
+            <p><strong>AbiBOT verileri:</strong> Sorduğunuz sorular ve alınan yanıtlar (hizmet iyileştirme için anonim olarak saklanır).</p>
+            <p><strong>Ödeme verileri:</strong> Kart bilgileri doğrudan Stripe tarafından işlenir, bizim sunucularımızda saklanmaz.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-purpose">
+          <h2 class="ls-title">Verileri Neden Kullanıyoruz?</h2>
+          <div class="ls-body">
+            <ul>
+              <li>Hesabınızı oluşturmak ve yönetmek (GDPR Art. 6(1)(b) — sözleşme)</li>
+              <li>Topluluk hizmetlerini sunmak (mahallem, ilanlar, etkinlikler)</li>
+              <li>AbiBOT hizmetini sağlamak ve iyileştirmek</li>
+              <li>Güvenlik ve dolandırıcılık tespiti (GDPR Art. 6(1)(f) — meşru menfaat)</li>
+              <li>Yasal yükümlülükleri yerine getirmek (GDPR Art. 6(1)(c))</li>
+              <li>Onayınız durumunda: hizmet güncellemeleri ve bildirimler</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-rights">
+          <h2 class="ls-title">Veri Haklarınız (GDPR)</h2>
+          <table class="rights-table">
+            <tr><th>Hak</th><th>Açıklama</th></tr>
+            <tr><td>Erişim hakkı (Art. 15)</td><td>Hakkınızda sakladığımız tüm verileri talep edebilirsiniz.</td></tr>
+            <tr><td>Düzeltme hakkı (Art. 16)</td><td>Yanlış verilerin düzeltilmesini isteyebilirsiniz.</td></tr>
+            <tr><td>Silme hakkı (Art. 17)</td><td>"Unutulma hakkı" — hesabınızı ve tüm verilerinizi silebilirsiniz.</td></tr>
+            <tr><td>Taşınabilirlik (Art. 20)</td><td>Verilerinizi makine okunur formatta alabilirsiniz.</td></tr>
+            <tr><td>İtiraz hakkı (Art. 21)</td><td>Meşru menfaat gerekçesiyle işlenen verilere itiraz edebilirsiniz.</td></tr>
+            <tr><td>Şikâyet hakkı</td><td>Almanya'da BfDI'ye, yerel ülkenizin DPA'sına şikâyette bulunabilirsiniz.</td></tr>
+          </table>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-storage">
+          <h2 class="ls-title">Saklama Süresi</h2>
+          <div class="ls-body">
+            <p>Hesabınızı sildiğinizde kişisel verileriniz <strong>30 gün içinde</strong> sistemlerimizden kalıcı olarak silinir. Yasal yükümlülükler gerektirdiğinde (örn. fatura kayıtları) bazı veriler <strong>10 yıla kadar</strong> saklanabilir.</p>
+            <p>AbiBOT sorularınız anonim hale getirilerek hizmet iyileştirme amacıyla <strong>12 ay</strong> süreyle saklanır.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-third">
+          <h2 class="ls-title">Üçüncü Taraf Hizmetler</h2>
+          <div class="ls-body">
+            <ul>
+              <li><strong>Supabase</strong> (EU-Frankfurt sunucuları) — veritabanı ve kimlik doğrulama</li>
+              <li><strong>Stripe</strong> — ödeme işleme (PCI-DSS uyumlu)</li>
+              <li><strong>Anthropic / Claude</strong> — AbiBOT yapay zeka hizmeti</li>
+              <li><strong>Vercel</strong> — barındırma hizmeti</li>
+              <li><strong>Resend</strong> — e-posta bildirimleri</li>
+            </ul>
+            <p>Tüm işleyicilerle GDPR Art. 28 kapsamında Veri İşleme Sözleşmesi (DPA) imzalanmıştır.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DE -->
+      <div class="lang-content" id="privacy-de">
+        <div class="legal-hero">
+          <div class="lh-badge">🔒 DSGVO-konform</div>
+          <h1 class="lh-title">Datenschutzerklärung</h1>
+          <p class="lh-sub">Der Schutz Ihrer personenbezogenen Daten ist uns wichtig. Diese Erklärung beschreibt, welche Daten wir erheben, warum und welche Rechte Sie haben.</p>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">📋 Ihre Rechte nach DSGVO</div>
+          <div class="ib-body">Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Datenübertragbarkeit und Widerspruch. Kontaktieren Sie uns unter <a href="mailto:datenschutz@bizdenbize.com" style="color:var(--green)">datenschutz@bizdenbize.com</a>.</div>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Erhobene Daten</h2>
+          <div class="ls-body">
+            <p><strong>Kontodaten:</strong> Name, E-Mail-Adresse, Passwort (verschlüsselt), Stadt, Land.</p>
+            <p><strong>Profildaten:</strong> Biografie, Sprachpräferenzen, Interessen, Profilfoto (optional).</p>
+            <p><strong>Nutzungsdaten:</strong> Seitenaufrufe, Anmeldezeitpunkte, genutzte Funktionen.</p>
+            <p><strong>Zahlungsdaten:</strong> Kartendaten werden direkt von Stripe verarbeitet und nicht auf unseren Servern gespeichert.</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Ihre Rechte (DSGVO)</h2>
+          <table class="rights-table">
+            <tr><th>Recht</th><th>Beschreibung</th></tr>
+            <tr><td>Auskunftsrecht (Art. 15)</td><td>Sie können Auskunft über Ihre gespeicherten Daten verlangen.</td></tr>
+            <tr><td>Berichtigungsrecht (Art. 16)</td><td>Falsche Daten können korrigiert werden.</td></tr>
+            <tr><td>Löschungsrecht (Art. 17)</td><td>"Recht auf Vergessenwerden" — Konto und alle Daten löschen.</td></tr>
+            <tr><td>Datenübertragbarkeit (Art. 20)</td><td>Daten in maschinenlesbarem Format erhalten.</td></tr>
+            <tr><td>Widerspruchsrecht (Art. 21)</td><td>Widerspruch gegen Verarbeitung auf Basis berechtigter Interessen.</td></tr>
+            <tr><td>Beschwerderecht</td><td>Beschwerde beim BfDI oder der zuständigen Landesbehörde.</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div class="lang-content" id="privacy-en">
+        <div class="legal-hero">
+          <div class="lh-badge">🔒 GDPR Compliant</div>
+          <h1 class="lh-title">Privacy Policy</h1>
+          <p class="lh-sub">Your personal data matters to us. This policy explains what data we collect, why, and what your rights are.</p>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">📋 Your GDPR Rights</div>
+          <div class="ib-body">Under GDPR, you have the right to access, rectify, erase, port, and object to your data. Contact us at <a href="mailto:datenschutz@bizdenbize.com" style="color:var(--green)">datenschutz@bizdenbize.com</a>.</div>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Data We Collect</h2>
+          <div class="ls-body">
+            <p><strong>Account data:</strong> Name, email address, password (encrypted), city, country.</p>
+            <p><strong>Profile data:</strong> Bio, language preferences, interests, profile photo (optional).</p>
+            <p><strong>Usage data:</strong> Pages visited, login times, features used.</p>
+            <p><strong>Listing data:</strong> Listings you create, photos, descriptions.</p>
+            <p><strong>Message data:</strong> Messages with other members (encrypted).</p>
+            <p><strong>AbiBOT data:</strong> Questions asked and answers received (anonymised for service improvement).</p>
+            <p><strong>Payment data:</strong> Card details are processed directly by Stripe and never stored on our servers.</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Your Rights (GDPR)</h2>
+          <table class="rights-table">
+            <tr><th>Right</th><th>Description</th></tr>
+            <tr><td>Right of access (Art. 15)</td><td>Request a copy of all data we hold about you.</td></tr>
+            <tr><td>Right to rectification (Art. 16)</td><td>Request correction of inaccurate data.</td></tr>
+            <tr><td>Right to erasure (Art. 17)</td><td>"Right to be forgotten" — delete your account and all data.</td></tr>
+            <tr><td>Data portability (Art. 20)</td><td>Receive your data in machine-readable format.</td></tr>
+            <tr><td>Right to object (Art. 21)</td><td>Object to processing based on legitimate interests.</td></tr>
+            <tr><td>Right to complain</td><td>Lodge a complaint with the BfDI or your local DPA.</td></tr>
+          </table>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Third-Party Services</h2>
+          <div class="ls-body">
+            <ul>
+              <li><strong>Supabase</strong> (EU-Frankfurt servers) — database and authentication</li>
+              <li><strong>Stripe</strong> — payment processing (PCI-DSS compliant)</li>
+              <li><strong>Anthropic / Claude</strong> — AbiBOT AI service</li>
+              <li><strong>Vercel</strong> — hosting</li>
+              <li><strong>Resend</strong> — transactional email</li>
+            </ul>
+            <p>Data Processing Agreements (DPA) under GDPR Art. 28 are in place with all processors.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TERMS OF SERVICE ══ -->
+    <div class="tab-panel" id="tab-terms">
+
+      <!-- TR -->
+      <div class="lang-content active" id="terms-tr">
+        <div class="legal-hero">
+          <div class="lh-badge">📋 Kullanım Şartları</div>
+          <h1 class="lh-title">Kullanım Şartları</h1>
+          <p class="lh-sub">BizdenBize'yi kullanarak aşağıdaki şartları kabul etmiş olursunuz. Lütfen dikkatlice okuyun.</p>
+        </div>
+        <div class="info-box gold">
+          <div class="ib-title">📌 Özet</div>
+          <div class="ib-body">BizdenBize Avrupa'daki Türk topluluğu için güvenli bir platform olmayı hedefler. Saygısız, sahte veya zararlı içeriklere sıfır tolerans gösterilir. Kurallara uymayan hesaplar kapatılır.</div>
+        </div>
+
+        <div class="legal-section" id="section-eligibility">
+          <h2 class="ls-title">Üyelik Koşulları</h2>
+          <div class="ls-body">
+            <p>BizdenBize'ye üye olmak için <strong>18 yaşında veya daha büyük</strong> olmanız ve Avrupa'da ikamet etmeniz gerekmektedir.</p>
+            <p>Platform, Türk kültürüyle bağlantısı olan bireyler için tasarlanmıştır. Üyelik, davetiye veya bekleme listesi onayıyla gerçekleşir.</p>
+            <p>Her kişi yalnızca <strong>bir hesap</strong> açabilir. Sahte kimlikle hesap açmak yasaktır.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-conduct">
+          <h2 class="ls-title">Davranış Kuralları</h2>
+          <div class="ls-body">
+            <p>Aşağıdaki davranışlar kesinlikle yasaktır:</p>
+            <ul>
+              <li>Taciz, nefret söylemi, ayrımcılık veya zorbalık</li>
+              <li>Sahte ilan veya dolandırıcılık girişimi</li>
+              <li>Spam, reklam veya istenmeyen mesaj gönderimi</li>
+              <li>Başkalarının kişisel bilgilerini izinsiz paylaşmak</li>
+              <li>Telif hakkı ihlali veya fikri mülkiyete tecavüz</li>
+              <li>Platformun güvenliğini tehdit eden eylemler</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-content">
+          <h2 class="ls-title">İçerik Politikası</h2>
+          <div class="ls-body">
+            <p>Platformda paylaştığınız içeriklerden <strong>siz sorumlusunuz</strong>. BizdenBize, hukuka aykırı içerikleri bildirimi takiben <strong>24 saat içinde</strong> kaldırma hakkını saklı tutar.</p>
+            <p>İlanlarda yalnızca <strong>kendi mülkünüz olan veya satma hakkına sahip olduğunuz</strong> ürünleri listeleyebilirsiniz.</p>
+            <p>AbiBOT yanıtları bilgi amaçlıdır ve profesyonel hukuki, tıbbi veya finansal tavsiye yerine geçmez.</p>
+          </div>
+          <div class="info-box red">
+            <div class="ib-title">🚫 Yasak İçerikler</div>
+            <div class="ib-body">Silah, uyuşturucu, sahte ürün, çalıntı mal, reşit olmayanları içeren içerikler, hakaret ve nefret söylemi platformda kesinlikle yasaktır.</div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-payments">
+          <h2 class="ls-title">Ödemeler ve İadeler</h2>
+          <div class="ls-body">
+            <p><strong>Premium abonelik:</strong> Aylık veya yıllık olarak Stripe üzerinden alınır. İstediğiniz zaman iptal edebilirsiniz; iptal sonrası dönem sonuna kadar erişim devam eder.</p>
+            <p><strong>AbiBOT kredileri:</strong> Satın alınan krediler iade edilmez, ancak asla sona ermez.</p>
+            <p>AB tüketici hukuku kapsamında dijital içerik satın alımlarında 14 günlük cayma hakkınız olabilir. Detaylar için <a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a> adresine yazın.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-termination">
+          <h2 class="ls-title">Hesap Feshi</h2>
+          <div class="ls-body">
+            <p>BizdenBize, bu şartları ihlal eden hesapları önceden uyarı yapmaksızın askıya alma veya kapatma hakkını saklı tutar.</p>
+            <p>Hesabınızı kendiniz kapatmak istediğinizde, tüm verileriniz 30 gün içinde silinir. Aktif ilanlarınız anında kaldırılır.</p>
+            <p>Haksız kapatma kararlarına <strong>appeals@bizdenbize.com</strong> adresine itiraz edebilirsiniz.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DE -->
+      <div class="lang-content" id="terms-de">
+        <div class="legal-hero">
+          <div class="lh-badge">📋 Nutzungsbedingungen</div>
+          <h1 class="lh-title">Nutzungsbedingungen</h1>
+          <p class="lh-sub">Durch die Nutzung von BizdenBize stimmen Sie diesen Bedingungen zu. Bitte lesen Sie diese sorgfältig durch.</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Nutzungsvoraussetzungen</h2>
+          <div class="ls-body"><p>Sie müssen mindestens <strong>18 Jahre alt</strong> sein und in Europa wohnen. Pro Person ist nur ein Konto erlaubt.</p></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Verhaltensregeln</h2>
+          <div class="ls-body">
+            <p>Folgendes ist strikt verboten:</p>
+            <ul>
+              <li>Belästigung, Hassrede, Diskriminierung</li>
+              <li>Gefälschte Inserate oder Betrugsversuche</li>
+              <li>Spam oder unerwünschte Nachrichten</li>
+              <li>Urheberrechtsverletzungen</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Zahlungen & Widerrufsrecht</h2>
+          <div class="ls-body">
+            <p><strong>Premium-Abonnement:</strong> Jederzeit kündbar. Nach Kündigung besteht Zugang bis Ende des Abrechnungszeitraums.</p>
+            <p><strong>AbiBOT-Credits:</strong> Nicht erstattungsfähig, laufen aber nie ab.</p>
+            <p>EU-Verbraucher haben bei digitalen Käufen ein 14-tägiges Widerrufsrecht. Kontakt: <a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div class="lang-content" id="terms-en">
+        <div class="legal-hero">
+          <div class="lh-badge">📋 Terms of Service</div>
+          <h1 class="lh-title">Terms of Service</h1>
+          <p class="lh-sub">By using BizdenBize, you agree to these terms. Please read them carefully.</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Eligibility</h2>
+          <div class="ls-body"><p>You must be at least <strong>18 years old</strong> and reside in Europe. Only one account per person is permitted.</p></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Prohibited Conduct</h2>
+          <div class="ls-body">
+            <ul>
+              <li>Harassment, hate speech, or discrimination</li>
+              <li>Fraudulent listings or scam attempts</li>
+              <li>Spam or unsolicited messages</li>
+              <li>Copyright infringement</li>
+              <li>Actions that compromise platform security</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Payments & Refunds</h2>
+          <div class="ls-body">
+            <p><strong>Premium subscription:</strong> Cancel any time. Access continues until end of billing period.</p>
+            <p><strong>AbiBOT credits:</strong> Non-refundable but never expire.</p>
+            <p>EU consumers may have a 14-day right of withdrawal on digital purchases. Contact <a href="mailto:legal@bizdenbize.com">legal@bizdenbize.com</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COOKIES ══ -->
+    <div class="tab-panel" id="tab-cookies">
+
+      <!-- TR -->
+      <div class="lang-content active" id="cookies-tr">
+        <div class="legal-hero">
+          <div class="lh-badge">🍪 Çerez Politikası</div>
+          <h1 class="lh-title">Çerez Politikası</h1>
+          <p class="lh-sub">BizdenBize, deneyiminizi iyileştirmek için çerezler kullanmaktadır. Hangi çerezleri kullandığımızı ve bunları nasıl yönetebileceğinizi açıklıyoruz.</p>
+        </div>
+
+        <div class="legal-section" id="section-what">
+          <h2 class="ls-title">Çerez Nedir?</h2>
+          <div class="ls-body">
+            <p>Çerezler, tarayıcınız tarafından cihazınıza kaydedilen küçük metin dosyalarıdır. Oturum açık tutma, dil tercihi kaydetme gibi işlevler için kullanılırlar.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-types">
+          <h2 class="ls-title">Kullandığımız Çerezler</h2>
+          <div class="ls-body">
+            <p><strong>Zorunlu çerezler</strong> — Platformun çalışması için gereklidir. Oturum yönetimi, güvenlik. Onayınız gerekmez.</p>
+            <p><strong>Tercih çerezleri</strong> — Dil ve tema gibi tercihlerinizi hatırlar. Onayınızla aktif olur.</p>
+            <p><strong>Analitik çerezler</strong> — Anonim kullanım istatistikleri. Onayınızla aktif olur.</p>
+            <p><strong>Ödeme çerezleri</strong> — Stripe tarafından ödeme güvenliği için kullanılır.</p>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="legal-section" id="section-manage">
+          <h2 class="ls-title">Çerezleri Nasıl Yönetirsiniz?</h2>
+          <div class="ls-body">
+            <p>Çerez tercihlerinizi istediğiniz zaman değiştirebilirsiniz:</p>
+            <ul>
+              <li>Aşağıdaki buton ile tercihlerinizi güncelleyin</li>
+              <li>Tarayıcı ayarlarınızdan çerezleri silin veya engelleyin</li>
+              <li>Zorunlu olmayan çerezleri reddedin (bazı özellikler çalışmayabilir)</li>
+            </ul>
+          </div>
+          <div style="margin-top:20px">
+            <button onclick="alert('Çerez tercihleri yönetim paneli açılıyor...')" style="padding:12px 24px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
+              🍪 Çerez Tercihlerimi Yönet
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DE -->
+      <div class="lang-content" id="cookies-de">
+        <div class="legal-hero">
+          <div class="lh-badge">🍪 Cookie-Richtlinie</div>
+          <h1 class="lh-title">Cookie-Richtlinie</h1>
+          <p class="lh-sub">BizdenBize verwendet Cookies zur Verbesserung Ihrer Erfahrung.</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Was sind Cookies?</h2>
+          <div class="ls-body"><p>Cookies sind kleine Textdateien, die von Ihrem Browser auf Ihrem Gerät gespeichert werden. Sie werden für Funktionen wie die Sitzungsverwaltung verwendet.</p></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Verwendete Cookies</h2>
+          <div class="ls-body">
+            <p><strong>Notwendige Cookies</strong> — Für den Betrieb der Plattform erforderlich. Kein Einverständnis nötig.</p>
+            <p><strong>Präferenz-Cookies</strong> — Speichern Sprach- und Themeneinstellungen.</p>
+            <p><strong>Analyse-Cookies</strong> — Anonyme Nutzungsstatistiken.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div class="lang-content" id="cookies-en">
+        <div class="legal-hero">
+          <div class="lh-badge">🍪 Cookie Policy</div>
+          <h1 class="lh-title">Cookie Policy</h1>
+          <p class="lh-sub">BizdenBize uses cookies to improve your experience.</p>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">What Are Cookies?</h2>
+          <div class="ls-body"><p>Cookies are small text files stored by your browser. They are used for session management, language preferences, and other functions.</p></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Cookies We Use</h2>
+          <div class="ls-body">
+            <p><strong>Essential cookies</strong> — Required for the platform to function. No consent needed.</p>
+            <p><strong>Preference cookies</strong> — Remember language and theme settings.</p>
+            <p><strong>Analytics cookies</strong> — Anonymous usage statistics.</p>
+            <p><strong>Payment cookies</strong> — Used by Stripe for payment security.</p>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="legal-section">
+          <h2 class="ls-title">Managing Cookies</h2>
+          <div class="ls-body">
+            <p>You can update your cookie preferences at any time using the button below, or through your browser settings.</p>
+          </div>
+          <div style="margin-top:20px">
+            <button onclick="alert('Cookie preference panel opening...')" style="padding:12px 24px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
+              🍪 Manage Cookie Preferences
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentLang = 'tr';
+  let currentTab = 'impressum';
+
+  const tabLabels = {
+    impressum: { tr: 'Impressum', de: 'Impressum', en: 'Legal Notice' },
+    privacy:   { tr: 'Gizlilik Politikası', de: 'Datenschutz', en: 'Privacy Policy' },
+    terms:     { tr: 'Kullanım Şartları', de: 'Nutzungsbedingungen', en: 'Terms of Service' },
+    cookies:   { tr: 'Çerez Politikası', de: 'Cookie-Richtlinie', en: 'Cookie Policy' },
+  };
+
+  function setLang(lang) {
+    currentLang = lang;
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+    // Show correct lang content in all tab panels
+    ['impressum','privacy','terms','cookies'].forEach(tab => {
+      document.querySelectorAll(`#tab-${tab} .lang-content`).forEach(c => c.classList.remove('active'));
+      const el = document.getElementById(`${tab}-${lang}`);
+      if (el) el.classList.add('active');
+    });
+    // Update sidebar tab labels
+    Object.keys(tabLabels).forEach(tab => {
+      const el = document.getElementById(`tab-label-${tab}`);
+      if (el) el.textContent = tabLabels[tab][lang];
+    });
+  }
+
+  function setTab(tab) {
+    currentTab = tab;
+    // Update tab nav
+    document.querySelectorAll('.tab-nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.tab-nav-item[onclick="setTab('${tab}')"]`).classList.add('active');
+    // Show panel
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    // Show correct section nav
+    ['impressum','privacy','terms','cookies'].forEach(t => {
+      const el = document.getElementById(`section-nav-${t}`);
+      if (el) el.style.display = t === tab ? 'flex' : 'none';
+    });
+    // Scroll to top
+    document.querySelector('.main-content').scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }
+
+  // Check URL hash for direct links e.g. legal.html#privacy
+  const hash = window.location.hash.replace('#','');
+  if (['impressum','privacy','terms','cookies'].includes(hash)) setTab(hash);
+</script>
+
+</body>
+</html>

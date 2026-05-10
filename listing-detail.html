@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Audi A3 Satılık</title>
+  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B;--red2:#E8393A;--navy:#1B3A8C;--navy2:#2348A8;
+      --cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;
+      --ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:16px;}
+    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo-link img{height:34px;width:auto;}
+    .nav-tabs{display:flex;gap:2px;}
+    .nav-tab{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;text-decoration:none;}
+    .nav-tab:hover{background:var(--warm);color:var(--ink);}
+    .nav-tab.active{background:var(--navy);color:var(--white);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* Breadcrumb */
+    .breadcrumb{padding:72px 40px 0;max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
+    .breadcrumb a:hover{color:var(--navy);}
+    .breadcrumb span{color:var(--sand);}
+
+    .page{padding:16px 40px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+
+    /* ── LEFT ── */
+    /* Image gallery */
+    .gallery{margin-bottom:20px;}
+    .main-img{height:380px;background:var(--warm);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden;cursor:pointer;margin-bottom:10px;border:1px solid var(--sand);}
+    .img-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .img-nav:hover{background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.12);}
+    .img-prev{left:12px;}
+    .img-next{right:12px;}
+    .img-counter{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+    .thumbs{display:flex;gap:8px;}
+    .thumb{width:72px;height:56px;border-radius:8px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:border-color .15s;flex-shrink:0;}
+    .thumb.active{border-color:var(--navy);}
+    .thumb:hover{border-color:var(--sand);}
+
+    /* Listing info */
+    .listing-info{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px;margin-bottom:16px;}
+    .li-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+    .li-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:var(--green);}
+    .save-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--sand);background:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .save-btn:hover{border-color:var(--red);color:var(--red);}
+    .li-price{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;}
+    .li-title{font-size:20px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+    .li-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+    .li-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);background:var(--warm);padding:4px 10px;border-radius:20px;}
+    .li-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
+    .li-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-top:1px solid var(--warm);padding-top:16px;}
+    .ls-item{text-align:center;}
+    .ls-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);}
+    .ls-label{font-size:11px;color:var(--muted);margin-top:2px;}
+
+    /* Details table */
+    .details-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;margin-bottom:16px;}
+    .dc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+    .details-table{width:100%;border-collapse:collapse;}
+    .details-table tr:nth-child(odd) td{background:rgba(250,247,242,.6);}
+    .details-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--warm);}
+    .details-table td:first-child{color:var(--muted);font-weight:500;width:40%;}
+    .details-table td:last-child{color:var(--ink);}
+    .details-table tr:last-child td{border-bottom:none;}
+
+    /* Similar listings */
+    .similar-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .sc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+    .similar-list{display:flex;flex-direction:column;gap:10px;}
+    .sim-item{display:flex;gap:12px;cursor:pointer;padding:8px;border-radius:10px;transition:background .15s;}
+    .sim-item:hover{background:var(--warm);}
+    .sim-thumb{width:60px;height:50px;border-radius:8px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .sim-price{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);}
+    .sim-title{font-size:12px;color:var(--muted);margin-top:1px;}
+
+    /* ── RIGHT ── */
+    .right-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px;}
+
+    /* Seller card */
+    .seller-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .seller-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+    .seller-avatar{width:52px;height:52px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
+    .seller-name{font-size:15px;font-weight:600;color:var(--ink);}
+    .seller-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .seller-verified{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:rgba(30,123,75,.1);color:var(--green);margin-top:4px;}
+    .seller-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+    .ss-item{text-align:center;padding:8px 4px;background:var(--cream);border-radius:8px;}
+    .ss-val{font-size:16px;font-weight:700;color:var(--ink);}
+    .ss-label{font-size:10px;color:var(--muted);margin-top:1px;}
+    .contact-btns{display:flex;flex-direction:column;gap:8px;}
+    .contact-btn{width:100%;padding:12px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;border:none;}
+    .contact-btn.primary{background:var(--navy);color:var(--white);}
+    .contact-btn.primary:hover{background:var(--navy2);}
+    .contact-btn.secondary{background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);}
+    .contact-btn.secondary:hover{border-color:var(--navy);}
+    .contact-btn.danger{background:none;color:var(--red);border:1.5px solid rgba(212,43,43,.2);}
+    .contact-btn.danger:hover{background:rgba(212,43,43,.05);}
+
+    /* Price offer */
+    .offer-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .oc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+    .oc-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+    .offer-input-wrap{display:flex;gap:8px;}
+    .offer-input{flex:1;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:'Instrument Sans',sans-serif;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .offer-input:focus{border-color:var(--navy);}
+    .offer-btn{padding:10px 16px;background:var(--gold);color:var(--ink);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;white-space:nowrap;}
+    .offer-btn:hover{opacity:.9;}
+
+    /* Safety tips */
+    .safety-card{background:rgba(27,58,140,.04);border:1px solid rgba(27,58,140,.15);border-radius:14px;padding:16px;}
+    .safety-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .safety-tips{display:flex;flex-direction:column;gap:5px;}
+    .safety-tip{font-size:11px;color:var(--muted);display:flex;gap:6px;line-height:1.4;}
+    .safety-tip::before{content:'✓';color:var(--navy);font-weight:700;flex-shrink:0;}
+
+    @media(max-width:900px){
+      .page{grid-template-columns:1fr;padding:16px 20px 60px;}
+      .right-col{position:static;}
+      .breadcrumb{padding:72px 20px 0;}
+    }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html">🏘️ Mahallem</a>
+      <a class="nav-tab active" href="classifieds.html">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html">🏢 İşletmeler</a>
+      <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="mahallem.html">Ana Sayfa</a><span>/</span>
+  <a href="classifieds.html">İlanlar</a><span>/</span>
+  <a href="classifieds.html">Araç</a><span>/</span>
+  <span style="color:var(--ink)">Audi A3 Satılık</span>
+</div>
+
+<div class="page">
+  <div>
+    <!-- Gallery -->
+    <div class="gallery">
+      <div class="main-img" id="main-img">
+        <span id="main-emoji">🚗</span>
+        <button class="img-nav img-prev" onclick="changeImg(-1)">‹</button>
+        <button class="img-nav img-next" onclick="changeImg(1)">›</button>
+        <div class="img-counter" id="img-counter">1 / 5</div>
+      </div>
+      <div class="thumbs">
+        <div class="thumb active" onclick="setImg(0)">🚗</div>
+        <div class="thumb" onclick="setImg(1)">🪟</div>
+        <div class="thumb" onclick="setImg(2)">🛞</div>
+        <div class="thumb" onclick="setImg(3)">💺</div>
+        <div class="thumb" onclick="setImg(4)">🔧</div>
+      </div>
+    </div>
+
+    <!-- Listing info -->
+    <div class="listing-info">
+      <div class="li-top">
+        <span class="li-badge">✓ Aktif İlan</span>
+        <button class="save-btn" id="save-btn" onclick="toggleSave()" title="Kaydet">🤍</button>
+      </div>
+      <div class="li-price">€18.500</div>
+      <div class="li-title">Audi A3 Satılık — 2019 Model, 68.000 km</div>
+      <div class="li-meta">
+        <span class="li-tag">🚗 Araç</span>
+        <span class="li-tag">📍 Frankfurt</span>
+        <span class="li-tag">🕐 3 saat önce</span>
+        <span class="li-tag">👁 47 görüntüleme</span>
+      </div>
+      <p class="li-desc">
+        2019 model Audi A3 Sedan, 68.000 km'de bakımı yeni yapılmış, hasar kayıtsız temiz araç satılıktır. Servis geçmişi mevcuttur. Orjinal boyalıdır, herhangi bir kaza veya hasar kaydı bulunmamaktadır.<br><br>
+        Araç özellikleri: Otomatik şanzıman, deri koltuklar, navigasyon, park sensörleri, LED farlar, 18" jantlar. İlk sahibinden, bakımlar Audi yetkili servisinde yaptırılmıştır.<br><br>
+        Muayenesi yenidir (2026). Ciddi alıcılar lütfen arayın.
+      </p>
+      <div class="li-stats">
+        <div class="ls-item"><div class="ls-val">47</div><div class="ls-label">Görüntüleme</div></div>
+        <div class="ls-item"><div class="ls-val">8</div><div class="ls-label">Kaydedenler</div></div>
+        <div class="ls-item"><div class="ls-val">3</div><div class="ls-label">Mesaj</div></div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="details-card">
+      <div class="dc-title">📋 Araç Detayları</div>
+      <table class="details-table">
+        <tr><td>Marka / Model</td><td>Audi A3 Sedan</td></tr>
+        <tr><td>Yıl</td><td>2019</td></tr>
+        <tr><td>Kilometre</td><td>68.000 km</td></tr>
+        <tr><td>Yakıt</td><td>Benzin</td></tr>
+        <tr><td>Şanzıman</td><td>Otomatik (S-Tronic)</td></tr>
+        <tr><td>Motor</td><td>1.5 TFSI · 150 HP</td></tr>
+        <tr><td>Renk</td><td>Gümüş Metalik</td></tr>
+        <tr><td>Kasa Tipi</td><td>Sedan</td></tr>
+        <tr><td>Hasar Kaydı</td><td>Yok ✓</td></tr>
+        <tr><td>Muayene</td><td>2026'ya kadar geçerli</td></tr>
+        <tr><td>İlan No</td><td>#BZB-2847</td></tr>
+      </table>
+    </div>
+
+    <!-- Similar -->
+    <div class="similar-card">
+      <div class="sc-title">🔍 Benzer İlanlar</div>
+      <div class="similar-list">
+        <div class="sim-item" onclick="window.location='listing-detail.html'">
+          <div class="sim-thumb">🚙</div>
+          <div><div class="sim-price">€16.900</div><div class="sim-title">VW Golf — 2018 · 72.000 km · Frankfurt</div></div>
+        </div>
+        <div class="sim-item" onclick="window.location='listing-detail.html'">
+          <div class="sim-thumb">🚘</div>
+          <div><div class="sim-price">€21.500</div><div class="sim-title">Audi A4 — 2020 · 54.000 km · Frankfurt</div></div>
+        </div>
+        <div class="sim-item" onclick="window.location='listing-detail.html'">
+          <div class="sim-thumb">🚗</div>
+          <div><div class="sim-price">€14.200</div><div class="sim-title">BMW 118i — 2017 · 88.000 km · Frankfurt</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right-col">
+
+    <div class="seller-card">
+      <div class="seller-header">
+        <div class="seller-avatar">AY</div>
+        <div>
+          <div class="seller-name">Ayşe Yılmaz</div>
+          <div class="seller-meta">📍 Frankfurt · 3 ilanı var</div>
+          <div class="seller-verified">✓ Onaylı Üye</div>
+        </div>
+      </div>
+      <div class="seller-stats">
+        <div class="ss-item"><div class="ss-val">4.9</div><div class="ss-label">Puan</div></div>
+        <div class="ss-item"><div class="ss-val">12</div><div class="ss-label">İşlem</div></div>
+        <div class="ss-item"><div class="ss-val">2g</div><div class="ss-label">Yanıt süresi</div></div>
+      </div>
+      <div class="contact-btns">
+        <button class="contact-btn primary" onclick="window.location='messages.html'">💬 Mesaj Gönder</button>
+        <button class="contact-btn secondary" onclick="window.location='profile.html'">👤 Profili Gör</button>
+        <button class="contact-btn danger" onclick="alert('Rapor alındı, incelenecek.')">⚑ Şikayet Et</button>
+      </div>
+    </div>
+
+    <div class="offer-card">
+      <div class="oc-title">💶 Fiyat Teklifi Ver</div>
+      <div class="oc-sub">İlan fiyatından farklı bir teklif sunabilirsin.</div>
+      <div class="offer-input-wrap">
+        <input class="offer-input" type="number" placeholder="€ Teklifiniz" id="offer-val">
+        <button class="offer-btn" onclick="sendOffer()">Teklif Ver</button>
+      </div>
+    </div>
+
+    <div class="safety-card">
+      <div class="safety-title">🔒 Güvenli Alışveriş</div>
+      <div class="safety-tips">
+        <div class="safety-tip">Yalnızca onaylı BizdenBize üyeleriyle işlem yapıyorsunuz</div>
+        <div class="safety-tip">Ödemeyi peşin ve yüz yüze yapın</div>
+        <div class="safety-tip">Aracı teslim almadan önce uzman kontrolü yaptırın</div>
+        <div class="safety-tip">Şüpheli durumları bize bildirin</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const emojis = ['🚗','🪟','🛞','💺','🔧'];
+  let current = 0;
+  function setImg(i) {
+    current = i;
+    document.getElementById('main-emoji').textContent = emojis[i];
+    document.getElementById('img-counter').textContent = (i+1)+' / '+emojis.length;
+    document.querySelectorAll('.thumb').forEach((t,idx) => t.classList.toggle('active', idx===i));
+  }
+  function changeImg(dir) { setImg((current + dir + emojis.length) % emojis.length); }
+  function toggleSave() {
+    const btn = document.getElementById('save-btn');
+    const saved = btn.textContent === '🧡';
+    btn.textContent = saved ? '🤍' : '🧡';
+  }
+  function sendOffer() {
+    const val = document.getElementById('offer-val').value;
+    if (!val) return;
+    alert(`€${val} teklifiniz satıcıya iletildi!`);
+    document.getElementById('offer-val').value = '';
+  }
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

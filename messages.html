@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Mesajlar</title>
+  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --navy:#1B3A8C; --navy2:#2348A8;
+      --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
+      --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --gold:#C9A84C; --green:#1E7B4B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); display: flex; flex-direction: column; }
+
+    /* ── NAV ── */
+    nav {
+      height: 58px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(250,247,242,.95); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212,197,169,.4); z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .nav-logo-link { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo-link img { height: 34px; width: auto; }
+    .nav-tabs { display: flex; gap: 2px; }
+    .nav-tab { padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; }
+    .nav-tab:hover { background: var(--warm); color: var(--ink); }
+    .nav-tab.active { background: var(--navy); color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-notif { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--sand); background: none; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; position: relative; transition: border-color .2s; }
+    .nav-notif:hover { border-color: var(--navy); }
+    .notif-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid var(--cream); }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+    /* ── SHELL ── */
+    .shell { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
+
+    /* ── CONVERSATION LIST ── */
+    .conv-list { border-right: 1px solid rgba(212,197,169,.35); display: flex; flex-direction: column; background: var(--white); overflow: hidden; }
+    .cl-header { padding: 16px 20px 12px; border-bottom: 1px solid rgba(212,197,169,.25); flex-shrink: 0; }
+    .cl-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cl-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
+    .new-msg-btn { width: 32px; height: 32px; border-radius: 8px; background: var(--navy); color: var(--white); border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .new-msg-btn:hover { background: var(--navy2); }
+    .search-bar { display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1.5px solid var(--sand); border-radius: 9px; padding: 8px 12px; transition: border-color .2s; }
+    .search-bar:focus-within { border-color: var(--navy); }
+    .search-bar input { border: none; background: none; outline: none; font-size: 13px; font-family: 'Instrument Sans', sans-serif; color: var(--ink); width: 100%; }
+    .search-bar input::placeholder { color: var(--sand); }
+
+    /* Filter tabs */
+    .filter-tabs { display: flex; gap: 4px; padding: 10px 20px; border-bottom: 1px solid rgba(212,197,169,.2); flex-shrink: 0; }
+    .filter-tab { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid transparent; cursor: pointer; font-family: 'Instrument Sans', sans-serif; color: var(--muted); background: none; transition: all .15s; }
+    .filter-tab:hover { color: var(--ink); }
+    .filter-tab.active { background: var(--navy); color: var(--white); }
+
+    /* Conversation items */
+    .conv-items { flex: 1; overflow-y: auto; }
+    .conv-items::-webkit-scrollbar { width: 3px; }
+    .conv-items::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+
+    .conv-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; transition: background .15s; border-bottom: 1px solid rgba(212,197,169,.15); position: relative; }
+    .conv-item:hover { background: var(--cream); }
+    .conv-item.active { background: rgba(27,58,140,.05); border-left: 3px solid var(--navy); padding-left: 17px; }
+    .conv-item.unread .ci-preview { color: var(--ink); font-weight: 500; }
+    .conv-item.unread .ci-name { font-weight: 700; }
+
+    .ci-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--white); position: relative; }
+    .ci-online { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: var(--green); border: 2px solid var(--white); }
+    .ci-body { flex: 1; min-width: 0; }
+    .ci-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+    .ci-name { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ci-time { font-size: 11px; color: var(--muted); flex-shrink: 0; margin-left: 6px; }
+    .ci-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy); flex-shrink: 0; }
+
+    /* Context tag */
+    .ci-context { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: rgba(212,197,169,.3); color: var(--muted); margin-top: 3px; }
+
+    /* ── CHAT PANEL ── */
+    .chat-panel { display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Empty state */
+    .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+    .es-icon { font-size: 52px; margin-bottom: 16px; }
+    .es-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .es-sub { font-size: 14px; color: var(--muted); line-height: 1.65; max-width: 320px; }
+
+    /* Chat header */
+    .chat-header { padding: 14px 24px; border-bottom: 1px solid rgba(212,197,169,.3); display: flex; align-items: center; gap: 14px; flex-shrink: 0; background: var(--white); }
+    .ch-avatar { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--white); position: relative; }
+    .ch-online { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: var(--green); border: 2px solid var(--white); }
+    .ch-info { flex: 1; }
+    .ch-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .ch-status { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .ch-actions { display: flex; gap: 6px; }
+    .ch-btn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--sand); background: none; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+    .ch-btn:hover { border-color: var(--navy); background: rgba(27,58,140,.05); }
+
+    /* Context banner (about listing/event) */
+    .context-banner { padding: 10px 24px; background: rgba(27,58,140,.04); border-bottom: 1px solid rgba(212,197,169,.2); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .cb-icon { font-size: 20px; }
+    .cb-text { font-size: 12px; color: var(--muted); flex: 1; }
+    .cb-text strong { color: var(--ink); }
+    .cb-link { font-size: 12px; font-weight: 600; color: var(--navy); text-decoration: none; cursor: pointer; }
+    .cb-link:hover { text-decoration: underline; }
+
+    /* Messages */
+    .messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 6px; }
+    .messages::-webkit-scrollbar { width: 3px; }
+    .messages::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+
+    /* Date separator */
+    .date-sep { text-align: center; font-size: 11px; color: var(--muted); margin: 10px 0; display: flex; align-items: center; gap: 10px; }
+    .date-sep::before, .date-sep::after { content: ''; flex: 1; height: 1px; background: var(--sand); opacity: .5; }
+
+    /* Message bubble */
+    .msg-row { display: flex; align-items: flex-end; gap: 8px; }
+    .msg-row.mine { flex-direction: row-reverse; }
+    .msg-avatar-sm { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+    .bubble { max-width: 68%; padding: 10px 14px; font-size: 14px; line-height: 1.55; word-break: break-word; }
+    .bubble.them { background: var(--white); border: 1px solid var(--sand); color: var(--ink); border-radius: 4px 14px 14px 14px; }
+    .bubble.mine { background: var(--navy); color: var(--white); border-radius: 14px 4px 14px 14px; }
+    .bubble.system { background: rgba(201,168,76,.1); border: 1px solid rgba(201,168,76,.3); color: var(--muted); font-size: 12px; border-radius: 8px; text-align: center; max-width: 100%; }
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 3px; padding: 0 4px; }
+    .msg-row.mine .msg-time { text-align: right; }
+    .msg-status { font-size: 10px; color: rgba(255,255,255,.5); }
+
+    /* Image message */
+    .bubble-img { max-width: 220px; border-radius: 10px; display: block; background: var(--warm); height: 140px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+
+    /* Listing card in chat */
+    .bubble-listing { background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 12px; max-width: 240px; cursor: pointer; transition: all .15s; }
+    .bubble-listing:hover { border-color: var(--navy); }
+    .bl-icon { font-size: 28px; margin-bottom: 6px; }
+    .bl-price { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .bl-title { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .bl-link { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--navy); }
+
+    /* Typing indicator */
+    .typing-row { display: flex; align-items: center; gap: 8px; }
+    .typing-bubble { background: var(--white); border: 1px solid var(--sand); border-radius: 4px 14px 14px 14px; padding: 10px 14px; display: flex; gap: 4px; align-items: center; }
+    .td { width: 7px; height: 7px; border-radius: 50%; background: var(--sand); animation: bounce .9s ease-in-out infinite; }
+    .td:nth-child(2) { animation-delay: .15s; }
+    .td:nth-child(3) { animation-delay: .3s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+    /* ── INPUT BAR ── */
+    .input-bar { padding: 14px 20px; border-top: 1px solid rgba(212,197,169,.35); background: var(--white); flex-shrink: 0; }
+    .input-actions-top { display: flex; gap: 6px; margin-bottom: 8px; }
+    .ia-btn { padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--sand); background: var(--cream); font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'Instrument Sans', sans-serif; color: var(--muted); transition: all .15s; display: flex; align-items: center; gap: 4px; }
+    .ia-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .input-wrap { display: flex; gap: 10px; align-items: flex-end; background: var(--cream); border: 1.5px solid var(--sand); border-radius: 12px; padding: 10px 14px; transition: border-color .2s; }
+    .input-wrap:focus-within { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,140,.08); }
+    #msg-input { flex: 1; border: none; background: none; outline: none; resize: none; font-family: 'Instrument Sans', sans-serif; font-size: 14px; color: var(--ink); min-height: 22px; max-height: 100px; line-height: 1.5; }
+    #msg-input::placeholder { color: var(--sand); }
+    .send-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--navy); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s, transform .1s; flex-shrink: 0; }
+    .send-btn:hover { background: var(--navy2); }
+    .send-btn:active { transform: scale(.95); }
+    .send-btn:disabled { background: var(--sand); cursor: not-allowed; }
+
+    /* New message modal */
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(26,18,8,.5); display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: 20px; padding: 32px; max-width: 440px; width: 90%; animation: slideUp .3s ease; }
+    @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .modal-close { float: right; background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; margin: -6px -6px 0 0; }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; clear: both; }
+    .user-search { display: flex; align-items: center; gap: 8px; background: var(--cream); border: 1.5px solid var(--sand); border-radius: 9px; padding: 10px 14px; margin-bottom: 16px; }
+    .user-search input { border: none; background: none; outline: none; font-size: 14px; font-family: 'Instrument Sans', sans-serif; color: var(--ink); width: 100%; }
+    .user-results { display: flex; flex-direction: column; gap: 4px; }
+    .user-result { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: background .15s; }
+    .user-result:hover { background: var(--warm); }
+    .ur-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+    .ur-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+    .ur-city { font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 768px) {
+      .shell { grid-template-columns: 1fr; }
+      .conv-list { display: none; }
+      .conv-list.mobile-open { display: flex; position: fixed; inset: 58px 0 0 0; z-index: 50; }
+    }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html">🏢 İşletmeler</a>
+      <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-notif">🔔<div class="notif-dot"></div></button>
+    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- ── CONVERSATION LIST ── -->
+  <aside class="conv-list">
+    <div class="cl-header">
+      <div class="cl-top">
+        <span class="cl-title">Mesajlar</span>
+        <button class="new-msg-btn" onclick="openNewMsg()" title="Yeni mesaj">+</button>
+      </div>
+      <div class="search-bar">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--sand);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Kişi veya mesaj ara..." oninput="filterConvs(this.value)">
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterTab(this,'all')">Tümü</button>
+      <button class="filter-tab" onclick="filterTab(this,'unread')">Okunmamış <span id="unread-count" style="background:var(--red);color:#fff;padding:1px 5px;border-radius:10px;font-size:10px;margin-left:2px">3</span></button>
+      <button class="filter-tab" onclick="filterTab(this,'listings')">İlanlar</button>
+    </div>
+
+    <div class="conv-items" id="conv-items">
+
+      <div class="conv-item active" data-id="1" data-type="all" onclick="openConv(1)">
+        <div class="ci-avatar" style="background:#1B3A8C">MK
+          <div class="ci-online"></div>
+        </div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Mustafa Kaya</span>
+            <span class="ci-time">14:32</span>
+          </div>
+          <div class="ci-preview">Araç hâlâ satılık mı? Fotoğraf...</div>
+          <span class="ci-context">🚗 Audi A3 hakkında</span>
+        </div>
+      </div>
+
+      <div class="conv-item unread" data-id="2" data-type="unread listings" onclick="openConv(2)">
+        <div class="ci-avatar" style="background:#D42B2B">ZD</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Zeynep Demir</span>
+            <span class="ci-time">12:05</span>
+          </div>
+          <div class="ci-preview">Koltuk hâlâ mevcut mu? Ne zaman...</div>
+          <span class="ci-context">🛋️ IKEA Koltuk hakkında</span>
+        </div>
+        <div class="unread-dot"></div>
+      </div>
+
+      <div class="conv-item unread" data-id="3" data-type="unread" onclick="openConv(3)">
+        <div class="ci-avatar" style="background:#1E7B4B">AK</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Ali Korkmaz</span>
+            <span class="ci-time">Dün</span>
+          </div>
+          <div class="ci-preview">BizdenBize'ye hoş geldin! 👋</div>
+        </div>
+        <div class="unread-dot"></div>
+      </div>
+
+      <div class="conv-item" data-id="4" data-type="all listings" onclick="openConv(4)">
+        <div class="ci-avatar" style="background:#C9A84C">SE</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Selin Erdoğan</span>
+            <span class="ci-time">Pazartesi</span>
+          </div>
+          <div class="ci-preview">Tamam anlaştık, yarın teslim alırım</div>
+          <span class="ci-context">📱 iPhone 13 hakkında</span>
+        </div>
+      </div>
+
+      <div class="conv-item" data-id="5" data-type="all" onclick="openConv(5)">
+        <div class="ci-avatar" style="background:#534AB7">BT</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Berk Taşkın</span>
+            <span class="ci-time">Pazar</span>
+          </div>
+          <div class="ci-preview">Frankfurt Festivali'nde görüşürüz!</div>
+        </div>
+      </div>
+
+      <div class="conv-item" data-id="6" data-type="all" onclick="openConv(6)">
+        <div class="ci-avatar" style="background:#854F0B">FY</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">Fatma Yıldırım</span>
+            <span class="ci-time">18.06</span>
+          </div>
+          <div class="ci-preview">Teşekkürler, çok yardımcı oldun!</div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── CHAT PANEL ── -->
+  <div class="chat-panel" id="chat-panel">
+
+    <!-- Conversation 1: Mustafa about car -->
+    <div id="conv-1" class="conv-view" style="display:flex;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#1B3A8C">MK
+          <div class="ch-online"></div>
+        </div>
+        <div class="ch-info">
+          <div class="ch-name">Mustafa Kaya</div>
+          <div class="ch-status">🟢 Çevrimiçi · Frankfurt</div>
+        </div>
+        <div class="ch-actions">
+          <button class="ch-btn" title="Sesli arama">📞</button>
+          <button class="ch-btn" title="Profili gör" onclick="window.location='profile.html'">👤</button>
+          <button class="ch-btn" title="Daha fazla">⋯</button>
+        </div>
+      </div>
+
+      <div class="context-banner">
+        <div class="cb-icon">🚗</div>
+        <div class="cb-text"><strong>Audi A3 — €18.500</strong> hakkında konuşuyorsunuz</div>
+        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
+      </div>
+
+      <div class="messages" id="msgs-1">
+        <div class="date-sep">Bugün</div>
+
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
+          <div>
+            <div class="bubble them">Merhaba! Araç ilanını gördüm, hâlâ satılık mı?</div>
+            <div class="msg-time">13:45</div>
+          </div>
+        </div>
+
+        <div class="msg-row mine">
+          <div>
+            <div class="bubble mine">Evet, hâlâ satılık! İlgileniyorsan gösterebilirim.</div>
+            <div class="msg-time">13:47 <span class="msg-status">✓✓</span></div>
+          </div>
+        </div>
+
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
+          <div>
+            <div class="bubble them">Harika! Biraz daha fotoğraf gönderebilir misin? Özellikle iç mekan ve motor.</div>
+            <div class="msg-time">13:52</div>
+          </div>
+        </div>
+
+        <div class="msg-row mine">
+          <div>
+            <div class="bubble-img" style="border-radius:14px 4px 14px 14px">📸</div>
+            <div class="msg-time" style="text-align:right">14:01 <span class="msg-status">✓✓</span></div>
+          </div>
+        </div>
+
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
+          <div>
+            <div class="bubble them">Çok temiz görünüyor! Fiyatta biraz esneklik var mı? €17.500 olur mu?</div>
+            <div class="msg-time">14:15</div>
+          </div>
+        </div>
+
+        <div class="msg-row mine">
+          <div>
+            <div class="bubble mine">€18.000'e razıyım, daha aşağısı olmuyor. Araç gerçekten çok bakımlı.</div>
+            <div class="msg-time">14:20 <span class="msg-status">✓✓</span></div>
+          </div>
+        </div>
+
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
+          <div>
+            <div class="bubble them">Araç hâlâ satılık mı? Fotoğraf attın ama ben de görmek istiyorum, ne zaman uygun olursun?</div>
+            <div class="msg-time">14:32</div>
+          </div>
+        </div>
+
+        <div class="typing-row" id="typing-1">
+          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
+          <div class="typing-bubble">
+            <div class="td"></div><div class="td"></div><div class="td"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-bar">
+        <div class="input-actions-top">
+          <button class="ia-btn" onclick="insertQuick('Yarın müsaitim, Frankfurt\'ta buluşabiliriz.')">📅 Buluşma öner</button>
+          <button class="ia-btn" onclick="insertQuick('€18.000 son fiyatım.')">💶 Fiyat onayla</button>
+          <button class="ia-btn">📎 Dosya</button>
+          <button class="ia-btn">📷 Fotoğraf</button>
+        </div>
+        <div class="input-wrap">
+          <textarea id="msg-input" placeholder="Mesaj yaz..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMsg()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other convs (simplified) -->
+    <div id="conv-2" class="conv-view" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#D42B2B">ZD</div>
+        <div class="ch-info"><div class="ch-name">Zeynep Demir</div><div class="ch-status">🟡 Son görülme: 2 saat önce</div></div>
+        <div class="ch-actions">
+          <button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button>
+        </div>
+      </div>
+      <div class="context-banner">
+        <div class="cb-icon">🛋️</div>
+        <div class="cb-text"><strong>IKEA Koltuk Takımı — €180</strong> hakkında konuşuyorsunuz</div>
+        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
+      </div>
+      <div class="messages">
+        <div class="date-sep">Bugün</div>
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#D42B2B">ZD</div>
+          <div><div class="bubble them">Merhaba! Koltuk takımı hâlâ mevcut mu? Ne zaman teslim alınabilir?</div><div class="msg-time">12:05</div></div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <div class="input-wrap">
+          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendGeneric(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="conv-3" class="conv-view" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#1E7B4B">AK<div class="ch-online"></div></div>
+        <div class="ch-info"><div class="ch-name">Ali Korkmaz</div><div class="ch-status">🟢 Çevrimiçi · Frankfurt</div></div>
+        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button></div>
+      </div>
+      <div class="messages">
+        <div class="date-sep">Dün</div>
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1E7B4B">AK</div>
+          <div><div class="bubble them">Merhaba Ayşe Hanım, BizdenBize'ye hoş geldin! 👋 Ben Ali, seni topluluğa davet eden kişiyim.</div><div class="msg-time">18:30</div></div>
+        </div>
+        <div class="msg-row">
+          <div class="msg-avatar-sm" style="background:#1E7B4B">AK</div>
+          <div><div class="bubble them">Herhangi bir sorun olursa bana yazabilirsin, yardımcı olmaya çalışırım 😊</div><div class="msg-time">18:31</div></div>
+        </div>
+        <div class="msg-row mine">
+          <div><div class="bubble mine">Teşekkürler Ali Bey! Çok memnun oldum, platform gerçekten harika görünüyor 🙏</div><div class="msg-time">Dün 20:14 <span class="msg-status">✓✓</span></div></div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <div class="input-wrap">
+          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendGeneric(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="conv-4" class="conv-view" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#C9A84C">SE</div>
+        <div class="ch-info"><div class="ch-name">Selin Erdoğan</div><div class="ch-status">🟡 Son görülme: Pazartesi</div></div>
+        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button></div>
+      </div>
+      <div class="context-banner">
+        <div class="cb-icon">📱</div>
+        <div class="cb-text"><strong>iPhone 13 — €320</strong> · Satış tamamlandı ✓</div>
+        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
+      </div>
+      <div class="messages">
+        <div class="date-sep">Pazartesi</div>
+        <div class="msg-row"><div class="msg-avatar-sm" style="background:#C9A84C">SE</div><div><div class="bubble them">Merhaba, iPhone hâlâ satılık mı?</div><div class="msg-time">10:00</div></div></div>
+        <div class="msg-row mine"><div><div class="bubble mine">Evet! €320 sabit fiyat.</div><div class="msg-time">10:15 <span class="msg-status">✓✓</span></div></div></div>
+        <div class="msg-row"><div class="msg-avatar-sm" style="background:#C9A84C">SE</div><div><div class="bubble them">Tamam anlaştık, yarın teslim alırım.</div><div class="msg-time">10:30</div></div></div>
+        <div><div class="bubble system" style="margin:8px auto;max-width:300px">✓ Satış tamamlandı · €320</div></div>
+      </div>
+      <div class="input-bar">
+        <div class="input-wrap">
+          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendGeneric(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="conv-5" class="conv-view" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#534AB7">BT</div>
+        <div class="ch-info"><div class="ch-name">Berk Taşkın</div><div class="ch-status">🟡 Son görülme: Pazar</div></div>
+        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn">👤</button><button class="ch-btn">⋯</button></div>
+      </div>
+      <div class="messages">
+        <div class="date-sep">Pazar</div>
+        <div class="msg-row"><div class="msg-avatar-sm" style="background:#534AB7">BT</div><div><div class="bubble them">Frankfurt Festivali'ne gidecek misin bu hafta?</div><div class="msg-time">15:00</div></div></div>
+        <div class="msg-row mine"><div><div class="bubble mine">Evet! Orada görüşürüz 🎉</div><div class="msg-time">15:10 <span class="msg-status">✓✓</span></div></div></div>
+        <div class="msg-row"><div class="msg-avatar-sm" style="background:#534AB7">BT</div><div><div class="bubble them">Frankfurt Festivali'nde görüşürüz!</div><div class="msg-time">15:12</div></div></div>
+      </div>
+      <div class="input-bar">
+        <div class="input-wrap">
+          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendGeneric(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="conv-6" class="conv-view" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="ch-avatar" style="background:#854F0B">FY</div>
+        <div class="ch-info"><div class="ch-name">Fatma Yıldırım</div><div class="ch-status">🟡 Son görülme: 18 Haziran</div></div>
+        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn">👤</button><button class="ch-btn">⋯</button></div>
+      </div>
+      <div class="messages">
+        <div class="date-sep">18 Haziran</div>
+        <div class="msg-row mine"><div><div class="bubble mine">Niederlassungserlaubnis konusunda yardımcı olabildiysem ne mutlu 😊</div><div class="msg-time">09:20 <span class="msg-status">✓✓</span></div></div></div>
+        <div class="msg-row"><div class="msg-avatar-sm" style="background:#854F0B">FY</div><div><div class="bubble them">Teşekkürler, çok yardımcı oldun! AbiBOT da çok işe yaradı aslında 👍</div><div class="msg-time">09:35</div></div></div>
+      </div>
+      <div class="input-bar">
+        <div class="input-wrap">
+          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" onclick="sendGeneric(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- New Message Modal -->
+<div class="modal-overlay" id="new-msg-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeNewMsg()">×</button>
+    <h3>Yeni Mesaj</h3>
+    <div class="user-search">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--sand);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input placeholder="İsim veya şehir ara..." oninput="searchUsers(this.value)" id="user-search-input">
+    </div>
+    <div class="user-results" id="user-results">
+      <div class="user-result" onclick="startConv('Mustafa Kaya','#1B3A8C','MK')">
+        <div class="ur-avatar" style="background:#1B3A8C">MK</div>
+        <div><div class="ur-name">Mustafa Kaya</div><div class="ur-city">📍 Frankfurt · 2 ortak bağlantı</div></div>
+      </div>
+      <div class="user-result" onclick="startConv('Ali Korkmaz','#1E7B4B','AK')">
+        <div class="ur-avatar" style="background:#1E7B4B">AK</div>
+        <div><div class="ur-name">Ali Korkmaz</div><div class="ur-city">📍 Frankfurt · Davetiye ile katıldı</div></div>
+      </div>
+      <div class="user-result" onclick="startConv('Berk Taşkın','#534AB7','BT')">
+        <div class="ur-avatar" style="background:#534AB7">BT</div>
+        <div><div class="ur-name">Berk Taşkın</div><div class="ur-city">📍 Amsterdam · 1 ortak bağlantı</div></div>
+      </div>
+      <div class="user-result" onclick="startConv('Hasan Şahin','#854F0B','HŞ')">
+        <div class="ur-avatar" style="background:#854F0B">HŞ</div>
+        <div><div class="ur-name">Hasan Şahin</div><div class="ur-city">📍 Amsterdam · Yeni üye</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let activeConv = 1;
+
+  function openConv(id) {
+    // Hide all
+    document.querySelectorAll('.conv-view').forEach(v => v.style.display = 'none');
+    // Show selected
+    const el = document.getElementById('conv-' + id);
+    if (el) el.style.display = 'flex';
+    // Update sidebar active
+    document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+    const item = document.querySelector(`[data-id="${id}"]`);
+    if (item) {
+      item.classList.add('active');
+      item.classList.remove('unread');
+      const dot = item.querySelector('.unread-dot');
+      if (dot) dot.remove();
+    }
+    activeConv = id;
+    // Update unread count
+    const remaining = document.querySelectorAll('.conv-item.unread').length;
+    document.getElementById('unread-count').textContent = remaining;
+    if (remaining === 0) document.getElementById('unread-count').style.display = 'none';
+    // Scroll to bottom
+    const msgs = document.querySelector(`#conv-${id} .messages`);
+    if (msgs) setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+  }
+
+  function sendMsg() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const msgs = document.getElementById('msgs-1');
+    // Remove typing indicator
+    const typing = document.getElementById('typing-1');
+    if (typing) typing.remove();
+    // Add message
+    const now = new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+    const row = document.createElement('div');
+    row.className = 'msg-row mine';
+    row.innerHTML = `<div><div class="bubble mine">${text}</div><div class="msg-time">${now} <span class="msg-status">✓</span></div></div>`;
+    msgs.appendChild(row);
+    input.value = '';
+    input.style.height = 'auto';
+    msgs.scrollTop = msgs.scrollHeight;
+    // Update conv preview
+    const preview = document.querySelector('[data-id="1"] .ci-preview');
+    if (preview) preview.textContent = text;
+    // Simulate reply
+    setTimeout(() => {
+      const typingRow = document.createElement('div');
+      typingRow.className = 'typing-row';
+      typingRow.id = 'typing-1';
+      typingRow.innerHTML = `<div class="msg-avatar-sm" style="background:#1B3A8C">MK</div><div class="typing-bubble"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+      msgs.appendChild(typingRow);
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => {
+        typingRow.remove();
+        const replies = ['Anladım, teşekkürler!', 'Peki, yarın müsait misin?', 'Harika, görüşürüz!', 'Tamam, düşüneyim.'];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const replyRow = document.createElement('div');
+        replyRow.className = 'msg-row';
+        replyRow.innerHTML = `<div class="msg-avatar-sm" style="background:#1B3A8C">MK</div><div><div class="bubble them">${reply}</div><div class="msg-time">${new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+        msgs.appendChild(replyRow);
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 1800);
+    }, 800);
+  }
+
+  function sendGeneric(btn) {
+    const inp = btn.closest('.input-bar').querySelector('textarea');
+    const text = inp.value.trim();
+    if (!text) return;
+    const msgs = btn.closest('.conv-view').querySelector('.messages');
+    const now = new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+    const row = document.createElement('div');
+    row.className = 'msg-row mine';
+    row.innerHTML = `<div><div class="bubble mine">${text}</div><div class="msg-time">${now} <span class="msg-status">✓</span></div></div>`;
+    msgs.appendChild(row);
+    inp.value = ''; inp.style.height = 'auto';
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  }
+  function handleKeyGeneric(e, inp) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); inp.closest('.input-bar').querySelector('.send-btn').click(); }
+  }
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  }
+  function insertQuick(text) {
+    const input = document.getElementById('msg-input');
+    input.value = text;
+    input.focus();
+    autoResize(input);
+  }
+
+  function filterTab(btn, type) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.conv-item').forEach(item => {
+      if (type === 'all') { item.style.display = 'flex'; return; }
+      const t = item.dataset.type || '';
+      item.style.display = t.includes(type) ? 'flex' : 'none';
+    });
+  }
+
+  function filterConvs(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('.conv-item').forEach(item => {
+      const name = item.querySelector('.ci-name').textContent.toLowerCase();
+      const prev = item.querySelector('.ci-preview').textContent.toLowerCase();
+      item.style.display = (name.includes(q) || prev.includes(q)) ? 'flex' : 'none';
+    });
+  }
+
+  function openNewMsg() { document.getElementById('new-msg-modal').classList.add('open'); }
+  function closeNewMsg() { document.getElementById('new-msg-modal').classList.remove('open'); }
+  document.getElementById('new-msg-modal').addEventListener('click', function(e) { if (e.target === this) closeNewMsg(); });
+
+  function startConv(name, color, initials) {
+    closeNewMsg();
+    alert(`${name} ile yeni konuşma başlatılıyor...`);
+  }
+
+  function searchUsers(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('.user-result').forEach(r => {
+      const name = r.querySelector('.ur-name').textContent.toLowerCase();
+      r.style.display = name.includes(q) ? 'flex' : 'none';
+    });
+  }
+
+  // Init — scroll to bottom of first conv
+  setTimeout(() => {
+    const msgs = document.getElementById('msgs-1');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  }, 100);
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

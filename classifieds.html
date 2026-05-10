@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — İlanlar</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="BizdenBize — Gurbet Hayatını Kolaylaştırıyoruz">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğu için platform. Topluluk, ilan, etkinlik ve AbiBOT.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com">
+  <link rel="canonical" href="https://bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,247,242,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);display:flex;align-items:center;gap:0;height:58px;}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);padding:0 24px;white-space:nowrap;}
+    .nav-logo span{color:var(--red);}
+    .nav-search{flex:1;max-width:360px;display:flex;align-items:center;gap:8px;background:var(--warm);border:1px solid var(--sand);border-radius:8px;padding:8px 14px;margin:0 16px;}
+    .nav-search input{border:none;background:none;outline:none;font-size:13px;font-family:'Instrument Sans',sans-serif;color:var(--ink);width:100%;}
+    .nav-tabs{display:flex;gap:2px;margin-left:8px;flex:1;}
+    .nav-tab{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .nav-tab:hover{background:var(--warm);color:var(--ink);}
+    .nav-tab.active{background:var(--red);color:var(--white);}
+    .nav-right{display:flex;align-items:center;gap:10px;padding:0 20px;}
+    .nav-avatar{width:36px;height:36px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;}
+
+    .page{padding:80px 40px 40px;max-width:1200px;margin:0 auto;}
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+    .page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;letter-spacing:-0.8px;}
+    .page-title span{color:var(--red);}
+    .page-sub{font-size:14px;color:var(--muted);margin-top:4px;}
+    .post-btn{display:flex;align-items:center;gap:8px;background:var(--red);color:var(--white);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .2s;}
+    .post-btn:hover{background:var(--red2);}
+
+    /* Filter bar */
+    .filter-bar{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;align-items:center;}
+    .filter-select{padding:9px 14px;border:1.5px solid var(--sand);border-radius:8px;background:var(--white);font-size:13px;font-family:'Instrument Sans',sans-serif;color:var(--ink);outline:none;cursor:pointer;}
+    .filter-select:focus{border-color:var(--red);}
+    .filter-cat{padding:8px 16px;border-radius:20px;border:1.5px solid var(--sand);background:var(--white);font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--muted);transition:all .15s;}
+    .filter-cat:hover{border-color:var(--red);color:var(--red);}
+    .filter-cat.active{border-color:var(--red);background:var(--red);color:var(--white);}
+    .result-count{margin-left:auto;font-size:13px;color:var(--muted);}
+
+    /* Grid */
+    .listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+    .listing{background:var(--white);border:1px solid var(--sand);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+    .listing:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(26,18,8,0.1);}
+    .listing.featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
+    .listing-thumb{height:180px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
+    .featured-badge{position:absolute;top:10px;left:10px;background:var(--gold);color:var(--white);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.05em;}
+    .save-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.9);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+    .listing-body{padding:14px 16px;}
+    .listing-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--ink);}
+    .listing-title{font-size:14px;font-weight:500;color:var(--ink);margin-top:4px;line-height:1.4;}
+    .listing-meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px;}
+    .listing-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:40px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;position:relative;animation:slideUp .3s ease;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:22px;color:var(--muted);}
+    .modal h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:6px;}
+    .modal p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--red);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .form-group textarea{resize:vertical;min-height:80px;}
+    .submit-btn{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-top:8px;}
+    .submit-btn:hover{background:var(--red2);}
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:36px;width:auto;display:block;"></a>
+  <div class="nav-search">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:#D4C5A9;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input placeholder="İlanlarda ara...">
+  </div>
+  <div class="nav-tabs">
+    <a class="nav-tab" href="mahallem.html">🏘️ Mahallem</a>
+    <a class="nav-tab active" href="classifieds.html">🛍️ İlanlar</a>
+    <a class="nav-tab" href="events.html">🎉 Etkinlikler</a>
+    <a class="nav-tab" href="business.html">🏢 İşletmeler</a>
+    <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">İlanlar <span>&</span> Alışveriş</h1>
+      <p class="page-sub">Güvenilir Türk komşularınla al, sat, takas yap.</p>
+    </div>
+    <button class="post-btn" onclick="openModal()">+ İlan Ver</button>
+  </div>
+
+  <div class="filter-bar">
+    <select class="filter-select">
+      <option>📍 Frankfurt</option>
+      <option>🇩🇪 Tüm Almanya</option>
+      <option>🌍 Tüm Avrupa</option>
+    </select>
+    <select class="filter-select">
+      <option>Fiyat: Hepsi</option>
+      <option>€0 – €100</option>
+      <option>€100 – €500</option>
+      <option>€500 – €2000</option>
+      <option>€2000+</option>
+    </select>
+    <button class="filter-cat active" onclick="filterCat(this)">Tümü</button>
+    <button class="filter-cat" onclick="filterCat(this)">🚗 Araç</button>
+    <button class="filter-cat" onclick="filterCat(this)">🏠 Emlak</button>
+    <button class="filter-cat" onclick="filterCat(this)">📱 Elektronik</button>
+    <button class="filter-cat" onclick="filterCat(this)">🛋️ Mobilya</button>
+    <button class="filter-cat" onclick="filterCat(this)">👗 Giyim</button>
+    <button class="filter-cat" onclick="filterCat(this)">🍳 Diğer</button>
+    <span class="result-count">247 ilan bulundu</span>
+  </div>
+
+  <div class="listings-grid">
+    <div class="listing featured" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">🚗<span class="featured-badge">⭐ Öne Çıkan</span><button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€18.500</div>
+        <div class="listing-title">Audi A3 Satılık — 2019, 68.000 km</div>
+        <div class="listing-meta">📍 Frankfurt · 3 saat önce <span class="listing-tag" style="background:rgba(192,57,43,.1);color:#D42B2B">Araç</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">📱<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€650</div>
+        <div class="listing-title">iPhone 14 Pro — 256GB, Siyah</div>
+        <div class="listing-meta">📍 Frankfurt · Dün <span class="listing-tag" style="background:rgba(24,95,165,.1);color:#185FA5">Elektronik</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">🛋️<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€180</div>
+        <div class="listing-title">IKEA Koltuk Takımı — Temiz, Gri</div>
+        <div class="listing-meta">📍 Frankfurt · Dün <span class="listing-tag" style="background:rgba(201,168,76,.1);color:#C9A84C">Mobilya</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">🏠<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€1.200/ay</div>
+        <div class="listing-title">3 Oda Kiralık Daire — Sachsenhausen</div>
+        <div class="listing-meta">📍 Frankfurt · 2 gün önce <span class="listing-tag" style="background:rgba(30,123,75,.1);color:#1E7B4B">Emlak</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">🚲<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€320</div>
+        <div class="listing-title">E-Bisiklet — Bosch Motor, 2022</div>
+        <div class="listing-meta">📍 Frankfurt · 3 gün önce <span class="listing-tag" style="background:rgba(192,57,43,.1);color:#D42B2B">Araç</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">👗<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€45</div>
+        <div class="listing-title">Zara Kışlık Mont — M Beden, Lacivert</div>
+        <div class="listing-meta">📍 Frankfurt · 4 gün önce <span class="listing-tag" style="background:rgba(83,74,183,.1);color:#534AB7">Giyim</span></div>
+      </div>
+    </div>
+    <div class="listing featured" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">🏪<span class="featured-badge">⭐ Öne Çıkan</span><button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€45.000</div>
+        <div class="listing-title">Devren Satılık Kebap Dükkanı — Kurulu Müşteri Kitlesi</div>
+        <div class="listing-meta">📍 Frankfurt · 1 hafta önce <span class="listing-tag" style="background:rgba(201,168,76,.1);color:#C9A84C">İşletme</span></div>
+      </div>
+    </div>
+    <div class="listing" onclick="window.location='listing-detail.html'">
+      <div class="listing-thumb">📺<button class="save-btn">🤍</button></div>
+      <div class="listing-body">
+        <div class="listing-price">€290</div>
+        <div class="listing-title">Samsung 55" 4K Smart TV</div>
+        <div class="listing-meta">📍 Frankfurt · 1 hafta önce <span class="listing-tag" style="background:rgba(24,95,165,.1);color:#185FA5">Elektronik</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Post Ad Modal -->
+<div class="modal-overlay" id="post-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h3>İlan Ver</h3>
+    <p>Mahallenle güvenli alışveriş yap.</p>
+    <div class="form-group">
+      <label>Kategori</label>
+      <select>
+        <option>🚗 Araç</option><option>🏠 Emlak & Kiralık</option>
+        <option>📱 Elektronik</option><option>🛋️ Mobilya</option>
+        <option>👗 Giyim</option><option>🍳 Diğer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Başlık</label>
+      <input type="text" placeholder="Ör: iPhone 14 Pro, 256GB, Siyah">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fiyat (€)</label>
+        <input type="number" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Durum</label>
+        <select><option>Sıfır gibi</option><option>İyi</option><option>Kullanılmış</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Açıklama</label>
+      <textarea placeholder="İlanını detaylıca anlat..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Şehir</label>
+      <input type="text" placeholder="Frankfurt">
+    </div>
+    <button class="submit-btn" onclick="submitAd()">İlanı Yayınla →</button>
+  </div>
+</div>
+
+<script>
+  function filterCat(btn){document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  function openModal(){document.getElementById('post-modal').classList.add('open');}
+  function closeModal(){document.getElementById('post-modal').classList.remove('open');}
+  document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  function submitAd(){alert('İlanınız yayınlandı! ✓');closeModal();}
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

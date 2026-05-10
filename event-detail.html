@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Frankfurt Türk Festivali 2025</title>
+  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:16px;}
+    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo-link img{height:34px;width:auto;}
+    .nav-tabs{display:flex;gap:2px;}
+    .nav-tab{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;text-decoration:none;}
+    .nav-tab:hover{background:var(--warm);color:var(--ink);}
+    .nav-tab.active{background:var(--navy);color:var(--white);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+
+    .breadcrumb{padding:72px 40px 0;max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
+    .breadcrumb a:hover{color:var(--navy);}
+    .breadcrumb span{color:var(--sand);}
+
+    .page{padding:16px 40px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;}
+
+    /* Hero banner */
+    .event-hero{height:300px;background:var(--navy);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:20px;}
+    .event-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--navy) 0%,var(--red) 100%);opacity:.8;}
+    .hero-emoji{font-size:80px;position:relative;z-index:1;margin-bottom:12px;}
+    .hero-date-badge{position:relative;z-index:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--white);}
+    .hero-share{position:absolute;top:16px;right:16px;z-index:2;display:flex;gap:8px;}
+    .hero-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:var(--white);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+    .hero-btn:hover{background:rgba(255,255,255,.25);}
+
+    /* Event info */
+    .event-info{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px;margin-bottom:16px;}
+    .ei-category{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(212,43,43,.1);color:var(--red);margin-bottom:12px;}
+    .ei-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);letter-spacing:-.5px;margin-bottom:14px;line-height:1.15;}
+    .ei-details{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+    .ei-row{display:flex;align-items:center;gap:12px;}
+    .ei-icon{width:36px;height:36px;border-radius:9px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .ei-text{font-size:14px;color:var(--ink);}
+    .ei-text span{color:var(--muted);font-size:12px;display:block;margin-top:1px;}
+    .ei-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+    .ei-tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .ei-tag{font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+
+    /* Map placeholder */
+    .map-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+    .map-placeholder{height:180px;background:linear-gradient(135deg,#e8f0fe,#d2e3fc);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:36px;cursor:pointer;transition:opacity .15s;}
+    .map-placeholder:hover{opacity:.9;}
+    .map-placeholder p{font-size:13px;color:var(--navy);margin-top:8px;font-weight:600;}
+    .map-address{padding:14px 18px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+
+    /* Attendees */
+    .attendees-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;margin-bottom:16px;}
+    .ac-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .ac-title{font-size:14px;font-weight:600;color:var(--ink);}
+    .ac-count{font-size:13px;color:var(--muted);}
+    .attendee-list{display:flex;flex-direction:column;gap:10px;}
+    .attendee-row{display:flex;align-items:center;gap:10px;}
+    .att-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .att-name{font-size:13px;font-weight:500;color:var(--ink);}
+    .att-city{font-size:11px;color:var(--muted);}
+    .att-you{margin-left:auto;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:rgba(30,123,75,.1);color:var(--green);}
+    .show-more{width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--sand);background:none;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;margin-top:10px;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .show-more:hover{border-color:var(--navy);color:var(--navy);}
+
+    /* Comments */
+    .comments-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .cc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:16px;}
+    .comment{display:flex;gap:10px;margin-bottom:16px;}
+    .comment:last-of-type{margin-bottom:0;}
+    .com-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .com-body{flex:1;}
+    .com-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+    .com-name{font-size:13px;font-weight:600;color:var(--ink);}
+    .com-time{font-size:11px;color:var(--muted);}
+    .com-text{font-size:13px;color:var(--muted);line-height:1.55;}
+    .com-like{font-size:11px;color:var(--muted);cursor:pointer;margin-top:4px;background:none;border:none;font-family:'Instrument Sans',sans-serif;transition:color .15s;}
+    .com-like:hover{color:var(--red);}
+    .add-comment{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--warm);}
+    .comment-input{flex:1;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-family:'Instrument Sans',sans-serif;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .comment-input:focus{border-color:var(--navy);}
+    .comment-send{padding:10px 16px;background:var(--navy);color:var(--white);border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .2s;white-space:nowrap;}
+    .comment-send:hover{background:var(--navy2);}
+
+    /* ── RIGHT ── */
+    .right-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px;}
+
+    /* RSVP card */
+    .rsvp-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px;text-align:center;}
+    .rc-date{display:inline-flex;flex-direction:column;align-items:center;background:var(--red);border-radius:14px;padding:12px 24px;margin-bottom:16px;}
+    .rc-month{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;}
+    .rc-day{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--white);line-height:1;}
+    .rc-time{font-size:13px;color:var(--muted);margin-bottom:6px;}
+    .rc-spots{font-size:12px;font-weight:600;color:var(--green);margin-bottom:18px;}
+    .rsvp-btn{width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;border:none;}
+    .rsvp-btn.join{background:var(--navy);color:var(--white);}
+    .rsvp-btn.join:hover{background:var(--navy2);}
+    .rsvp-btn.going{background:var(--green);color:var(--white);}
+    .rsvp-share{display:flex;gap:8px;margin-top:10px;}
+    .share-btn{flex:1;padding:9px;border-radius:8px;border:1.5px solid var(--sand);background:none;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--muted);transition:all .15s;}
+    .share-btn:hover{border-color:var(--navy);color:var(--navy);}
+
+    /* Organizer */
+    .organizer-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .org-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+    .org-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .org-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+    .org-name{font-size:14px;font-weight:600;color:var(--ink);}
+    .org-meta{font-size:12px;color:var(--muted);}
+    .msg-org-btn{width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--sand);background:var(--warm);font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--ink);transition:all .15s;}
+    .msg-org-btn:hover{border-color:var(--navy);color:var(--navy);}
+
+    /* Similar events */
+    .similar-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
+    .sc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+    .sim-event{display:flex;gap:12px;padding:8px;border-radius:10px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+    .sim-event:hover{background:var(--warm);}
+    .se-date{width:40px;flex-shrink:0;text-align:center;background:var(--navy);border-radius:8px;padding:5px 4px;}
+    .se-m{font-size:9px;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;}
+    .se-d{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);line-height:1;}
+    .se-title{font-size:13px;font-weight:500;color:var(--ink);}
+    .se-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+
+    @media(max-width:900px){
+      .page{grid-template-columns:1fr;padding:16px 20px 60px;}
+      .right-col{position:static;}
+      .breadcrumb{padding:72px 20px 0;}
+    }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html">🛍️ İlanlar</a>
+      <a class="nav-tab active" href="events.html">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html">🏢 İşletmeler</a>
+      <a class="nav-tab" href="abibot.html">🤖 AbiBOT</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="mahallem.html">Ana Sayfa</a><span>/</span>
+  <a href="events.html">Etkinlikler</a><span>/</span>
+  <span style="color:var(--ink)">Frankfurt Türk Festivali 2025</span>
+</div>
+
+<div class="page">
+  <div>
+    <!-- Hero -->
+    <div class="event-hero">
+      <div class="hero-emoji">🎉</div>
+      <div class="hero-date-badge">📅 14 Haziran 2025 · Cumartesi · 14:00 – 22:00</div>
+      <div class="hero-share">
+        <button class="hero-btn" onclick="shareEvent()" title="Paylaş">↗</button>
+        <button class="hero-btn" id="hero-save" onclick="toggleHeroSave()" title="Kaydet">🤍</button>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="event-info">
+      <div class="ei-category">🎉 Kültür & Festival</div>
+      <h1 class="ei-title">Frankfurt Türk Festivali 2025</h1>
+      <div class="ei-details">
+        <div class="ei-row">
+          <div class="ei-icon">📅</div>
+          <div class="ei-text">14 Haziran 2025, Cumartesi<span>14:00 – 22:00 arasında</span></div>
+        </div>
+        <div class="ei-row">
+          <div class="ei-icon">📍</div>
+          <div class="ei-text">Römerberg Meydanı, Frankfurt am Main<span>60311 Frankfurt, Deutschland</span></div>
+        </div>
+        <div class="ei-row">
+          <div class="ei-icon">👥</div>
+          <div class="ei-text">43 katılımcı gidiyor<span>Sınır yok · Herkese açık</span></div>
+        </div>
+        <div class="ei-row">
+          <div class="ei-icon">💶</div>
+          <div class="ei-text">Ücretsiz giriş<span>Bazı etkinlikler için ücret alınabilir</span></div>
+        </div>
+      </div>
+      <p class="ei-desc">
+        Her yıl geleneksel olarak düzenlenen Frankfurt Türk Festivali bu yıl da Römerberg'de! Türk mutfağından yemekler, canlı müzik, halk dansları ve çocuklar için özel etkinlikler sizi bekliyor.<br><br>
+        Bu yıl özellikle: Türk sanatçıların konser performansları, geleneksel el sanatları sergisi, çay bahçesi ve nargileciler de festivalimizde yer alacak. Tüm Frankfurt Türk topluluğunu ve dostlarını bekliyoruz!
+      </p>
+      <div class="ei-tags">
+        <span class="ei-tag">🎵 Canlı Müzik</span>
+        <span class="ei-tag">🍽️ Türk Mutfağı</span>
+        <span class="ei-tag">💃 Halk Dansları</span>
+        <span class="ei-tag">👶 Çocuk Etkinlikleri</span>
+        <span class="ei-tag">🎨 El Sanatları</span>
+        <span class="ei-tag">☕ Çay Bahçesi</span>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-card">
+      <div class="map-placeholder" onclick="alert('Google Haritalar\'da açılıyor...')">
+        🗺️
+        <p>Haritada Gör → Römerberg, Frankfurt</p>
+      </div>
+      <div class="map-address">📍 Römerberg, 60311 Frankfurt am Main · <a href="#" style="color:var(--navy);margin-left:4px">Yol tarifi al</a></div>
+    </div>
+
+    <!-- Attendees -->
+    <div class="attendees-card">
+      <div class="ac-header">
+        <span class="ac-title">👥 Katılımcılar</span>
+        <span class="ac-count">43 kişi gidiyor</span>
+      </div>
+      <div class="attendee-list">
+        <div class="attendee-row">
+          <div class="att-avatar" style="background:#D42B2B">AY</div>
+          <div><div class="att-name">Ayşe Yılmaz</div><div class="att-city">Frankfurt</div></div>
+          <span class="att-you">Sen</span>
+        </div>
+        <div class="attendee-row">
+          <div class="att-avatar" style="background:#1B3A8C">MK</div>
+          <div><div class="att-name">Mustafa Kaya</div><div class="att-city">Frankfurt</div></div>
+        </div>
+        <div class="attendee-row">
+          <div class="att-avatar" style="background:#1E7B4B">AK</div>
+          <div><div class="att-name">Ali Korkmaz</div><div class="att-city">Frankfurt</div></div>
+        </div>
+        <div class="attendee-row">
+          <div class="att-avatar" style="background:#534AB7">BT</div>
+          <div><div class="att-name">Berk Taşkın</div><div class="att-city">Amsterdam · özellikle geliyor</div></div>
+        </div>
+        <div class="attendee-row">
+          <div class="att-avatar" style="background:#854F0B">FY</div>
+          <div><div class="att-name">Fatma Yıldırım</div><div class="att-city">Wien · özellikle geliyor</div></div>
+        </div>
+      </div>
+      <button class="show-more" onclick="this.textContent='Yükleniyor...'">+38 kişiyi daha gör</button>
+    </div>
+
+    <!-- Comments -->
+    <div class="comments-card">
+      <div class="cc-title">💬 Yorumlar (8)</div>
+      <div class="comment">
+        <div class="com-avatar" style="background:#1B3A8C">MK</div>
+        <div class="com-body">
+          <div class="com-header"><span class="com-name">Mustafa Kaya</span><span class="com-time">2 gün önce</span></div>
+          <div class="com-text">Geçen sene çok güzeldi, bu yıl daha da büyük olacakmış! Herkesi bekliyoruz 🎉</div>
+          <button class="com-like" onclick="this.textContent='❤️ 7'">🤍 6</button>
+        </div>
+      </div>
+      <div class="comment">
+        <div class="com-avatar" style="background:#1E7B4B">AK</div>
+        <div class="com-body">
+          <div class="com-header"><span class="com-name">Ali Korkmaz</span><span class="com-time">1 gün önce</span></div>
+          <div class="com-text">Amsterdam'dan yola çıkıyoruz, festival için özel geliyor 6 kişilik grup! 🇹🇷</div>
+          <button class="com-like" onclick="this.textContent='❤️ 4'">🤍 3</button>
+        </div>
+      </div>
+      <div class="comment">
+        <div class="com-avatar" style="background:#854F0B">FY</div>
+        <div class="com-body">
+          <div class="com-header"><span class="com-name">Fatma Yıldırım</span><span class="com-time">5 saat önce</span></div>
+          <div class="com-text">Otopark var mı? Arabayla gelmek istiyoruz.</div>
+          <button class="com-like" onclick="this.textContent='❤️ 2'">🤍 1</button>
+        </div>
+      </div>
+      <div class="add-comment">
+        <input class="comment-input" id="comment-input" placeholder="Yorum ekle..." onkeydown="if(event.key==='Enter')addComment()">
+        <button class="comment-send" onclick="addComment()">Gönder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right-col">
+
+    <div class="rsvp-card">
+      <div class="rc-date">
+        <div class="rc-month">Haziran</div>
+        <div class="rc-day">14</div>
+      </div>
+      <div class="rc-time">Cumartesi · 14:00 – 22:00</div>
+      <div class="rc-spots">✓ Sınırsız yer · Ücretsiz giriş</div>
+      <button class="rsvp-btn going" id="rsvp-btn" onclick="toggleRsvp()">✓ Katılıyorum</button>
+      <div class="rsvp-share">
+        <button class="share-btn" onclick="shareWA()">💬 WhatsApp</button>
+        <button class="share-btn" onclick="shareEvent()">↗ Paylaş</button>
+      </div>
+    </div>
+
+    <div class="organizer-card">
+      <div class="org-title">Organizatör</div>
+      <div class="org-row">
+        <div class="org-avatar">MK</div>
+        <div>
+          <div class="org-name">Mustafa Kaya</div>
+          <div class="org-meta">📍 Frankfurt · 12 etkinlik düzenledi</div>
+        </div>
+      </div>
+      <button class="msg-org-btn" onclick="window.location='messages.html'">💬 Organizatöre Mesaj</button>
+    </div>
+
+    <div class="similar-card">
+      <div class="sc-title">📅 Diğer Etkinlikler</div>
+      <div class="sim-event" onclick="window.location='event-detail.html'">
+        <div class="se-date"><div class="se-m">Haz</div><div class="se-d">18</div></div>
+        <div><div class="se-title">Türk Girişimciler Networking</div><div class="se-meta">📍 Frankfurt · 22 katılımcı</div></div>
+      </div>
+      <div class="sim-event" onclick="window.location='event-detail.html'">
+        <div class="se-date" style="background:var(--green)"><div class="se-m">Haz</div><div class="se-d">21</div></div>
+        <div><div class="se-title">Türkçe Çocuk Kitapları</div><div class="se-meta">📍 Frankfurt · 14 katılımcı</div></div>
+      </div>
+      <div class="sim-event" onclick="window.location='event-detail.html'">
+        <div class="se-date" style="background:var(--gold)"><div class="se-m">Tem</div><div class="se-d">04</div></div>
+        <div><div class="se-title">Türk Mutfağı Atölyesi</div><div class="se-meta">📍 Frankfurt · 8 katılımcı</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let going = true;
+  function toggleRsvp() {
+    going = !going;
+    const btn = document.getElementById('rsvp-btn');
+    btn.className = 'rsvp-btn ' + (going ? 'going' : 'join');
+    btn.textContent = going ? '✓ Katılıyorum' : 'Katıl';
+  }
+  function toggleHeroSave() {
+    const btn = document.getElementById('hero-save');
+    btn.textContent = btn.textContent === '🤍' ? '🧡' : '🤍';
+  }
+  function shareEvent() {
+    navigator.clipboard?.writeText(window.location.href);
+    alert('Bağlantı kopyalandı!');
+  }
+  function shareWA() {
+    const msg = encodeURIComponent('Frankfurt Türk Festivali\'ne gel! 🎉 14 Haziran, Römerberg\nhttps://bizdenbize.com/event-detail.html');
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  }
+  function addComment() {
+    const input = document.getElementById('comment-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const container = input.closest('.comments-card');
+    const div = document.createElement('div');
+    div.className = 'comment';
+    div.innerHTML = `<div class="com-avatar" style="background:var(--red)">AY</div>
+      <div class="com-body">
+        <div class="com-header"><span class="com-name">Ayşe Yılmaz</span><span class="com-time">Şimdi</span></div>
+        <div class="com-text">${text}</div>
+        <button class="com-like">🤍 0</button>
+      </div>`;
+    container.insertBefore(div, input.closest('.add-comment'));
+    input.value = '';
+  }
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>

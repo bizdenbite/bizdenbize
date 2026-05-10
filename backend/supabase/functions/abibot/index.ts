@@ -1,0 +1,194 @@
+// supabase/functions/abibot/index.ts
+// Deploy: supabase functions deploy abibot
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://bizdenbize.com",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+// Credit cost per category
+const CREDIT_COSTS: Record<string, number> = {
+  legal:      5,
+  visa:       5,
+  medical:    4,
+  tax:        4,
+  housing:    3,
+  employment: 3,
+  school:     2,
+  insurance:  2,
+};
+
+// System prompts per category
+const SYSTEM_PROMPTS: Record<string, string> = {
+  legal:      "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in LEGAL matters — German, Dutch, Belgian, Austrian, and EU law as it applies to Turkish immigrants and diaspora. Be warm, clear, and helpful. Always end by recommending professional consultation for important decisions. Max 250 words.",
+  visa:       "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in VISA and RESIDENCE PERMITS — Niederlassungserlaubnis, Aufenthaltstitel, family reunification, citizenship, EU free movement for Turkish citizens. Be warm and clear. Always recommend official sources. Max 250 words.",
+  medical:    "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in MEDICAL topics — European healthcare, Krankenkasse, medications, symptoms, navigating healthcare as a Turkish person in Europe. Always recommend seeing a doctor for personal health issues. Max 250 words.",
+  tax:        "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in TAX and FINANCE — German Steuer, Kindergeld, Wohngeld, social benefits, income tax, financial planning for Turkish diaspora. Always recommend a Steuerberater for complex cases. Max 250 words.",
+  housing:    "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in HOUSING — German Mietrecht, rental contracts, deposit rules, tenant rights, Nebenkosten, housing benefits. Be practical and clear. Max 250 words.",
+  employment: "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in EMPLOYMENT — Kündigung, Arbeitsvertrag, sick leave, discrimination, unemployment benefits (ALG), workers' rights in Germany and Europe. Max 250 words.",
+  school:     "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in EDUCATION and FAMILY BENEFITS — Kindergeld, Elterngeld, school enrollment, Kita, Bafög, family support for Turkish families in Europe. Max 250 words.",
+  insurance:  "You are AbiBOT, a trusted AI advisor for the Turkish community in Europe on BizdenBize. You specialize in INSURANCE and VEHICLES — Kfz-Versicherung, Haftpflicht, car registration, accidents, claims, insurance navigation in Germany/Europe. Max 250 words.",
+};
+
+const LANG_INSTRUCTIONS: Record<string, string> = {
+  tr: "Always respond in TURKISH (Türkçe). Use friendly, clear Turkish. Avoid excessive legal jargon.",
+  de: "Always respond in GERMAN (Deutsch). Use friendly, clear German. Avoid excessive legal jargon.",
+  en: "Always respond in ENGLISH. Use friendly, clear English. Avoid excessive legal jargon.",
+};
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    // Parse request
+    const { category, language, messages } = await req.json();
+
+    if (!category || !messages?.length) {
+      return new Response(
+        JSON.stringify({ error: "category and messages are required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Get authenticated user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized — please log in" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check user credits
+    const creditCost = CREDIT_COSTS[category] ?? 3;
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("abibot_credits, is_premium, status")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return new Response(
+        JSON.stringify({ error: "Profile not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (profile.status !== "approved") {
+      return new Response(
+        JSON.stringify({ error: "Account not approved yet" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (profile.abibot_credits < creditCost) {
+      return new Response(
+        JSON.stringify({
+          error: "Insufficient credits",
+          required: creditCost,
+          available: profile.abibot_credits,
+          topup_url: "https://bizdenbize.com/topup.html"
+        }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Build system prompt
+    const systemPrompt = [
+      SYSTEM_PROMPTS[category] ?? SYSTEM_PROMPTS.legal,
+      LANG_INSTRUCTIONS[language] ?? LANG_INSTRUCTIONS.tr,
+    ].join("\n\n");
+
+    // Call Claude API
+    const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") ?? "",
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: messages,
+      }),
+    });
+
+    if (!claudeResponse.ok) {
+      const err = await claudeResponse.text();
+      console.error("Claude API error:", err);
+      return new Response(
+        JSON.stringify({ error: "AI service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const claudeData = await claudeResponse.json();
+    const answer = claudeData.content?.[0]?.text ?? "";
+
+    // Deduct credits (use service role for writes)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    // Deduct from profile
+    await supabaseAdmin
+      .from("profiles")
+      .update({ abibot_credits: profile.abibot_credits - creditCost })
+      .eq("id", user.id);
+
+    // Log transaction
+    await supabaseAdmin
+      .from("credit_transactions")
+      .insert({
+        user_id: user.id,
+        amount: -creditCost,
+        type: "usage",
+        description: `AbiBOT — ${category} sorusu`,
+      });
+
+    // Save session
+    const userQuestion = messages[messages.length - 1]?.content ?? "";
+    await supabaseAdmin
+      .from("abibot_sessions")
+      .insert({
+        user_id: user.id,
+        category,
+        language: language ?? "tr",
+        question: typeof userQuestion === "string" ? userQuestion : JSON.stringify(userQuestion),
+        answer,
+        credits_used: creditCost,
+      });
+
+    return new Response(
+      JSON.stringify({
+        answer,
+        credits_used: creditCost,
+        credits_remaining: profile.abibot_credits - creditCost,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
+  } catch (err) {
+    console.error("AbiBOT function error:", err);
+    return new Response(
+      JSON.stringify({ error: "Internal server error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});

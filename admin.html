@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Admin Paneli</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="BizdenBize — Gurbet Hayatını Kolaylaştırıyoruz">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğu için platform. Topluluk, ilan, etkinlik ve AbiBOT.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com">
+  <link rel="canonical" href="https://bizdenbize.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;--blue:#185FA5;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:#F5F4F2;color:var(--ink);display:flex;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{width:240px;background:var(--ink);display:flex;flex-direction:column;padding:28px 16px;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;}
+    .sidebar-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);padding:0 8px;margin-bottom:32px;}
+    .sidebar-logo span{color:var(--red2);}
+    .sidebar-logo small{display:block;font-size:10px;font-weight:400;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+    .nav-section{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 10px;margin-bottom:6px;margin-top:20px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);transition:all .15s;text-decoration:none;}
+    .nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
+    .nav-item.active{background:rgba(255,255,255,.1);color:var(--white);}
+    .nav-item-icon{font-size:15px;width:20px;text-align:center;}
+    .nav-badge{margin-left:auto;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--red);color:var(--white);}
+    .sidebar-bottom{margin-top:auto;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);}
+    .back-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.4);text-decoration:none;transition:all .15s;}
+    .back-btn:hover{color:rgba(255,255,255,.7);}
+
+    /* MAIN */
+    .main{margin-left:240px;flex:1;padding:32px;}
+
+    /* Top */
+    .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .page-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;letter-spacing:-.5px;}
+    .page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+    .top-actions{display:flex;gap:8px;}
+    .top-btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;border:1.5px solid var(--sand);background:var(--white);color:var(--ink);}
+    .top-btn:hover{border-color:var(--red);}
+    .top-btn.primary{background:var(--red);color:var(--white);border-color:var(--red);}
+    .top-btn.primary:hover{background:var(--red2);}
+
+    /* Stats grid */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+    .stat-card{background:var(--white);border:1px solid rgba(212,197,169,.4);border-radius:14px;padding:20px;}
+    .stat-card.highlight{background:var(--ink);}
+    .stat-icon{font-size:20px;margin-bottom:10px;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
+    .stat-card.highlight .stat-val{color:var(--white);}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
+    .stat-card.highlight .stat-label{color:rgba(255,255,255,.4);}
+    .stat-change{font-size:11px;font-weight:600;margin-top:6px;}
+    .stat-change.up{color:var(--green);}
+    .stat-change.down{color:var(--red);}
+
+    /* Two column */
+    .two-col{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-bottom:18px;}
+
+    /* Table */
+    .card{background:var(--white);border:1px solid rgba(212,197,169,.4);border-radius:14px;overflow:hidden;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(212,197,169,.3);}
+    .card-title{font-size:13px;font-weight:600;color:var(--ink);}
+    .card-link{font-size:12px;color:var(--red);cursor:pointer;text-decoration:none;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:10px 20px;text-align:left;background:rgba(212,197,169,.1);}
+    td{font-size:13px;padding:12px 20px;border-bottom:1px solid rgba(212,197,169,.2);color:var(--ink);}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(250,247,242,.7);}
+    .user-cell{display:flex;align-items:center;gap:10px;}
+    .user-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .status-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+    .s-approved{background:rgba(30,123,75,.12);color:var(--green);}
+    .s-pending{background:rgba(201,168,76,.12);color:#854F0B;}
+    .s-banned{background:rgba(192,57,43,.12);color:var(--red);}
+    .action-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Instrument Sans',sans-serif;border:1px solid var(--sand);background:var(--warm);color:var(--ink);margin-right:4px;transition:all .15s;}
+    .action-btn:hover{border-color:var(--red);color:var(--red);}
+    .action-btn.approve{background:rgba(30,123,75,.1);border-color:rgba(30,123,75,.4);color:var(--green);}
+    .action-btn.approve:hover{background:var(--green);color:var(--white);border-color:var(--green);}
+    .action-btn.ban{background:rgba(192,57,43,.08);border-color:rgba(192,57,43,.3);color:var(--red);}
+    .action-btn.ban:hover{background:var(--red);color:var(--white);border-color:var(--red);}
+
+    /* Waitlist & quick stats */
+    .waitlist-item{padding:14px 20px;border-bottom:1px solid rgba(212,197,169,.2);display:flex;align-items:center;gap:12px;}
+    .waitlist-item:last-child{border-bottom:none;}
+    .wl-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .wl-name{font-size:13px;font-weight:500;color:var(--ink);}
+    .wl-city{font-size:11px;color:var(--muted);}
+    .wl-actions{margin-left:auto;display:flex;gap:5px;}
+
+    /* Mini chart */
+    .chart-wrap{padding:20px;}
+    .bar-chart{display:flex;align-items:flex-end;gap:6px;height:100px;}
+    .bar{flex:1;border-radius:4px 4px 0 0;background:var(--red);opacity:.7;transition:opacity .2s;cursor:pointer;position:relative;}
+    .bar:hover{opacity:1;}
+    .bar-label{font-size:9px;color:var(--muted);text-align:center;margin-top:5px;}
+    .chart-days{display:flex;gap:6px;padding:0;}
+    .chart-day{flex:1;text-align:center;font-size:9px;color:var(--muted);}
+
+    .quick-stats{display:flex;flex-direction:column;gap:8px;padding:16px 20px;}
+    .qs-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(212,197,169,.2);}
+    .qs-item:last-child{border-bottom:none;}
+    .qs-label{font-size:13px;color:var(--muted);}
+    .qs-val{font-size:13px;font-weight:600;color:var(--ink);}
+    .qs-bar-wrap{height:4px;background:var(--warm);border-radius:2px;margin-top:4px;flex:1;margin-left:12px;}
+    .qs-bar{height:100%;border-radius:2px;background:var(--red);}
+  
+    .nav-logo-link { display:flex; align-items:center; text-decoration:none; flex-shrink:0; }
+    .nav-logo-link img { height:34px; width:auto; }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .hamburger:hover { background: var(--warm, #F0EAE0); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink, #1A1208); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--white, #fff); z-index: 99;
+      flex-direction: column; overflow-y: auto;
+      border-top: 1px solid rgba(212,197,169,.4);
+      animation: slideDown .2s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mm-user {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px;
+      background: var(--navy, #1B3A8C);
+    }
+    .mm-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--red, #D42B2B); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
+    .mm-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink, #1A1208); text-decoration: none;
+      transition: background .15s; cursor: pointer;
+    }
+    .mm-link:hover { background: var(--warm, #F0EAE0); }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+    .mm-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      background: var(--red, #D42B2B); color: #fff;
+    }
+    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
+    .mm-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted, #6B5E4E);
+      padding: 8px 24px 4px;
+    }
+    .mm-footer {
+      padding: 16px 24px 32px;
+      border-top: 1px solid rgba(212,197,169,.25);
+    }
+    .mm-logout {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--red, #D42B2B);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-weight: 500; padding: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+      .nav-search { max-width: 160px !important; }
+    }
+    @media (max-width: 480px) {
+      .nav-search { display: none !important; }
+    }
+
+  
+  /* ── COOKIE CONSENT BANNER ── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--ink, #1A1208);
+    border-top: 1px solid rgba(255,255,255,.1);
+    padding: 20px 32px;
+    display: none;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
+    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
+  }
+  #cookie-banner.visible { display: flex; }
+  @keyframes slideUpBanner {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
+  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+  .cb-text { flex: 1; min-width: 240px; }
+  .cb-title {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .cb-desc {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px; color: rgba(255,255,255,.5);
+    line-height: 1.55;
+  }
+  .cb-desc a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cb-desc a:hover { color: #fff; }
+  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .cb-btn {
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all .15s; white-space: nowrap;
+  }
+  .cb-accept {
+    background: #D42B2B; color: #fff;
+  }
+  .cb-accept:hover { background: #E8393A; }
+  .cb-essential {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .cb-manage {
+    background: none; color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.15) !important;
+  }
+  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
+
+  /* Cookie preferences modal */
+  #cookie-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(26,18,8,.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #cookie-modal.open { display: flex; }
+  .cm-box {
+    background: #fff; border-radius: 20px;
+    padding: 0; max-width: 520px; width: 90%;
+    max-height: 85vh; overflow-y: auto;
+    animation: popIn .3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  @keyframes popIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .cm-header {
+    padding: 24px 24px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: #1A1208;
+  }
+  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
+  .cm-close {
+    background: none; border: none; font-size: 22px;
+    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
+    margin: -4px -4px 0 12px; line-height: 1;
+  }
+  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
+  .cm-cat {
+    border: 1px solid #F0EAE0; border-radius: 12px;
+    overflow: hidden;
+  }
+  .cm-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+    background: #FAF7F2; transition: background .15s;
+    user-select: none;
+  }
+  .cm-cat-header:hover { background: #F0EAE0; }
+  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cm-cat-info { flex: 1; }
+  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
+  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
+  /* Toggle switch */
+  .cm-toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: #D4C5A9; position: relative; flex-shrink: 0;
+    cursor: pointer; transition: background .2s; border: none;
+  }
+  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
+  .cm-toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform .2s;
+  }
+  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
+  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
+  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
+  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
+  .cm-cat.open .cm-cat-body { display: block; }
+  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
+  .cm-cat-detail strong { color: #1A1208; }
+
+  .cm-footer {
+    padding: 20px 24px 24px; display: flex; gap: 8px;
+    border-top: 1px solid #F0EAE0; margin-top: 16px;
+  }
+  .cm-save {
+    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-save:hover { background: #2348A8; }
+  .cm-accept-all {
+    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
+    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+    transition: background .15s;
+  }
+  .cm-accept-all:hover { background: #E8393A; }
+
+  </style>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BizdenBize">
+  <meta name="application-name" content="BizdenBize">
+  <meta name="theme-color" content="#1B3A8C">
+  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  <!-- Apple touch icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+  <link rel="shortcut icon" href="icons/icon-96.png">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">Bizden<span>Bize</span><small>Admin Paneli</small></div>
+
+  <div class="nav-section">Genel Bakış</div>
+  <a class="nav-item active" href="admin.html"><span class="nav-item-icon">📊</span>Dashboard</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">🔔</span>Bildirimler<span class="nav-badge">12</span></a>
+
+  <div class="nav-section">Üyeler</div>
+  <a class="nav-item" href="#" onclick="showSection('waitlist')"><span class="nav-item-icon">⏳</span>Bekleme Listesi<span class="nav-badge">23</span></a>
+  <a class="nav-item" href="#" onclick="showSection('users')"><span class="nav-item-icon">👥</span>Tüm Üyeler</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">🎟️</span>Davetiyeler</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">⚠️</span>Raporlar<span class="nav-badge">5</span></a>
+
+  <div class="nav-section">İçerik</div>
+  <a class="nav-item" href="#"><span class="nav-item-icon">📝</span>Gönderiler</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">🛍️</span>İlanlar</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">🏢</span>İşletmeler</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">🎉</span>Etkinlikler</a>
+
+  <div class="nav-section">Sistem</div>
+  <a class="nav-item" href="#"><span class="nav-item-icon">💳</span>Premium Üyeler</a>
+  <a class="nav-item" href="#"><span class="nav-item-icon">⚙️</span>Ayarlar</a>
+
+  <div class="sidebar-bottom">
+    <a class="back-btn" href="mahallem.html">← Platforma dön</a>
+    <a class="back-btn" href="login.html" style="margin-top:6px;color:rgba(255,255,255,.3)">⏻ Çıkış yap</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="top-bar">
+    <div>
+      <h1 class="page-title">Admin Paneli</h1>
+      <p class="page-sub">Son güncelleme: Az önce · Frankfurt, Almanya</p>
+    </div>
+    <div class="top-actions">
+      <button class="top-btn">📤 Rapor Al</button>
+      <button class="top-btn primary">+ Üye Ekle</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card highlight">
+      <div class="stat-icon">👥</div>
+      <div class="stat-val">482</div>
+      <div class="stat-label">Toplam Üye</div>
+      <div class="stat-change up">↑ +34 bu hafta</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-val">23</div>
+      <div class="stat-label">Bekleyen Başvuru</div>
+      <div class="stat-change up">↑ +8 bugün</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🛍️</div>
+      <div class="stat-val">247</div>
+      <div class="stat-label">Aktif İlan</div>
+      <div class="stat-change up">↑ +12 bu hafta</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💳</div>
+      <div class="stat-val">38</div>
+      <div class="stat-label">Premium Üye</div>
+      <div class="stat-change up">↑ +4 bu ay</div>
+    </div>
+  </div>
+
+  <!-- Two col -->
+  <div class="two-col">
+    <!-- Waitlist -->
+    <div class="card" id="waitlist-section">
+      <div class="card-header">
+        <span class="card-title">⏳ Bekleme Listesi — Onay Bekleyenler</span>
+        <a class="card-link">Tümünü gör</a>
+      </div>
+      <div>
+        <div class="waitlist-item">
+          <div class="wl-avatar" style="background:#D42B2B">AK</div>
+          <div><div class="wl-name">Ali Korkmaz</div><div class="wl-city">Frankfurt · "3. nesil, Frankfurt'ta doğdum"</div></div>
+          <div class="wl-actions">
+            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
+            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
+          </div>
+        </div>
+        <div class="waitlist-item">
+          <div class="wl-avatar" style="background:#185FA5">SE</div>
+          <div><div class="wl-name">Selin Erdoğan</div><div class="wl-city">Berlin · "Annem Frankfurt'tan, ben Berlin'de"</div></div>
+          <div class="wl-actions">
+            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
+            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
+          </div>
+        </div>
+        <div class="waitlist-item">
+          <div class="wl-avatar" style="background:#1E7B4B">BT</div>
+          <div><div class="wl-name">Berk Taşkın</div><div class="wl-city">Amsterdam · "Türk kökenli, Hollanda'da iş insanı"</div></div>
+          <div class="wl-actions">
+            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
+            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
+          </div>
+        </div>
+        <div class="waitlist-item">
+          <div class="wl-avatar" style="background:#854F0B">FY</div>
+          <div><div class="wl-name">Fatma Yıldırım</div><div class="wl-city">Wien · Davetiye kodu: BZB·1234</div></div>
+          <div class="wl-actions">
+            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
+            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
+          </div>
+        </div>
+        <div class="waitlist-item">
+          <div class="wl-avatar" style="background:#534AB7">CE</div>
+          <div><div class="wl-name">Can Erdem</div><div class="wl-city">Frankfurt · "İkinci nesil, ailem Gaziantep'ten"</div></div>
+          <div class="wl-actions">
+            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
+            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div>
+      <!-- Growth chart -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-header"><span class="card-title">📈 Üye Büyümesi</span></div>
+        <div class="chart-wrap">
+          <div class="bar-chart">
+            <div><div class="bar" style="height:30%"></div><div class="bar-label">P</div></div>
+            <div><div class="bar" style="height:45%"></div><div class="bar-label">S</div></div>
+            <div><div class="bar" style="height:38%"></div><div class="bar-label">Ç</div></div>
+            <div><div class="bar" style="height:60%"></div><div class="bar-label">P</div></div>
+            <div><div class="bar" style="height:55%"></div><div class="bar-label">C</div></div>
+            <div><div class="bar" style="height:80%"></div><div class="bar-label">C</div></div>
+            <div><div class="bar" style="height:100%"></div><div class="bar-label">P</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">🌍 Şehir Dağılımı</span></div>
+        <div class="quick-stats">
+          <div>
+            <div class="qs-item" style="border:none;padding:4px 0">
+              <span class="qs-label">🇩🇪 Frankfurt</span>
+              <span class="qs-val">142</span>
+            </div>
+            <div class="qs-bar-wrap" style="margin:0"><div class="qs-bar" style="width:75%"></div></div>
+          </div>
+          <div>
+            <div class="qs-item" style="border:none;padding:4px 0">
+              <span class="qs-label">🇩🇪 Berlin</span>
+              <span class="qs-val">89</span>
+            </div>
+            <div class="qs-bar-wrap" style="margin:0"><div class="qs-bar" style="width:47%"></div></div>
+          </div>
+          <div>
+            <div class="qs-item" style="border:none;padding:4px 0">
+              <span class="qs-label">🇳🇱 Amsterdam</span>
+              <span class="qs-val">53</span>
+            </div>
+            <div class="qs-bar-wrap" style="margin:0"><div class="qs-bar" style="width:28%"></div></div>
+          </div>
+          <div>
+            <div class="qs-item" style="border:none;padding:4px 0">
+              <span class="qs-label">🇦🇹 Wien</span>
+              <span class="qs-val">48</span>
+            </div>
+            <div class="qs-bar-wrap" style="margin:0"><div class="qs-bar" style="width:25%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All users table -->
+  <div class="card" id="users-section">
+    <div class="card-header">
+      <span class="card-title">👥 Son Kaydolan Üyeler</span>
+      <a class="card-link">Tüm üyeleri gör</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Üye</th>
+          <th>Şehir</th>
+          <th>Kayıt</th>
+          <th>Davetiye</th>
+          <th>Durum</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="user-cell"><div class="user-av" style="background:#D42B2B">AY</div>Ayşe Yılmaz</div></td>
+          <td>Frankfurt 🇩🇪</td>
+          <td>2 gün önce</td>
+          <td>BZB·2847</td>
+          <td><span class="status-badge s-approved">Onaylı</span></td>
+          <td><button class="action-btn">Profil</button><button class="action-btn ban">Askıya Al</button></td>
+        </tr>
+        <tr>
+          <td><div class="user-cell"><div class="user-av" style="background:#185FA5">MK</div>Mustafa Kaya</div></td>
+          <td>Frankfurt 🇩🇪</td>
+          <td>3 gün önce</td>
+          <td>Doğrudan</td>
+          <td><span class="status-badge s-approved">Onaylı</span></td>
+          <td><button class="action-btn">Profil</button><button class="action-btn ban">Askıya Al</button></td>
+        </tr>
+        <tr>
+          <td><div class="user-cell"><div class="user-av" style="background:#1E7B4B">ZD</div>Zeynep Demir</div></td>
+          <td>Wien 🇦🇹</td>
+          <td>5 gün önce</td>
+          <td>BZB·1122</td>
+          <td><span class="status-badge s-approved">Onaylı</span></td>
+          <td><button class="action-btn">Profil</button><button class="action-btn ban">Askıya Al</button></td>
+        </tr>
+        <tr>
+          <td><div class="user-cell"><div class="user-av" style="background:#C9A84C">HS</div>Hasan Şahin</div></td>
+          <td>Amsterdam 🇳🇱</td>
+          <td>1 hafta önce</td>
+          <td>BZB·9954</td>
+          <td><span class="status-badge s-pending">Beklemede</span></td>
+          <td><button class="action-btn approve" onclick="this.closest('tr').querySelector('.status-badge').className='status-badge s-approved';this.closest('tr').querySelector('.status-badge').textContent='Onaylı'">Onayla</button><button class="action-btn ban">Reddet</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+  function approve(btn) {
+    const item = btn.closest('.waitlist-item');
+    item.style.opacity = '0';
+    item.style.transition = 'opacity .3s';
+    setTimeout(() => item.remove(), 300);
+  }
+  function reject(btn) {
+    const item = btn.closest('.waitlist-item');
+    item.style.background = 'rgba(192,57,43,.05)';
+    item.style.opacity = '0';
+    item.style.transition = 'all .3s';
+    setTimeout(() => item.remove(), 300);
+  }
+</script>
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-menu');
+    const hb = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') &&
+        !menu.contains(e.target) && !hb.contains(e.target)) {
+      hb.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  // Close on nav link click
+  document.querySelectorAll('.mm-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+  // Mark active link
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+  })();
+
+</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
+          .catch(err => console.warn('[BizdenBize] SW failed:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:#1B3A8C;color:#fff;padding:14px 20px;
+    display:none;align-items:center;gap:14px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
+      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+    </div>
+    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
+      font-family:inherit;white-space:nowrap;">Yükle</button>
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
+      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
+      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        const banner = document.getElementById('pwa-banner');
+        if (banner) banner.style.display = 'none';
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('[BizdenBize] PWA install:', outcome);
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+<script>
+  // ══ COOKIE CONSENT LOGIC ══
+  (function() {
+    var STORAGE_KEY = 'bb_cookie_consent';
+    var consent = null;
+    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+
+    // Show banner if no consent yet
+    if (!consent) {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var b = document.getElementById('cookie-banner');
+          if (b) b.classList.add('visible');
+        }, 800);
+      });
+    } else {
+      applyConsent(consent);
+    }
+
+    window.acceptAll = function() {
+      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+    };
+
+    window.acceptEssential = function() {
+      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
+      saveConsent(c);
+      hideBanner();
+    };
+
+    window.savePreferences = function() {
+      var c = {
+        essential: true,
+        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
+        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
+        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
+        ts: Date.now()
+      };
+      saveConsent(c);
+      hideBanner();
+      closeCookieModal();
+      showToast('✓ Çerez tercihleriniz kaydedildi.');
+    };
+
+    function saveConsent(c) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
+      applyConsent(c);
+    }
+
+    function applyConsent(c) {
+      // Analytics: load only if consented
+      if (c.analytics) {
+        // Plausible or similar would load here
+        // e.g. loadScript('https://plausible.io/js/plausible.js')
+        console.log('[BizdenBize] Analytics enabled');
+      }
+      // Marketing
+      if (c.marketing) {
+        console.log('[BizdenBize] Marketing enabled');
+      }
+    }
+
+    function hideBanner() {
+      var b = document.getElementById('cookie-banner');
+      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
+    }
+
+    window.openCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeCookieModal = function() {
+      var m = document.getElementById('cookie-modal');
+      if (m) m.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var m = document.getElementById('cookie-modal');
+      if (m && e.target === m) closeCookieModal();
+    });
+
+    window.toggleCat = function(cat) {
+      var el = document.getElementById('cat-' + cat);
+      if (el) el.classList.toggle('open');
+    };
+
+    window.toggleCookie = function(e, cat) {
+      e.stopPropagation();
+      var btn = document.getElementById('toggle-' + cat);
+      if (btn) btn.classList.toggle('on');
+    };
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+  })();
+
+  </script>
+</body>
+</html>
