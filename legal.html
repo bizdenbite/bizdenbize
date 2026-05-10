@@ -118,6 +118,7 @@
       .main-content{padding:24px 20px 60px;}
     }
   </style>
+  <script src="i18n.js"></script>
 </head>
 <body>
 
@@ -140,6 +141,8 @@
       <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 TR</button>
       <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
       <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+      <button class="lang-btn" onclick="setLang('fr')">🇫🇷 FR</button>
+      <button class="lang-btn" onclick="setLang('nl')">🇳🇱 NL</button>
     </div>
 
     <div class="tab-nav">
@@ -499,6 +502,46 @@
               <li><strong>Resend</strong> — transactional email</li>
             </ul>
             <p>Data Processing Agreements (DPA) under GDPR Art. 28 are in place with all processors.</p>
+          </div>
+        </div>
+      
+      <!-- FR -->
+      <div class="lang-content" id="privacy-fr">
+        <div class="legal-hero">
+          <div class="lh-badge">🔒 Conforme au RGPD</div>
+          <h1 class="lh-title">Politique de Confidentialité</h1>
+          <p class="lh-sub">Vos données personnelles nous tiennent à cœur. Cette politique explique quelles données nous collectons, pourquoi et quels sont vos droits.</p>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">📋 Vos droits selon le RGPD</div>
+          <div class="ib-body">Vous avez le droit d'accéder, de rectifier, d'effacer, de transférer vos données et de vous y opposer. Contactez-nous à <a href="mailto:datenschutz@bizdenbize.com" style="color:var(--green)">datenschutz@bizdenbize.com</a>.</div>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Données collectées</h2>
+          <div class="ls-body">
+            <p><strong>Données de compte :</strong> Nom, prénom, adresse e-mail, mot de passe (chiffré), ville, pays.</p>
+            <p><strong>Données de profil :</strong> Biographie, préférences linguistiques, centres d'intérêt, photo de profil (facultatif).</p>
+            <p><strong>Données de paiement :</strong> Les coordonnées bancaires sont traitées directement par Stripe et ne sont jamais stockées sur nos serveurs.</p>
+          </div>
+        </div>
+      </div>
+      <!-- NL -->
+      <div class="lang-content" id="privacy-nl">
+        <div class="legal-hero">
+          <div class="lh-badge">🔒 AVG-conform</div>
+          <h1 class="lh-title">Privacybeleid</h1>
+          <p class="lh-sub">Uw persoonsgegevens zijn belangrijk voor ons. Dit beleid legt uit welke gegevens we verzamelen, waarom en wat uw rechten zijn.</p>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">📋 Uw rechten onder de AVG</div>
+          <div class="ib-body">U heeft het recht op inzage, rectificatie, verwijdering, overdraagbaarheid en bezwaar. Neem contact op via <a href="mailto:datenschutz@bizdenbize.com" style="color:var(--green)">datenschutz@bizdenbize.com</a>.</div>
+        </div>
+        <div class="legal-section">
+          <h2 class="ls-title">Gegevens die we verzamelen</h2>
+          <div class="ls-body">
+            <p><strong>Accountgegevens:</strong> Naam, e-mailadres, wachtwoord (versleuteld), stad, land.</p>
+            <p><strong>Profielgegevens:</strong> Biografie, taalvoorkeuren, interesses, profielfoto (optioneel).</p>
+            <p><strong>Betalingsgegevens:</strong> Kaartgegevens worden direct door Stripe verwerkt en nooit op onze servers opgeslagen.</p>
           </div>
         </div>
       </div>
