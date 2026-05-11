@@ -781,22 +781,18 @@
           <label>Soyad</label>
           <input type="text" id="p-lname" value="Yılmaz" oninput="updateName()">
         </div>
-        <div class="form-group">
-          <label>Şehir</label>
-          <input type="text" id="p-city" placeholder="Frankfurt">
-        </div>
-        <div class="form-group">
-          <label>Ülke</label>
-          <select id="p-country">
-            <option>Almanya 🇩🇪</option>
-            <option>Hollanda 🇳🇱</option>
-            <option>Avusturya 🇦🇹</option>
-            <option>Belçika 🇧🇪</option>
-            <option>İsviçre 🇨🇭</option>
-            <option>Fransa 🇫🇷</option>
-            <option>İngiltere 🇬🇧</option>
-            <option>Diğer</option>
-          </select>
+        <div class="form-group full">
+          <label>Konum</label>
+          <div style="position:relative;">
+            <input type="text" id="p-location-input" placeholder="Şehrinizi arayın..." autocomplete="off"
+              style="width:100%;padding-right:36px;"
+              oninput="document.getElementById('p-city').value='';document.getElementById('p-country').value='';">
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">📍</span>
+          </div>
+          <div id="p-location-status" style="font-size:11px;margin-top:5px;color:var(--muted);display:none;"></div>
+          <!-- Hidden fields populated by Google Maps -->
+          <input type="hidden" id="p-city">
+          <input type="hidden" id="p-country">
         </div>
         <div class="form-group full">
           <label>Hakkında (isteğe bağlı)</label>
@@ -1050,11 +1046,60 @@
   }
 
   function next() {
+    // If on profile step (panel 1), validate location and save
+    if (current === 1) {
+      saveProfile();
+      return;
+    }
     if (current < total - 1) {
       current++;
       showPanel(current);
       updateProgress();
     }
+  }
+
+  async function saveProfile() {
+    const city    = document.getElementById('p-city').value.trim();
+    const country = document.getElementById('p-country').value.trim();
+
+    // Enforce Google Maps selection
+    if (!city || !country) {
+      const input = document.getElementById('p-location-input');
+      const status = document.getElementById('p-location-status');
+      input.style.borderColor = 'var(--red)';
+      status.style.display = 'block';
+      status.style.color = 'var(--red)';
+      status.textContent = '⚠️ Lütfen listeden bir şehir seçin.';
+      input.focus();
+      return;
+    }
+
+    const firstName = document.getElementById('p-fname').value.trim();
+    const lastName  = document.getElementById('p-lname').value.trim();
+    const langs     = [...document.querySelectorAll('.lang-toggle.selected')].map(b => b.textContent.trim());
+    const interests = [...document.querySelectorAll('.interest-tag.selected')].map(b => b.textContent.trim());
+
+    try {
+      const sb = window._sb;
+      if (sb) {
+        const { data: { user } } = await sb.auth.getUser();
+        if (user) {
+          await sb.from('profiles').update({
+            first_name: firstName,
+            last_name: lastName,
+            city,
+            country,
+            languages: langs,
+            interests,
+            updated_at: new Date().toISOString(),
+          }).eq('id', user.id);
+        }
+      }
+    } catch(e) { console.warn('Profile save failed:', e); }
+
+    current++;
+    showPanel(current);
+    updateProgress();
   }
 
   function prev() {
@@ -1243,12 +1288,63 @@
   })();
 
   </script>
+<!-- Google Maps Places Autocomplete -->
+<script>
+  function initGooglePlaces() {
+    const input = document.getElementById('p-location-input');
+    if (!input || !window.google) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['(cities)'],
+      fields: ['address_components', 'formatted_address', 'name'],
+    });
+
+    autocomplete.addListener('place_changed', function() {
+      const place = autocomplete.getPlace();
+      if (!place.address_components) return;
+
+      let city = '';
+      let country = '';
+
+      place.address_components.forEach(component => {
+        if (component.types.includes('locality') || component.types.includes('postal_town')) {
+          city = component.long_name;
+        }
+        if (component.types.includes('administrative_area_level_1') && !city) {
+          city = component.long_name;
+        }
+        if (component.types.includes('country')) {
+          country = component.long_name;
+        }
+      });
+
+      document.getElementById('p-city').value = city || place.name;
+      document.getElementById('p-country').value = country;
+
+      // Show confirmation
+      const status = document.getElementById('p-location-status');
+      status.style.display = 'block';
+      status.style.color = '#1E7B4B';
+      status.textContent = `✅ ${city || place.name}, ${country}`;
+
+      // Style input as confirmed
+      input.style.borderColor = '#1E7B4B';
+    });
+
+    // Prevent form submit on Enter in autocomplete
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initGooglePlaces" async defer></script>
 </body>
 <script type="module">
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+  window._sb = sb;
 
   const { data: { user } } = await sb.auth.getUser();
   if (!user) { window.location.replace('/login.html'); }
