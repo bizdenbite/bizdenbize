@@ -1052,13 +1052,20 @@
             const limit = profile.is_premium ? 10 : 2;
             if (usedToday >= limit) {
               hideWelcome();
+              addMessage('user', text);
+              hideWelcome();
+              const limitDiv = document.createElement('div');
+              limitDiv.className = 'msg';
               const limitMsg = profile.is_premium
                 ? `Günlük ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin.`
-                : `Günlük ücretsiz ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin veya Premium'a geçerek 10 soruya çıkarın.`;
-              addMessage('user', text);
-              addMessage('assistant',
-                `⏳ **Günlük limit doldu.**\n\n${limitMsg}${!profile.is_premium ? '\n\n[Premium\'a Geç →](premium.html)' : ''}`,
-                false);
+                : `Günlük ücretsiz ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin veya <a href="premium.html" style="color:var(--red);font-weight:600;text-decoration:none;">Premium'a geçerek 10 soruya çıkarın →</a>`;
+              limitDiv.innerHTML = `<div class="msg-avatar ai">AI</div>
+                <div class="msg-body">
+                  <div class="bubble ai" style="border-color:var(--gold);background:rgba(201,168,76,.06);">
+                    ⏳ <strong>Günlük limit doldu.</strong><br><br>${limitMsg}
+                  </div>
+                </div>`;
+              document.getElementById('messages').appendChild(limitDiv);
               scrollToBottom();
               return;
             }
