@@ -683,45 +683,47 @@
 
 <!-- ESCALATION MODAL -->
 <div class="modal-overlay" id="escalate-modal">
-  <div class="modal" style="max-width:520px;padding:0;display:flex;flex-direction:column;max-height:90vh;">
-    <!-- Scrollable content -->
-    <div style="padding:28px 28px 0;overflow-y:auto;flex:1;">
+  <div class="modal" style="max-width:520px;padding:0;display:flex;flex-direction:column;max-height:88vh;">
+    <!-- Scrollable top section -->
+    <div style="padding:24px 24px 16px;overflow-y:auto;flex:1;min-height:0;">
       <button class="modal-close" onclick="closeEscalate()">×</button>
       <h3>Uzman İncelesin</h3>
       <p class="modal-sub">AbiBOT yanıtınızı aşağıdaki uzmanlardan biri doğrulasın. 24–48 saat içinde yanıt alırsınız.</p>
 
       <!-- Question preview -->
-      <div style="background:var(--cream);border-left:3px solid var(--navy);border-radius:4px 8px 8px 4px;padding:10px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:16px;max-height:72px;overflow:hidden;" id="esc-question-preview"></div>
+      <div style="background:var(--cream);border-left:3px solid var(--navy);border-radius:4px 8px 8px 4px;padding:10px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:14px;max-height:60px;overflow:hidden;" id="esc-question-preview"></div>
 
-      <!-- Expert list (loaded from DB) -->
-      <div id="esc-expert-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-        <div style="text-align:center;padding:20px;font-size:13px;color:var(--muted);">Uzmanlar yükleniyor...</div>
+      <!-- Expert list -->
+      <div id="esc-expert-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+        <div style="text-align:center;padding:16px;font-size:13px;color:var(--muted);">Uzmanlar yükleniyor...</div>
       </div>
 
-      <!-- Credit info bar -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+      <!-- Credit info -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
         <div style="background:var(--warm);border-radius:9px;padding:10px 14px;">
           <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Mevcut Krediniz</div>
-          <div style="font-size:16px;font-weight:700;color:var(--ink);" id="esc-balance-display">—</div>
+          <div style="font-size:15px;font-weight:700;" id="esc-balance-display">—</div>
         </div>
         <div style="background:var(--warm);border-radius:9px;padding:10px 14px;">
           <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">İnceleme Ücreti</div>
-          <div style="font-size:16px;font-weight:700;" id="esc-cost-display">5 Kredi</div>
+          <div style="font-size:15px;font-weight:700;" id="esc-cost-display">5 Kredi</div>
         </div>
       </div>
 
-      <!-- Pro-bono option (shown only when eligible) -->
-      <div id="esc-probono-bar" style="display:none;margin-bottom:12px;padding:12px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:10px;">
+      <!-- Pro-bono (shown only if eligible) -->
+      <div id="esc-probono-bar" style="display:none;padding:12px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:10px;">
         <div style="font-size:12px;font-weight:600;color:#1E7B4B;margin-bottom:4px;">🤝 Ücretsiz Uzman Yardımı</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Gönüllü uzmanlarımızdan destek isteyebilirsiniz. Yanıt süresi daha uzun olabilir.</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;">Gönüllü uzmanlarımızdan destek isteyebilirsiniz. Yanıt süresi daha uzun olabilir.</div>
         <div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:10px;">💛 Eğer imkânın varsa kredi satın alarak uzmanlarımızı destekleyebilirsin.</div>
         <button onclick="submitEscalation('probono')" style="width:100%;padding:10px;background:#1E7B4B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Ücretsiz Yardım İste →</button>
       </div>
     </div>
 
-    <!-- Sticky bottom actions — always visible -->
-    <div style="padding:16px 28px 24px;border-top:1px solid var(--warm);background:var(--white);border-radius:0 0 20px 20px;">
-      <!-- Buy credits button -->
+    <!-- Sticky bottom — always visible, never scrolls away -->
+    <div style="padding:14px 24px 22px;border-top:1px solid var(--warm);background:var(--white);border-radius:0 0 20px 20px;flex-shrink:0;">
+      <!-- Primary: send button (has credits or free review) -->
+      <button class="modal-submit" id="esc-main-btn" onclick="submitEscalation(window._escType)" style="margin-top:0;">Uzmana Gönder →</button>
+      <!-- Secondary: buy credits (no credits) -->
       <div id="esc-buy-bar" style="display:none;">
         <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;" id="esc-buy-msg"></div>
         <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">💳 Kredi Satın Al →</button>
