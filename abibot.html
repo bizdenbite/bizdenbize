@@ -683,29 +683,47 @@
 
 <!-- ESCALATION MODAL -->
 <div class="modal-overlay" id="escalate-modal">
-  <div class="modal">
+  <div class="modal" style="max-width:520px;">
     <button class="modal-close" onclick="closeEscalate()">×</button>
     <h3>Uzman İncelesin</h3>
-    <p class="modal-sub">AbiBOT cevabını aşağıdaki uzmanlardan biri doğrulasın. 24–48 saat içinde geri dönecekler.</p>
-    <div id="expert-list">
-      <div class="expert-option selected" onclick="selectExpert(this)">
-        <div class="exp-avatar" style="background:#D42B2B">MY</div>
-        <div>
-          <div class="exp-name">Av. Mehmet Yıldız</div>
-          <div class="exp-cred">Hukuk · Frankfurt · 8 yıl deneyim</div>
-        </div>
-        <div class="exp-price">€25</div>
+    <p class="modal-sub">AbiBOT yanıtınızı aşağıdaki uzmanlardan biri doğrulasın. 24–48 saat içinde yanıt alırsınız.</p>
+
+    <!-- Question preview -->
+    <div style="background:var(--cream);border-left:3px solid var(--navy);border-radius:4px 8px 8px 4px;padding:10px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:16px;max-height:72px;overflow:hidden;" id="esc-question-preview"></div>
+
+    <!-- Expert list (loaded from DB) -->
+    <div id="esc-expert-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="text-align:center;padding:20px;font-size:13px;color:var(--muted);">Uzmanlar yükleniyor...</div>
+    </div>
+
+    <!-- Credit info bar -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--warm);border-radius:9px;padding:10px 14px;">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Mevcut Krediniz</div>
+        <div style="font-size:16px;font-weight:700;color:var(--ink);" id="esc-balance-display">—</div>
       </div>
-      <div class="expert-option" onclick="selectExpert(this)">
-        <div class="exp-avatar" style="background:#185FA5">SA</div>
-        <div>
-          <div class="exp-name">Av. Selin Arslan</div>
-          <div class="exp-cred">Hukuk · Berlin · 5 yıl deneyim</div>
-        </div>
-        <div class="exp-price">€20</div>
+      <div style="background:var(--warm);border-radius:9px;padding:10px 14px;">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">İnceleme Ücreti</div>
+        <div style="font-size:16px;font-weight:700;" id="esc-cost-display">5 Kredi</div>
       </div>
     </div>
-    <button class="modal-submit" onclick="submitEscalation()">€25 — Uzmana Gönder →</button>
+
+    <!-- Primary CTA -->
+    <button class="modal-submit" id="esc-main-btn" onclick="submitEscalation(window._escType)">Uzmana Gönder →</button>
+
+    <!-- No credits: buy credits link -->
+    <div id="esc-buy-bar" style="display:none;margin-top:10px;">
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px;" id="esc-buy-msg"></div>
+      <button onclick="window.location='topup.html'" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">💳 Kredi Satın Al →</button>
+    </div>
+
+    <!-- Pro-bono option (shown only when eligible) -->
+    <div id="esc-probono-bar" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:10px;">
+      <div style="font-size:12px;font-weight:600;color:#1E7B4B;margin-bottom:4px;">🤝 Ücretsiz Uzman Yardımı</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Gönüllü uzmanlarımızdan destek isteyebilirsiniz. Yanıt süresi daha uzun olabilir.</div>
+      <div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:10px;">💛 Eğer imkânın varsa kredi satın alarak uzmanlarımızı destekleyebilirsin.</div>
+      <button onclick="submitEscalation('probono')" style="width:100%;padding:10px;background:#1E7B4B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Ücretsiz Yardım İste →</button>
+    </div>
   </div>
 </div>
 
@@ -1061,9 +1079,115 @@
   }
 
   // ── ESCALATION ──
-  function openEscalate() {
+  window._escType = 'free'; // tracks what submit button will do
+
+  async function openEscalate() {
+    if (!hasAnswered) return;
+    const sb = window.supabase || supabase;
+    if (!sb) return;
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { alert('Giriş yapmanız gerekiyor.'); window.location = 'login.html'; return; }
+
+    // Show modal immediately with loading state
     document.getElementById('escalate-modal').classList.add('open');
-    updateExpertsByCategory();
+    document.getElementById('esc-question-preview').textContent = lastQuestion;
+    document.getElementById('esc-expert-list').innerHTML =
+      '<div style="text-align:center;padding:20px;font-size:13px;color:var(--muted);">Uzmanlar yükleniyor...</div>';
+    document.getElementById('esc-buy-bar').style.display = 'none';
+    document.getElementById('esc-probono-bar').style.display = 'none';
+    document.getElementById('esc-main-btn').style.display = 'block';
+    document.getElementById('esc-main-btn').disabled = true;
+    document.getElementById('esc-main-btn').textContent = 'Yükleniyor...';
+
+    // Load experts and profile in parallel
+    const [{ data: profile }, { data: experts }] = await Promise.all([
+      sb.from('profiles').select('*').eq('id', session.user.id).single(),
+      sb.from('experts')
+        .select('*, profiles:profile_id(first_name, last_name)')
+        .eq('is_active', true)
+    ]);
+
+    const credits = profile?.expert_credits || 0;
+    const hasFreeReview = !profile?.free_review_used;
+    const hasCredits = credits >= 5;
+
+    // Determine submit type and cost label
+    if (hasFreeReview) {
+      window._escType = 'free';
+      document.getElementById('esc-cost-display').textContent = '🎁 Ücretsiz';
+      document.getElementById('esc-cost-display').style.color = 'var(--green)';
+      document.getElementById('esc-main-btn').textContent = 'Ücretsiz Gönder →';
+      document.getElementById('esc-main-btn').disabled = false;
+    } else if (hasCredits) {
+      window._escType = 'credits';
+      document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
+      document.getElementById('esc-cost-display').style.color = 'var(--navy)';
+      document.getElementById('esc-main-btn').textContent = 'Kredi ile Gönder →';
+      document.getElementById('esc-main-btn').disabled = false;
+    } else {
+      window._escType = null;
+      document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
+      document.getElementById('esc-cost-display').style.color = 'var(--muted)';
+      document.getElementById('esc-main-btn').style.display = 'none';
+      document.getElementById('esc-buy-bar').style.display = 'block';
+      document.getElementById('esc-buy-msg').textContent =
+        `Krediniz bulunmuyor (mevcut: ${credits} kredi). İnceleme için 5 kredi gerekiyor.`;
+    }
+
+    // Balance display
+    document.getElementById('esc-balance-display').textContent = hasFreeReview
+      ? '1 Ücretsiz Hak'
+      : `${credits} Kredi`;
+    document.getElementById('esc-balance-display').style.color = hasFreeReview
+      ? 'var(--green)' : credits >= 5 ? 'var(--ink)' : 'var(--red)';
+
+    // Render experts filtered by category
+    const categoryExperts = (experts || []).filter(e =>
+      !e.categories?.length || e.categories.includes(selectedCat)
+    );
+    const expertColors = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+    if (!categoryExperts.length) {
+      document.getElementById('esc-expert-list').innerHTML =
+        '<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted);">Bu kategori için henüz uzman atanmamış.</div>';
+    } else {
+      document.getElementById('esc-expert-list').innerHTML = categoryExperts.map((e, i) => {
+        const initials = ((e.profiles?.first_name?.[0]||'') + (e.profiles?.last_name?.[0]||'')).toUpperCase() || 'U';
+        const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim();
+        return `<div class="expert-option" style="cursor:default;pointer-events:none;">
+          <div class="exp-avatar" style="background:${expertColors[i % expertColors.length]}">${initials}</div>
+          <div>
+            <div class="exp-name">${name}</div>
+            <div class="exp-cred">${e.title || 'Uzman'}</div>
+          </div>
+          <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:#1E7B4B;">Müsait</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Pro-bono check
+    const probono = checkProbonoEligibility(profile);
+    if (probono.eligible && !hasFreeReview && !hasCredits) {
+      const { data: slots } = await sb.from('experts')
+        .select('probono_slots_total, probono_slots_used')
+        .eq('offers_probono', true).eq('is_active', true);
+      const hasSlots = slots?.some(e => (e.probono_slots_used||0) < (e.probono_slots_total||5));
+      if (hasSlots) document.getElementById('esc-probono-bar').style.display = 'block';
+    }
+  }
+
+  function checkProbonoEligibility(profile) {
+    const now = Date.now();
+    const daysSinceJoin = (now - new Date(profile?.created_at).getTime()) / 86400000;
+    if (daysSinceJoin < 30) return { eligible: false };
+    if ((profile?.total_credits_purchased || 0) > 0) return { eligible: false };
+    if (!profile?.free_review_used) return { eligible: false };
+    if (profile?.last_probono_at) {
+      const days = (now - new Date(profile.last_probono_at).getTime()) / 86400000;
+      if (days < 60) return { eligible: false };
+    }
+    if (!profile?.city || !profile?.country) return { eligible: false };
+    return { eligible: true };
   }
 
   function closeEscalate() {
@@ -1074,51 +1198,15 @@
     if (e.target === this) closeEscalate();
   });
 
-  function updateExpertsByCategory() {
-    const experts = {
-      legal:      [{ init:'MY', color:'#D42B2B', name:'Av. Mehmet Yıldız',    cred:'Hukuk · Frankfurt · 8 yıl', price:25 }, { init:'SA', color:'#185FA5', name:'Av. Selin Arslan',    cred:'Hukuk · Berlin · 5 yıl',     price:20 }],
-      medical:    [{ init:'FS', color:'#1E7B4B', name:'Dr. Fatma Şahin',      cred:'Pratisyen · Frankfurt · 10 yıl', price:22 }, { init:'AO', color:'#185FA5', name:'Dr. Ali Öztürk',   cred:'Dahiliye · München · 7 yıl',  price:19 }],
-      tax:        [{ init:'KD', color:'#C9A84C', name:'Kemal Doğan',          cred:'Mali Müşavir · Frankfurt · 12 yıl', price:20 }, { init:'ZE', color:'#534AB7', name:'Zeynep Erbil', cred:'Vergi · Berlin · 6 yıl',       price:18 }],
-      visa:       [{ init:'MY', color:'#D42B2B', name:'Av. Mehmet Yıldız',    cred:'Göç Hukuku · Frankfurt · 8 yıl', price:28 }, { init:'NK', color:'#185FA5', name:'Av. Nilüfer Kaya', cred:'Vize · Köln · 9 yıl',         price:24 }],
-      housing:    [{ init:'BT', color:'#1E7B4B', name:'Berk Taşkın',          cred:'Kiracı Hakları · Berlin · 5 yıl', price:16 }, { init:'SA', color:'#185FA5', name:'Av. Selin Arslan', cred:'Kira Hukuku · Berlin · 5 yıl', price:18 }],
-      employment: [{ init:'MY', color:'#D42B2B', name:'Av. Mehmet Yıldız',    cred:'İş Hukuku · Frankfurt · 8 yıl', price:22 }, { init:'SA', color:'#185FA5', name:'Av. Selin Arslan',  cred:'Çalışma Hukuku · Berlin · 5 yıl', price:18 }],
-      school:     [{ init:'FS', color:'#1E7B4B', name:'Fatma Şahin',          cred:'Sosyal Yardımlar · Frankfurt · 6 yıl', price:14 }, { init:'ZE', color:'#534AB7', name:'Zeynep Erbil', cred:'Aile Danışmanı · Berlin · 4 yıl', price:12 }],
-      insurance:  [{ init:'KD', color:'#C9A84C', name:'Kemal Doğan',          cred:'Sigorta Danışmanı · Frankfurt · 10 yıl', price:15 }, { init:'BT', color:'#1E7B4B', name:'Berk Taşkın', cred:'Araç Sigortası · Berlin · 5 yıl', price:13 }],
-    };
-    const list = experts[selectedCat] || experts.legal;
-    const container = document.getElementById('expert-list');
-    container.innerHTML = list.map((e, i) => `
-      <div class="expert-option ${i === 0 ? 'selected' : ''}" onclick="selectExpert(this)">
-        <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
-        <div><div class="exp-name">${e.name}</div><div class="exp-cred">${e.cred}</div></div>
-        <div class="exp-price">€${e.price}</div>
-      </div>`).join('');
-    const firstPrice = list[0].price;
-    document.querySelector('.modal-submit').textContent = `€${firstPrice} — Uzmana Gönder →`;
-  }
-
-  function selectExpert(el) {
-    document.querySelectorAll('.expert-option').forEach(e => e.classList.remove('selected'));
-    el.classList.add('selected');
-    const price = el.querySelector('.exp-price').textContent;
-    document.querySelector('.modal-submit').textContent = `${price} — Uzmana Gönder →`;
-  }
-
-  async function submitEscalation() {
-    const btn = document.querySelector('.modal-submit');
-    if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+  async function submitEscalation(type) {
+    const mainBtn = document.getElementById('esc-main-btn');
+    if (mainBtn) { mainBtn.disabled = true; mainBtn.textContent = 'Gönderiliyor...'; }
 
     try {
       const sb = window.supabase || supabase;
-      if (!sb) { throw new Error('Supabase not initialized'); }
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) {
-        alert('Uzman incelemesi için giriş yapmanız gerekiyor.');
-        closeEscalate();
-        return;
-      }
+      if (!session) throw new Error('Not authenticated');
 
-      // Save to expert_reviews table
       const { error } = await sb.from('expert_reviews').insert({
         user_id: session.user.id,
         category: selectedCat || 'legal',
@@ -1126,30 +1214,46 @@
         question: lastQuestion || '',
         abibot_answer: lastAnswer || '',
         status: 'pending',
-        credits_charged: 0
+        credits_charged: (type === 'free' || type === 'probono') ? 0 : 5,
+        is_probono: type === 'probono',
       });
-
       if (error) throw error;
 
-      // Notify user
-      await sb.from('notifications').insert({
+      if (type === 'free') {
+        await sb.from('profiles').update({ free_review_used: true }).eq('id', session.user.id);
+      } else if (type === 'credits') {
+        const { data: p } = await sb.from('profiles').select('expert_credits').eq('id', session.user.id).single();
+        await sb.from('profiles').update({ expert_credits: Math.max(0, (p?.expert_credits||0) - 5) }).eq('id', session.user.id);
+      } else if (type === 'probono') {
+        await sb.from('profiles').update({ last_probono_at: new Date().toISOString() }).eq('id', session.user.id);
+        const { data: experts } = await sb.from('experts')
+          .select('id, probono_slots_used, probono_slots_total')
+          .eq('offers_probono', true).eq('is_active', true);
+        const avail = experts?.find(e => (e.probono_slots_used||0) < (e.probono_slots_total||5));
+        if (avail) await sb.from('experts').update({ probono_slots_used: (avail.probono_slots_used||0) + 1 }).eq('id', avail.id);
+      }
+
+      sb.from('notifications').insert({
         user_id: session.user.id,
         type: 'expert_assigned',
         title: 'Uzman inceleme talebiniz alındı ✅',
-        body: 'Talebiniz uzman ekibimize iletildi. 24-48 saat içinde platform üzerinden yanıt alacaksınız.',
+        body: type === 'probono'
+          ? 'Gönüllü uzman talebiniz alındı. Bir uzman müsait olduğunda yanıtlanacak.'
+          : 'Talebiniz uzman ekibimize iletildi. 24-48 saat içinde yanıt alacaksınız.',
         link: '/abibot.html'
-      });
+      }).catch(() => {});
 
       closeEscalate();
-      addMessage('assistant', '✅ Talebiniz uzman ekibimize iletildi! **24-48 saat içinde platform üzerinden** yanıt alacaksınız. Bildirim gönderilecektir.', false);
+      addMessage('assistant', type === 'probono'
+        ? '🤝 Gönüllü uzman talebiniz alındı! Bir uzman müsait olduğunda yanıt alacaksınız.'
+        : '✅ Talebiniz uzman ekibimize iletildi! **24-48 saat içinde platform üzerinden** yanıt alacaksınız.', false);
       scrollToBottom();
 
     } catch(err) {
-      console.error('Expert review error:', err);
-      closeEscalate();
+      console.error('Escalation error:', err);
+      if (mainBtn) { mainBtn.disabled = false; mainBtn.textContent = 'Tekrar Dene'; }
       addMessage('assistant', '⚠️ Bir hata oluştu. Lütfen tekrar deneyin.', false);
-    } finally {
-      if (btn) { btn.disabled = false; }
+      closeEscalate();
     }
   }
 
