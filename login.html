@@ -524,12 +524,17 @@
         return;
       }
 
-      // Also submit to waitlist function
-      await fetch(SUPABASE_URL + '/functions/v1/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
-        body: JSON.stringify({ first_name: fname, last_name: lname, email, invite_code: invite })
-      });
+      // Also submit to waitlist function (non-blocking, 5s timeout)
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 5000);
+        await fetch(SUPABASE_URL + '/functions/v1/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+          body: JSON.stringify({ first_name: fname, last_name: lname, email, invite_code: invite }),
+          signal: controller.signal
+        });
+      } catch(e) { console.warn('Waitlist call failed:', e); }
 
       document.getElementById('register-form').style.display = 'none';
       document.querySelector('.tab-bar').style.display = 'none';
