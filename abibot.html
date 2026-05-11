@@ -1025,11 +1025,51 @@
     document.querySelector('.modal-submit').textContent = `${price} — Uzmana Gönder →`;
   }
 
-  function submitEscalation() {
-    closeEscalate();
-    const expert = document.querySelector('.expert-option.selected .exp-name').textContent;
-    addMessage('assistant', `✅ Sorunuz **${expert}**'a iletildi. 24–48 saat içinde e-posta ile yanıt alacaksınız. Teşekkürler!`, false);
-    scrollToBottom();
+  async function submitEscalation() {
+    const btn = document.querySelector('.modal-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert('Uzman incelemesi için giriş yapmanız gerekiyor.');
+        closeEscalate();
+        return;
+      }
+
+      // Save to expert_reviews table
+      const { error } = await supabase.from('expert_reviews').insert({
+        user_id: session.user.id,
+        category: selectedCat || 'legal',
+        language: selectedLang || 'tr',
+        question: lastQuestion || '',
+        abibot_answer: lastAnswer || '',
+        status: 'pending',
+        credits_charged: 0
+      });
+
+      if (error) throw error;
+
+      // Notify user
+      await supabase.from('notifications').insert({
+        user_id: session.user.id,
+        type: 'expert_assigned',
+        title: 'Uzman inceleme talebiniz alındı ✅',
+        body: 'Talebiniz uzman ekibimize iletildi. 24-48 saat içinde platform üzerinden yanıt alacaksınız.',
+        link: '/abibot.html'
+      });
+
+      closeEscalate();
+      addMessage('assistant', '✅ Talebiniz uzman ekibimize iletildi! **24-48 saat içinde platform üzerinden** yanıt alacaksınız. Bildirim gönderilecektir.', false);
+      scrollToBottom();
+
+    } catch(err) {
+      console.error('Expert review error:', err);
+      closeEscalate();
+      addMessage('assistant', '⚠️ Bir hata oluştu. Lütfen tekrar deneyin.', false);
+    } finally {
+      if (btn) { btn.disabled = false; }
+    }
   }
 
   function copyAnswer(btn) {
