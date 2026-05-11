@@ -783,14 +783,22 @@
         </div>
         <div class="form-group full">
           <label>Konum</label>
-          <div style="position:relative;">
-            <input type="text" id="p-location-input" placeholder="Şehrinizi arayın..." autocomplete="off"
-              style="width:100%;padding-right:36px;"
-              oninput="document.getElementById('p-city').value='';document.getElementById('p-country').value='';">
-            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">📍</span>
+          <div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px 16px;margin-bottom:8px;" id="location-detected-bar" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div>
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px;">Konumunuz tespit edildi</div>
+                <div style="font-size:14px;font-weight:600;color:var(--ink);" id="location-detected-text">Tespit ediliyor...</div>
+              </div>
+              <div style="font-size:24px;">📍</div>
+            </div>
           </div>
-          <div id="p-location-status" style="font-size:11px;margin-top:5px;color:var(--muted);display:none;"></div>
-          <!-- Hidden fields populated by Google Maps -->
+          <div style="position:relative;" id="location-search-wrap">
+            <input type="text" id="p-location-input" placeholder="Farklı bir şehir seçmek için arayın..." autocomplete="off"
+              style="width:100%;padding-right:36px;font-size:13px;"
+              oninput="document.getElementById('p-city').value='';document.getElementById('p-country').value='';document.getElementById('p-location-status').style.display='none';">
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">🔍</span>
+          </div>
+          <div id="p-location-status" style="font-size:11px;margin-top:5px;display:none;"></div>
           <input type="hidden" id="p-city">
           <input type="hidden" id="p-country">
         </div>
@@ -1288,53 +1296,88 @@
   })();
 
   </script>
-<!-- Google Maps Places Autocomplete -->
+<!-- Google Maps Places Autocomplete + GPS Detection -->
 <script>
+  function setLocation(city, country, source) {
+    document.getElementById('p-city').value = city;
+    document.getElementById('p-country').value = country;
+
+    const bar = document.getElementById('location-detected-bar');
+    const text = document.getElementById('location-detected-text');
+    bar.style.display = 'block';
+    text.textContent = `${city}, ${country}`;
+
+    const status = document.getElementById('p-location-status');
+    status.style.display = 'block';
+    status.style.color = '#1E7B4B';
+    status.textContent = source === 'gps'
+      ? '✅ Konumunuz otomatik tespit edildi. Farklı bir şehir seçmek için aşağıdan arayabilirsiniz.'
+      : `✅ ${city}, ${country}`;
+
+    document.getElementById('p-location-input').style.borderColor = '#1E7B4B';
+  }
+
   function initGooglePlaces() {
     const input = document.getElementById('p-location-input');
     if (!input || !window.google) return;
 
+    // Auto-detect via GPS
+    if (navigator.geolocation) {
+      const bar = document.getElementById('location-detected-bar');
+      bar.style.display = 'block';
+      document.getElementById('location-detected-text').textContent = 'Konumunuz tespit ediliyor...';
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          try {
+            const res = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
+            );
+            const data = await res.json();
+            const components = data.results?.[0]?.address_components || [];
+            let city = '', country = '';
+            components.forEach(c => {
+              if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
+                city = c.long_name;
+              if (c.types.includes('country'))
+                country = c.long_name;
+            });
+            if (city && country) setLocation(city, country, 'gps');
+          } catch(e) {
+            document.getElementById('location-detected-text').textContent = 'Tespit edilemedi';
+          }
+        },
+        () => {
+          // GPS denied — hide bar, let user search manually
+          document.getElementById('location-detected-bar').style.display = 'none';
+        },
+        { timeout: 8000 }
+      );
+    }
+
+    // Autocomplete for manual correction
     const autocomplete = new google.maps.places.Autocomplete(input, {
       types: ['(cities)'],
-      fields: ['address_components', 'formatted_address', 'name'],
+      fields: ['address_components', 'name'],
     });
 
     autocomplete.addListener('place_changed', function() {
       const place = autocomplete.getPlace();
       if (!place.address_components) return;
-
-      let city = '';
-      let country = '';
-
-      place.address_components.forEach(component => {
-        if (component.types.includes('locality') || component.types.includes('postal_town')) {
-          city = component.long_name;
-        }
-        if (component.types.includes('administrative_area_level_1') && !city) {
-          city = component.long_name;
-        }
-        if (component.types.includes('country')) {
-          country = component.long_name;
-        }
+      let city = '', country = '';
+      place.address_components.forEach(c => {
+        if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
+          city = c.long_name;
+        if (c.types.includes('administrative_area_level_1') && !city)
+          city = c.long_name;
+        if (c.types.includes('country'))
+          country = c.long_name;
       });
-
-      document.getElementById('p-city').value = city || place.name;
-      document.getElementById('p-country').value = country;
-
-      // Show confirmation
-      const status = document.getElementById('p-location-status');
-      status.style.display = 'block';
-      status.style.color = '#1E7B4B';
-      status.textContent = `✅ ${city || place.name}, ${country}`;
-
-      // Style input as confirmed
-      input.style.borderColor = '#1E7B4B';
+      setLocation(city || place.name, country, 'manual');
     });
 
-    // Prevent form submit on Enter in autocomplete
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') e.preventDefault();
-    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initGooglePlaces" async defer></script>
