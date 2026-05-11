@@ -1031,7 +1031,15 @@
     const text = input.value.trim();
     if (!text || isLoading) return;
 
-    const sb = window.supabase;
+    // Wait for supabase to be ready (max 3s)
+    let sb = window.supabase;
+    if (!sb) {
+      for (let i = 0; i < 30; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        sb = window.supabase;
+        if (sb) break;
+      }
+    }
 
     // ── 1. DAILY LIMIT CHECK ──
     if (sb) {
@@ -1055,6 +1063,8 @@
             }
 
             const limit = profile.is_premium ? 10 : 2;
+            console.log(`[AbiBOT] Daily usage: ${usedToday}/${limit}`);
+
             if (usedToday >= limit) {
               hideWelcome();
               addMessage('user', text);
