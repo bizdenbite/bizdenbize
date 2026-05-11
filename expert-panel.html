@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Uzman Paneli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo-link img{height:34px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-title span{color:var(--navy);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+
+    .page{padding:78px 32px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
+
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;grid-column:1/-1;}
+    .stat{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px 20px;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
+    .stat.urgent{border-color:var(--red);background:rgba(212,43,43,.04);}
+    .stat.urgent .stat-val{color:var(--red);}
+
+    /* Sidebar */
+    .sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:76px;}
+    .filter-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;}
+    .fc-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+    .filter-btn{width:100%;padding:9px 12px;border-radius:8px;border:none;background:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
+    .filter-btn:hover{background:var(--warm);color:var(--ink);}
+    .filter-btn.active{background:var(--navy);color:var(--white);}
+    .filter-count{font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;background:rgba(255,255,255,.2);}
+    .filter-btn:not(.active) .filter-count{background:var(--warm);color:var(--muted);}
+
+    /* Main */
+    .main{display:flex;flex-direction:column;gap:12px;}
+    .review-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;transition:box-shadow .2s;}
+    .review-card:hover{box-shadow:0 4px 20px rgba(26,18,8,.08);}
+    .review-card.urgent{border-color:var(--red);}
+    .rc-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--warm);cursor:pointer;}
+    .rc-cat{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .rc-info{flex:1;}
+    .rc-user{font-size:13px;font-weight:600;color:var(--ink);}
+    .rc-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;}
+    .rc-status{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;}
+    .status-pending{background:rgba(201,168,76,.15);color:#854F0B;}
+    .status-assigned{background:rgba(27,58,140,.1);color:var(--navy);}
+    .status-answered{background:rgba(30,123,75,.1);color:var(--green);}
+    .rc-time{font-size:11px;color:var(--muted);flex-shrink:0;}
+
+    .rc-body{padding:20px;}
+    .rc-section-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .rc-question{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:16px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
+    .rc-abibot{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;padding:12px;background:rgba(27,58,140,.04);border-radius:8px;border-left:3px solid rgba(27,58,140,.2);max-height:120px;overflow-y:auto;}
+    .rc-response-area{margin-top:4px;}
+    .response-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:10px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;transition:border-color .2s;line-height:1.6;}
+    .response-textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,58,140,.08);}
+    .rc-actions{display:flex;gap:8px;margin-top:10px;align-items:center;}
+    .submit-btn{padding:10px 24px;background:var(--green);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
+    .submit-btn:hover{opacity:.9;}
+    .submit-btn:disabled{background:var(--sand);cursor:not-allowed;}
+    .assign-btn{padding:10px 16px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
+    .assign-btn:hover{opacity:.9;}
+    .close-btn{padding:10px 16px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;margin-left:auto;}
+    .close-btn:hover{border-color:var(--red);color:var(--red);}
+
+    /* Answered */
+    .rc-answered{padding:12px;background:rgba(30,123,75,.05);border-radius:8px;border-left:3px solid var(--green);font-size:13px;color:var(--ink);line-height:1.6;}
+    .rc-answered-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
+
+    /* Expert assign dropdown */
+    .assign-select{padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;}
+
+    /* Empty state */
+    .empty{text-align:center;padding:60px 20px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+    .empty-sub{font-size:14px;color:var(--muted);}
+
+    /* Expert management */
+    .expert-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;}
+    .ec-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+    .ec-name{font-size:14px;font-weight:600;color:var(--ink);}
+    .ec-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .ec-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+    .ec-cat{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(27,58,140,.08);color:var(--navy);font-weight:500;}
+    .ec-actions{margin-left:auto;display:flex;gap:6px;}
+    .ec-btn{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;border:1.5px solid var(--sand);background:var(--warm);color:var(--muted);transition:all .15s;}
+    .ec-btn:hover{border-color:var(--navy);color:var(--navy);}
+    .ec-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+    @media(max-width:900px){.page{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.sidebar{position:static;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">👨‍⚖️ <span>Uzman Paneli</span></span>
+  </div>
+  <div class="nav-right">
+    <a href="admin.html" style="font-size:12px;color:var(--muted);text-decoration:none;margin-right:8px;">Admin →</a>
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat urgent">
+      <div class="stat-val" id="stat-pending">0</div>
+      <div class="stat-label">⏳ Bekleyen İstek</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="stat-inreview">0</div>
+      <div class="stat-label">🔍 İncelemede</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="stat-answered">0</div>
+      <div class="stat-label">✅ Yanıtlanan</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="stat-experts">0</div>
+      <div class="stat-label">👨‍⚖️ Aktif Uzman</div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="filter-card">
+      <div class="fc-title">Filtre</div>
+      <button class="filter-btn active" onclick="setFilter('all',this)">
+        Tüm İstekler <span class="filter-count" id="count-all">0</span>
+      </button>
+      <button class="filter-btn" onclick="setFilter('pending',this)">
+        ⏳ Bekleyen <span class="filter-count" id="count-pending">0</span>
+      </button>
+      <button class="filter-btn" onclick="setFilter('assigned',this)">
+        🔍 Atandı <span class="filter-count" id="count-assigned">0</span>
+      </button>
+      <button class="filter-btn" onclick="setFilter('answered',this)">
+        ✅ Yanıtlandı <span class="filter-count" id="count-answered">0</span>
+      </button>
+    </div>
+
+    <div class="filter-card">
+      <div class="fc-title">Kategoriler</div>
+      <button class="filter-btn" onclick="setCatFilter('legal',this)">⚖️ Hukuki</button>
+      <button class="filter-btn" onclick="setCatFilter('visa',this)">🛂 Vize</button>
+      <button class="filter-btn" onclick="setCatFilter('medical',this)">🏥 Tıbbi</button>
+      <button class="filter-btn" onclick="setCatFilter('tax',this)">💶 Vergi</button>
+      <button class="filter-btn" onclick="setCatFilter('housing',this)">🏠 Konut</button>
+      <button class="filter-btn" onclick="setCatFilter('employment',this)">💼 İş</button>
+    </div>
+
+    <div class="filter-card">
+      <div class="fc-title">Uzmanlar</div>
+      <div id="expert-list-sidebar" style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Yükleniyor...</div>
+      </div>
+      <button onclick="showAddExpert()" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;border:1.5px dashed var(--sand);background:none;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">+ Uzman Ekle</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main" id="reviews-main">
+    <div class="empty">
+      <div class="empty-icon">⏳</div>
+      <div class="empty-title">Yükleniyor...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Add Expert Modal -->
+<div id="add-expert-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px;padding:32px;max-width:480px;width:90%;animation:popIn .3s ease;">
+    <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:20px;">Uzman Ekle</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kullanıcı E-postası</label>
+        <input id="expert-email" type="email" placeholder="uzman@email.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Unvan</label>
+        <input id="expert-title" type="text" placeholder="Rechtsanwalt / Steuerberater / Doktor..." style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kategoriler</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="cat-checkboxes">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="legal"> Hukuki</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="visa"> Vize</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="medical"> Tıbbi</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="tax"> Vergi</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="housing"> Konut</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="employment"> İş</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="school"> Okul</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="insurance"> Sigorta</label>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button onclick="addExpert()" style="flex:1;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Uzman Ekle</button>
+      <button onclick="document.getElementById('add-expert-modal').style.display='none'" style="padding:12px 20px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Auth check — only admins and experts
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.replace('login.html'); }
+
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  if (!profile?.is_admin) {
+    // Check if they're an expert
+    const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', user.id).single();
+    if (!expert) { window.location.replace('mahallem.html'); }
+  }
+
+  // Update avatar
+  document.querySelector('.nav-avatar').textContent =
+    ((profile?.first_name?.[0] || '') + (profile?.last_name?.[0] || '')).toUpperCase() || 'U';
+
+  let allReviews = [];
+  let allExperts = [];
+  let currentFilter = 'all';
+  let currentCatFilter = null;
+
+  const CAT_ICONS = {
+    legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
+    housing:'🏠', employment:'💼', school:'🎓', insurance:'🚗'
+  };
+  const CAT_COLORS = {
+    legal:'#EEF2FF', visa:'#FFF7ED', medical:'#F0FDF4',
+    tax:'#FFFBEB', housing:'#FDF4FF', employment:'#EFF6FF',
+    school:'#FEF9C3', insurance:'#FFF1F2'
+  };
+  const STATUS_LABELS = {
+    pending:'Bekliyor', assigned:'Atandı', in_review:'İncelemede',
+    answered:'Yanıtlandı', closed:'Kapatıldı'
+  };
+
+  // Load everything
+  async function loadAll() {
+    const [reviewsRes, expertsRes] = await Promise.all([
+      supabase.from('expert_reviews').select('*, profiles:user_id(first_name, last_name, city, country)').order('created_at', { ascending: false }),
+      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url)').eq('is_active', true)
+    ]);
+
+    allReviews = reviewsRes.data || [];
+    allExperts = expertsRes.data || [];
+
+    updateStats();
+    renderExpertSidebar();
+    renderReviews();
+  }
+
+  function updateStats() {
+    const pending  = allReviews.filter(r => r.status === 'pending').length;
+    const inreview = allReviews.filter(r => r.status === 'assigned' || r.status === 'in_review').length;
+    const answered = allReviews.filter(r => r.status === 'answered').length;
+
+    document.getElementById('stat-pending').textContent   = pending;
+    document.getElementById('stat-inreview').textContent  = inreview;
+    document.getElementById('stat-answered').textContent  = answered;
+    document.getElementById('stat-experts').textContent   = allExperts.length;
+
+    document.getElementById('count-all').textContent      = allReviews.length;
+    document.getElementById('count-pending').textContent  = pending;
+    document.getElementById('count-assigned').textContent = inreview;
+    document.getElementById('count-answered').textContent = answered;
+  }
+
+  function renderExpertSidebar() {
+    const container = document.getElementById('expert-list-sidebar');
+    if (!allExperts.length) {
+      container.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Henüz uzman yok</div>';
+      return;
+    }
+    container.innerHTML = allExperts.map(e => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--warm);">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+          ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
+          <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
+        </div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+      </div>
+    `).join('');
+  }
+
+  function renderReviews() {
+    let reviews = allReviews;
+    if (currentFilter !== 'all') {
+      reviews = reviews.filter(r => {
+        if (currentFilter === 'assigned') return r.status === 'assigned' || r.status === 'in_review';
+        return r.status === currentFilter;
+      });
+    }
+    if (currentCatFilter) {
+      reviews = reviews.filter(r => r.category === currentCatFilter);
+    }
+
+    const container = document.getElementById('reviews-main');
+    if (!reviews.length) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Bu filtrede istek yok</div><div class="empty-sub">Harika! Tüm istekler yanıtlanmış.</div></div>`;
+      return;
+    }
+
+    container.innerHTML = reviews.map(r => {
+      const user = r.profiles;
+      const userName = user ? `${user.first_name} ${user.last_name}` : 'Kullanıcı';
+      const timeAgo = getTimeAgo(r.created_at);
+      const statusClass = `status-${r.status === 'in_review' ? 'assigned' : r.status}`;
+      const isAnswered = r.status === 'answered' || r.status === 'closed';
+
+      return `
+        <div class="review-card ${r.status === 'pending' ? 'urgent' : ''}" id="card-${r.id}">
+          <div class="rc-header" onclick="toggleCard('${r.id}')">
+            <div class="rc-cat" style="background:${CAT_COLORS[r.category] || '#f5f5f5'}">${CAT_ICONS[r.category] || '❓'}</div>
+            <div class="rc-info">
+              <div class="rc-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${user?.city || ''}</span></div>
+              <div class="rc-meta">
+                <span>${r.category}</span>
+                <span>·</span>
+                <span>${r.language?.toUpperCase()}</span>
+              </div>
+            </div>
+            <span class="rc-status ${statusClass}">${STATUS_LABELS[r.status] || r.status}</span>
+            <span class="rc-time">${timeAgo}</span>
+          </div>
+          <div class="rc-body" id="body-${r.id}" style="display:none;">
+            <div class="rc-section-label">Kullanıcının Sorusu</div>
+            <div class="rc-question">${r.question}</div>
+
+            ${r.abibot_answer ? `
+              <div class="rc-section-label">AbiBOT Yanıtı</div>
+              <div class="rc-abibot">${r.abibot_answer}</div>
+            ` : ''}
+
+            ${isAnswered ? `
+              <div class="rc-answered-label">Uzman Yanıtı</div>
+              <div class="rc-answered">${r.expert_response || ''}</div>
+            ` : `
+              <div class="rc-response-area">
+                <div class="rc-section-label">Uzman Yanıtı</div>
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                  <select class="assign-select" id="assign-${r.id}">
+                    <option value="">Uzmana Ata...</option>
+                    ${allExperts.filter(e => !e.categories?.length || e.categories.includes(r.category)).map(e =>
+                      `<option value="${e.id}">${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
+                    ).join('')}
+                  </select>
+                  <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
+                </div>
+                <textarea class="response-textarea" id="resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
+                <div class="rc-actions">
+                  <button class="submit-btn" onclick="submitResponse('${r.id}')">✓ Yanıtı Gönder</button>
+                  <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
+                </div>
+              </div>
+            `}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  window.toggleCard = function(id) {
+    const body = document.getElementById('body-' + id);
+    body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  };
+
+  window.setFilter = function(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderReviews();
+  };
+
+  window.setCatFilter = function(cat, btn) {
+    if (currentCatFilter === cat) {
+      currentCatFilter = null;
+      btn.classList.remove('active');
+    } else {
+      currentCatFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    renderReviews();
+  };
+
+  window.assignExpert = async function(reviewId) {
+    const expertId = document.getElementById('assign-' + reviewId).value;
+    if (!expertId) return;
+    await supabase.from('expert_reviews').update({
+      expert_id: expertId, status: 'assigned', assigned_at: new Date().toISOString()
+    }).eq('id', reviewId);
+    await loadAll();
+  };
+
+  window.submitResponse = async function(reviewId) {
+    const response = document.getElementById('resp-' + reviewId).value.trim();
+    if (!response) return;
+
+    const btn = document.querySelector(`#card-${reviewId} .submit-btn`);
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+    // Update review
+    await supabase.from('expert_reviews').update({
+      expert_response: response,
+      status: 'answered',
+      answered_at: new Date().toISOString()
+    }).eq('id', reviewId);
+
+    // Get user_id to notify
+    const review = allReviews.find(r => r.id === reviewId);
+    if (review) {
+      // Create in-app notification for user
+      await supabase.from('notifications').insert({
+        user_id: review.user_id,
+        type: 'expert_answered',
+        title: 'Uzman yanıtınız hazır! ✅',
+        body: 'AbiBOT sorunuz bir uzman tarafından incelendi ve yanıtlandı.',
+        link: '/abibot.html'
+      });
+    }
+
+    await loadAll();
+  };
+
+  window.showAddExpert = function() {
+    document.getElementById('add-expert-modal').style.display = 'flex';
+  };
+
+  window.addExpert = async function() {
+    const email = document.getElementById('expert-email').value.trim();
+    const title = document.getElementById('expert-title').value.trim();
+    const cats = [...document.querySelectorAll('#cat-checkboxes input:checked')].map(c => c.value);
+
+    if (!email) return;
+
+    // Find user by email
+    const { data: users } = await supabase.from('profiles').select('id').eq('id',
+      (await supabase.auth.admin?.listUsers())?.data?.users?.find(u => u.email === email)?.id
+    );
+
+    alert(`Uzman daveti gönderildi: ${email}\n\nKategoriler: ${cats.join(', ')}\nUnvan: ${title}\n\nNot: Kullanıcı platforma kaydolduktan sonra Supabase SQL Editor'dan manuel olarak experts tablosuna ekleyebilirsiniz.`);
+    document.getElementById('add-expert-modal').style.display = 'none';
+  };
+
+  function getTimeAgo(date) {
+    const diff = Date.now() - new Date(date).getTime();
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if (h < 1) return 'Az önce';
+    if (h < 24) return `${h} saat önce`;
+    return `${d} gün önce`;
+  }
+
+  loadAll();
+  // Auto-refresh every 30 seconds
+  setInterval(loadAll, 30000);
+</script>
+</body>
+</html>
