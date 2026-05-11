@@ -501,11 +501,11 @@
 
   <!-- Current balance -->
   <div class="balance-banner">
-    <div class="bb-icon">🤖</div>
+    <div class="bb-icon">👨‍⚖️</div>
     <div class="bb-info">
-      <div class="bb-label">Mevcut AbiBOT Kredi Bakiyesi</div>
-      <div class="bb-amount" id="current-balance">€12</div>
-      <div class="bb-sub">~3 hukuki soru · ~4 tıbbi soru · ~6 diğer soru</div>
+      <div class="bb-label">Mevcut Uzman İnceleme Kredisi</div>
+      <div class="bb-amount" id="current-balance">0 Kredi</div>
+      <div class="bb-sub">Her uzman incelemesi 5 kredi · Konu fark etmeksizin sabit fiyat</div>
     </div>
     <div class="bb-history">
       <button class="bb-hist-btn" onclick="openHistory()">📋 Geçmiş</button>
@@ -515,78 +515,96 @@
   <!-- ── STEP 1: Package ── -->
   <div class="step-panel active" id="panel-1">
     <h2 class="section-title">Kredi paketi seç</h2>
-    <p class="section-sub">Her soru, kategorisine göre farklı kredi kullanır. Paketler asla sona ermez — ne zaman istersen kullanırsın.</p>
+    <p class="section-sub">Krediler yalnızca <strong>uzman incelemesi</strong> için kullanılır. Her inceleme <strong>5 kredi</strong>'dir — konu ne olursa olsun. Paketler asla sona ermez.</p>
 
     <div class="packages">
-      <div class="pkg" id="pkg-starter" onclick="selectPkg(this,'starter',10,9.99)">
+      <div class="pkg" id="pkg-starter" onclick="selectPkg(this,'starter',10,10)">
         <div class="pkg-check">✓</div>
         <div class="pkg-icon">🌱</div>
         <div class="pkg-credits">10</div>
-        <div class="pkg-credit-label">Kredi</div>
-        <div class="pkg-price">€9.99</div>
-        <div class="pkg-per">€1.00 / kredi</div>
+        <div class="pkg-credit-label">Kredi · 2 İnceleme</div>
+        <div class="pkg-price">€10</div>
+        <div class="pkg-per">€5.00 / inceleme</div>
       </div>
 
-      <div class="pkg popular selected" id="pkg-standard" onclick="selectPkg(this,'standard',25,19.99)">
+      <div class="pkg popular selected" id="pkg-standard" onclick="selectPkg(this,'standard',25,20)">
         <div class="popular-badge">⭐ En Popüler</div>
         <div class="pkg-check">✓</div>
         <div class="pkg-icon">🔥</div>
         <div class="pkg-credits">25</div>
-        <div class="pkg-credit-label">Kredi</div>
-        <div class="pkg-price">€19.99</div>
-        <div class="pkg-per">€0.80 / kredi</div>
+        <div class="pkg-credit-label">Kredi · 5 İnceleme</div>
+        <div class="pkg-price">€20</div>
+        <div class="pkg-per">€4.00 / inceleme</div>
         <div class="pkg-saving">%20 tasarruf</div>
       </div>
 
-      <div class="pkg" id="pkg-pro" onclick="selectPkg(this,'pro',60,39.99)">
+      <div class="pkg" id="pkg-pro" onclick="selectPkg(this,'pro',50,40)">
         <div class="pkg-check">✓</div>
         <div class="pkg-icon">💎</div>
-        <div class="pkg-credits">60</div>
-        <div class="pkg-credit-label">Kredi</div>
-        <div class="pkg-price">€39.99</div>
-        <div class="pkg-per">€0.67 / kredi</div>
-        <div class="pkg-saving">%33 tasarruf</div>
-      </div>
-
-      <div class="pkg" id="pkg-max" onclick="selectPkg(this,'max',150,79.99)">
-        <div class="pkg-check">✓</div>
-        <div class="pkg-icon">🚀</div>
-        <div class="pkg-credits">150</div>
-        <div class="pkg-credit-label">Kredi</div>
-        <div class="pkg-price">€79.99</div>
-        <div class="pkg-per">€0.53 / kredi</div>
-        <div class="pkg-saving">%47 tasarruf</div>
+        <div class="pkg-credits">50</div>
+        <div class="pkg-credit-label">Kredi · 10 İnceleme</div>
+        <div class="pkg-price">€40</div>
+        <div class="pkg-per">€4.00 / inceleme</div>
+        <div class="pkg-saving">%20 tasarruf</div>
       </div>
     </div>
 
     <!-- Usage guide -->
     <div class="usage-guide">
-      <div class="ug-title">💡 Kredilerle ne kadar soru sorabilirsin?</div>
-      <div class="ug-grid">
+      <div class="ug-title">👨‍⚖️ Uzman incelemesi nasıl çalışır?</div>
+      <div class="ug-grid" style="grid-template-columns:repeat(4,1fr);">
         <div class="ug-item">
           <div class="ug-icon">⚖️</div>
-          <div class="ug-cat">Hukuki / Vize</div>
+          <div class="ug-cat">Hukuki</div>
           <div class="ug-price">5 kredi</div>
-          <div class="ug-count" id="ug-legal">= 5 soru</div>
+          <div class="ug-count">= 1 inceleme</div>
         </div>
         <div class="ug-item">
           <div class="ug-icon">🏥</div>
-          <div class="ug-cat">Tıbbi / Vergi</div>
-          <div class="ug-price">4 kredi</div>
-          <div class="ug-count" id="ug-medical">= 6 soru</div>
+          <div class="ug-cat">Tıbbi</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
+        </div>
+        <div class="ug-item">
+          <div class="ug-icon">🛂</div>
+          <div class="ug-cat">Vize</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
+        </div>
+        <div class="ug-item">
+          <div class="ug-icon">💶</div>
+          <div class="ug-cat">Vergi</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
         </div>
         <div class="ug-item">
           <div class="ug-icon">🏠</div>
-          <div class="ug-cat">Konut / İş</div>
-          <div class="ug-price">3 kredi</div>
-          <div class="ug-count" id="ug-housing">= 8 soru</div>
+          <div class="ug-cat">Konut</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
+        </div>
+        <div class="ug-item">
+          <div class="ug-icon">💼</div>
+          <div class="ug-cat">İş & Çalışma</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
+        </div>
+        <div class="ug-item">
+          <div class="ug-icon">🎓</div>
+          <div class="ug-cat">Okul</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
         </div>
         <div class="ug-item">
           <div class="ug-icon">🚗</div>
-          <div class="ug-cat">Sigorta / Okul</div>
-          <div class="ug-price">2 kredi</div>
-          <div class="ug-count" id="ug-basic">= 12 soru</div>
+          <div class="ug-cat">Sigorta</div>
+          <div class="ug-price">5 kredi</div>
+          <div class="ug-count">= 1 inceleme</div>
         </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:8px;font-size:12px;color:#1E7B4B;text-align:center;">
+        ✅ Krediler yalnızca <strong>uzman incelemesi</strong> için kullanılır.<br>
+        AbiBOT AI sohbeti: ücretsiz üyelikte <strong>günde 2 soru</strong>, Premium'da <strong>günde 10 soru</strong> hakkı mevcuttur.
       </div>
     </div>
 
