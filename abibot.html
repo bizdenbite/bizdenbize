@@ -725,7 +725,67 @@
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
     window.supabase = supabase;
+    await loadExpertResponses();
   })();
+
+  // ── LOAD EXPERT RESPONSES ON STARTUP ──
+  async function loadExpertResponses() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: reviews, error } = await supabase
+        .from('expert_reviews')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'answered')
+        .order('answered_at', { ascending: false });
+
+      if (error || !reviews || !reviews.length) return;
+
+      hideWelcome();
+      const msgs = document.getElementById('messages');
+
+      // Section header
+      const header = document.createElement('div');
+      header.style.cssText = 'text-align:center;padding:8px 0 4px;';
+      header.innerHTML = `<span style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;background:rgba(30,123,75,.08);padding:4px 14px;border-radius:20px;">✅ Uzman Yanıtlarınız</span>`;
+      msgs.appendChild(header);
+
+      reviews.forEach(review => {
+        const cat = catData[review.category] || { icon: '❓', name: review.category };
+        const date = new Date(review.answered_at || review.created_at).toLocaleDateString('tr-TR');
+        const formattedResponse = (review.expert_response || '')
+          .replace(/\n/g, '<br>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        const formattedQuestion = (review.question || '')
+          .replace(/\n/g, '<br>');
+
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `
+          <div class="msg-avatar ai" style="background:#1E7B4B;">✅</div>
+          <div class="msg-body" style="max-width:85%">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;margin-bottom:6px;">
+              ${cat.icon} ${cat.name} · Uzman Yanıtı · ${date}
+            </div>
+            <div style="background:rgba(30,123,75,.05);border:1px solid rgba(30,123,75,.25);border-left:3px solid #1E7B4B;border-radius:4px 14px 14px 14px;padding:14px 16px;font-size:14px;line-height:1.65;color:var(--ink);">
+              <div style="font-size:12px;color:var(--muted);border-bottom:1px solid rgba(30,123,75,.15);padding-bottom:10px;margin-bottom:12px;">
+                <strong style="color:var(--ink);">Sorunuz:</strong> ${formattedQuestion}
+              </div>
+              ${formattedResponse}
+            </div>
+            <div class="msg-time">${date}</div>
+          </div>`;
+        msgs.appendChild(div);
+      });
+
+      scrollToBottom();
+    } catch(e) {
+      console.error('Expert responses load error:', e);
+    }
+  }
 
   // ── STATE ──
   let selectedLang = 'tr';
