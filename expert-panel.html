@@ -98,6 +98,17 @@
     .ec-btn:hover{border-color:var(--navy);color:var(--navy);}
     .ec-btn.danger:hover{border-color:var(--red);color:var(--red);}
 
+    /* Pro-bono */
+    .review-card.probono{border-color:#1E7B4B;}
+    .probono-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,123,75,.12);color:#1E7B4B;border:1px solid rgba(30,123,75,.2);flex-shrink:0;}
+    .probono-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--warm);margin-top:8px;}
+    .pt-label{font-size:12px;font-weight:600;color:var(--ink);}
+    .pt-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+    .pt-switch{width:36px;height:20px;border-radius:10px;background:var(--sand);position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0;}
+    .pt-switch.on{background:var(--green);}
+    .pt-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;}
+    .pt-switch.on::after{transform:translateX(16px);}
+    .pt-slots{font-size:11px;color:var(--muted);margin-top:6px;}
     @media(max-width:900px){.page{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.sidebar{position:static;}}
   </style>
 </head>
@@ -135,6 +146,10 @@
       <div class="stat-val" id="stat-experts">0</div>
       <div class="stat-label">👨‍⚖️ Aktif Uzman</div>
     </div>
+    <div class="stat" style="border-color:rgba(30,123,75,.3);background:rgba(30,123,75,.03);">
+      <div class="stat-val" id="stat-probono" style="color:#1E7B4B;">0</div>
+      <div class="stat-label">🤝 Pro-Bono Bekleyen</div>
+    </div>
   </div>
 
   <!-- Sidebar -->
@@ -152,6 +167,9 @@
       </button>
       <button class="filter-btn" onclick="setFilter('answered',this)">
         ✅ Yanıtlandı <span class="filter-count" id="count-answered">0</span>
+      </button>
+      <button class="filter-btn" onclick="setFilter('probono',this)">
+        🤝 Pro-Bono <span class="filter-count" id="count-probono">0</span>
       </button>
     </div>
 
@@ -279,19 +297,22 @@
   }
 
   function updateStats() {
-    const pending  = allReviews.filter(r => r.status === 'pending').length;
+    const pending  = allReviews.filter(r => r.status === 'pending' && !r.is_probono).length;
     const inreview = allReviews.filter(r => r.status === 'assigned' || r.status === 'in_review').length;
     const answered = allReviews.filter(r => r.status === 'answered').length;
+    const probono  = allReviews.filter(r => r.is_probono && r.status === 'pending').length;
 
     document.getElementById('stat-pending').textContent   = pending;
     document.getElementById('stat-inreview').textContent  = inreview;
     document.getElementById('stat-answered').textContent  = answered;
     document.getElementById('stat-experts').textContent   = allExperts.length;
+    document.getElementById('stat-probono').textContent   = probono;
 
     document.getElementById('count-all').textContent      = allReviews.length;
     document.getElementById('count-pending').textContent  = pending;
     document.getElementById('count-assigned').textContent = inreview;
     document.getElementById('count-answered').textContent = answered;
+    document.getElementById('count-probono').textContent  = probono;
   }
 
   function renderExpertSidebar() {
@@ -301,15 +322,24 @@
       return;
     }
     container.innerHTML = allExperts.map(e => `
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--warm);">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
-          ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
+      <div style="padding:8px 0;border-bottom:1px solid var(--warm);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+            ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
+            <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
         </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
-          <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
+        <div class="probono-toggle">
+          <div>
+            <div class="pt-label">🤝 Pro-Bono</div>
+            <div class="pt-sub">${e.probono_slots_used||0}/${e.probono_slots_total||5} yuva kullanıldı</div>
+          </div>
+          <button class="pt-switch ${e.offers_probono ? 'on' : ''}" onclick="toggleProbono('${e.id}', this)"></button>
         </div>
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
       </div>
     `).join('');
   }
@@ -326,7 +356,9 @@
 
   function renderReviews() {
     let reviews = allReviews;
-    if (currentFilter !== 'all') {
+    if (currentFilter === 'probono') {
+      reviews = reviews.filter(r => r.is_probono && r.status === 'pending');
+    } else if (currentFilter !== 'all') {
       reviews = reviews.filter(r => {
         if (currentFilter === 'assigned') return r.status === 'assigned' || r.status === 'in_review';
         return r.status === currentFilter;
@@ -350,7 +382,7 @@
       const isAnswered = r.status === 'answered' || r.status === 'closed';
 
       return `
-        <div class="review-card ${r.status === 'pending' ? 'urgent' : ''}" id="card-${r.id}">
+        <div class="review-card ${r.status === 'pending' ? 'urgent' : ''} ${r.is_probono ? 'probono' : ''}" id="card-${r.id}">
           <div class="rc-header" onclick="toggleCard('${r.id}')">
             <div class="rc-cat" style="background:${CAT_COLORS[r.category] || '#f5f5f5'}">${CAT_ICONS[r.category] || '❓'}</div>
             <div class="rc-info">
@@ -361,6 +393,7 @@
                 <span>${r.language?.toUpperCase()}</span>
               </div>
             </div>
+            ${r.is_probono ? '<span class="probono-badge">🤝 Pro-Bono</span>' : ''}
             <span class="rc-status ${statusClass}">${STATUS_LABELS[r.status] || r.status}</span>
             <span class="rc-time">${timeAgo}</span>
           </div>
@@ -491,6 +524,13 @@
     if (h < 24) return `${h} saat önce`;
     return `${d} gün önce`;
   }
+
+  window.toggleProbono = async function(expertId, btn) {
+    const isOn = btn.classList.contains('on');
+    btn.classList.toggle('on');
+    await supabase.from('experts').update({ offers_probono: !isOn }).eq('id', expertId);
+    await loadAll();
+  };
 
   loadAll();
   // Auto-refresh every 30 seconds
