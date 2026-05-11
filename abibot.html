@@ -1137,6 +1137,26 @@
         addMessage('assistant',
           `Bu soru bizim kapsama alanımız dışındadır.\n\nAbiBOT yalnızca platform kategorilerimiz dahilindeki konularda yardımcı olabilir. Lütfen soldaki menüden uygun bir kategori seçin.\n\n⚠️ Dikkat: Tüm sorular mevcut kredinizden kesilecektir.`,
           false);
+
+        // Increment counter even for off-topic
+        if (sb) {
+          try {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) {
+              const today = new Date().toISOString().split('T')[0];
+              const { data: p } = await sb.from('profiles')
+                .select('daily_prompts_used, daily_prompts_reset_at')
+                .eq('id', session.user.id).single();
+              const pDate = (p?.daily_prompts_reset_at || '').toString().split('T')[0];
+              const used = pDate === today ? (p?.daily_prompts_used || 0) : 0;
+              await sb.from('profiles').update({
+                daily_prompts_used: used + 1,
+                daily_prompts_reset_at: today
+              }).eq('id', session.user.id);
+            }
+          } catch(e) { console.warn('Counter update failed:', e); }
+        }
+
         isLoading = false;
         document.getElementById('send-btn').disabled = false;
         input.focus();
