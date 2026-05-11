@@ -1014,41 +1014,126 @@
   }
 
   // ── SEND MESSAGE ──
+  // ── CATEGORY TOPICS FOR AI CHECK ──
+  const catTopics = {
+    legal:      'legal matters, German/EU law, rights, contracts, courts, lawyers, Recht',
+    medical:    'medical topics, health, symptoms, doctors, Krankenkasse, medications',
+    tax:        'tax, finance, Steuer, Kindergeld, Wohngeld, income, social benefits',
+    visa:       'visa, residence permits, Aufenthaltstitel, immigration, citizenship',
+    housing:    'housing, rental, Mietrecht, tenancy, deposit, Nebenkosten, landlord',
+    employment: 'employment, work, Kündigung, Arbeitsvertrag, salary, unemployment',
+    school:     'school, children, Kita, Kindergeld, Elterngeld, education, Bafög',
+    insurance:  'insurance, Kfz-Versicherung, car, vehicle, accident, claims',
+  };
+
   async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (!text || isLoading) return;
+
+    const sb = window.supabase;
+
+    // ── 1. DAILY LIMIT CHECK ──
+    if (sb) {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+          const { data: profile } = await sb.from('profiles')
+            .select('daily_prompts_used, daily_prompts_reset_at, is_premium')
+            .eq('id', session.user.id).single();
+
+          if (profile) {
+            const today = new Date().toISOString().split('T')[0];
+            let usedToday = profile.daily_prompts_used || 0;
+
+            if (profile.daily_prompts_reset_at !== today) {
+              usedToday = 0;
+              await sb.from('profiles').update({
+                daily_prompts_used: 0,
+                daily_prompts_reset_at: today
+              }).eq('id', session.user.id);
+            }
+
+            const limit = profile.is_premium ? 10 : 2;
+            if (usedToday >= limit) {
+              hideWelcome();
+              addMessage('user', text);
+              const limitDiv = document.createElement('div');
+              limitDiv.className = 'msg';
+              const limitMsg = profile.is_premium
+                ? `Günlük ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin.`
+                : `Günlük ücretsiz ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin veya <a href="premium.html" style="color:var(--red);font-weight:600;text-decoration:none;">Premium'a geçerek 10 soruya çıkarın →</a>`;
+              limitDiv.innerHTML = `<div class="msg-avatar ai">AI</div>
+                <div class="msg-body">
+                  <div class="bubble ai" style="border-color:var(--gold);background:rgba(201,168,76,.06);">
+                    ⏳ <strong>Günlük limit doldu.</strong><br><br>${limitMsg}
+                  </div>
+                </div>`;
+              document.getElementById('messages').appendChild(limitDiv);
+              scrollToBottom();
+              return;
+            }
+          }
+        }
+      } catch(e) { console.warn('Daily limit check failed:', e); }
+    }
 
     isLoading = true;
     document.getElementById('send-btn').disabled = true;
     input.value = '';
     input.style.height = 'auto';
 
-    lastQuestion = text;
     addMessage('user', text);
     messageHistory.push({ role: 'user', content: text });
-
+    hideWelcome();
     addTyping();
 
-    const systemPrompt = systemPrompts[selectedCat] + '\n\n' + langInstructions[selectedLang] +
-      '\n\nIMPORTANT: Structure your answer clearly. Use line breaks. Be helpful but always end with a note recommending the user consult a professional for their specific situation. Keep answers concise — 150-250 words max.';
-
-    try {
-      // AbiBOT uses Supabase Edge Function to keep API key secure
-    const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-    const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-
-    // Get session token
+    // Get session token from global supabase — no new createClient
     let sessionToken = null;
     try {
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-      const { data: { session } } = await sb.auth.getSession();
-      sessionToken = session?.access_token;
-    } catch(e) { console.warn('Supabase not configured yet, using demo mode'); }
+      if (sb) {
+        const { data: { session } } = await sb.auth.getSession();
+        sessionToken = session?.access_token;
+      }
+    } catch(e) {}
 
-    // Always use Edge Function — never call Anthropic directly from browser
-    const response = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
+    try {
+      // ── 2. CATEGORY RELEVANCE CHECK (AI-based) ──
+      const checkRes = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (sessionToken || SUPABASE_ANON),
+          'apikey': SUPABASE_ANON,
+        },
+        body: JSON.stringify({
+          category: selectedCat,
+          language: 'en',
+          messages: [{
+            role: 'user',
+            content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
+          }],
+        }),
+      });
+
+      const checkData = await checkRes.json();
+      const verdict = (checkData.answer || '').trim().toUpperCase().slice(0, 3);
+
+      if (verdict === 'NO') {
+        removeTyping();
+        messageHistory.pop();
+        const cat = catData[selectedCat];
+        addMessage('assistant',
+          `Bu soru bizim kapsama alanımız dışındadır.\n\nAbiBOT yalnızca platform kategorilerimiz dahilindeki konularda yardımcı olabilir. Lütfen soldaki menüden uygun bir kategori seçin.\n\n⚠️ Dikkat: Tüm sorular mevcut kredinizden kesilecektir.`,
+          false);
+        isLoading = false;
+        document.getElementById('send-btn').disabled = false;
+        input.focus();
+        return;
+      }
+
+      // ── 3. MAIN ANSWER ──
+      const response = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1065,6 +1150,7 @@
       const data = await response.json();
       const reply = data.answer || data.error || 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.';
       lastAnswer = reply;
+      lastQuestion = text;
 
       removeTyping();
       addMessage('assistant', reply, true);
@@ -1072,7 +1158,24 @@
 
       hasAnswered = true;
       document.getElementById('escalate-sidebar-btn').disabled = false;
-      showCostToast(selectedCatPrice);
+
+      // ── 4. INCREMENT DAILY COUNTER ──
+      if (sb) {
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          if (session) {
+            const today = new Date().toISOString().split('T')[0];
+            const { data: p } = await sb.from('profiles')
+              .select('daily_prompts_used, daily_prompts_reset_at')
+              .eq('id', session.user.id).single();
+            const used = p?.daily_prompts_reset_at === today ? (p?.daily_prompts_used || 0) : 0;
+            await sb.from('profiles').update({
+              daily_prompts_used: used + 1,
+              daily_prompts_reset_at: today
+            }).eq('id', session.user.id);
+          }
+        } catch(e) { console.warn('Counter update failed:', e); }
+      }
 
     } catch (err) {
       removeTyping();
