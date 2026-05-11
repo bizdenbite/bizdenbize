@@ -1244,4 +1244,32 @@
 
   </script>
 </body>
+<script type="module">
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { window.location.replace('/login.html'); }
+
+  // Try profile first, fall back to auth metadata
+  const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single();
+  const meta = user.user_metadata || {};
+  const fullName = meta.full_name || '';
+  const firstName = profile?.first_name || meta.first_name || fullName.split(' ')[0] || user.email.split('@')[0];
+  const lastName  = profile?.last_name  || meta.last_name  || fullName.split(' ').slice(1).join(' ') || '';
+
+  // Update all name references on the page
+  document.querySelectorAll('#sidebar-name').forEach(el => el.textContent = `${firstName} ${lastName}`.trim());
+  document.querySelectorAll('em').forEach(el => { if (el.textContent.includes('Ayşe')) el.textContent = firstName + '!'; });
+  const fnInput = document.getElementById('p-fname');
+  const lnInput = document.getElementById('p-lname');
+  if (fnInput) fnInput.value = firstName;
+  if (lnInput) lnInput.value = lastName;
+
+  // Update avatar initials
+  const initials = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase();
+  document.querySelectorAll('.member-avatar, #sidebar-avatar, #avatar-preview').forEach(el => el.textContent = initials);
+</script>
 </html>
