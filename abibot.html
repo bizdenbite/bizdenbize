@@ -1064,7 +1064,7 @@
             }
 
             const limit = profile.is_premium ? 10 : 2;
-            console.log(`[AbiBOT] Daily usage: ${usedToday}/${limit}`);
+            console.log(`[AbiBOT] Daily usage: ${usedToday}/${limit} | resetDate: ${resetDate} | today: ${today} | match: ${resetDate === today}`);
 
             if (usedToday >= limit) {
               hideWelcome();
