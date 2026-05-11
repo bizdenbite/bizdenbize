@@ -314,6 +314,16 @@
     `).join('');
   }
 
+
+  function mdToHtml(text) {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/##\s*(.*?)\n/g, '<strong style="display:block;margin:8px 0 4px">$1</strong>')
+      .replace(/\n/g, '<br>');
+  }
+
   function renderReviews() {
     let reviews = allReviews;
     if (currentFilter !== 'all') {
@@ -356,11 +366,11 @@
           </div>
           <div class="rc-body" id="body-${r.id}" style="display:none;">
             <div class="rc-section-label">Kullanıcının Sorusu</div>
-            <div class="rc-question">${r.question}</div>
+            <div class="rc-question">${mdToHtml(r.question)}</div>
 
             ${r.abibot_answer ? `
               <div class="rc-section-label">AbiBOT Yanıtı</div>
-              <div class="rc-abibot">${r.abibot_answer}</div>
+              <div class="rc-abibot">${mdToHtml(r.abibot_answer)}</div>
             ` : ''}
 
             ${isAnswered ? `
