@@ -710,6 +710,19 @@
 </div>
 
 <script>
+
+  // Global Supabase client
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  let supabase = null;
+
+  // Initialize Supabase
+  (async function() {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+    window.supabase = supabase;
+  })();
+
   // ── STATE ──
   let selectedLang = 'tr';
   let selectedCat = 'legal';
@@ -1030,7 +1043,9 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const sb = window.supabase || supabase;
+      if (!sb) { throw new Error('Supabase not initialized'); }
+      const { data: { session } } = await sb.auth.getSession();
       if (!session) {
         alert('Uzman incelemesi için giriş yapmanız gerekiyor.');
         closeEscalate();
@@ -1038,7 +1053,7 @@
       }
 
       // Save to expert_reviews table
-      const { error } = await supabase.from('expert_reviews').insert({
+      const { error } = await sb.from('expert_reviews').insert({
         user_id: session.user.id,
         category: selectedCat || 'legal',
         language: selectedLang || 'tr',
@@ -1051,7 +1066,7 @@
       if (error) throw error;
 
       // Notify user
-      await supabase.from('notifications').insert({
+      await sb.from('notifications').insert({
         user_id: session.user.id,
         type: 'expert_assigned',
         title: 'Uzman inceleme talebiniz alındı ✅',
