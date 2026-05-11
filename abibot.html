@@ -940,6 +940,7 @@
     input.value = '';
     input.style.height = 'auto';
 
+    lastQuestion = text;
     addMessage('user', text);
     messageHistory.push({ role: 'user', content: text });
 
@@ -979,6 +980,7 @@
 
       const data = await response.json();
       const reply = data.answer || data.error || 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.';
+      lastAnswer = reply;
 
       removeTyping();
       addMessage('assistant', reply, true);
