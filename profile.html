@@ -1268,6 +1268,7 @@
 </body>
 <script type="module">
   (async () => {
+  await new Promise(r => document.readyState === 'complete' ? r() : window.addEventListener('load', r));
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
 
