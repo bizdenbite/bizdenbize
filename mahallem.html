@@ -669,7 +669,7 @@
     <!-- Compose -->
     <div class="compose">
       <div class="compose-top">
-        <div class="compose-avatar">AY</div>
+        <div class="compose-avatar" id="compose-avatar">—</div>
         <textarea class="compose-input" placeholder="Mahallenle bir şey paylaş..."></textarea>
       </div>
       <div class="compose-actions">
@@ -1036,96 +1036,117 @@
 <script type="module">
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) { window.location.replace('login.html'); }
+  let sb = window.supabase;
+  if (!sb) {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+    window.supabase = sb;
+  }
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session || !session.user) { window.location.replace('login.html'); return; }
+  const user = session.user;
+  const token = session.access_token;
+
+  const headers = {
+    'apikey': SUPABASE_ANON,
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
 
   // Load current user profile
-  const { data: profile } = await sb.from('profiles')
-    .select('first_name, last_name, city, country, avatar_url, status')
-    .eq('id', user.id).single();
+  const profRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${user.id}`, { headers });
+  const profiles = await profRes.json();
+  const profile = profiles?.[0];
 
   const firstName = profile?.first_name || user.email.split('@')[0];
-  const lastName  = profile?.last_name || '';
+  const lastName  = profile?.last_name  || '';
   const fullName  = `${firstName} ${lastName}`.trim();
-  const city      = profile?.city || '';
+  const city      = profile?.city    || '';
   const country   = profile?.country || '';
-  const initials  = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase();
+  const initials  = ((firstName[0]||'') + (lastName[0]||'')).toUpperCase();
   const colors    = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
   const color     = colors[initials.charCodeAt(0) % colors.length];
 
-  // Update sidebar
-  const avatarEl = document.getElementById('sidebar-avatar');
-  if (profile?.avatar_url) {
-    avatarEl.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-  } else {
-    avatarEl.textContent = initials;
-    avatarEl.style.background = color;
+  function setAvatar(el, url) {
+    if (!el) return;
+    if (url) {
+      el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      el.textContent = initials;
+      el.style.background = color;
+    }
   }
-  document.getElementById('sidebar-name').textContent = fullName;
+
+  // Update sidebar
+  setAvatar(document.getElementById('sidebar-avatar'), profile?.avatar_url);
+  document.getElementById('sidebar-name').textContent = fullName || 'Yükleniyor...';
   document.getElementById('sidebar-city').textContent = city ? `📍 ${city}, ${country}` : '📍 —';
   document.getElementById('sidebar-connections').textContent = '0';
   document.getElementById('sidebar-listings').textContent = '0';
 
   // Update nav avatar
   const navAvatar = document.getElementById('nav-avatar');
-  if (profile?.avatar_url) {
-    navAvatar.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-  } else {
-    navAvatar.textContent = initials;
-    navAvatar.style.background = color;
+  setAvatar(navAvatar, profile?.avatar_url);
+  if (!profile?.avatar_url) { navAvatar.textContent = initials; navAvatar.style.background = color; }
+
+  // Update compose avatar
+  const composeAvatar = document.getElementById('compose-avatar');
+  if (composeAvatar) {
+    setAvatar(composeAvatar, profile?.avatar_url);
+    if (!profile?.avatar_url) { composeAvatar.textContent = initials; composeAvatar.style.background = color; }
   }
 
-  // Update location filter button
+  // Update location filter
   if (city) {
     document.getElementById('filter-city').textContent = `📍 ${city}`;
     document.getElementById('user-city-label').textContent = city;
   }
 
-  // Load member counts
-  const { data: allProfiles } = await sb.from('profiles').select('city, country');
-  if (allProfiles) {
-    const cityCount = allProfiles.filter(p => p.city?.toLowerCase() === city.toLowerCase()).length;
-    const germanyCount = allProfiles.filter(p => p.country?.toLowerCase().includes('almanya') || p.country?.toLowerCase().includes('germany') || p.country?.toLowerCase().includes('deutschland')).length;
-    const totalCount = allProfiles.length;
+  // Load all profiles for counts and new members
+  const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at`, { headers });
+  const allProfiles = await allRes.json();
 
-    document.getElementById('city-count').textContent = cityCount || '—';
+  if (Array.isArray(allProfiles)) {
+    const cityCount    = allProfiles.filter(p => p.city?.toLowerCase() === city.toLowerCase()).length;
+    const germanyCount = allProfiles.filter(p => ['almanya','germany','deutschland'].includes(p.country?.toLowerCase())).length;
+    const totalCount   = allProfiles.length;
+
+    document.getElementById('city-count').textContent    = cityCount    || '—';
     document.getElementById('germany-count').textContent = germanyCount || '—';
-    document.getElementById('europe-count').textContent = totalCount || '—';
-  }
+    document.getElementById('europe-count').textContent  = totalCount   || '—';
 
-  // Load new members (exclude current user)
-  const { data: newMembers } = await sb.from('profiles')
-    .select('id, first_name, last_name, city, avatar_url, created_at')
-    .neq('id', user.id)
-    .not('first_name', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(3);
+    // New members excluding current user
+    const newMembers = allProfiles
+      .filter(p => p.id !== user.id && p.first_name)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 3);
 
-  const memberColors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
-  const list = document.getElementById('new-members-list');
-  const title = document.getElementById('new-members-title');
-
-  if (newMembers?.length) {
+    const memberColors = ['#D42B2B','#185FA5','#1E7B4B'];
+    const list  = document.getElementById('new-members-list');
+    const title = document.getElementById('new-members-title');
     if (city) title.textContent = `👥 ${city}'dan Yeni Üyeler`;
-    list.innerHTML = newMembers.map((m, i) => {
-      const mn  = `${m.first_name || ''} ${m.last_name || ''}`.trim();
-      const mi  = ((m.first_name?.[0] || '') + (m.last_name?.[0] || '')).toUpperCase();
-      const mc  = memberColors[i % memberColors.length];
-      const loc = m.city ? `${m.city} · Yeni üye` : 'Yeni üye';
-      const avatarHtml = m.avatar_url
-        ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-        : mi;
-      return `<div class="nearby-user">
-        <div class="nu-avatar" style="background:${mc}">${avatarHtml}</div>
-        <div><div class="nu-name">${mn}</div><div class="nu-city">${loc}</div></div>
-        <button class="connect-btn">Bağlan</button>
-      </div>`;
-    }).join('');
-  } else {
-    list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Henüz başka üye yok.</div>';
+
+    if (newMembers.length) {
+      list.innerHTML = newMembers.map((m, i) => {
+        const mn  = `${m.first_name||''} ${m.last_name||''}`.trim();
+        const mi  = ((m.first_name?.[0]||'') + (m.last_name?.[0]||'')).toUpperCase();
+        const mc  = memberColors[i % memberColors.length];
+        const loc = m.city ? `${m.city} · Yeni üye` : 'Yeni üye';
+        const avatarHtml = m.avatar_url
+          ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          : mi;
+        return `<div class="nearby-user">
+          <div class="nu-avatar" style="background:${mc}">${avatarHtml}</div>
+          <div><div class="nu-name">${mn}</div><div class="nu-city">${loc}</div></div>
+          <button class="connect-btn">Bağlan</button>
+        </div>`;
+      }).join('');
+    } else {
+      list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Henüz başka üye yok.</div>';
+    }
   }
 </script>
 </body>
