@@ -1284,7 +1284,7 @@
   const user = session.user;
 
   // Use fetch directly with auth token to avoid RLS issues
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&id=eq.${user.id}`, {
+  const res = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${user.id}`, {
     headers: {
       'apikey': SUPABASE_ANON,
       'Authorization': `Bearer ${session.access_token}`,
