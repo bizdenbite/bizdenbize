@@ -1128,7 +1128,8 @@
   }
 
   function copyMyCode() {
-    navigator.clipboard.writeText('BZB2847').then(() => {
+    const code = document.getElementById('my-invite-code')?.textContent?.replace(/·/g,'').trim() || 'BZB';
+    navigator.clipboard.writeText(code).then(() => {
       const btn = event.target;
       btn.textContent = '✓ Kopyalandı!';
       setTimeout(() => btn.textContent = '📋 Kopyala', 2000);
@@ -1176,8 +1177,16 @@
   }
 
   function shareWA() {
-    const msg = encodeURIComponent('Seni BizdenBize\'ye davet ediyorum — Avrupa\'daki Türk topluluğu 🇹🇷\n\nDavetiye kodun: BZB2847\n\nhttps://bizdenbize.sobhoy.com');
-    window.open('https://wa.me/?text=' + msg, '_blank');
+    const code = document.getElementById('my-invite-code')?.textContent?.replace(/·/g,'').trim() || 'BZB';
+    const msg = encodeURIComponent(
+      `Seni BizdenBize'ye davet ediyorum — Avrupa'daki Türk topluluğu 🇹🇷\n\nDavetiye kodun: ${code}\n\nhttps://bizdenbize.vercel.app/login.html?invite=${code}`
+    );
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = `whatsapp://send?text=${msg}`;
+    } else {
+      window.open(`https://web.whatsapp.com/send?text=${msg}`, '_blank');
+    }
   }
 
   function goToDashboard() {
@@ -1429,7 +1438,14 @@
   if (!user) { window.location.replace('/login.html'); }
 
   // Try profile first, fall back to auth metadata
-  const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single();
+  const { data: profile } = await sb.from('profiles').select('first_name, last_name, invite_code').eq('id', user.id).single();
+
+  // Load real invite code
+  if (profile?.invite_code) {
+    const formatted = profile.invite_code.replace(/(.{3})(.*)/, '$1·$2');
+    const codeEl = document.getElementById('my-invite-code');
+    if (codeEl) codeEl.textContent = formatted;
+  }
   const meta = user.user_metadata || {};
   const fullName = meta.full_name || '';
   const firstName = profile?.first_name || meta.first_name || fullName.split(' ')[0] || user.email.split('@')[0];
