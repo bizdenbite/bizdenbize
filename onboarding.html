@@ -767,7 +767,8 @@
       <div class="avatar-picker">
         <div class="avatar-preview" id="avatar-preview">AY</div>
         <div class="avatar-actions">
-          <button class="avatar-btn">📷 Fotoğraf yükle</button>
+          <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
+          <button class="avatar-btn" onclick="document.getElementById('avatar-file-input').click()">📷 Fotoğraf yükle</button>
           <button class="avatar-btn" onclick="randomAvatar()">🎲 Renk seç</button>
         </div>
       </div>
@@ -1110,6 +1111,46 @@
     const col = avatarColors[avatarColorIdx];
     document.getElementById('avatar-preview').style.background = col;
     document.getElementById('sidebar-avatar').style.background = col;
+  }
+
+  async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById('avatar-preview');
+      const sidebar = document.getElementById('sidebar-avatar');
+      const img = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      preview.innerHTML = img;
+      sidebar.innerHTML = img;
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to Supabase Storage
+    try {
+      const sb = window._sb;
+      if (!sb) return;
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) return;
+
+      const ext = file.name.split('.').pop();
+      const path = `avatars/${user.id}.${ext}`;
+
+      const { error: uploadError } = await sb.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
+
+      await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
+
+    } catch(e) {
+      console.warn('Avatar upload failed:', e);
+    }
   }
 
   function toggleLang(btn) { btn.classList.toggle('selected'); }
