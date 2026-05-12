@@ -929,52 +929,8 @@
         Hangi şehirdesin? Yerel topluluğunla bağlanmak için şehrini seç. Birden fazla şehir ekleyebilirsin.
       </p>
 
-      <div class="city-grid">
-        <div class="city-card selected" onclick="toggleCity(this)">
-          <div class="city-flag">🇩🇪</div>
-          <div class="city-name">Frankfurt</div>
-          <div class="city-count">142 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇩🇪</div>
-          <div class="city-name">Berlin</div>
-          <div class="city-count">89 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇩🇪</div>
-          <div class="city-name">München</div>
-          <div class="city-count">67 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇳🇱</div>
-          <div class="city-name">Amsterdam</div>
-          <div class="city-count">53 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇦🇹</div>
-          <div class="city-name">Wien</div>
-          <div class="city-count">48 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇧🇪</div>
-          <div class="city-name">Brüksel</div>
-          <div class="city-count">31 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇨🇭</div>
-          <div class="city-name">Zürich</div>
-          <div class="city-count">29 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">🇫🇷</div>
-          <div class="city-name">Paris</div>
-          <div class="city-count">24 üye</div>
-        </div>
-        <div class="city-card" onclick="toggleCity(this)">
-          <div class="city-flag">➕</div>
-          <div class="city-name">Diğer şehir</div>
-          <div class="city-count">Ekle</div>
-        </div>
+      <div class="city-grid" id="city-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:20px;font-size:13px;color:var(--muted);">Şehirler yükleniyor...</div>
       </div>
 
       <div class="panel-nav">
@@ -1052,6 +1008,7 @@
       p.classList.toggle('active', i === idx);
     });
     document.querySelector('.main').scrollTo(0, 0);
+    if (idx === 3) loadCities();
   }
 
   function goTo(idx) {
@@ -1158,6 +1115,81 @@
   function toggleLang(btn) { btn.classList.toggle('selected'); }
   function toggleTag(btn) { btn.classList.toggle('selected'); }
   function toggleCity(card) { card.classList.toggle('selected'); }
+
+  // ── DYNAMIC CITY GRID ──
+  const FALLBACK_CITIES = [
+    { city: 'Frankfurt',  country: 'Almanya',   flag: '🇩🇪' },
+    { city: 'Berlin',     country: 'Almanya',   flag: '🇩🇪' },
+    { city: 'München',    country: 'Almanya',   flag: '🇩🇪' },
+    { city: 'Hamburg',    country: 'Almanya',   flag: '🇩🇪' },
+    { city: 'Amsterdam',  country: 'Hollanda',  flag: '🇳🇱' },
+    { city: 'Wien',       country: 'Avusturya', flag: '🇦🇹' },
+    { city: 'Zürich',     country: 'İsviçre',   flag: '🇨🇭' },
+    { city: 'Paris',      country: 'Fransa',    flag: '🇫🇷' },
+  ];
+  const COUNTRY_FLAGS = {
+    'Almanya':'🇩🇪','Deutschland':'🇩🇪','Germany':'🇩🇪',
+    'Hollanda':'🇳🇱','Netherlands':'🇳🇱',
+    'Avusturya':'🇦🇹','Austria':'🇦🇹',
+    'Belçika':'🇧🇪','Belgium':'🇧🇪',
+    'İsviçre':'🇨🇭','Switzerland':'🇨🇭',
+    'Fransa':'🇫🇷','France':'🇫🇷',
+    'İngiltere':'🇬🇧','United Kingdom':'🇬🇧',
+  };
+
+  let citiesLoaded = false;
+  async function loadCities() {
+    if (citiesLoaded) return;
+    citiesLoaded = true;
+    const grid = document.getElementById('city-grid');
+    if (!grid) return;
+
+    let cities = [];
+    let userCity = '';
+
+    try {
+      const sb = window._sb;
+      if (sb) {
+        const { data: { user } } = await sb.auth.getUser();
+        if (user) {
+          const { data: profile } = await sb.from('profiles')
+            .select('city, country').eq('id', user.id).single();
+          userCity = profile?.city || '';
+        }
+        const { data } = await sb.from('profiles')
+          .select('city, country').not('city', 'is', null).neq('city', '');
+        if (data?.length) {
+          const counts = {};
+          data.forEach(p => {
+            if (!counts[p.city]) counts[p.city] = { city: p.city, country: p.country, count: 0 };
+            counts[p.city].count++;
+          });
+          cities = Object.values(counts).sort((a, b) => b.count - a.count);
+        }
+      }
+    } catch(e) { console.warn('City load error:', e); }
+
+    const realNames = new Set(cities.map(c => c.city.toLowerCase()));
+    const fallbacks = FALLBACK_CITIES.filter(f => !realNames.has(f.city.toLowerCase()));
+    let combined = [...cities, ...fallbacks].slice(0, 8);
+
+    // Always show user's city if not in list
+    if (userCity && !combined.find(c => c.city.toLowerCase() === userCity.toLowerCase())) {
+      combined.unshift({ city: userCity, count: 0 });
+      combined = combined.slice(0, 8);
+    }
+
+    grid.innerHTML = combined.map(c => {
+      const flag = COUNTRY_FLAGS[c.country] || '🌍';
+      const count = c.count ? `${c.count} üye` : 'Yeni';
+      const selected = userCity && c.city.toLowerCase() === userCity.toLowerCase();
+      return `<div class="city-card ${selected ? 'selected' : ''}" onclick="toggleCity(this)" data-city="${c.city}">
+        <div class="city-flag">${flag}</div>
+        <div class="city-name">${c.city}</div>
+        <div class="city-count">${count}</div>
+      </div>`;
+    }).join('');
+  }
 
   function checkSlot(idx, input) {
     const slot = document.getElementById('slot-' + idx);
