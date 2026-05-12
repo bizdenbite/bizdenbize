@@ -1266,4 +1266,102 @@
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initProfilePlaces" async defer></script>
 </body>
+<script type="module">
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { window.location.replace('login.html'); }
+
+  const { data: p } = await sb.from('profiles')
+    .select('*').eq('id', user.id).single();
+
+  if (!p) return;
+
+  const firstName = p.first_name || user.email.split('@')[0];
+  const lastName  = p.last_name  || '';
+  const fullName  = `${firstName} ${lastName}`.trim();
+  const username  = p.username || user.email.split('@')[0];
+  const city      = p.city    || '';
+  const country   = p.country || '';
+  const bio       = p.bio     || '';
+  const initials  = ((firstName[0]||'') + (lastName[0]||'')).toUpperCase();
+  const colors    = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+  const color     = colors[initials.charCodeAt(0) % colors.length];
+
+  // ── Avatar ──
+  function setAvatar(el, url) {
+    if (!el) return;
+    if (url) {
+      el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      el.textContent = initials;
+      el.style.background = color;
+    }
+  }
+  setAvatar(document.getElementById('main-avatar'), p.avatar_url);
+  setAvatar(document.querySelector('.nav-avatar'), p.avatar_url);
+  if (!p.avatar_url) {
+    document.querySelector('.nav-avatar').textContent = initials;
+    document.querySelector('.nav-avatar').style.background = color;
+  }
+
+  // ── Profile card ──
+  document.getElementById('display-name').textContent = fullName;
+  document.getElementById('display-bio').textContent  = bio || '';
+  document.querySelector('.profile-handle').textContent = `@${username}`;
+  document.querySelector('.profile-city').textContent   = city ? `📍 ${city}, ${country}` : '';
+
+  // Show/hide verified badge
+  const verBadge = document.querySelector('.verified-badge');
+  if (verBadge) verBadge.style.display = p.is_verified ? 'inline-flex' : 'none';
+
+  // ── Info section ──
+  document.getElementById('info-name').textContent = fullName;
+  const infoItems = document.querySelectorAll('.info-item .info-val');
+  if (infoItems[1]) infoItems[1].textContent = city ? `📍 ${city}, ${country}` : '—';
+  if (infoItems[2]) infoItems[2].textContent = user.email;
+  if (infoItems[4]) infoItems[4].textContent = p.is_premium ? 'Premium' : `Ücretsiz · ${new Date(p.created_at).toLocaleDateString('tr-TR')} katıldı`;
+  if (infoItems[5]) infoItems[5].textContent = p.invited_by ? `${p.invited_by} tarafından davet edildi` : '—';
+
+  // ── Languages & interests ──
+  if (p.languages?.length) {
+    const langFlags = { 'Türkçe':'🇹🇷', 'Deutsch':'🇩🇪', 'English':'🇬🇧', 'Français':'🇫🇷', 'Nederlands':'🇳🇱' };
+    document.querySelector('.tag-section .tags').innerHTML =
+      p.languages.map(l => `<span class="tag navy">${langFlags[l]||''} ${l}</span>`).join('');
+  }
+  if (p.interests?.length) {
+    const intIcons = { 'Yemek & Mutfak':'🍽️','İş & Girişim':'💼','Etkinlik & Buluşma':'🎉','Emlak & Kiralık':'🏠','Araç & Ulaşım':'🚗','Aile & Çocuklar':'👶' };
+    document.querySelectorAll('.tag-section')[1].querySelector('.tags').innerHTML =
+      p.interests.map(i => `<span class="tag">${intIcons[i]||'⭐'} ${i}</span>`).join('');
+  }
+
+  // ── Invite code ──
+  if (p.invite_code) {
+    const formatted = p.invite_code.replace(/(.{3})(.*)/, '$1·$2');
+    document.querySelector('.invite-code-row .ic-code').textContent = formatted;
+  }
+
+  // ── Edit form pre-fill ──
+  const ef = document.getElementById('edit-fname');
+  const el = document.getElementById('edit-lname');
+  const eb = document.getElementById('edit-bio');
+  const eli = document.getElementById('edit-location-input');
+  if (ef)  ef.value  = firstName;
+  if (el)  el.value  = lastName;
+  if (eb)  eb.value  = bio;
+  if (eli && city) {
+    eli.value = `${city}, ${country}`;
+    document.getElementById('edit-city').value    = city;
+    document.getElementById('edit-country').value = country;
+    const status = document.getElementById('edit-location-status');
+    if (status) { status.style.display = 'block'; status.textContent = `✅ ${city}, ${country}`; }
+    eli.style.borderColor = '#1E7B4B';
+  }
+
+  // ── Stats ──
+  document.querySelector('.ps-val').textContent = '0'; // connections — no table yet
+</script>
 </html>
