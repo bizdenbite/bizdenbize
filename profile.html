@@ -582,12 +582,14 @@
     <div class="profile-card">
 
       <div class="profile-cover">
-        <button class="cover-edit" onclick="alert('Kapak fotoğrafı değiştir')">✏️ Düzenle</button>
+        <button class="cover-edit" onclick="document.getElementById('cover-file-input').click()">✏️ Düzenle</button>
+        <input type="file" id="cover-file-input" accept="image/*" style="display:none">
       </div>
 
       <div class="avatar-wrap">
-        <div class="profile-avatar" id="main-avatar" onclick="alert('Fotoğraf yükle')">AY</div>
-        <div class="avatar-edit-badge">✏️</div>
+        <div class="profile-avatar" id="main-avatar" onclick="document.getElementById('avatar-file-input').click()" title="Fotoğraf değiştir">AY</div>
+        <div class="avatar-edit-badge" onclick="document.getElementById('avatar-file-input').click()" style="cursor:pointer">✏️</div>
+        <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
       </div>
 
       <div class="profile-info">
@@ -1368,6 +1370,62 @@
     const status = document.getElementById('edit-location-status');
     if (status) { status.style.display = 'block'; status.textContent = `✅ ${city}, ${country}`; eli.style.borderColor = '#1E7B4B'; }
   }
+
+  // ── AVATAR UPLOAD ──────────────────────────────────────────
+  async function uploadPhoto(file, type) {
+    const ext    = file.name.split('.').pop();
+    const path   = `${uid}/${type}.${ext}`;
+    const bucket = 'avatars';
+
+    const { error: upErr } = await sb.storage.from(bucket).upload(path, file, {
+      upsert: true, contentType: file.type
+    });
+    if (upErr) { alert(`Yükleme hatası: ${upErr.message}`); return null; }
+
+    const { data: { publicUrl } } = sb.storage.from(bucket).getPublicUrl(path);
+    return publicUrl;
+  }
+
+  function showUploadSpinner(elId, on) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.style.opacity = on ? '.5' : '1';
+    el.style.pointerEvents = on ? 'none' : '';
+  }
+
+  document.getElementById('avatar-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    showUploadSpinner('main-avatar', true);
+    const url = await uploadPhoto(file, 'avatar');
+    if (url) {
+      await sb.from('profiles').update({ avatar_url: url }).eq('id', uid);
+      setAvatar(document.getElementById('main-avatar'), url);
+      const navAv = document.querySelector('.nav-avatar');
+      if (navAv) setAvatar(navAv, url);
+    }
+    showUploadSpinner('main-avatar', false);
+    e.target.value = '';
+  });
+
+  document.getElementById('cover-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const cover = document.querySelector('.profile-cover');
+    if (cover) { cover.style.opacity = '.5'; cover.style.pointerEvents = 'none'; }
+    const url = await uploadPhoto(file, 'cover');
+    if (url) {
+      await sb.from('profiles').update({ cover_url: url }).eq('id', uid);
+      if (cover) {
+        cover.style.backgroundImage = `url(${url})`;
+        cover.style.backgroundSize  = 'cover';
+        cover.style.backgroundPosition = 'center';
+      }
+    }
+    if (cover) { cover.style.opacity = '1'; cover.style.pointerEvents = ''; }
+    e.target.value = '';
+  });
+
   })();
 </script>
 </html>
