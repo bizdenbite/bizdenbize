@@ -792,11 +792,20 @@
               <div style="font-size:24px;">📍</div>
             </div>
           </div>
-          <div style="position:relative;" id="location-search-wrap">
-            <input type="text" id="p-location-input" placeholder="Farklı bir şehir seçmek için arayın..." autocomplete="off"
-              style="width:100%;padding-right:36px;font-size:13px;"
-              oninput="document.getElementById('p-city').value='';document.getElementById('p-country').value='';document.getElementById('p-location-status').style.display='none';">
-            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">🔍</span>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <div style="position:relative;flex:1;">
+              <input type="text" id="p-location-input"
+                placeholder="Şehrinizi yazın..."
+                autocomplete="new-password"
+                name="location-search-field"
+                style="width:100%;padding-right:36px;font-size:13px;"
+                oninput="document.getElementById('p-city').value='';document.getElementById('p-country').value='';document.getElementById('p-location-status').style.display='none';">
+              <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;">🔍</span>
+            </div>
+            <button type="button" onclick="detectGPS()" id="gps-btn"
+              style="padding:0 14px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;">
+              📍 Konumumu Bul
+            </button>
           </div>
           <div id="p-location-status" style="font-size:11px;margin-top:5px;display:none;"></div>
           <input type="hidden" id="p-city">
@@ -1311,58 +1320,85 @@
     status.style.display = 'block';
     status.style.color = '#1E7B4B';
     status.textContent = source === 'gps'
-      ? '✅ Konumunuz otomatik tespit edildi. Farklı bir şehir seçmek için aşağıdan arayabilirsiniz.'
-      : `✅ ${city}, ${country}`;
+      ? `✅ ${city}, ${country} — Konumunuz tespit edildi.`
+      : `✅ ${city}, ${country} seçildi.`;
 
-    document.getElementById('p-location-input').style.borderColor = '#1E7B4B';
+    const input = document.getElementById('p-location-input');
+    input.value = `${city}, ${country}`;
+    input.style.borderColor = '#1E7B4B';
+
+    const btn = document.getElementById('gps-btn');
+    btn.textContent = '✅ Tespit edildi';
+    btn.style.background = '#1E7B4B';
+  }
+
+  function detectGPS() {
+    const btn = document.getElementById('gps-btn');
+    btn.textContent = '⏳ Tespit ediliyor...';
+    btn.disabled = true;
+
+    if (!navigator.geolocation) {
+      btn.textContent = '📍 Konumumu Bul';
+      btn.disabled = false;
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
+          );
+          const data = await res.json();
+          const components = data.results?.[0]?.address_components || [];
+          let city = '', country = '';
+          components.forEach(c => {
+            if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
+              city = c.long_name;
+            if (c.types.includes('country'))
+              country = c.long_name;
+          });
+          if (city && country) {
+            setLocation(city, country, 'gps');
+          } else {
+            btn.textContent = '📍 Konumumu Bul';
+            btn.disabled = false;
+          }
+        } catch(e) {
+          btn.textContent = '📍 Konumumu Bul';
+          btn.disabled = false;
+        }
+      },
+      () => {
+        btn.textContent = '❌ İzin verilmedi';
+        btn.style.background = 'var(--muted)';
+        setTimeout(() => {
+          btn.textContent = '📍 Konumumu Bul';
+          btn.style.background = 'var(--navy)';
+          btn.disabled = false;
+        }, 2000);
+      },
+      { timeout: 8000 }
+    );
   }
 
   function initGooglePlaces() {
     const input = document.getElementById('p-location-input');
     if (!input || !window.google) return;
 
-    // Auto-detect via GPS
-    if (navigator.geolocation) {
-      const bar = document.getElementById('location-detected-bar');
-      bar.style.display = 'block';
-      document.getElementById('location-detected-text').textContent = 'Konumunuz tespit ediliyor...';
+    // Disable Chrome autofill completely
+    input.setAttribute('autocomplete', 'new-password');
+    input.setAttribute('readonly', true);
+    setTimeout(() => input.removeAttribute('readonly'), 500);
 
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          try {
-            const res = await fetch(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
-            );
-            const data = await res.json();
-            const components = data.results?.[0]?.address_components || [];
-            let city = '', country = '';
-            components.forEach(c => {
-              if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
-                city = c.long_name;
-              if (c.types.includes('country'))
-                country = c.long_name;
-            });
-            if (city && country) setLocation(city, country, 'gps');
-          } catch(e) {
-            document.getElementById('location-detected-text').textContent = 'Tespit edilemedi';
-          }
-        },
-        () => {
-          // GPS denied — hide bar, let user search manually
-          document.getElementById('location-detected-bar').style.display = 'none';
-        },
-        { timeout: 8000 }
-      );
-    }
-
-    // Autocomplete for manual correction
     const autocomplete = new google.maps.places.Autocomplete(input, {
       types: ['(cities)'],
       fields: ['address_components', 'name'],
     });
 
-    autocomplete.addListener('place_changed', function() {
+    // Disable browser autocomplete on the pac-container
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
       const place = autocomplete.getPlace();
       if (!place.address_components) return;
       let city = '', country = '';
