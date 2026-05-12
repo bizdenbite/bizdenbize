@@ -680,21 +680,25 @@
             <label>Soyad</label>
             <input type="text" id="edit-lname" value="Yılmaz">
           </div>
-          <div class="form-group">
-            <label>Şehir</label>
-            <input type="text" id="edit-city" value="Frankfurt">
-          </div>
-          <div class="form-group">
-            <label>Ülke</label>
-            <select id="edit-country">
-              <option selected>Almanya 🇩🇪</option>
-              <option>Hollanda 🇳🇱</option>
-              <option>Avusturya 🇦🇹</option>
-              <option>Belçika 🇧🇪</option>
-              <option>İsviçre 🇨🇭</option>
-              <option>Fransa 🇫🇷</option>
-              <option>İngiltere 🇬🇧</option>
-            </select>
+          <div class="form-group full">
+            <label>Konum</label>
+            <div style="display:flex;gap:8px;margin-bottom:6px;">
+              <div style="position:relative;flex:1;">
+                <input type="text" id="edit-location-input"
+                  placeholder="Şehrinizi yazın..."
+                  autocomplete="new-password"
+                  style="width:100%;padding-right:36px;"
+                  oninput="document.getElementById('edit-city').value='';document.getElementById('edit-country').value='';">
+                <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
+              </div>
+              <button type="button" onclick="detectProfileGPS()" id="profile-gps-btn"
+                style="padding:0 12px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;">
+                📍 Bul
+              </button>
+            </div>
+            <div id="edit-location-status" style="font-size:11px;color:#1E7B4B;display:none;"></div>
+            <input type="hidden" id="edit-city">
+            <input type="hidden" id="edit-country">
           </div>
           <div class="form-group full">
             <label>Hakkında</label>
@@ -914,25 +918,54 @@
     if (editOpen) document.getElementById('edit-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function saveProfile() {
-    const fname = document.getElementById('edit-fname').value.trim();
-    const lname = document.getElementById('edit-lname').value.trim();
-    const bio   = document.getElementById('edit-bio').value.trim();
-    const full  = (fname + ' ' + lname).trim();
+  async function saveProfile() {
+    const fname   = document.getElementById('edit-fname').value.trim();
+    const lname   = document.getElementById('edit-lname').value.trim();
+    const bio     = document.getElementById('edit-bio').value.trim();
+    const city    = document.getElementById('edit-city').value.trim();
+    const country = document.getElementById('edit-country').value.trim();
+    const full    = (fname + ' ' + lname).trim();
+
+    // Validate location
+    if (!city || !country) {
+      const status = document.getElementById('edit-location-status');
+      status.style.display = 'block';
+      status.style.color = 'var(--red)';
+      status.textContent = '⚠️ Lütfen listeden bir şehir seçin.';
+      document.getElementById('edit-location-input').style.borderColor = 'var(--red)';
+      return;
+    }
 
     // Update display
     document.getElementById('display-name').textContent = full;
     document.getElementById('info-name').textContent = full;
     document.getElementById('display-bio').textContent = bio;
+    document.querySelector('.profile-city').textContent = `📍 ${city}, ${country}`;
 
     // Update avatar initials
     const initials = (fname[0] || '') + (lname[0] || '');
     document.getElementById('main-avatar').textContent = initials.toUpperCase();
     document.querySelector('.nav-avatar').textContent  = initials.toUpperCase();
 
+    // Save to Supabase
+    try {
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) {
+        await sb.from('profiles').update({
+          first_name: fname,
+          last_name: lname,
+          bio,
+          city,
+          country,
+          updated_at: new Date().toISOString()
+        }).eq('id', user.id);
+      }
+    } catch(e) { console.warn('Profile save failed:', e); }
+
     toggleEdit();
 
-    // Toast
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 24px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;animation:fadeUp .3s ease';
     toast.textContent = '✓ Profil güncellendi';
@@ -1157,5 +1190,80 @@
   })();
 
   </script>
+<!-- Google Maps Places for profile edit -->
+<script>
+  function setProfileLocation(city, country) {
+    document.getElementById('edit-city').value = city;
+    document.getElementById('edit-country').value = country;
+    const input = document.getElementById('edit-location-input');
+    input.value = `${city}, ${country}`;
+    input.style.borderColor = '#1E7B4B';
+    const status = document.getElementById('edit-location-status');
+    status.style.display = 'block';
+    status.textContent = `✅ ${city}, ${country}`;
+  }
+
+  function detectProfileGPS() {
+    const btn = document.getElementById('profile-gps-btn');
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.coords.latitude},${pos.coords.longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
+          );
+          const data = await res.json();
+          const components = data.results?.[0]?.address_components || [];
+          let city = '', country = '';
+          components.forEach(c => {
+            if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
+            if (c.types.includes('country')) country = c.long_name;
+          });
+          if (city && country) {
+            setProfileLocation(city, country);
+            btn.textContent = '✅';
+            btn.style.background = '#1E7B4B';
+          } else {
+            btn.textContent = '📍 Bul';
+            btn.disabled = false;
+          }
+        } catch(e) { btn.textContent = '📍 Bul'; btn.disabled = false; }
+      },
+      () => { btn.textContent = '❌'; setTimeout(() => { btn.textContent = '📍 Bul'; btn.disabled = false; btn.style.background = 'var(--navy)'; }, 2000); },
+      { timeout: 8000 }
+    );
+  }
+
+  function initProfilePlaces() {
+    const input = document.getElementById('edit-location-input');
+    if (!input || !window.google) return;
+    input.setAttribute('autocomplete', 'new-password');
+    input.setAttribute('readonly', true);
+    setTimeout(() => input.removeAttribute('readonly'), 500);
+
+    // Pre-fill with current value from profile
+    const currentCity = '{{ city }}';
+    const currentCountry = '{{ country }}';
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['(cities)'],
+      fields: ['address_components', 'name'],
+    });
+    autocomplete.addListener('place_changed', function() {
+      const place = autocomplete.getPlace();
+      if (!place.address_components) return;
+      let city = '', country = '';
+      place.address_components.forEach(c => {
+        if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
+        if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
+        if (c.types.includes('country')) country = c.long_name;
+      });
+      setProfileLocation(city || place.name, country);
+    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initProfilePlaces" async defer></script>
 </body>
 </html>
