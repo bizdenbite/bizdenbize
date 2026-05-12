@@ -619,7 +619,7 @@
     <button class="nav-notif">
       🔔<div class="notif-dot"></div>
     </button>
-    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+    <div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">—</div>
   </div>
 </nav>
 
@@ -628,19 +628,19 @@
   <!-- LEFT SIDEBAR -->
   <aside class="left-sidebar">
     <div class="user-card">
-      <div class="user-card-avatar">AY</div>
-      <div class="user-card-name">Ayşe Yılmaz</div>
-      <div class="user-card-city">📍 Frankfurt, Almanya</div>
+      <div class="user-card-avatar" id="sidebar-avatar">—</div>
+      <div class="user-card-name" id="sidebar-name">Yükleniyor...</div>
+      <div class="user-card-city" id="sidebar-city">📍 —</div>
       <div class="user-card-stats">
-        <div class="uc-stat"><div class="uc-val">47</div><div class="uc-label">Bağlantı</div></div>
-        <div class="uc-stat"><div class="uc-val">3</div><div class="uc-label">İlan</div></div>
+        <div class="uc-stat"><div class="uc-val" id="sidebar-connections">—</div><div class="uc-label">Bağlantı</div></div>
+        <div class="uc-stat"><div class="uc-val" id="sidebar-listings">—</div><div class="uc-label">İlan</div></div>
       </div>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Menü</div>
       <a class="sidebar-link active" href="mahallem.html"><span class="sidebar-link-icon">🏠</span>Mahallem</a>
-      <a class="sidebar-link" href="#"><span class="sidebar-link-icon">👤</span>Profilim</a>
+      <a class="sidebar-link" href="profile.html"><span class="sidebar-link-icon">👤</span>Profilim</a>
       <a class="sidebar-link" href="messages.html"><span class="sidebar-link-icon">💬</span>Mesajlar<span class="sidebar-badge">3</span></a>
       <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🔔</span>Bildirimler<span class="sidebar-badge">7</span></a>
       <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🎟️</span>Davetiyelerim</a>
@@ -649,10 +649,10 @@
 
     <div class="sidebar-section">
       <div class="sidebar-label">Mahallelerim</div>
-      <div class="mahalle-list">
-        <div class="mahalle-item"><div class="mahalle-dot" style="background:#D42B2B"></div>Frankfurt<span class="mahalle-count">142</span></div>
-        <div class="mahalle-item"><div class="mahalle-dot" style="background:#185FA5"></div>Tüm Almanya<span class="mahalle-count">891</span></div>
-        <div class="mahalle-item"><div class="mahalle-dot" style="background:#C9A84C"></div>Tüm Avrupa<span class="mahalle-count">4.2k</span></div>
+      <div class="mahalle-list" id="mahalle-list">
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#D42B2B"></div><span id="user-city-label">—</span><span class="mahalle-count" id="city-count">—</span></div>
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#185FA5"></div>Tüm Almanya<span class="mahalle-count" id="germany-count">—</span></div>
+        <div class="mahalle-item"><div class="mahalle-dot" style="background:#C9A84C"></div>Tüm Avrupa<span class="mahalle-count" id="europe-count">—</span></div>
       </div>
     </div>
   </aside>
@@ -661,7 +661,7 @@
   <main class="feed">
     <!-- Location filter -->
     <div class="loc-filter">
-      <button class="loc-btn active">📍 Frankfurt</button>
+      <button class="loc-btn active" id="filter-city">📍 —</button>
       <button class="loc-btn">🇩🇪 Almanya</button>
       <button class="loc-btn">🌍 Tüm Avrupa</button>
     </div>
@@ -680,8 +680,12 @@
       </div>
     </div>
 
-    <!-- Post 1 -->
-    <div class="post-card">
+    <!-- Post 1 — Example Content -->
+    <div class="post-card" style="border:1.5px dashed var(--sand);">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <span style="background:var(--sand);color:var(--muted);padding:2px 8px;border-radius:20px;">📌 Örnek İçerik</span>
+        Topluluk böyle görünecek
+      </div>
       <div class="post-header">
         <div class="post-avatar" style="background:#185FA5">MK</div>
         <div class="post-meta">
@@ -751,8 +755,11 @@
       <button class="event-rsvp" onclick="rsvp(this)">Katıl</button>
     </div>
 
-    <!-- Post 2 -->
-    <div class="post-card">
+    <!-- Post 2 — Example Content -->
+    <div class="post-card" style="border:1.5px dashed var(--sand);">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <span style="background:var(--sand);color:var(--muted);padding:2px 8px;border-radius:20px;">📌 Örnek İçerik</span>
+      </div>
       <div class="post-header">
         <div class="post-avatar" style="background:#1E7B4B">ZD</div>
         <div class="post-meta">
@@ -787,21 +794,9 @@
     </div>
 
     <div class="widget">
-      <div class="widget-title">👥 Frankfurt'tan Yeni Üyeler</div>
-      <div class="nearby-user">
-        <div class="nu-avatar" style="background:#D42B2B">AK</div>
-        <div><div class="nu-name">Ali Korkmaz</div><div class="nu-city">Frankfurt · 2 ortak bağlantı</div></div>
-        <button class="connect-btn">Bağlan</button>
-      </div>
-      <div class="nearby-user">
-        <div class="nu-avatar" style="background:#185FA5">SE</div>
-        <div><div class="nu-name">Selin Erdoğan</div><div class="nu-city">Frankfurt · 1 ortak bağlantı</div></div>
-        <button class="connect-btn">Bağlan</button>
-      </div>
-      <div class="nearby-user">
-        <div class="nu-avatar" style="background:#1E7B4B">BT</div>
-        <div><div class="nu-name">Berk Taşkın</div><div class="nu-city">Frankfurt · Yeni üye</div></div>
-        <button class="connect-btn">Bağlan</button>
+      <div class="widget-title" id="new-members-title">👥 Yeni Üyeler</div>
+      <div id="new-members-list">
+        <div style="font-size:12px;color:var(--muted);padding:8px 0;">Yükleniyor...</div>
       </div>
     </div>
 
@@ -1037,5 +1032,101 @@
   })();
 
   </script>
+
+<script type="module">
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { window.location.replace('login.html'); }
+
+  // Load current user profile
+  const { data: profile } = await sb.from('profiles')
+    .select('first_name, last_name, city, country, avatar_url, status')
+    .eq('id', user.id).single();
+
+  const firstName = profile?.first_name || user.email.split('@')[0];
+  const lastName  = profile?.last_name || '';
+  const fullName  = `${firstName} ${lastName}`.trim();
+  const city      = profile?.city || '';
+  const country   = profile?.country || '';
+  const initials  = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase();
+  const colors    = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+  const color     = colors[initials.charCodeAt(0) % colors.length];
+
+  // Update sidebar
+  const avatarEl = document.getElementById('sidebar-avatar');
+  if (profile?.avatar_url) {
+    avatarEl.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    avatarEl.textContent = initials;
+    avatarEl.style.background = color;
+  }
+  document.getElementById('sidebar-name').textContent = fullName;
+  document.getElementById('sidebar-city').textContent = city ? `📍 ${city}, ${country}` : '📍 —';
+  document.getElementById('sidebar-connections').textContent = '0';
+  document.getElementById('sidebar-listings').textContent = '0';
+
+  // Update nav avatar
+  const navAvatar = document.getElementById('nav-avatar');
+  if (profile?.avatar_url) {
+    navAvatar.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    navAvatar.textContent = initials;
+    navAvatar.style.background = color;
+  }
+
+  // Update location filter button
+  if (city) {
+    document.getElementById('filter-city').textContent = `📍 ${city}`;
+    document.getElementById('user-city-label').textContent = city;
+  }
+
+  // Load member counts
+  const { data: allProfiles } = await sb.from('profiles').select('city, country');
+  if (allProfiles) {
+    const cityCount = allProfiles.filter(p => p.city?.toLowerCase() === city.toLowerCase()).length;
+    const germanyCount = allProfiles.filter(p => p.country?.toLowerCase().includes('almanya') || p.country?.toLowerCase().includes('germany') || p.country?.toLowerCase().includes('deutschland')).length;
+    const totalCount = allProfiles.length;
+
+    document.getElementById('city-count').textContent = cityCount || '—';
+    document.getElementById('germany-count').textContent = germanyCount || '—';
+    document.getElementById('europe-count').textContent = totalCount || '—';
+  }
+
+  // Load new members (exclude current user)
+  const { data: newMembers } = await sb.from('profiles')
+    .select('id, first_name, last_name, city, avatar_url, created_at')
+    .neq('id', user.id)
+    .not('first_name', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  const memberColors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+  const list = document.getElementById('new-members-list');
+  const title = document.getElementById('new-members-title');
+
+  if (newMembers?.length) {
+    if (city) title.textContent = `👥 ${city}'dan Yeni Üyeler`;
+    list.innerHTML = newMembers.map((m, i) => {
+      const mn  = `${m.first_name || ''} ${m.last_name || ''}`.trim();
+      const mi  = ((m.first_name?.[0] || '') + (m.last_name?.[0] || '')).toUpperCase();
+      const mc  = memberColors[i % memberColors.length];
+      const loc = m.city ? `${m.city} · Yeni üye` : 'Yeni üye';
+      const avatarHtml = m.avatar_url
+        ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+        : mi;
+      return `<div class="nearby-user">
+        <div class="nu-avatar" style="background:${mc}">${avatarHtml}</div>
+        <div><div class="nu-name">${mn}</div><div class="nu-city">${loc}</div></div>
+        <button class="connect-btn">Bağlan</button>
+      </div>`;
+    }).join('');
+  } else {
+    list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Henüz başka üye yok.</div>';
+  }
+</script>
 </body>
 </html>
