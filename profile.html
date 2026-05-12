@@ -1272,35 +1272,34 @@
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
 
-  // Reuse existing instance or create new one
-  let sb = window.supabase;
-  if (!sb) {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-    window.supabase = sb;
-  }
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.replace('login.html'); return; }
-  const user = session.user;
+  console.log('[Profile] Session:', session?.user?.email || 'NULL');
+  if (!session?.user) { window.location.replace('login.html'); return; }
 
-  // Use fetch directly with auth token to avoid RLS issues
-  const res = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${user.id}`, {
+  const uid = session.user.id;
+  const tok = session.access_token;
+  console.log('[Profile] UID:', uid);
+
+  const res = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${uid}`, {
     headers: {
       'apikey': SUPABASE_ANON,
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${tok}`,
       'Accept': 'application/json',
     }
   });
+  console.log('[Profile] Fetch status:', res.status);
   const profiles = await res.json();
+  console.log('[Profile] Data:', profiles);
   const p = profiles?.[0];
-  if (!p) return;
+  if (!p) { console.warn('[Profile] No profile found'); return; }
 
-  const firstName = p.first_name || user.email.split('@')[0];
+  const firstName = p.first_name || session.user.email.split('@')[0];
   const lastName  = p.last_name  || '';
   const fullName  = `${firstName} ${lastName}`.trim();
-  const username  = p.username || user.email.split('@')[0];
+  const username  = p.username || session.user.email.split('@')[0];
   const city      = p.city    || '';
   const country   = p.country || '';
   const bio       = p.bio     || '';
@@ -1332,7 +1331,7 @@
   document.getElementById('info-name').textContent = fullName;
   const infoVals = document.querySelectorAll('.info-item .info-val');
   if (infoVals[1]) infoVals[1].textContent = city ? `📍 ${city}, ${country}` : '—';
-  if (infoVals[2]) infoVals[2].textContent = user.email;
+  if (infoVals[2]) infoVals[2].textContent = session.user.email;
   if (infoVals[4]) infoVals[4].textContent = p.is_premium ? 'Premium' : `Ücretsiz · ${new Date(p.created_at).toLocaleDateString('tr-TR')} katıldı`;
   if (infoVals[5]) infoVals[5].textContent = p.invited_by ? `${p.invited_by} tarafından davet edildi` : '—';
 
@@ -1372,10 +1371,10 @@
   })();
 </script>
 
-  const firstName = p.first_name || user.email.split('@')[0];
+  const firstName = p.first_name || session.user.email.split('@')[0];
   const lastName  = p.last_name  || '';
   const fullName  = `${firstName} ${lastName}`.trim();
-  const username  = p.username || user.email.split('@')[0];
+  const username  = p.username || session.user.email.split('@')[0];
   const city      = p.city    || '';
   const country   = p.country || '';
   const bio       = p.bio     || '';
@@ -1407,7 +1406,7 @@
   document.getElementById('info-name').textContent = fullName;
   const infoVals = document.querySelectorAll('.info-item .info-val');
   if (infoVals[1]) infoVals[1].textContent = city ? `📍 ${city}, ${country}` : '—';
-  if (infoVals[2]) infoVals[2].textContent = user.email;
+  if (infoVals[2]) infoVals[2].textContent = session.user.email;
   if (infoVals[4]) infoVals[4].textContent = p.is_premium ? 'Premium' : `Ücretsiz · ${new Date(p.created_at).toLocaleDateString('tr-TR')} katıldı`;
   if (infoVals[5]) infoVals[5].textContent = p.invited_by ? `${p.invited_by} tarafından davet edildi` : '—';
 
