@@ -1271,9 +1271,12 @@
       document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
       document.getElementById('esc-cost-display').style.color = 'var(--muted)';
       document.getElementById('esc-main-btn').style.display = 'none';
-      document.getElementById('esc-buy-bar').style.display = 'block';
+      const buyBar = document.getElementById('esc-buy-bar');
+      buyBar.style.display = 'block';
       document.getElementById('esc-buy-msg').textContent =
         `Krediniz bulunmuyor (mevcut: ${credits} kredi). İnceleme için 5 kredi gerekiyor.`;
+      // Scroll buy button into view reliably
+      setTimeout(() => buyBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
     }
 
     // Balance display
