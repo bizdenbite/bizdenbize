@@ -254,7 +254,7 @@
     .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(26,18,8,.55); display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--white); border-radius: 20px; padding: 36px; max-width: 480px; width: 90%; animation: slideUp .3s ease; overflow: hidden; }
-    .modal.modal-flex { padding: 0; display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; border-radius: 20px; }
+    .modal.modal-flex { padding: 0; display: flex; flex-direction: column; max-height: 92vh; overflow: visible; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
     .modal-close { float: right; background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; margin: -8px -8px 0 0; }
     .modal h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
@@ -686,7 +686,7 @@
 <div class="modal-overlay" id="escalate-modal">
   <div class="modal modal-flex" style="max-width:520px;">
     <!-- Scrollable top section -->
-    <div style="padding:24px 24px 16px;overflow-y:auto;flex:1;min-height:0;max-height:calc(90vh - 140px);">
+    <div style="padding:24px 24px 16px;overflow-y:auto;flex:1;min-height:0;overflow-y:auto;">
       <button class="modal-close" onclick="closeEscalate()">×</button>
       <h3>Uzman İncelesin</h3>
       <p class="modal-sub">AbiBOT yanıtınızı aşağıdaki uzmanlardan biri doğrulasın. 24–48 saat içinde yanıt alırsınız.</p>
@@ -721,7 +721,7 @@
     </div>
 
     <!-- Sticky bottom — always visible, never scrolls away -->
-    <div style="padding:14px 24px 24px;border-top:1px solid var(--warm);background:var(--white);border-radius:0 0 20px 20px;flex-shrink:0;overflow:visible;position:relative;z-index:1;">
+    <div style="padding:16px 24px 28px;border-top:1px solid var(--warm);background:var(--white);border-radius:0 0 20px 20px;flex-shrink:0;position:relative;z-index:2;">
       <!-- Primary: send button (has credits or free review) -->
       <button class="modal-submit" id="esc-main-btn" onclick="submitEscalation(window._escType)" style="margin-top:0;">Uzmana Gönder →</button>
       <!-- Secondary: buy credits (no credits) -->
