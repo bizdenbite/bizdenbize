@@ -692,7 +692,7 @@
       <p class="modal-sub">AbiBOT yanıtınızı aşağıdaki uzmanlardan biri doğrulasın. 24–48 saat içinde yanıt alırsınız.</p>
 
       <!-- Question preview -->
-      <div style="background:var(--cream);border-left:3px solid var(--navy);border-radius:4px 8px 8px 4px;padding:10px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:14px;max-height:60px;overflow:hidden;" id="esc-question-preview"></div>
+      <div style="background:var(--cream);border-left:3px solid var(--ink);border-radius:4px 8px 8px 4px;padding:10px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:14px;max-height:60px;overflow:hidden;" id="esc-question-preview"></div>
 
       <!-- Expert list -->
       <div id="esc-expert-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
@@ -727,7 +727,7 @@
       <!-- Secondary: buy credits (no credits) -->
       <div id="esc-buy-bar" style="display:none;">
         <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;" id="esc-buy-msg"></div>
-        <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:block;">💳 Kredi Satın Al →</button>
+        <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:block;">💳 Kredi Satın Al →</button>
       </div>
     </div>
   </div>
@@ -1263,7 +1263,7 @@
     } else if (hasCredits) {
       window._escType = 'credits';
       document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
-      document.getElementById('esc-cost-display').style.color = 'var(--navy)';
+      document.getElementById('esc-cost-display').style.color = 'var(--ink)';
       document.getElementById('esc-main-btn').textContent = 'Kredi ile Gönder →';
       document.getElementById('esc-main-btn').disabled = false;
     } else {
