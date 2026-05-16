@@ -492,6 +492,17 @@
         body: 'AbiBOT sorunuz bir uzman tarafından incelendi ve yanıtlandı.',
         link: '/abibot.html'
       });
+
+      // If pro-bono, increment the expert's used slot count
+      if (review.is_probono && review.expert_id) {
+        const expert = allExperts.find(e => e.id === review.expert_id);
+        if (expert) {
+          const newUsed = (expert.probono_slots_used || 0) + 1;
+          await supabase.from('experts')
+            .update({ probono_slots_used: newUsed })
+            .eq('id', expert.id);
+        }
+      }
     }
 
     await loadAll();
