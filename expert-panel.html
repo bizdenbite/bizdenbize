@@ -503,6 +503,26 @@
             .eq('id', expert.id);
         }
       }
+
+      // Send email notification via edge function
+      try {
+        await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON}`,
+          },
+          body: JSON.stringify({
+            review_id: review.id,
+            user_id: review.user_id,
+            category: review.category,
+            question: review.question,
+            expert_response: response,
+          })
+        });
+      } catch (emailErr) {
+        console.warn('Email notification failed (non-critical):', emailErr);
+      }
     }
 
     await loadAll();
