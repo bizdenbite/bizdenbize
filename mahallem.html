@@ -573,7 +573,21 @@
     transition: background .15s;
   }
   .cm-accept-all:hover { background: #E8393A; }
-    @media (max-width: 900px) { }
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr !important;
+      }
+      .left-sidebar {
+        display: none !important;
+      }
+      .right-sidebar {
+        display: none !important;
+      }
+      .feed {
+        padding: 16px !important;
+        max-width: 100% !important;
+      }
+    }
   </style>
 
   <!-- PWA -->
