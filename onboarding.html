@@ -457,10 +457,19 @@
     @media (max-width: 900px) {
       .shell { grid-template-columns: 1fr; }
       .sidebar { display: none; }
-      .panel { padding: 40px 24px; }
+      .panel { padding: 40px 24px 100px; }
       .form-grid { grid-template-columns: 1fr; }
       .city-grid { grid-template-columns: repeat(2, 1fr); }
       .welcome-highlight { grid-template-columns: 1fr; gap: 20px; }
+      .panel-nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--cream);
+        padding: 12px 24px 24px;
+        margin-top: 0;
+        border-top: 1px solid var(--warm);
+        z-index: 50;
+      }
     }
   
     .nav-logo-link { display:flex; align-items:center; text-decoration:none; flex-shrink:0; }
