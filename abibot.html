@@ -13,7 +13,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    html, body { overflow-x: hidden; max-width: 100vw; }
     :root {
       --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
       --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
@@ -285,8 +284,8 @@
     .modal-submit:hover { background: var(--red2); }
 
     @media (max-width: 768px) {
-      .shell { grid-template-columns: 1fr; }
-      .left-panel { display: none; }
+      .shell { grid-template-columns: 1fr !important; width: 100% !important; }
+      .left-panel { display: none !important; width: 0 !important; }
       .chat-area { height: calc(100vh - 58px); }
       nav { padding: 0 12px; }
       .nav-divider { display: none; }
