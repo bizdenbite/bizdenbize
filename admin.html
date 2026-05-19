@@ -464,7 +464,7 @@
       <div class="ue-field"><label>Ad</label><input type="text" id="ue-firstname" placeholder="Ahmet"></div>
       <div class="ue-field"><label>Soyad</label><input type="text" id="ue-lastname" placeholder="Yilmaz"></div>
     </div>
-    <div class="ue-field"><label>E-posta</label><input type="email" id="ue-email" placeholder="ahmet@ornek.com"></div>
+
     <div class="ue-row">
       <div class="ue-field"><label>Sehir</label><input type="text" id="ue-city" placeholder="Frankfurt"></div>
       <div class="ue-field"><label>Ulke</label>
@@ -1007,15 +1007,14 @@
   window.submitUyeEkle = async function() {
     var firstname=document.getElementById('ue-firstname').value.trim();
     var lastname =document.getElementById('ue-lastname').value.trim();
-    var email    =document.getElementById('ue-email').value.trim();
     var city     =document.getElementById('ue-city').value.trim();
     var country  =document.getElementById('ue-country').value;
     var status   =document.getElementById('ue-status').value;
     var btn      =document.getElementById('ue-submit-btn');
     var msg      =document.getElementById('ue-msg');
 
-    if(!firstname||!email){
-      msg.textContent='Ad ve e-posta zorunludur.';msg.className='ue-msg error';return;
+    if(!firstname){
+      msg.textContent='Ad zorunludur.';msg.className='ue-msg error';return;
     }
 
     btn.disabled=true; btn.textContent='Ekleniyor...';
@@ -1028,7 +1027,7 @@
 
     var s = await xhrInsert('/rest/v1/profiles', {
       id:newId, first_name:firstname, last_name:lastname,
-      email:email, city:city, country:country,
+      city:city, country:country,
       username:username, status:status,
       created_at:new Date().toISOString()
     });
