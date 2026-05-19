@@ -427,7 +427,9 @@ function bb_detectLanguage() {
 function bb_setLanguage(lang) {
   if (!BB_SUPPORTED.includes(lang)) return;
   localStorage.setItem(BB_STORAGE_KEY, lang);
-  bb_applyLanguage(lang);
+  // Reload the page — cleanest way to apply all translations including
+  // hardcoded text that isn't using data-i18n attributes
+  window.location.reload();
 }
 
 function bb_applyLanguage(lang) {
@@ -571,6 +573,12 @@ function bb_injectLangSwitcher() {
 
 // ── AUTO-INIT ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+  // If there's no saved preference yet, force Turkish as default
+  // (clears old auto-detected language from previous visits)
+  const saved = localStorage.getItem(BB_STORAGE_KEY);
+  if (!saved) {
+    localStorage.setItem(BB_STORAGE_KEY, 'tr');
+  }
   const lang = bb_detectLanguage();
   bb_injectLangSwitcher();
   bb_applyLanguage(lang);
