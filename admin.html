@@ -706,29 +706,30 @@
     function initials(fn, ln) { return ((fn||'?')[0]+(ln||'?')[0]).toUpperCase(); }
 
     try {
+      // Use supabase client for proper RLS
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient(SUPA_URL, ANON_KEY);
+
       // 1. Total approved members
-      const totalRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id&status=eq.approved`, { headers });
-      const totalData = await totalRes.json();
-      setStat('stat-total', totalData.length, '', true);
+      const { data: totalData, error: e1 } = await sb.from('profiles').select('id').eq('status', 'approved');
+      console.log('Total data:', totalData, e1);
+      setStat('stat-total', totalData ? totalData.length : 0, '', true);
 
       // 2. Pending members
-      const pendRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id&status=eq.pending`, { headers });
-      const pendData = await pendRes.json();
-      setStat('stat-pending', pendData.length, pendData.length > 0 ? '↑ onay bekliyor' : '✓ temiz', pendData.length > 0);
+      const { data: pendData } = await sb.from('profiles').select('id').eq('status', 'pending');
+      const pendCount = pendData ? pendData.length : 0;
+      setStat('stat-pending', pendCount, pendCount > 0 ? '↑ onay bekliyor' : '✓ temiz', pendCount > 0);
 
       // 3. Active listings
-      const listRes = await fetch(`${SUPA_URL}/rest/v1/listings?select=id&status=eq.active`, { headers });
-      const listData = await listRes.json();
-      setStat('stat-listings', listData.length, '', true);
+      const { data: listData } = await sb.from('listings').select('id').eq('status', 'active');
+      setStat('stat-listings', listData ? listData.length : 0, '', true);
 
       // 4. AbiBOT sessions
-      const abibotRes = await fetch(`${SUPA_URL}/rest/v1/abibot_sessions?select=id`, { headers });
-      const abibotData = await abibotRes.json();
-      setStat('stat-abibot', abibotData.length, '', true);
+      const { data: abibotData } = await sb.from('abibot_sessions').select('id');
+      setStat('stat-abibot', abibotData ? abibotData.length : 0, '', true);
 
       // 5. Load real waitlist (pending users)
-      const wlRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10`, { headers });
-      const wlData = await wlRes.json();
+      const { data: wlData } = await sb.from('profiles').select('id,first_name,last_name,username,city,created_at').eq('status', 'pending').order('created_at', { ascending: false }).limit(10);
       const container = document.getElementById('waitlist-container');
       if (container) {
         if (!wlData.length) {
@@ -762,8 +763,8 @@
     // Approve/reject functions
     window.approveUser = async function(userId, btn) {
       btn.disabled = true; btn.textContent = '...';
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = createClient(SUPA_URL, ANON_KEY);
+      const { createClient: cc1 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = cc1(SUPA_URL, ANON_KEY);
       const { error } = await sb.from('profiles').update({ status: 'approved' }).eq('id', userId);
       if (!error) {
         btn.closest('.waitlist-item').style.opacity = '0.4';
@@ -781,8 +782,8 @@
     window.rejectUser = async function(userId, btn) {
       if (!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
       btn.disabled = true; btn.textContent = '...';
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = createClient(SUPA_URL, ANON_KEY);
+      const { createClient: cc2 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = cc2(SUPA_URL, ANON_KEY);
       const { error } = await sb.from('profiles').update({ status: 'rejected' }).eq('id', userId);
       if (!error) {
         btn.closest('.waitlist-item').style.opacity = '0.4';
