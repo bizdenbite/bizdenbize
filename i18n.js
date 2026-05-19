@@ -416,18 +416,12 @@ const BB_SUPPORTED = ['tr','de','en','fr','nl'];
 const BB_STORAGE_KEY = 'bb_language';
 
 function bb_detectLanguage() {
-  // 1. Check saved preference
+  // 1. Check saved preference (user manually switched)
   const saved = localStorage.getItem(BB_STORAGE_KEY);
   if (saved && BB_SUPPORTED.includes(saved)) return saved;
 
-  // 2. Auto-detect from browser
-  const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-
-  if (browserLang.startsWith('tr')) return 'tr';
-  if (browserLang.startsWith('de')) return 'de';
-  if (browserLang.startsWith('fr')) return 'fr';
-  if (browserLang.startsWith('nl')) return 'nl';
-  return 'en'; // fallback
+  // 2. Default is always Turkish — user can switch manually
+  return 'tr';
 }
 
 function bb_setLanguage(lang) {
@@ -459,6 +453,15 @@ function bb_applyLanguage(lang) {
     btn.classList.toggle('active', btn.dataset.lang === lang);
   });
 
+  // Update globe trigger label
+  var label = document.getElementById('bb-lang-label');
+  if (label) label.textContent = lang.toUpperCase();
+
+  // Update active state in dropdown
+  document.querySelectorAll('.bb-lang-option').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
   // Store globally
   window.BB_LANG = lang;
   window.BB_T = t;
@@ -467,31 +470,103 @@ function bb_applyLanguage(lang) {
 // ── LANGUAGE SWITCHER UI ─────────────────────────────
 
 function bb_injectLangSwitcher() {
-  // Find footer or create a floating switcher
-  const footer = document.querySelector('footer') || document.querySelector('.lang-switcher');
-  if (!footer) return;
+  // Inject CSS once
+  if (!document.getElementById('bb-lang-css')) {
+    var style = document.createElement('style');
+    style.id = 'bb-lang-css';
+    style.textContent = `
+      .bb-lang-wrap { position:relative; display:inline-block; }
+      .bb-lang-trigger {
+        display:flex;align-items:center;gap:5px;
+        background:none;border:1.5px solid rgba(212,197,169,0.6);
+        border-radius:8px;padding:5px 10px;cursor:pointer;
+        font-size:12px;font-weight:600;color:#1A1208;
+        font-family:'Instrument Sans',sans-serif;
+        transition:border-color .15s,background .15s;
+        white-space:nowrap;
+      }
+      .bb-lang-trigger:hover { border-color:#D42B2B;background:rgba(212,197,169,0.15); }
+      .bb-lang-dropdown {
+        position:absolute;top:calc(100% + 6px);right:0;
+        background:#FAF7F2;border:1px solid rgba(212,197,169,0.6);
+        border-radius:10px;padding:4px;min-width:150px;
+        box-shadow:0 8px 24px rgba(0,0,0,.12);
+        display:none;z-index:9999;
+      }
+      .bb-lang-wrap.open .bb-lang-dropdown { display:block; }
+      .bb-lang-option {
+        display:flex;align-items:center;gap:8px;
+        padding:8px 12px;border-radius:7px;cursor:pointer;
+        font-size:13px;font-family:'Instrument Sans',sans-serif;
+        color:#1A1208;border:none;background:none;width:100%;text-align:left;
+        transition:background .1s;
+      }
+      .bb-lang-option:hover { background:rgba(212,197,169,0.3); }
+      .bb-lang-option.active {
+        background:rgba(212,43,43,0.08);color:#D42B2B;font-weight:600;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Find the nav-right container
+  const navRight = document.querySelector('.nav-right');
+  if (!navRight) return;
 
   const existing = document.getElementById('bb-lang-switcher');
   if (existing) return;
 
-  const switcher = document.createElement('div');
-  switcher.id = 'bb-lang-switcher';
-  switcher.style.cssText = 'display:flex;gap:6px;align-items:center;';
-  switcher.innerHTML = `
-    <button class="bb-lang-btn lang-btn" data-lang="tr" onclick="bb_setLanguage('tr')">🇹🇷 TR</button>
-    <button class="bb-lang-btn lang-btn" data-lang="de" onclick="bb_setLanguage('de')">🇩🇪 DE</button>
-    <button class="bb-lang-btn lang-btn" data-lang="en" onclick="bb_setLanguage('en')">🇬🇧 EN</button>
-    <button class="bb-lang-btn lang-btn" data-lang="fr" onclick="bb_setLanguage('fr')">🇫🇷 FR</button>
-    <button class="bb-lang-btn lang-btn" data-lang="nl" onclick="bb_setLanguage('nl')">🇳🇱 NL</button>
-  `;
+  var langs = [
+    { code:'tr', flag:'🇹🇷', label:'Türkçe' },
+    { code:'de', flag:'🇩🇪', label:'Deutsch' },
+    { code:'en', flag:'🇬🇧', label:'English' },
+    { code:'fr', flag:'🇫🇷', label:'Français' },
+    { code:'nl', flag:'🇳🇱', label:'Nederlands' },
+  ];
 
-  const langSwitcher = footer.querySelector('.lang-switcher');
-  if (langSwitcher) {
-    langSwitcher.innerHTML = '';
-    langSwitcher.appendChild(switcher);
+  var wrap = document.createElement('div');
+  wrap.id = 'bb-lang-switcher';
+  wrap.className = 'bb-lang-wrap';
+
+  var trigger = document.createElement('button');
+  trigger.className = 'bb-lang-trigger';
+  trigger.id = 'bb-lang-trigger';
+  trigger.innerHTML = '🌍 <span id="bb-lang-label">TR</span>';
+  trigger.onclick = function(e) {
+    e.stopPropagation();
+    wrap.classList.toggle('open');
+  };
+
+  var dropdown = document.createElement('div');
+  dropdown.className = 'bb-lang-dropdown';
+
+  langs.forEach(function(l) {
+    var btn = document.createElement('button');
+    btn.className = 'bb-lang-option bb-lang-btn';
+    btn.dataset.lang = l.code;
+    btn.innerHTML = l.flag + ' ' + l.label;
+    btn.onclick = function() {
+      bb_setLanguage(l.code);
+      wrap.classList.remove('open');
+    };
+    dropdown.appendChild(btn);
+  });
+
+  wrap.appendChild(trigger);
+  wrap.appendChild(dropdown);
+
+  // Insert before the notification button
+  const notif = navRight.querySelector('.nav-notif');
+  if (notif) {
+    navRight.insertBefore(wrap, notif);
   } else {
-    footer.appendChild(switcher);
+    navRight.insertBefore(wrap, navRight.firstChild);
   }
+
+  // Close on outside click
+  document.addEventListener('click', function() {
+    wrap.classList.remove('open');
+  });
 }
 
 // ── AUTO-INIT ────────────────────────────────────────
