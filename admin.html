@@ -749,16 +749,15 @@
   var SUPA = 'https://wxjudojlwksivhzjnmim.supabase.co';
   var ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
 
-  // ── XHR GET ──────────────────────────────────────────────────────
-  function xhrGet(path, token) {
+  function xhrGet(path) {
     return new Promise(function(resolve) {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', SUPA + path, true);
       xhr.setRequestHeader('apikey', ANON);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + (token || _adminToken || ANON));
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (_adminToken || ANON));
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.onload = function() {
-        try { var d=JSON.parse(xhr.responseText); resolve(Array.isArray(d)?d:[]); }
+        try { var d = JSON.parse(xhr.responseText); resolve(Array.isArray(d) ? d : []); }
         catch(e) { resolve([]); }
       };
       xhr.onerror = function() { resolve([]); };
@@ -766,7 +765,6 @@
     });
   }
 
-  // ── XHR POST (login) ─────────────────────────────────────────────
   function xhrPost(path, body) {
     return new Promise(function(resolve) {
       var xhr = new XMLHttpRequest();
@@ -774,15 +772,14 @@
       xhr.setRequestHeader('apikey', ANON);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
-        try { resolve({status:xhr.status, data:JSON.parse(xhr.responseText)}); }
-        catch(e) { resolve({status:xhr.status, data:{}}); }
+        try { resolve({ status: xhr.status, data: JSON.parse(xhr.responseText) }); }
+        catch(e) { resolve({ status: xhr.status, data: {} }); }
       };
-      xhr.onerror = function() { resolve({status:0, data:{}}); };
+      xhr.onerror = function() { resolve({ status: 0, data: {} }); };
       xhr.send(JSON.stringify(body));
     });
   }
 
-  // ── XHR PATCH ────────────────────────────────────────────────────
   function xhrPatch(path, body) {
     return new Promise(function(resolve) {
       var xhr = new XMLHttpRequest();
@@ -807,53 +804,51 @@
     err.classList.remove('show');
 
     if (!pass) {
-      err.textContent = 'Lütfen şifrenizi girin.';
+      err.textContent = 'Lutfen sifrenizi girin.';
       err.classList.add('show');
-      btn.disabled = false; btn.textContent = 'Giriş Yap';
+      btn.disabled = false; btn.textContent = 'Giris Yap';
       return;
     }
 
     try {
-      // Try Supabase v2 auth endpoint
-      var res = await xhrPost('/auth/v1/token?grant_type=password', {email:email, password:pass});
-      console.log('[Admin Login] Status:', res.status, 'Data:', res.data);
+      var res = await xhrPost('/auth/v1/token?grant_type=password', { email: email, password: pass });
+      console.log('[BizdenBize Admin] Login status:', res.status, res.data);
 
       if (res.status === 200 && res.data.access_token) {
         _adminToken = res.data.access_token;
         document.getElementById('admin-login-overlay').classList.add('hidden');
         loadStats();
       } else {
-        // Show the actual error from Supabase
         var msg = (res.data && (res.data.error_description || res.data.msg || res.data.message))
-                  || ('Giriş başarısız. (Kod: ' + res.status + ')');
+                  || ('Giris basarisiz. Kod: ' + res.status);
         err.textContent = msg;
         err.classList.add('show');
-        btn.disabled = false; btn.textContent = 'Giriş Yap';
+        btn.disabled = false; btn.textContent = 'Giris Yap';
       }
     } catch(e) {
-      console.error('[Admin Login] Exception:', e);
-      err.textContent = 'Bağlantı hatası: ' + e.message;
+      console.error('[BizdenBize Admin] Login error:', e);
+      err.textContent = 'Baglanti hatasi: ' + e.message;
       err.classList.add('show');
-      btn.disabled = false; btn.textContent = 'Giriş Yap';
+      btn.disabled = false; btn.textContent = 'Giris Yap';
     }
   };
 
-  // Allow Enter key to submit
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !document.getElementById('admin-login-overlay').classList.contains('hidden')) {
+    var overlay = document.getElementById('admin-login-overlay');
+    if (e.key === 'Enter' && overlay && !overlay.classList.contains('hidden')) {
       doAdminLogin();
     }
   });
 
-  // ── Stats helpers ─────────────────────────────────────────────────
+  // ── Stat helpers ──────────────────────────────────────────────────
   var COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
-  function colorFor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%COLORS.length;return COLORS[h];}
-  function initials(a,b){return(((a||'?')[0])+((b||'?')[0])).toUpperCase();}
-  function setStat(id,val,changeText,isUp){
-    var el=document.getElementById(id);
-    if(el) el.textContent=String(val);
-    var ch=document.getElementById(id+'-change');
-    if(ch&&changeText){ch.textContent=changeText;ch.className='stat-change '+(isUp?'up':'down');}
+  function colorFor(s) { var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))%COLORS.length; return COLORS[h]; }
+  function initials(a,b) { return (((a||'?')[0])+((b||'?')[0])).toUpperCase(); }
+  function setStat(id, val, changeText, isUp) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(val);
+    var ch = document.getElementById(id + '-change');
+    if (ch && changeText) { ch.textContent = changeText; ch.className = 'stat-change ' + (isUp ? 'up' : 'down'); }
   }
 
   // ── Load stats ────────────────────────────────────────────────────
@@ -864,58 +859,78 @@
       xhrGet('/rest/v1/listings?select=id&status=eq.active&limit=10000'),
       xhrGet('/rest/v1/abibot_sessions?select=id&limit=10000')
     ]);
-    var total=res[0].length, pend=res[1].length;
+
+    var total = res[0].length, pend = res[1].length;
     setStat('stat-total',    total, '', true);
-    setStat('stat-pending',  pend,  pend>0?'↑ onay bekliyor':'✓ temiz', pend>0);
+    setStat('stat-pending',  pend,  pend > 0 ? 'onay bekliyor' : 'temiz', pend > 0);
     setStat('stat-listings', res[2].length, '', true);
     setStat('stat-abibot',   res[3].length, '', true);
 
+    // Waitlist — uses data-uid to avoid all quote-escaping issues
     var wl = await xhrGet('/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10');
     var box = document.getElementById('waitlist-container');
-    if (box) {
-      if (!wl.length) {
-        box.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
-      } else {
-        box.innerHTML=wl.map(function(u){
-          var fn=u.first_name||'',ln=u.last_name||'';
-          var name=(fn+' '+ln).trim()||u.username||'İsimsiz';
-          return '<div class="waitlist-item">'+
-            '<div class="wl-avatar" style="background:'+colorFor(u.id)+'">'+initials(fn||u.username,ln)+'</div>'+
-            '<div><div class="wl-name">'+name+'</div>'+
-            '<div class="wl-city">'+(u.city||'—')+' · @'+(u.username||'—')+'</div></div>'+
-            '<div class="wl-actions">'+
-            '<button class="action-btn approve" onclick="approveUser(''+u.id+'',this)">✓ Onayla</button>'+
-            '<button class="action-btn ban" onclick="rejectUser(''+u.id+'',this)">✕ Reddet</button>'+
-            '</div></div>';
-        }).join('');
-      }
+    if (!box) return;
+
+    if (!wl.length) {
+      box.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Bekleyen basvuru yok</div>';
+      return;
     }
+
+    // Build HTML using data-uid attribute (no tricky quote escaping needed)
+    var html = '';
+    for (var i = 0; i < wl.length; i++) {
+      var u    = wl[i];
+      var fn   = u.first_name || '';
+      var ln   = u.last_name  || '';
+      var name = (fn + ' ' + ln).trim() || u.username || 'Isimsiz';
+      var city = u.city     || '-';
+      var user = u.username || '-';
+      html += '<div class="waitlist-item">' +
+        '<div class="wl-avatar" style="background:' + colorFor(u.id) + '">' + initials(fn || u.username, ln) + '</div>' +
+        '<div><div class="wl-name">' + name + '</div>' +
+        '<div class="wl-city">' + city + ' @' + user + '</div></div>' +
+        '<div class="wl-actions">' +
+        '<button class="action-btn approve" data-uid="' + u.id + '">Onayla</button>' +
+        '<button class="action-btn ban"     data-uid="' + u.id + '">Reddet</button>' +
+        '</div></div>';
+    }
+    box.innerHTML = html;
+
+    // Attach events after innerHTML is set
+    box.querySelectorAll('.approve').forEach(function(btn) {
+      btn.addEventListener('click', function() { approveUser(this.dataset.uid, this); });
+    });
+    box.querySelectorAll('.ban').forEach(function(btn) {
+      btn.addEventListener('click', function() { rejectUser(this.dataset.uid, this); });
+    });
   };
 
   // ── Approve ───────────────────────────────────────────────────────
-  window.approveUser = async function(id,btn) {
-    btn.disabled=true; btn.textContent='...';
-    var s=await xhrPatch('/rest/v1/profiles?id=eq.'+id,{status:'approved'});
-    if(s>=200&&s<300){
-      btn.closest('.waitlist-item').style.opacity='0.4'; btn.textContent='✓ Onaylandı';
-      var p=document.getElementById('stat-pending'),t=document.getElementById('stat-total');
-      if(p) p.textContent=Math.max(0,parseInt(p.textContent)-1);
-      if(t) t.textContent=parseInt(t.textContent)+1;
-    } else {btn.textContent='✗ Hata';btn.disabled=false;}
+  window.approveUser = async function(id, btn) {
+    btn.disabled = true; btn.textContent = '...';
+    var s = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'approved' });
+    if (s >= 200 && s < 300) {
+      btn.closest('.waitlist-item').style.opacity = '0.4'; btn.textContent = 'Onaylandi';
+      var p = document.getElementById('stat-pending'), t = document.getElementById('stat-total');
+      if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
+      if (t) t.textContent = parseInt(t.textContent) + 1;
+    } else { btn.textContent = 'Hata'; btn.disabled = false; }
   };
 
   // ── Reject ────────────────────────────────────────────────────────
-  window.rejectUser = async function(id,btn) {
-    if(!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
-    btn.disabled=true; btn.textContent='...';
-    var s=await xhrPatch('/rest/v1/profiles?id=eq.'+id,{status:'rejected'});
-    if(s>=200&&s<300){
-      btn.closest('.waitlist-item').style.opacity='0.4'; btn.textContent='✕ Reddedildi';
-      var p=document.getElementById('stat-pending');
-      if(p) p.textContent=Math.max(0,parseInt(p.textContent)-1);
-    } else {btn.textContent='✗ Hata';btn.disabled=false;}
+  window.rejectUser = async function(id, btn) {
+    if (!confirm('Bu kullanicıyı reddetmek istediğinize emin misiniz?')) return;
+    btn.disabled = true; btn.textContent = '...';
+    var s = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'rejected' });
+    if (s >= 200 && s < 300) {
+      btn.closest('.waitlist-item').style.opacity = '0.4'; btn.textContent = 'Reddedildi';
+      var p = document.getElementById('stat-pending');
+      if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
+    } else { btn.textContent = 'Hata'; btn.disabled = false; }
   };
 </script>
+
+
 
 <script>
   // ══ COOKIE CONSENT LOGIC ══
