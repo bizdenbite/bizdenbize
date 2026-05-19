@@ -1004,44 +1004,104 @@
     if(m&&e.target===m) closeUyeModal();
   });
 
-  window.submitUyeEkle = async function() {
-    var firstname=document.getElementById('ue-firstname').value.trim();
-    var lastname =document.getElementById('ue-lastname').value.trim();
-    var city     =document.getElementById('ue-city').value.trim();
-    var country  =document.getElementById('ue-country').value;
-    var status   =document.getElementById('ue-status').value;
-    var btn      =document.getElementById('ue-submit-btn');
-    var msg      =document.getElementById('ue-msg');
+  var SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODM3MzUwNSwiZXhwIjoyMDkzOTQ5NTA1fQ.YZttGx8bGrHeCI0IeU9eXDBPDPXylDB8V5N7PDOrNdY';
 
-    if(!firstname){
-      msg.textContent='Ad zorunludur.';msg.className='ue-msg error';return;
+  window.submitUyeEkle = async function() {
+    var firstname = document.getElementById('ue-firstname').value.trim();
+    var lastname  = document.getElementById('ue-lastname').value.trim();
+    var email     = document.getElementById('ue-email').value.trim();
+    var city      = document.getElementById('ue-city').value.trim();
+    var country   = document.getElementById('ue-country').value;
+    var status    = document.getElementById('ue-status').value;
+    var btn       = document.getElementById('ue-submit-btn');
+    var msg       = document.getElementById('ue-msg');
+
+    if (!firstname || !email) {
+      msg.textContent = 'Ad ve e-posta zorunludur.';
+      msg.className = 'ue-msg error'; return;
+    }
+    if (email.indexOf('@') < 1) {
+      msg.textContent = 'Gecerli bir e-posta girin.';
+      msg.className = 'ue-msg error'; return;
     }
 
-    btn.disabled=true; btn.textContent='Ekleniyor...';
-    msg.textContent=''; msg.className='ue-msg';
+    btn.disabled = true; btn.textContent = 'Ekleniyor...';
+    msg.textContent = ''; msg.className = 'ue-msg';
 
-    // Timestamp suffix guarantees unique username every time
-    var username = (firstname + lastname).toLowerCase().replace(/[^a-z0-9]/g, '') + Date.now();
-
-    // Let Supabase auto-generate the UUID (no id field sent)
-    var s = await xhrInsert('/rest/v1/profiles', {
-      first_name: firstname,
-      last_name:  lastname,
-      city:       city,
-      country:    country,
-      username:   username,
-      status:     status
+    // Step 1: Create auth user via admin API (service role key required)
+    var authXhr = new XMLHttpRequest();
+    var authResult = await new Promise(function(resolve) {
+      authXhr.open('POST', SUPA + '/auth/v1/admin/users', true);
+      authXhr.setRequestHeader('apikey', SERVICE_KEY);
+      authXhr.setRequestHeader('Authorization', 'Bearer ' + SERVICE_KEY);
+      authXhr.setRequestHeader('Content-Type', 'application/json');
+      authXhr.onload = function() {
+        try { resolve({status: authXhr.status, data: JSON.parse(authXhr.responseText)}); }
+        catch(e) { resolve({status: authXhr.status, data: {}}); }
+      };
+      authXhr.onerror = function() { resolve({status: 0, data: {}}); };
+      authXhr.send(JSON.stringify({
+        email: email,
+        email_confirm: true,
+        user_metadata: { first_name: firstname, last_name: lastname }
+      }));
     });
 
-    if(s>=200&&s<300){
-      msg.textContent=firstname+' '+lastname+' basariyla eklendi!';
-      msg.className='ue-msg success';
-      btn.textContent='Eklendi';
-      setTimeout(function(){closeUyeModal();loadStats();},1500);
+    if (authResult.status !== 200) {
+      var errMsg = (authResult.data && (authResult.data.msg || authResult.data.message || authResult.data.error_description))
+                   || ('Auth hatasi: ' + authResult.status);
+      msg.textContent = errMsg;
+      msg.className = 'ue-msg error';
+      btn.disabled = false; btn.textContent = 'Uye Ekle'; return;
+    }
+
+    var newUserId = authResult.data.id;
+    var username  = (firstname + lastname).toLowerCase().replace(/[^a-z0-9]/g, '') + Date.now();
+
+    // Step 2: Create profile linked to the new auth user
+    var profXhr = new XMLHttpRequest();
+    var profResult = await new Promise(function(resolve) {
+      profXhr.open('POST', SUPA + '/rest/v1/profiles', true);
+      profXhr.setRequestHeader('apikey', SERVICE_KEY);
+      profXhr.setRequestHeader('Authorization', 'Bearer ' + SERVICE_KEY);
+      profXhr.setRequestHeader('Content-Type', 'application/json');
+      profXhr.setRequestHeader('Prefer', 'return=minimal');
+      profXhr.onload  = function() { resolve(profXhr.status); };
+      profXhr.onerror = function() { resolve(0); };
+      profXhr.send(JSON.stringify({
+        id:         newUserId,
+        first_name: firstname,
+        last_name:  lastname,
+        city:       city,
+        country:    country,
+        username:   username,
+        status:     status
+      }));
+    });
+
+    if (profResult >= 200 && profResult < 300) {
+      // Step 3: Send password reset email so user can set their password
+      var resetXhr = new XMLHttpRequest();
+      resetXhr.open('POST', SUPA + '/auth/v1/recover', true);
+      resetXhr.setRequestHeader('apikey', ANON);
+      resetXhr.setRequestHeader('Content-Type', 'application/json');
+      resetXhr.send(JSON.stringify({email: email}));
+
+      msg.textContent = firstname + ' ' + lastname + ' eklendi! Sifre belirleme e-postasi gonderildi.';
+      msg.className = 'ue-msg success';
+      btn.textContent = 'Eklendi';
+      setTimeout(function() { closeUyeModal(); loadStats(); }, 2000);
     } else {
-      msg.textContent='Hata kodu: '+s+'. Supabase INSERT politikasini kontrol edin.';
-      msg.className='ue-msg error';
-      btn.disabled=false; btn.textContent='Uye Ekle';
+      // Auth user created but profile failed — clean up auth user
+      var delXhr = new XMLHttpRequest();
+      delXhr.open('DELETE', SUPA + '/auth/v1/admin/users/' + newUserId, true);
+      delXhr.setRequestHeader('apikey', SERVICE_KEY);
+      delXhr.setRequestHeader('Authorization', 'Bearer ' + SERVICE_KEY);
+      delXhr.send();
+
+      msg.textContent = 'Profil olusturulamadi (Kod: ' + profResult + '). Tekrar deneyin.';
+      msg.className = 'ue-msg error';
+      btn.disabled = false; btn.textContent = 'Uye Ekle';
     }
   };
 </script>
