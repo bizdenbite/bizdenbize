@@ -348,6 +348,48 @@
   }
   .cm-accept-all:hover { background: #E8393A; }
     @media (max-width: 900px) { }
+
+  /* ── ADMIN LOGIN OVERLAY ── */
+  #admin-login-overlay {
+    position:fixed;inset:0;z-index:99999;
+    background:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+  }
+  #admin-login-overlay.hidden { display:none; }
+  .login-box {
+    background:var(--white);border-radius:20px;
+    padding:40px;width:100%;max-width:380px;
+    box-shadow:0 24px 80px rgba(0,0,0,.4);
+  }
+  .login-logo {
+    font-family:'Playfair Display',serif;font-size:22px;
+    font-weight:900;color:var(--ink);margin-bottom:4px;
+  }
+  .login-logo span{color:var(--red);}
+  .login-sub{font-size:12px;color:var(--muted);margin-bottom:28px;}
+  .login-field{margin-bottom:14px;}
+  .login-field label{font-size:11px;font-weight:600;color:var(--muted);
+    letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;}
+  .login-field input{
+    width:100%;padding:11px 14px;border:1.5px solid var(--sand);
+    border-radius:9px;font-size:14px;font-family:'Instrument Sans',sans-serif;
+    color:var(--ink);background:var(--cream);outline:none;
+    transition:border-color .15s;
+  }
+  .login-field input:focus{border-color:var(--red);}
+  .login-btn{
+    width:100%;padding:13px;background:var(--red);color:#fff;
+    border:none;border-radius:9px;font-size:14px;font-weight:700;
+    font-family:'Instrument Sans',sans-serif;cursor:pointer;
+    margin-top:8px;transition:background .15s;
+  }
+  .login-btn:hover{background:var(--red2);}
+  .login-btn:disabled{opacity:.6;cursor:not-allowed;}
+  .login-error{
+    font-size:12px;color:var(--red);margin-top:10px;
+    display:none;font-weight:600;
+  }
+  .login-error.show{display:block;}
   </style>
 
   <!-- PWA -->
@@ -374,6 +416,25 @@
   <script src="i18n.js"></script>
 </head>
 <body>
+
+<!-- ── ADMIN LOGIN OVERLAY ── -->
+<div id="admin-login-overlay">
+  <div class="login-box">
+    <div class="login-logo">Bizden<span>Bize</span></div>
+    <div class="login-sub">Admin Paneli — Lütfen giriş yapın</div>
+    <div class="login-field">
+      <label>E-posta</label>
+      <input type="email" id="login-email" value="nazvannorel@gmail.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Şifre</label>
+      <input type="password" id="login-password" placeholder="Şifrenizi girin" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doAdminLogin()">Giriş Yap</button>
+    <div class="login-error" id="login-error">E-posta veya şifre hatalı. Tekrar deneyin.</div>
+  </div>
+</div>
+
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -683,148 +744,156 @@
     });
   </script>
 <script>
-  // ══ LIVE STATS FROM SUPABASE (XHR — bypasses Service Worker) ══
-  (function () {
-    var SUPA = 'https://wxjudojlwksivhzjnmim.supabase.co';
-    var KEY  = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  // ══ ADMIN AUTH + LIVE STATS (XHR — bypasses Service Worker) ══
+  var _adminToken = null;
+  var SUPA = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  var ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
 
-    // ── XHR GET: returns parsed JSON array, or [] on error ──────────
-    // XMLHttpRequest is NOT interceptable by Service Workers.
-    // We count the returned rows directly — no Content-Range tricks.
-    function xhrGet(path) {
-      return new Promise(function (resolve) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', SUPA + path, true);
-        xhr.setRequestHeader('apikey', KEY);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + KEY);
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.onload = function () {
-          try {
-            var data = JSON.parse(xhr.responseText);
-            resolve(Array.isArray(data) ? data : []);
-          } catch (e) { resolve([]); }
-        };
-        xhr.onerror = function () { resolve([]); };
-        xhr.send();
-      });
-    }
+  // ── XHR GET ──────────────────────────────────────────────────────
+  function xhrGet(path, token) {
+    return new Promise(function(resolve) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', SUPA + path, true);
+      xhr.setRequestHeader('apikey', ANON);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (token || _adminToken || ANON));
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.onload = function() {
+        try { var d=JSON.parse(xhr.responseText); resolve(Array.isArray(d)?d:[]); }
+        catch(e) { resolve([]); }
+      };
+      xhr.onerror = function() { resolve([]); };
+      xhr.send();
+    });
+  }
 
-    // ── XHR PATCH: update a row ──────────────────────────────────────
-    function xhrPatch(path, body) {
-      return new Promise(function (resolve) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('PATCH', SUPA + path, true);
-        xhr.setRequestHeader('apikey', KEY);
-        xhr.setRequestHeader('Authorization', 'Bearer ' + KEY);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('Prefer', 'return=minimal');
-        xhr.onload  = function () { resolve(xhr.status); };
-        xhr.onerror = function () { resolve(0); };
-        xhr.send(JSON.stringify(body));
-      });
-    }
+  // ── XHR POST (login) ─────────────────────────────────────────────
+  function xhrPost(path, body) {
+    return new Promise(function(resolve) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', SUPA + path, true);
+      xhr.setRequestHeader('apikey', ANON);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onload = function() {
+        try { resolve({status:xhr.status, data:JSON.parse(xhr.responseText)}); }
+        catch(e) { resolve({status:xhr.status, data:{}}); }
+      };
+      xhr.onerror = function() { resolve({status:0, data:{}}); };
+      xhr.send(JSON.stringify(body));
+    });
+  }
 
-    // ── Update a stat card ───────────────────────────────────────────
-    function setStat(id, val, changeText, isUp) {
-      var el = document.getElementById(id);
-      if (el) el.textContent = String(val);
-      var ch = document.getElementById(id + '-change');
-      if (ch && changeText) {
-        ch.textContent = changeText;
-        ch.className = 'stat-change ' + (isUp ? 'up' : 'down');
-      }
-    }
+  // ── XHR PATCH ────────────────────────────────────────────────────
+  function xhrPatch(path, body) {
+    return new Promise(function(resolve) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('PATCH', SUPA + path, true);
+      xhr.setRequestHeader('apikey', ANON);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (_adminToken || ANON));
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Prefer', 'return=minimal');
+      xhr.onload  = function() { resolve(xhr.status); };
+      xhr.onerror = function() { resolve(0); };
+      xhr.send(JSON.stringify(body));
+    });
+  }
 
-    // ── Avatar helpers ───────────────────────────────────────────────
-    var COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
-    function colorFor(s) { var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))%COLORS.length; return COLORS[h]; }
-    function initials(a, b) { return (((a||'?')[0])+((b||'?')[0])).toUpperCase(); }
+  // ── Login ─────────────────────────────────────────────────────────
+  window.doAdminLogin = async function() {
+    var email = document.getElementById('login-email').value.trim();
+    var pass  = document.getElementById('login-password').value;
+    var btn   = document.getElementById('login-btn');
+    var err   = document.getElementById('login-error');
+    btn.disabled = true; btn.textContent = 'Giriş yapılıyor...';
+    err.classList.remove('show');
 
-    // ── Main loader ──────────────────────────────────────────────────
-    async function load() {
-      // Run all 4 counts in parallel for speed
-      var results = await Promise.all([
-        xhrGet('/rest/v1/profiles?select=id&status=eq.approved&limit=10000'),
-        xhrGet('/rest/v1/profiles?select=id&status=eq.pending&limit=10000'),
-        xhrGet('/rest/v1/listings?select=id&status=eq.active&limit=10000'),
-        xhrGet('/rest/v1/abibot_sessions?select=id&limit=10000')
-      ]);
-
-      var totalCount = results[0].length;
-      var pendCount  = results[1].length;
-      var listCount  = results[2].length;
-      var botCount   = results[3].length;
-
-      setStat('stat-total',    totalCount, '', true);
-      setStat('stat-pending',  pendCount,  pendCount > 0 ? '↑ onay bekliyor' : '✓ temiz', pendCount > 0);
-      setStat('stat-listings', listCount,  '', true);
-      setStat('stat-abibot',   botCount,   '', true);
-
-      // Waitlist: pending users, newest first
-      var wl = await xhrGet('/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10');
-      var container = document.getElementById('waitlist-container');
-      if (container) {
-        if (!wl.length) {
-          container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
-        } else {
-          container.innerHTML = wl.map(function (u) {
-            var fn   = u.first_name || '';
-            var ln   = u.last_name  || '';
-            var name = (fn + ' ' + ln).trim() || u.username || 'İsimsiz';
-            var city = u.city || '—';
-            var col  = colorFor(u.id);
-            var ini  = initials(fn || u.username, ln);
-            return '<div class="waitlist-item">' +
-              '<div class="wl-avatar" style="background:' + col + '">' + ini + '</div>' +
-              '<div><div class="wl-name">' + name + '</div>' +
-              '<div class="wl-city">' + city + ' · @' + (u.username || '—') + '</div></div>' +
-              '<div class="wl-actions">' +
-              '<button class="action-btn approve" onclick="approveUser(\'' + u.id + '\',this)">✓ Onayla</button>' +
-              '<button class="action-btn ban"     onclick="rejectUser(\''  + u.id + '\',this)">✕ Reddet</button>' +
-              '</div></div>';
-          }).join('');
-        }
-      }
-    }
-
-    // ── Approve ──────────────────────────────────────────────────────
-    window.approveUser = async function (id, btn) {
-      btn.disabled = true; btn.textContent = '...';
-      var status = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'approved' });
-      if (status >= 200 && status < 300) {
-        btn.closest('.waitlist-item').style.opacity = '0.4';
-        btn.textContent = '✓ Onaylandı';
-        var p = document.getElementById('stat-pending');
-        var t = document.getElementById('stat-total');
-        if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
-        if (t) t.textContent = parseInt(t.textContent) + 1;
-      } else {
-        btn.textContent = '✗ Hata'; btn.disabled = false;
-      }
-    };
-
-    // ── Reject ───────────────────────────────────────────────────────
-    window.rejectUser = async function (id, btn) {
-      if (!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
-      btn.disabled = true; btn.textContent = '...';
-      var status = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'rejected' });
-      if (status >= 200 && status < 300) {
-        btn.closest('.waitlist-item').style.opacity = '0.4';
-        btn.textContent = '✕ Reddedildi';
-        var p = document.getElementById('stat-pending');
-        if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
-      } else {
-        btn.textContent = '✗ Hata'; btn.disabled = false;
-      }
-    };
-
-    // Start
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', load);
+    var res = await xhrPost('/auth/v1/token?grant_type=password', {email:email, password:pass});
+    if (res.status === 200 && res.data.access_token) {
+      _adminToken = res.data.access_token;
+      document.getElementById('admin-login-overlay').classList.add('hidden');
+      loadStats();
     } else {
-      load();
+      err.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Giriş Yap';
     }
-  })();
+  };
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !document.getElementById('admin-login-overlay').classList.contains('hidden')) {
+      doAdminLogin();
+    }
+  });
+
+  // ── Stats helpers ─────────────────────────────────────────────────
+  var COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
+  function colorFor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%COLORS.length;return COLORS[h];}
+  function initials(a,b){return(((a||'?')[0])+((b||'?')[0])).toUpperCase();}
+  function setStat(id,val,changeText,isUp){
+    var el=document.getElementById(id);
+    if(el) el.textContent=String(val);
+    var ch=document.getElementById(id+'-change');
+    if(ch&&changeText){ch.textContent=changeText;ch.className='stat-change '+(isUp?'up':'down');}
+  }
+
+  // ── Load stats ────────────────────────────────────────────────────
+  window.loadStats = async function() {
+    var res = await Promise.all([
+      xhrGet('/rest/v1/profiles?select=id&status=eq.approved&limit=10000'),
+      xhrGet('/rest/v1/profiles?select=id&status=eq.pending&limit=10000'),
+      xhrGet('/rest/v1/listings?select=id&status=eq.active&limit=10000'),
+      xhrGet('/rest/v1/abibot_sessions?select=id&limit=10000')
+    ]);
+    var total=res[0].length, pend=res[1].length;
+    setStat('stat-total',    total, '', true);
+    setStat('stat-pending',  pend,  pend>0?'↑ onay bekliyor':'✓ temiz', pend>0);
+    setStat('stat-listings', res[2].length, '', true);
+    setStat('stat-abibot',   res[3].length, '', true);
+
+    var wl = await xhrGet('/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10');
+    var box = document.getElementById('waitlist-container');
+    if (box) {
+      if (!wl.length) {
+        box.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
+      } else {
+        box.innerHTML=wl.map(function(u){
+          var fn=u.first_name||'',ln=u.last_name||'';
+          var name=(fn+' '+ln).trim()||u.username||'İsimsiz';
+          return '<div class="waitlist-item">'+
+            '<div class="wl-avatar" style="background:'+colorFor(u.id)+'">'+initials(fn||u.username,ln)+'</div>'+
+            '<div><div class="wl-name">'+name+'</div>'+
+            '<div class="wl-city">'+(u.city||'—')+' · @'+(u.username||'—')+'</div></div>'+
+            '<div class="wl-actions">'+
+            '<button class="action-btn approve" onclick="approveUser(''+u.id+'',this)">✓ Onayla</button>'+
+            '<button class="action-btn ban" onclick="rejectUser(''+u.id+'',this)">✕ Reddet</button>'+
+            '</div></div>';
+        }).join('');
+      }
+    }
+  };
+
+  // ── Approve ───────────────────────────────────────────────────────
+  window.approveUser = async function(id,btn) {
+    btn.disabled=true; btn.textContent='...';
+    var s=await xhrPatch('/rest/v1/profiles?id=eq.'+id,{status:'approved'});
+    if(s>=200&&s<300){
+      btn.closest('.waitlist-item').style.opacity='0.4'; btn.textContent='✓ Onaylandı';
+      var p=document.getElementById('stat-pending'),t=document.getElementById('stat-total');
+      if(p) p.textContent=Math.max(0,parseInt(p.textContent)-1);
+      if(t) t.textContent=parseInt(t.textContent)+1;
+    } else {btn.textContent='✗ Hata';btn.disabled=false;}
+  };
+
+  // ── Reject ────────────────────────────────────────────────────────
+  window.rejectUser = async function(id,btn) {
+    if(!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
+    btn.disabled=true; btn.textContent='...';
+    var s=await xhrPatch('/rest/v1/profiles?id=eq.'+id,{status:'rejected'});
+    if(s>=200&&s<300){
+      btn.closest('.waitlist-item').style.opacity='0.4'; btn.textContent='✕ Reddedildi';
+      var p=document.getElementById('stat-pending');
+      if(p) p.textContent=Math.max(0,parseInt(p.textContent)-1);
+    } else {btn.textContent='✗ Hata';btn.disabled=false;}
+  };
 </script>
 
 <script>
