@@ -423,27 +423,27 @@
   <div class="stats-grid">
     <div class="stat-card highlight">
       <div class="stat-icon">👥</div>
-      <div class="stat-val">482</div>
+      <div class="stat-val" id="stat-total">—</div>
       <div class="stat-label">Toplam Üye</div>
-      <div class="stat-change up">↑ +34 bu hafta</div>
+      <div class="stat-change up" id="stat-total-change"></div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">⏳</div>
-      <div class="stat-val">23</div>
+      <div class="stat-val" id="stat-pending">—</div>
       <div class="stat-label">Bekleyen Başvuru</div>
-      <div class="stat-change up">↑ +8 bugün</div>
+      <div class="stat-change" id="stat-pending-change"></div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">🛍️</div>
-      <div class="stat-val">247</div>
+      <div class="stat-val" id="stat-listings">—</div>
       <div class="stat-label">Aktif İlan</div>
-      <div class="stat-change up">↑ +12 bu hafta</div>
+      <div class="stat-change up" id="stat-listings-change"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">💳</div>
-      <div class="stat-val">38</div>
-      <div class="stat-label">Premium Üye</div>
-      <div class="stat-change up">↑ +4 bu ay</div>
+      <div class="stat-icon">🤖</div>
+      <div class="stat-val" id="stat-abibot">—</div>
+      <div class="stat-label">AbiBOT Sorular</div>
+      <div class="stat-change up" id="stat-abibot-change"></div>
     </div>
   </div>
 
@@ -456,45 +456,8 @@
         <a class="card-link">Tümünü gör</a>
       </div>
       <div>
-        <div class="waitlist-item">
-          <div class="wl-avatar" style="background:#D42B2B">AK</div>
-          <div><div class="wl-name">Ali Korkmaz</div><div class="wl-city">Frankfurt · "3. nesil, Frankfurt'ta doğdum"</div></div>
-          <div class="wl-actions">
-            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
-            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
-          </div>
-        </div>
-        <div class="waitlist-item">
-          <div class="wl-avatar" style="background:#185FA5">SE</div>
-          <div><div class="wl-name">Selin Erdoğan</div><div class="wl-city">Berlin · "Annem Frankfurt'tan, ben Berlin'de"</div></div>
-          <div class="wl-actions">
-            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
-            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
-          </div>
-        </div>
-        <div class="waitlist-item">
-          <div class="wl-avatar" style="background:#1E7B4B">BT</div>
-          <div><div class="wl-name">Berk Taşkın</div><div class="wl-city">Amsterdam · "Türk kökenli, Hollanda'da iş insanı"</div></div>
-          <div class="wl-actions">
-            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
-            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
-          </div>
-        </div>
-        <div class="waitlist-item">
-          <div class="wl-avatar" style="background:#854F0B">FY</div>
-          <div><div class="wl-name">Fatma Yıldırım</div><div class="wl-city">Wien · Davetiye kodu: BZB·1234</div></div>
-          <div class="wl-actions">
-            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
-            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
-          </div>
-        </div>
-        <div class="waitlist-item">
-          <div class="wl-avatar" style="background:#534AB7">CE</div>
-          <div><div class="wl-name">Can Erdem</div><div class="wl-city">Frankfurt · "İkinci nesil, ailem Gaziantep'ten"</div></div>
-          <div class="wl-actions">
-            <button class="action-btn approve" onclick="approve(this)">✓ Onayla</button>
-            <button class="action-btn ban" onclick="reject(this)">✕ Reddet</button>
-          </div>
+        <div id="waitlist-container">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Yükleniyor...</div>
         </div>
       </div>
     </div>
@@ -719,6 +682,121 @@
       deferredPrompt = null;
     });
   </script>
+<script>
+  // ══ LIVE STATS FROM SUPABASE ══
+  (async function() {
+    const SUPA_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const ANON_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const headers = { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY };
+
+    // Helper to set stat
+    function setStat(id, val, changeText, isUp) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+      const chEl = document.getElementById(id + '-change');
+      if (chEl && changeText) {
+        chEl.textContent = changeText;
+        chEl.className = 'stat-change ' + (isUp ? 'up' : 'down');
+      }
+    }
+
+    // Avatar colors
+    const COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
+    function colorFor(str) { let h=0; for(let c of str) h=(h*31+c.charCodeAt(0))%COLORS.length; return COLORS[h]; }
+    function initials(fn, ln) { return ((fn||'?')[0]+(ln||'?')[0]).toUpperCase(); }
+
+    try {
+      // 1. Total approved members
+      const totalRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id&status=eq.approved`, { headers });
+      const totalData = await totalRes.json();
+      setStat('stat-total', totalData.length, '', true);
+
+      // 2. Pending members
+      const pendRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id&status=eq.pending`, { headers });
+      const pendData = await pendRes.json();
+      setStat('stat-pending', pendData.length, pendData.length > 0 ? '↑ onay bekliyor' : '✓ temiz', pendData.length > 0);
+
+      // 3. Active listings
+      const listRes = await fetch(`${SUPA_URL}/rest/v1/listings?select=id&status=eq.active`, { headers });
+      const listData = await listRes.json();
+      setStat('stat-listings', listData.length, '', true);
+
+      // 4. AbiBOT sessions
+      const abibotRes = await fetch(`${SUPA_URL}/rest/v1/abibot_sessions?select=id`, { headers });
+      const abibotData = await abibotRes.json();
+      setStat('stat-abibot', abibotData.length, '', true);
+
+      // 5. Load real waitlist (pending users)
+      const wlRes = await fetch(`${SUPA_URL}/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10`, { headers });
+      const wlData = await wlRes.json();
+      const container = document.getElementById('waitlist-container');
+      if (container) {
+        if (!wlData.length) {
+          container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
+        } else {
+          container.innerHTML = wlData.map(u => {
+            const fn = u.first_name || '';
+            const ln = u.last_name || '';
+            const name = (fn + ' ' + ln).trim() || u.username || 'İsimsiz';
+            const city = u.city || '—';
+            const color = colorFor(u.id);
+            const init = initials(fn || u.username, ln);
+            return `<div class="waitlist-item">
+              <div class="wl-avatar" style="background:${color}">${init}</div>
+              <div>
+                <div class="wl-name">${name}</div>
+                <div class="wl-city">${city} · @${u.username||'—'}</div>
+              </div>
+              <div class="wl-actions">
+                <button class="action-btn approve" onclick="approveUser('${u.id}', this)">✓ Onayla</button>
+                <button class="action-btn ban" onclick="rejectUser('${u.id}', this)">✕ Reddet</button>
+              </div>
+            </div>`;
+          }).join('');
+        }
+      }
+    } catch(e) {
+      console.error('Stats load error:', e);
+    }
+
+    // Approve/reject functions
+    window.approveUser = async function(userId, btn) {
+      btn.disabled = true; btn.textContent = '...';
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient(SUPA_URL, ANON_KEY);
+      const { error } = await sb.from('profiles').update({ status: 'approved' }).eq('id', userId);
+      if (!error) {
+        btn.closest('.waitlist-item').style.opacity = '0.4';
+        btn.textContent = '✓ Onaylandı';
+        // Refresh counts
+        const pendEl = document.getElementById('stat-pending');
+        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+        const totalEl = document.getElementById('stat-total');
+        if (totalEl) totalEl.textContent = parseInt(totalEl.textContent) + 1;
+      } else {
+        btn.textContent = '✗ Hata'; btn.disabled = false;
+      }
+    };
+
+    window.rejectUser = async function(userId, btn) {
+      if (!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
+      btn.disabled = true; btn.textContent = '...';
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient(SUPA_URL, ANON_KEY);
+      const { error } = await sb.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      if (!error) {
+        btn.closest('.waitlist-item').style.opacity = '0.4';
+        btn.textContent = '✕ Reddedildi';
+        const pendEl = document.getElementById('stat-pending');
+        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+      } else {
+        btn.textContent = '✗ Hata'; btn.disabled = false;
+      }
+    };
+
+  })();
+</script>
+
 <script>
   // ══ COOKIE CONSENT LOGIC ══
   (function() {
