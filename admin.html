@@ -349,47 +349,65 @@
   .cm-accept-all:hover { background: #E8393A; }
     @media (max-width: 900px) { }
 
-  /* ── ADMIN LOGIN OVERLAY ── */
-  #admin-login-overlay {
-    position:fixed;inset:0;z-index:99999;
-    background:var(--ink);
-    display:flex;align-items:center;justify-content:center;
+  /* ── ÜYE EKLE MODAL ── */
+  #uye-ekle-modal {
+    position:fixed;inset:0;z-index:99998;
+    background:rgba(26,18,8,.6);
+    display:none;align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);
   }
-  #admin-login-overlay.hidden { display:none; }
-  .login-box {
-    background:var(--white);border-radius:20px;
-    padding:40px;width:100%;max-width:380px;
-    box-shadow:0 24px 80px rgba(0,0,0,.4);
+  #uye-ekle-modal.open { display:flex; }
+  .ue-box {
+    background:#fff;border-radius:20px;
+    padding:36px;width:100%;max-width:460px;
+    box-shadow:0 24px 80px rgba(0,0,0,.3);
+    animation:popIn .25s cubic-bezier(.16,1,.3,1);
   }
-  .login-logo {
-    font-family:'Playfair Display',serif;font-size:22px;
-    font-weight:900;color:var(--ink);margin-bottom:4px;
+  .ue-header {
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;
   }
-  .login-logo span{color:var(--red);}
-  .login-sub{font-size:12px;color:var(--muted);margin-bottom:28px;}
-  .login-field{margin-bottom:14px;}
-  .login-field label{font-size:11px;font-weight:600;color:var(--muted);
-    letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;}
-  .login-field input{
-    width:100%;padding:11px 14px;border:1.5px solid var(--sand);
-    border-radius:9px;font-size:14px;font-family:'Instrument Sans',sans-serif;
+  .ue-title {
+    font-family:'Playfair Display',serif;
+    font-size:20px;font-weight:900;color:var(--ink);
+  }
+  .ue-close {
+    background:none;border:none;font-size:22px;
+    color:var(--muted);cursor:pointer;line-height:1;padding:4px;
+  }
+  .ue-close:hover { color:var(--ink); }
+  .ue-field { margin-bottom:14px; }
+  .ue-field label {
+    font-size:11px;font-weight:600;color:var(--muted);
+    letter-spacing:.06em;text-transform:uppercase;
+    display:block;margin-bottom:6px;
+  }
+  .ue-field input, .ue-field select {
+    width:100%;padding:10px 13px;
+    border:1.5px solid var(--sand);border-radius:9px;
+    font-size:13px;font-family:'Instrument Sans',sans-serif;
     color:var(--ink);background:var(--cream);outline:none;
     transition:border-color .15s;
   }
-  .login-field input:focus{border-color:var(--red);}
-  .login-btn{
-    width:100%;padding:13px;background:var(--red);color:#fff;
-    border:none;border-radius:9px;font-size:14px;font-weight:700;
-    font-family:'Instrument Sans',sans-serif;cursor:pointer;
-    margin-top:8px;transition:background .15s;
+  .ue-field input:focus, .ue-field select:focus { border-color:var(--red); }
+  .ue-row { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+  .ue-actions { display:flex;gap:10px;margin-top:20px; }
+  .ue-btn {
+    flex:1;padding:12px;border-radius:9px;font-size:13px;
+    font-weight:700;font-family:'Instrument Sans',sans-serif;
+    cursor:pointer;border:none;transition:all .15s;
   }
-  .login-btn:hover{background:var(--red2);}
-  .login-btn:disabled{opacity:.6;cursor:not-allowed;}
-  .login-error{
-    font-size:12px;color:var(--red);margin-top:10px;
-    display:none;font-weight:600;
+  .ue-btn.primary { background:var(--red);color:#fff; }
+  .ue-btn.primary:hover { background:var(--red2); }
+  .ue-btn.primary:disabled { opacity:.6;cursor:not-allowed; }
+  .ue-btn.secondary {
+    background:var(--warm);color:var(--ink);
+    border:1.5px solid var(--sand);
   }
-  .login-error.show{display:block;}
+  .ue-btn.secondary:hover { border-color:var(--red); }
+  .ue-msg { font-size:12px;font-weight:600;margin-top:12px;display:none; }
+  .ue-msg.success { color:var(--green);display:block; }
+  .ue-msg.error   { color:var(--red);display:block; }
   </style>
 
   <!-- PWA -->
@@ -416,25 +434,6 @@
   <script src="i18n.js"></script>
 </head>
 <body>
-
-<!-- ── ADMIN LOGIN OVERLAY ── -->
-<div id="admin-login-overlay">
-  <div class="login-box">
-    <div class="login-logo">Bizden<span>Bize</span></div>
-    <div class="login-sub">Admin Paneli — Lütfen giriş yapın</div>
-    <div class="login-field">
-      <label>E-posta</label>
-      <input type="email" id="login-email" value="nazvannorel@gmail.com" autocomplete="email">
-    </div>
-    <div class="login-field">
-      <label>Şifre</label>
-      <input type="password" id="login-password" placeholder="Şifrenizi girin" autocomplete="current-password">
-    </div>
-    <button class="login-btn" id="login-btn" onclick="doAdminLogin()">Giriş Yap</button>
-    <div class="login-error" id="login-error">E-posta veya şifre hatalı. Tekrar deneyin.</div>
-  </div>
-</div>
-
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -476,7 +475,7 @@
     </div>
     <div class="top-actions">
       <button class="top-btn">📤 Rapor Al</button>
-      <button class="top-btn primary">+ Üye Ekle</button>
+      <button class="top-btn primary" onclick="openUyeModal()">+ Üye Ekle</button>
     </div>
   </div>
 
@@ -744,193 +743,120 @@
     });
   </script>
 <script>
-  // ══ ADMIN AUTH + LIVE STATS (XHR — bypasses Service Worker) ══
-  var _adminToken = null;
-  var SUPA = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  var ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  // ══ LIVE STATS FROM SUPABASE ══
+  (async function() {
+    const SUPA_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const ANON_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const headers = { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY };
 
-  function xhrGet(path) {
-    return new Promise(function(resolve) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', SUPA + path, true);
-      xhr.setRequestHeader('apikey', ANON);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + (_adminToken || ANON));
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.onload = function() {
-        try { var d = JSON.parse(xhr.responseText); resolve(Array.isArray(d) ? d : []); }
-        catch(e) { resolve([]); }
-      };
-      xhr.onerror = function() { resolve([]); };
-      xhr.send();
-    });
-  }
-
-  function xhrPost(path, body) {
-    return new Promise(function(resolve) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', SUPA + path, true);
-      xhr.setRequestHeader('apikey', ANON);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.onload = function() {
-        try { resolve({ status: xhr.status, data: JSON.parse(xhr.responseText) }); }
-        catch(e) { resolve({ status: xhr.status, data: {} }); }
-      };
-      xhr.onerror = function() { resolve({ status: 0, data: {} }); };
-      xhr.send(JSON.stringify(body));
-    });
-  }
-
-  function xhrPatch(path, body) {
-    return new Promise(function(resolve) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('PATCH', SUPA + path, true);
-      xhr.setRequestHeader('apikey', ANON);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + (_adminToken || ANON));
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('Prefer', 'return=minimal');
-      xhr.onload  = function() { resolve(xhr.status); };
-      xhr.onerror = function() { resolve(0); };
-      xhr.send(JSON.stringify(body));
-    });
-  }
-
-  // ── Login ─────────────────────────────────────────────────────────
-  window.doAdminLogin = async function() {
-    var email = document.getElementById('login-email').value.trim();
-    var pass  = document.getElementById('login-password').value;
-    var btn   = document.getElementById('login-btn');
-    var err   = document.getElementById('login-error');
-    btn.disabled = true; btn.textContent = 'Giriş yapılıyor...';
-    err.classList.remove('show');
-
-    if (!pass) {
-      err.textContent = 'Lutfen sifrenizi girin.';
-      err.classList.add('show');
-      btn.disabled = false; btn.textContent = 'Giris Yap';
-      return;
+    // Helper to set stat
+    function setStat(id, val, changeText, isUp) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+      const chEl = document.getElementById(id + '-change');
+      if (chEl && changeText) {
+        chEl.textContent = changeText;
+        chEl.className = 'stat-change ' + (isUp ? 'up' : 'down');
+      }
     }
+
+    // Avatar colors
+    const COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
+    function colorFor(str) { let h=0; for(let c of str) h=(h*31+c.charCodeAt(0))%COLORS.length; return COLORS[h]; }
+    function initials(fn, ln) { return ((fn||'?')[0]+(ln||'?')[0]).toUpperCase(); }
 
     try {
-      var res = await xhrPost('/auth/v1/token?grant_type=password', { email: email, password: pass });
-      console.log('[BizdenBize Admin] Login status:', res.status, res.data);
+      // Use supabase client for proper RLS
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient(SUPA_URL, ANON_KEY);
 
-      if (res.status === 200 && res.data.access_token) {
-        _adminToken = res.data.access_token;
-        document.getElementById('admin-login-overlay').classList.add('hidden');
-        loadStats();
-      } else {
-        var msg = (res.data && (res.data.error_description || res.data.msg || res.data.message))
-                  || ('Giris basarisiz. Kod: ' + res.status);
-        err.textContent = msg;
-        err.classList.add('show');
-        btn.disabled = false; btn.textContent = 'Giris Yap';
+      // 1. Total approved members
+      const { data: totalData, error: e1 } = await sb.from('profiles').select('id').eq('status', 'approved');
+      console.log('Total data:', totalData, e1);
+      setStat('stat-total', totalData ? totalData.length : 0, '', true);
+
+      // 2. Pending members
+      const { data: pendData } = await sb.from('profiles').select('id').eq('status', 'pending');
+      const pendCount = pendData ? pendData.length : 0;
+      setStat('stat-pending', pendCount, pendCount > 0 ? '↑ onay bekliyor' : '✓ temiz', pendCount > 0);
+
+      // 3. Active listings
+      const { data: listData } = await sb.from('listings').select('id').eq('status', 'active');
+      setStat('stat-listings', listData ? listData.length : 0, '', true);
+
+      // 4. AbiBOT sessions
+      const { data: abibotData } = await sb.from('abibot_sessions').select('id');
+      setStat('stat-abibot', abibotData ? abibotData.length : 0, '', true);
+
+      // 5. Load real waitlist (pending users)
+      const { data: wlData } = await sb.from('profiles').select('id,first_name,last_name,username,city,created_at').eq('status', 'pending').order('created_at', { ascending: false }).limit(10);
+      const container = document.getElementById('waitlist-container');
+      if (container) {
+        if (!wlData.length) {
+          container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
+        } else {
+          container.innerHTML = wlData.map(u => {
+            const fn = u.first_name || '';
+            const ln = u.last_name || '';
+            const name = (fn + ' ' + ln).trim() || u.username || 'İsimsiz';
+            const city = u.city || '—';
+            const color = colorFor(u.id);
+            const init = initials(fn || u.username, ln);
+            return `<div class="waitlist-item">
+              <div class="wl-avatar" style="background:${color}">${init}</div>
+              <div>
+                <div class="wl-name">${name}</div>
+                <div class="wl-city">${city} · @${u.username||'—'}</div>
+              </div>
+              <div class="wl-actions">
+                <button class="action-btn approve" onclick="approveUser('${u.id}', this)">✓ Onayla</button>
+                <button class="action-btn ban" onclick="rejectUser('${u.id}', this)">✕ Reddet</button>
+              </div>
+            </div>`;
+          }).join('');
+        }
       }
     } catch(e) {
-      console.error('[BizdenBize Admin] Login error:', e);
-      err.textContent = 'Baglanti hatasi: ' + e.message;
-      err.classList.add('show');
-      btn.disabled = false; btn.textContent = 'Giris Yap';
-    }
-  };
-
-  document.addEventListener('keydown', function(e) {
-    var overlay = document.getElementById('admin-login-overlay');
-    if (e.key === 'Enter' && overlay && !overlay.classList.contains('hidden')) {
-      doAdminLogin();
-    }
-  });
-
-  // ── Stat helpers ──────────────────────────────────────────────────
-  var COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
-  function colorFor(s) { var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))%COLORS.length; return COLORS[h]; }
-  function initials(a,b) { return (((a||'?')[0])+((b||'?')[0])).toUpperCase(); }
-  function setStat(id, val, changeText, isUp) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(val);
-    var ch = document.getElementById(id + '-change');
-    if (ch && changeText) { ch.textContent = changeText; ch.className = 'stat-change ' + (isUp ? 'up' : 'down'); }
-  }
-
-  // ── Load stats ────────────────────────────────────────────────────
-  window.loadStats = async function() {
-    var res = await Promise.all([
-      xhrGet('/rest/v1/profiles?select=id&status=eq.approved&limit=10000'),
-      xhrGet('/rest/v1/profiles?select=id&status=eq.pending&limit=10000'),
-      xhrGet('/rest/v1/listings?select=id&status=eq.active&limit=10000'),
-      xhrGet('/rest/v1/abibot_sessions?select=id&limit=10000')
-    ]);
-
-    var total = res[0].length, pend = res[1].length;
-    setStat('stat-total',    total, '', true);
-    setStat('stat-pending',  pend,  pend > 0 ? 'onay bekliyor' : 'temiz', pend > 0);
-    setStat('stat-listings', res[2].length, '', true);
-    setStat('stat-abibot',   res[3].length, '', true);
-
-    // Waitlist — uses data-uid to avoid all quote-escaping issues
-    var wl = await xhrGet('/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10');
-    var box = document.getElementById('waitlist-container');
-    if (!box) return;
-
-    if (!wl.length) {
-      box.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Bekleyen basvuru yok</div>';
-      return;
+      console.error('Stats load error:', e);
     }
 
-    // Build HTML using data-uid attribute (no tricky quote escaping needed)
-    var html = '';
-    for (var i = 0; i < wl.length; i++) {
-      var u    = wl[i];
-      var fn   = u.first_name || '';
-      var ln   = u.last_name  || '';
-      var name = (fn + ' ' + ln).trim() || u.username || 'Isimsiz';
-      var city = u.city     || '-';
-      var user = u.username || '-';
-      html += '<div class="waitlist-item">' +
-        '<div class="wl-avatar" style="background:' + colorFor(u.id) + '">' + initials(fn || u.username, ln) + '</div>' +
-        '<div><div class="wl-name">' + name + '</div>' +
-        '<div class="wl-city">' + city + ' @' + user + '</div></div>' +
-        '<div class="wl-actions">' +
-        '<button class="action-btn approve" data-uid="' + u.id + '">Onayla</button>' +
-        '<button class="action-btn ban"     data-uid="' + u.id + '">Reddet</button>' +
-        '</div></div>';
-    }
-    box.innerHTML = html;
+    // Approve/reject functions
+    window.approveUser = async function(userId, btn) {
+      btn.disabled = true; btn.textContent = '...';
+      const { createClient: cc1 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = cc1(SUPA_URL, ANON_KEY);
+      const { error } = await sb.from('profiles').update({ status: 'approved' }).eq('id', userId);
+      if (!error) {
+        btn.closest('.waitlist-item').style.opacity = '0.4';
+        btn.textContent = '✓ Onaylandı';
+        // Refresh counts
+        const pendEl = document.getElementById('stat-pending');
+        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+        const totalEl = document.getElementById('stat-total');
+        if (totalEl) totalEl.textContent = parseInt(totalEl.textContent) + 1;
+      } else {
+        btn.textContent = '✗ Hata'; btn.disabled = false;
+      }
+    };
 
-    // Attach events after innerHTML is set
-    box.querySelectorAll('.approve').forEach(function(btn) {
-      btn.addEventListener('click', function() { approveUser(this.dataset.uid, this); });
-    });
-    box.querySelectorAll('.ban').forEach(function(btn) {
-      btn.addEventListener('click', function() { rejectUser(this.dataset.uid, this); });
-    });
-  };
+    window.rejectUser = async function(userId, btn) {
+      if (!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
+      btn.disabled = true; btn.textContent = '...';
+      const { createClient: cc2 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = cc2(SUPA_URL, ANON_KEY);
+      const { error } = await sb.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      if (!error) {
+        btn.closest('.waitlist-item').style.opacity = '0.4';
+        btn.textContent = '✕ Reddedildi';
+        const pendEl = document.getElementById('stat-pending');
+        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+      } else {
+        btn.textContent = '✗ Hata'; btn.disabled = false;
+      }
+    };
 
-  // ── Approve ───────────────────────────────────────────────────────
-  window.approveUser = async function(id, btn) {
-    btn.disabled = true; btn.textContent = '...';
-    var s = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'approved' });
-    if (s >= 200 && s < 300) {
-      btn.closest('.waitlist-item').style.opacity = '0.4'; btn.textContent = 'Onaylandi';
-      var p = document.getElementById('stat-pending'), t = document.getElementById('stat-total');
-      if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
-      if (t) t.textContent = parseInt(t.textContent) + 1;
-    } else { btn.textContent = 'Hata'; btn.disabled = false; }
-  };
-
-  // ── Reject ────────────────────────────────────────────────────────
-  window.rejectUser = async function(id, btn) {
-    if (!confirm('Bu kullanicıyı reddetmek istediğinize emin misiniz?')) return;
-    btn.disabled = true; btn.textContent = '...';
-    var s = await xhrPatch('/rest/v1/profiles?id=eq.' + id, { status: 'rejected' });
-    if (s >= 200 && s < 300) {
-      btn.closest('.waitlist-item').style.opacity = '0.4'; btn.textContent = 'Reddedildi';
-      var p = document.getElementById('stat-pending');
-      if (p) p.textContent = Math.max(0, parseInt(p.textContent) - 1);
-    } else { btn.textContent = 'Hata'; btn.disabled = false; }
-  };
+  })();
 </script>
-
-
 
 <script>
   // ══ COOKIE CONSENT LOGIC ══
@@ -1040,5 +966,191 @@
   })();
 
   </script>
+
+<!-- ── ÜYE EKLE MODAL ── -->
+<div id="uye-ekle-modal">
+  <div class="ue-box">
+    <div class="ue-header">
+      <div class="ue-title">+ Yeni Üye Ekle</div>
+      <button class="ue-close" onclick="closeUyeModal()">✕</button>
+    </div>
+
+    <div class="ue-row">
+      <div class="ue-field">
+        <label>Ad</label>
+        <input type="text" id="ue-firstname" placeholder="Ahmet">
+      </div>
+      <div class="ue-field">
+        <label>Soyad</label>
+        <input type="text" id="ue-lastname" placeholder="Yılmaz">
+      </div>
+    </div>
+
+    <div class="ue-field">
+      <label>E-posta</label>
+      <input type="email" id="ue-email" placeholder="ahmet@ornek.com">
+    </div>
+
+    <div class="ue-row">
+      <div class="ue-field">
+        <label>Şehir</label>
+        <input type="text" id="ue-city" placeholder="Frankfurt">
+      </div>
+      <div class="ue-field">
+        <label>Ülke</label>
+        <select id="ue-country">
+          <option value="DE">🇩🇪 Almanya</option>
+          <option value="NL">🇳🇱 Hollanda</option>
+          <option value="AT">🇦🇹 Avusturya</option>
+          <option value="BE">🇧🇪 Belçika</option>
+          <option value="FR">🇫🇷 Fransa</option>
+          <option value="CH">🇨🇭 İsviçre</option>
+          <option value="GB">🇬🇧 İngiltere</option>
+          <option value="SE">🇸🇪 İsveç</option>
+          <option value="DK">🇩🇰 Danimarka</option>
+          <option value="OTHER">🌍 Diğer</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ue-field">
+      <label>Durum</label>
+      <select id="ue-status">
+        <option value="approved">✅ Onaylı</option>
+        <option value="pending">⏳ Beklemede</option>
+      </select>
+    </div>
+
+    <div class="ue-actions">
+      <button class="ue-btn secondary" onclick="closeUyeModal()">İptal</button>
+      <button class="ue-btn primary" id="ue-submit-btn" onclick="submitUyeEkle()">Üye Ekle</button>
+    </div>
+    <div class="ue-msg" id="ue-msg"></div>
+  </div>
+</div>
+
+<script>
+  // ── ÜYE EKLE MODAL ─────────────────────────────────────────────
+  window.openUyeModal = function() {
+    // Clear previous values
+    ['ue-firstname','ue-lastname','ue-email','ue-city'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var msg = document.getElementById('ue-msg');
+    if (msg) { msg.textContent = ''; msg.className = 'ue-msg'; }
+    var btn = document.getElementById('ue-submit-btn');
+    if (btn) { btn.disabled = false; btn.textContent = 'Üye Ekle'; }
+    document.getElementById('uye-ekle-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var f = document.getElementById('ue-firstname');
+      if (f) f.focus();
+    }, 100);
+  };
+
+  window.closeUyeModal = function() {
+    document.getElementById('uye-ekle-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Close on backdrop click
+  document.getElementById('uye-ekle-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeUyeModal();
+  });
+
+  window.submitUyeEkle = async function() {
+    var firstname = document.getElementById('ue-firstname').value.trim();
+    var lastname  = document.getElementById('ue-lastname').value.trim();
+    var email     = document.getElementById('ue-email').value.trim();
+    var city      = document.getElementById('ue-city').value.trim();
+    var country   = document.getElementById('ue-country').value;
+    var status    = document.getElementById('ue-status').value;
+    var btn       = document.getElementById('ue-submit-btn');
+    var msg       = document.getElementById('ue-msg');
+
+    // Validation
+    if (!firstname || !email) {
+      msg.textContent = 'Ad ve e-posta zorunludur.';
+      msg.className = 'ue-msg error';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      msg.textContent = 'Geçerli bir e-posta adresi girin.';
+      msg.className = 'ue-msg error';
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Ekleniyor...';
+    msg.textContent = ''; msg.className = 'ue-msg';
+
+    // Generate a random username from name
+    var username = (firstname + lastname).toLowerCase()
+      .replace(/[^a-z0-9]/g, '') + Math.floor(Math.random() * 1000);
+
+    // Generate a unique ID
+    var newId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+
+    var payload = {
+      id:         newId,
+      first_name: firstname,
+      last_name:  lastname,
+      email:      email,
+      city:       city,
+      country:    country,
+      username:   username,
+      status:     status,
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', SUPA + '/rest/v1/profiles', true);
+      xhr.setRequestHeader('apikey', ANON);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (_adminToken || ANON));
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Prefer', 'return=minimal');
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          msg.textContent = '✓ ' + firstname + ' ' + lastname + ' başarıyla eklendi!';
+          msg.className = 'ue-msg success';
+          btn.textContent = '✓ Eklendi';
+          // Update stat counters
+          if (status === 'approved') {
+            var t = document.getElementById('stat-total');
+            if (t) t.textContent = parseInt(t.textContent || '0') + 1;
+          } else {
+            var p = document.getElementById('stat-pending');
+            if (p) p.textContent = parseInt(p.textContent || '0') + 1;
+          }
+          // Close modal after 1.5s
+          setTimeout(function() { closeUyeModal(); loadStats(); }, 1500);
+        } else {
+          try {
+            var err = JSON.parse(xhr.responseText);
+            msg.textContent = err.message || ('Hata: ' + xhr.status);
+          } catch(e) {
+            msg.textContent = 'Hata kodu: ' + xhr.status;
+          }
+          msg.className = 'ue-msg error';
+          btn.disabled = false; btn.textContent = 'Üye Ekle';
+        }
+      };
+      xhr.onerror = function() {
+        msg.textContent = 'Bağlantı hatası. Tekrar deneyin.';
+        msg.className = 'ue-msg error';
+        btn.disabled = false; btn.textContent = 'Üye Ekle';
+      };
+      xhr.send(JSON.stringify(payload));
+    } catch(e) {
+      msg.textContent = 'Hata: ' + e.message;
+      msg.className = 'ue-msg error';
+      btn.disabled = false; btn.textContent = 'Üye Ekle';
+    }
+  };
+</script>
 </body>
 </html>
