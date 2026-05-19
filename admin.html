@@ -806,12 +806,33 @@
     btn.disabled = true; btn.textContent = 'Giriş yapılıyor...';
     err.classList.remove('show');
 
-    var res = await xhrPost('/auth/v1/token?grant_type=password', {email:email, password:pass});
-    if (res.status === 200 && res.data.access_token) {
-      _adminToken = res.data.access_token;
-      document.getElementById('admin-login-overlay').classList.add('hidden');
-      loadStats();
-    } else {
+    if (!pass) {
+      err.textContent = 'Lütfen şifrenizi girin.';
+      err.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Giriş Yap';
+      return;
+    }
+
+    try {
+      // Try Supabase v2 auth endpoint
+      var res = await xhrPost('/auth/v1/token?grant_type=password', {email:email, password:pass});
+      console.log('[Admin Login] Status:', res.status, 'Data:', res.data);
+
+      if (res.status === 200 && res.data.access_token) {
+        _adminToken = res.data.access_token;
+        document.getElementById('admin-login-overlay').classList.add('hidden');
+        loadStats();
+      } else {
+        // Show the actual error from Supabase
+        var msg = (res.data && (res.data.error_description || res.data.msg || res.data.message))
+                  || ('Giriş başarısız. (Kod: ' + res.status + ')');
+        err.textContent = msg;
+        err.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Giriş Yap';
+      }
+    } catch(e) {
+      console.error('[Admin Login] Exception:', e);
+      err.textContent = 'Bağlantı hatası: ' + e.message;
       err.classList.add('show');
       btn.disabled = false; btn.textContent = 'Giriş Yap';
     }
