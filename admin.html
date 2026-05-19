@@ -1020,16 +1020,17 @@
     btn.disabled=true; btn.textContent='Ekleniyor...';
     msg.textContent=''; msg.className='ue-msg';
 
-    var username=(firstname+lastname).toLowerCase().replace(/[^a-z0-9]/g,'')+Math.floor(Math.random()*1000);
-    var newId='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
-      var r=Math.random()*16|0; return(c==='x'?r:(r&0x3|0x8)).toString(16);
-    });
+    // Timestamp suffix guarantees unique username every time
+    var username = (firstname + lastname).toLowerCase().replace(/[^a-z0-9]/g, '') + Date.now();
 
+    // Let Supabase auto-generate the UUID (no id field sent)
     var s = await xhrInsert('/rest/v1/profiles', {
-      id:newId, first_name:firstname, last_name:lastname,
-      city:city, country:country,
-      username:username, status:status,
-      created_at:new Date().toISOString()
+      first_name: firstname,
+      last_name:  lastname,
+      city:       city,
+      country:    country,
+      username:   username,
+      status:     status
     });
 
     if(s>=200&&s<300){
