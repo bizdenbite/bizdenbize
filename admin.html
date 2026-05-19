@@ -684,116 +684,172 @@
   </script>
 <script>
   // ══ LIVE STATS FROM SUPABASE ══
-  (async function() {
+  // FIX: Uses XMLHttpRequest instead of fetch() / Supabase JS client.
+  // Service Workers can ONLY intercept fetch() calls — XHR bypasses
+  // them completely, so the SW can never corrupt these URLs again.
+  (function() {
     const SUPA_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
     const ANON_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-    const headers = { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY };
 
-    // Helper to set stat
+    // ── XHR wrapper (returns a Promise, bypasses Service Worker) ────
+    function xhrRequest(method, url, body) {
+      return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url, true);
+        xhr.setRequestHeader('apikey', ANON_KEY);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + ANON_KEY);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        if (method === 'GET') {
+          xhr.setRequestHeader('Prefer', 'count=exact');
+          xhr.setRequestHeader('Range-Unit', 'items');
+          xhr.setRequestHeader('Range', '0-0');
+        }
+        if (method === 'PATCH') {
+          xhr.setRequestHeader('Prefer', 'return=minimal');
+        }
+        xhr.onload = function() {
+          resolve({ status: xhr.status, responseText: xhr.responseText, allHeaders: xhr.getAllResponseHeaders() });
+        };
+        xhr.onerror = function() { reject(new Error('XHR error: ' + url)); };
+        xhr.send(body ? JSON.stringify(body) : null);
+      });
+    }
+
+    // ── Parse count from Content-Range header ───────────────────────
+    function parseCount(allHeaders, responseText) {
+      var cr = allHeaders.match(/content-range:\s*[\d\-\*]+\/(\d+|\*)/i);
+      if (cr && cr[1] !== '*') return parseInt(cr[1], 10);
+      try { return JSON.parse(responseText).length; } catch(e) { return 0; }
+    }
+
+    // ── Set a stat card value ────────────────────────────────────────
     function setStat(id, val, changeText, isUp) {
-      const el = document.getElementById(id);
+      var el = document.getElementById(id);
       if (el) el.textContent = val;
-      const chEl = document.getElementById(id + '-change');
+      var chEl = document.getElementById(id + '-change');
       if (chEl && changeText) {
         chEl.textContent = changeText;
         chEl.className = 'stat-change ' + (isUp ? 'up' : 'down');
       }
     }
 
-    // Avatar colors
-    const COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
-    function colorFor(str) { let h=0; for(let c of str) h=(h*31+c.charCodeAt(0))%COLORS.length; return COLORS[h]; }
-    function initials(fn, ln) { return ((fn||'?')[0]+(ln||'?')[0]).toUpperCase(); }
+    // ── Avatar helpers ───────────────────────────────────────────────
+    var COLORS = ['#D42B2B','#185FA5','#1E7B4B','#854F0B','#534AB7','#B45309','#0F766E'];
+    function colorFor(str) { var h=0; for(var i=0;i<str.length;i++) h=(h*31+str.charCodeAt(i))%COLORS.length; return COLORS[h]; }
+    function initials(fn, ln) { return (((fn||'?')[0])+((ln||'?')[0])).toUpperCase(); }
 
-    try {
-      // Use supabase client for proper RLS
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = createClient(SUPA_URL, ANON_KEY);
+    // ── Load all stats ───────────────────────────────────────────────
+    async function loadStats() {
+      try {
+        // 1. Total approved members
+        var r1 = await xhrRequest('GET', SUPA_URL + '/rest/v1/profiles?select=id&status=eq.approved');
+        setStat('stat-total', parseCount(r1.allHeaders, r1.responseText), '', true);
 
-      // 1. Total approved members
-      const { data: totalData, error: e1 } = await sb.from('profiles').select('id').eq('status', 'approved');
-      console.log('Total data:', totalData, e1);
-      setStat('stat-total', totalData ? totalData.length : 0, '', true);
+        // 2. Pending members
+        var r2 = await xhrRequest('GET', SUPA_URL + '/rest/v1/profiles?select=id&status=eq.pending');
+        var pendCount = parseCount(r2.allHeaders, r2.responseText);
+        setStat('stat-pending', pendCount, pendCount > 0 ? '↑ onay bekliyor' : '✓ temiz', pendCount > 0);
 
-      // 2. Pending members
-      const { data: pendData } = await sb.from('profiles').select('id').eq('status', 'pending');
-      const pendCount = pendData ? pendData.length : 0;
-      setStat('stat-pending', pendCount, pendCount > 0 ? '↑ onay bekliyor' : '✓ temiz', pendCount > 0);
+        // 3. Active listings
+        var r3 = await xhrRequest('GET', SUPA_URL + '/rest/v1/listings?select=id&status=eq.active');
+        setStat('stat-listings', parseCount(r3.allHeaders, r3.responseText), '', true);
 
-      // 3. Active listings
-      const { data: listData } = await sb.from('listings').select('id').eq('status', 'active');
-      setStat('stat-listings', listData ? listData.length : 0, '', true);
+        // 4. AbiBOT sessions
+        var r4 = await xhrRequest('GET', SUPA_URL + '/rest/v1/abibot_sessions?select=id');
+        setStat('stat-abibot', parseCount(r4.allHeaders, r4.responseText), '', true);
 
-      // 4. AbiBOT sessions
-      const { data: abibotData } = await sb.from('abibot_sessions').select('id');
-      setStat('stat-abibot', abibotData ? abibotData.length : 0, '', true);
+        // 5. Waitlist (pending users, most recent first)
+        var wlXhr = new XMLHttpRequest();
+        var wlUrl = SUPA_URL + '/rest/v1/profiles?select=id,first_name,last_name,username,city,created_at&status=eq.pending&order=created_at.desc&limit=10';
+        await new Promise(function(resolve, reject) {
+          wlXhr.open('GET', wlUrl, true);
+          wlXhr.setRequestHeader('apikey', ANON_KEY);
+          wlXhr.setRequestHeader('Authorization', 'Bearer ' + ANON_KEY);
+          wlXhr.setRequestHeader('Content-Type', 'application/json');
+          wlXhr.onload = function() { resolve(); };
+          wlXhr.onerror = function() { reject(new Error('Waitlist XHR error')); };
+          wlXhr.send();
+        });
 
-      // 5. Load real waitlist (pending users)
-      const { data: wlData } = await sb.from('profiles').select('id,first_name,last_name,username,city,created_at').eq('status', 'pending').order('created_at', { ascending: false }).limit(10);
-      const container = document.getElementById('waitlist-container');
-      if (container) {
-        if (!wlData.length) {
-          container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
-        } else {
-          container.innerHTML = wlData.map(u => {
-            const fn = u.first_name || '';
-            const ln = u.last_name || '';
-            const name = (fn + ' ' + ln).trim() || u.username || 'İsimsiz';
-            const city = u.city || '—';
-            const color = colorFor(u.id);
-            const init = initials(fn || u.username, ln);
-            return `<div class="waitlist-item">
-              <div class="wl-avatar" style="background:${color}">${init}</div>
-              <div>
-                <div class="wl-name">${name}</div>
-                <div class="wl-city">${city} · @${u.username||'—'}</div>
-              </div>
-              <div class="wl-actions">
-                <button class="action-btn approve" onclick="approveUser('${u.id}', this)">✓ Onayla</button>
-                <button class="action-btn ban" onclick="rejectUser('${u.id}', this)">✕ Reddet</button>
-              </div>
-            </div>`;
-          }).join('');
+        var wlData = [];
+        try { wlData = JSON.parse(wlXhr.responseText) || []; } catch(e) {}
+
+        var container = document.getElementById('waitlist-container');
+        if (container) {
+          if (!wlData.length) {
+            container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">✓ Bekleyen başvuru yok</div>';
+          } else {
+            container.innerHTML = wlData.map(function(u) {
+              var fn = u.first_name || '';
+              var ln = u.last_name || '';
+              var name = (fn + ' ' + ln).trim() || u.username || 'İsimsiz';
+              var city = u.city || '—';
+              var color = colorFor(u.id);
+              var init = initials(fn || u.username, ln);
+              return '<div class="waitlist-item">' +
+                '<div class="wl-avatar" style="background:' + color + '">' + init + '</div>' +
+                '<div><div class="wl-name">' + name + '</div>' +
+                '<div class="wl-city">' + city + ' · @' + (u.username||'—') + '</div></div>' +
+                '<div class="wl-actions">' +
+                '<button class="action-btn approve" onclick="approveUser(\'' + u.id + '\', this)">✓ Onayla</button>' +
+                '<button class="action-btn ban" onclick="rejectUser(\'' + u.id + '\', this)">✕ Reddet</button>' +
+                '</div></div>';
+            }).join('');
+          }
         }
+
+      } catch(e) {
+        console.error('[BizdenBize] Stats load error:', e);
       }
-    } catch(e) {
-      console.error('Stats load error:', e);
     }
 
-    // Approve/reject functions
+    // ── Approve user (XHR PATCH — also bypasses SW) ─────────────────
     window.approveUser = async function(userId, btn) {
       btn.disabled = true; btn.textContent = '...';
-      const { createClient: cc1 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = cc1(SUPA_URL, ANON_KEY);
-      const { error } = await sb.from('profiles').update({ status: 'approved' }).eq('id', userId);
-      if (!error) {
-        btn.closest('.waitlist-item').style.opacity = '0.4';
-        btn.textContent = '✓ Onaylandı';
-        // Refresh counts
-        const pendEl = document.getElementById('stat-pending');
-        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
-        const totalEl = document.getElementById('stat-total');
-        if (totalEl) totalEl.textContent = parseInt(totalEl.textContent) + 1;
-      } else {
+      try {
+        var r = await xhrRequest('PATCH', SUPA_URL + '/rest/v1/profiles?id=eq.' + userId, { status: 'approved' });
+        if (r.status >= 200 && r.status < 300) {
+          btn.closest('.waitlist-item').style.opacity = '0.4';
+          btn.textContent = '✓ Onaylandı';
+          var pendEl = document.getElementById('stat-pending');
+          if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+          var totalEl = document.getElementById('stat-total');
+          if (totalEl) totalEl.textContent = parseInt(totalEl.textContent) + 1;
+        } else {
+          throw new Error('HTTP ' + r.status);
+        }
+      } catch(e) {
+        console.error('[BizdenBize] approveUser error:', e);
         btn.textContent = '✗ Hata'; btn.disabled = false;
       }
     };
 
+    // ── Reject user (XHR PATCH — also bypasses SW) ──────────────────
     window.rejectUser = async function(userId, btn) {
       if (!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
       btn.disabled = true; btn.textContent = '...';
-      const { createClient: cc2 } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = cc2(SUPA_URL, ANON_KEY);
-      const { error } = await sb.from('profiles').update({ status: 'rejected' }).eq('id', userId);
-      if (!error) {
-        btn.closest('.waitlist-item').style.opacity = '0.4';
-        btn.textContent = '✕ Reddedildi';
-        const pendEl = document.getElementById('stat-pending');
-        if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
-      } else {
+      try {
+        var r = await xhrRequest('PATCH', SUPA_URL + '/rest/v1/profiles?id=eq.' + userId, { status: 'rejected' });
+        if (r.status >= 200 && r.status < 300) {
+          btn.closest('.waitlist-item').style.opacity = '0.4';
+          btn.textContent = '✕ Reddedildi';
+          var pendEl = document.getElementById('stat-pending');
+          if (pendEl) pendEl.textContent = Math.max(0, parseInt(pendEl.textContent) - 1);
+        } else {
+          throw new Error('HTTP ' + r.status);
+        }
+      } catch(e) {
+        console.error('[BizdenBize] rejectUser error:', e);
         btn.textContent = '✗ Hata'; btn.disabled = false;
       }
     };
+
+    // Run on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadStats);
+    } else {
+      loadStats();
+    }
 
   })();
 </script>
