@@ -663,10 +663,10 @@
       </div>
       <div class="abibot-info">
         <div class="abibot-name">AbiBOT — Dijital Abiniz</div>
-        <div class="abibot-sub" id="abibot-sub">Hukuki kategoride yanıtlıyor · TR / DE / EN</div>
+        <div class="abibot-sub" id="abibot-sub">Hukuki kategorisinde yanıtlıyor · TR / DE / EN / FR / NL</div>
       </div>
       <span class="active-cat-badge" id="active-cat-badge">⚖️ Hukuki</span>
-      <span class="cost-badge" id="cost-badge" style="background:rgba(30,123,75,.1);color:#1E7B4B;border-color:rgba(30,123,75,.2)">✓ Ücretsiz</span>
+
     </div>
 
     <div class="messages" id="messages">
@@ -916,8 +916,7 @@
     selectedCatIcon = el.dataset.icon;
     const d = catData[selectedCat];
     document.getElementById('active-cat-badge').textContent = d.icon + ' ' + d.name;
-    document.getElementById('cost-badge').textContent = '✓ Ücretsiz';
-    document.getElementById('abibot-sub').textContent = d.name + ' kategorisinde yanıtlıyor · TR / DE / EN';
+    document.getElementById('abibot-sub').textContent = d.name + ' kategorisinde yanıtlıyor · TR / DE / EN / FR / NL';
   }
 
   function selectCatByName(cat) {
