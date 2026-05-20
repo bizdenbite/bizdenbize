@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — İş Ver & Bul</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="İş Ver & Bul — BizdenBize">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --gold:#C9A84C; --green:#1E7B4B; --blue:#185FA5; --navy:#1B3A8C;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav {
+      height: 58px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px 0 12px;
+      background: rgba(250,247,242,0.95); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212,197,169,0.4);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; margin-right: 8px; }
+    .nav-tabs { display: flex; gap: 2px; flex: 1; }
+    .nav-tab { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; white-space: nowrap; }
+    .nav-tab:hover { background: var(--warm); color: var(--ink); }
+    .nav-tab.active { background: var(--red); color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+    @media (max-width: 768px) { .nav-tabs { display: none !important; } }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink); padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 0%, rgba(201,168,76,.18) 0%, transparent 55%),
+                  radial-gradient(ellipse at 20% 100%, rgba(212,43,43,.12) 0%, transparent 50%);
+    }
+    .hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
+    .hero-tabs {
+      display: inline-flex; background: rgba(255,255,255,.07); border-radius: 10px; padding: 4px; gap: 2px; margin-bottom: 28px;
+    }
+    .hero-tab {
+      padding: 8px 24px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; font-family: inherit; transition: all .2s; color: rgba(255,255,255,.5); background: none;
+    }
+    .hero-tab.active { background: var(--white); color: var(--ink); }
+    .hero h1 {
+      font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 12px;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.5); line-height: 1.65; margin-bottom: 28px; }
+
+    /* Search */
+    .search-row { display: flex; gap: 8px; max-width: 600px; margin: 0 auto; }
+    .search-wrap {
+      flex: 1; display: flex; align-items: center; background: var(--white);
+      border-radius: 10px; padding: 4px 4px 4px 14px; box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    .search-wrap input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--ink); padding: 8px 0; background: none; }
+    .search-wrap input::placeholder { color: var(--sand); }
+    .search-btn { padding: 10px 20px; background: var(--red); color: var(--white); border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; white-space: nowrap; }
+    .search-btn:hover { background: var(--red2); }
+    .post-btn { padding: 10px 20px; background: var(--gold); color: var(--ink); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+    .post-btn:hover { background: #d4a93c; transform: translateY(-1px); }
+
+    /* Stats */
+    .hero-stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); }
+    .hstat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
+    .hstat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+
+    /* ── BODY ── */
+    .page-body { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+    @media (max-width: 768px) { .page-body { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .filter-box { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 16px; }
+    .filter-box-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+    .filter-opt { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background .15s; }
+    .filter-opt:hover { background: var(--warm); }
+    .filter-opt input { accent-color: var(--red); cursor: pointer; }
+    .filter-opt label { font-size: 13px; color: var(--ink); cursor: pointer; flex: 1; }
+    .filter-opt span { font-size: 11px; color: var(--muted); }
+    .filter-divider { height: 1px; background: var(--warm); margin: 8px 0; }
+
+    /* ── MAIN ── */
+    .main { min-width: 0; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 8px; flex-wrap: wrap; }
+    .results-count { font-size: 13px; color: var(--muted); }
+    .results-count strong { color: var(--ink); }
+    .sort-select { padding: 7px 12px; border: 1.5px solid var(--sand); border-radius: 8px; font-family: inherit; font-size: 12px; color: var(--ink); background: var(--white); cursor: pointer; outline: none; }
+
+    /* Category pills */
+    .cat-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .cat-pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1.5px solid var(--sand); background: var(--white); color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
+    .cat-pill:hover { border-color: var(--ink); color: var(--ink); }
+    .cat-pill.active { border-color: var(--red); background: var(--red); color: var(--white); }
+
+    /* ── LISTING CARDS ── */
+    .listings { display: flex; flex-direction: column; gap: 10px; }
+    .listing-card {
+      background: var(--white); border: 1px solid var(--sand); border-radius: 14px;
+      padding: 18px 20px; display: flex; gap: 16px; align-items: flex-start;
+      cursor: pointer; transition: all .2s; text-decoration: none; color: inherit;
+      position: relative;
+    }
+    .listing-card:hover { border-color: var(--red); box-shadow: 0 4px 20px rgba(212,43,43,.07); transform: translateY(-1px); }
+    .listing-card.featured { border-color: var(--gold); background: linear-gradient(135deg, #fff 0%, rgba(201,168,76,.04) 100%); }
+    .featured-badge {
+      position: absolute; top: -1px; right: 16px;
+      background: var(--gold); color: var(--ink); font-size: 9px; font-weight: 700;
+      padding: 3px 10px; border-radius: 0 0 8px 8px; letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    .listing-avatar {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700;
+    }
+    .listing-body { flex: 1; min-width: 0; }
+    .listing-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .listing-title { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+    .listing-price { font-size: 15px; font-weight: 700; color: var(--green); white-space: nowrap; flex-shrink: 0; }
+    .listing-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .listing-author { font-size: 12px; color: var(--muted); }
+    .listing-location { font-size: 12px; color: var(--muted); }
+    .listing-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .listing-footer { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .listing-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .tag-gig { background: rgba(24,95,165,.08); color: var(--blue); }
+    .tag-job { background: rgba(30,123,75,.08); color: var(--green); }
+    .tag-remote { background: rgba(201,168,76,.1); color: #8a6d00; }
+    .tag-cat { background: var(--warm); color: var(--muted); }
+    .listing-time { font-size: 11px; color: var(--sand); margin-left: auto; }
+
+    /* ── POST MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(26,18,8,.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: 20px; max-width: 520px; width: 92%; max-height: 92vh; display: flex; flex-direction: column; animation: slideUp .3s ease; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { padding: 22px 24px 16px; border-bottom: 1px solid var(--warm); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; line-height: 1; }
+    .modal-body { overflow-y: auto; flex: 1; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-footer { padding: 14px 24px 20px; border-top: 1px solid var(--warm); flex-shrink: 0; }
+    .field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); display: block; margin-bottom: 5px; }
+    .field-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--sand); border-radius: 9px; font-family: inherit; font-size: 13px; color: var(--ink); background: var(--cream); outline: none; transition: border-color .15s; }
+    .field-input:focus { border-color: var(--red); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    textarea.field-input { resize: none; min-height: 80px; line-height: 1.5; }
+    select.field-input { cursor: pointer; }
+
+    /* Type toggle */
+    .type-toggle { display: flex; gap: 6px; }
+    .type-btn { flex: 1; padding: 10px; border-radius: 9px; border: 1.5px solid var(--sand); background: var(--white); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s; text-align: center; }
+    .type-btn.active.job { border-color: var(--green); background: rgba(30,123,75,.07); color: var(--green); }
+    .type-btn.active.gig { border-color: var(--blue); background: rgba(24,95,165,.07); color: var(--blue); }
+
+    /* Featured upsell */
+    .featured-upsell {
+      border: 1.5px solid rgba(201,168,76,.4); background: rgba(201,168,76,.06);
+      border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+    }
+    .featured-upsell input { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+    .featured-upsell-text { flex: 1; }
+    .featured-upsell-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .featured-upsell-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .featured-price { font-size: 14px; font-weight: 700; color: var(--gold); }
+
+    .submit-btn { width: 100%; padding: 13px; background: var(--red); color: var(--white); border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; }
+    .submit-btn:hover { background: var(--red2); }
+
+    /* Success */
+    .post-success { display: none; text-align: center; padding: 40px 20px; }
+    .post-success h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
+    .post-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html" data-i18n="nav_community">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html" data-i18n="nav_classifieds">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html" data-i18n="nav_events">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html" data-i18n="nav_businesses">🏢 İşletmeler</a>
+      <a class="nav-tab active" href="is-ver-bul.html">💼 İş Ver & Bul</a>
+      <a class="nav-tab" href="library.html" data-i18n="nav_library">📚 Bilgiler</a>
+      <a class="nav-tab" href="abibot.html" data-i18n="nav_abibot">🤖 AbiBOT</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tabs">
+      <button class="hero-tab active" onclick="setMode('all',this)">Tümü</button>
+      <button class="hero-tab" onclick="setMode('job',this)">💼 İş İlanları</button>
+      <button class="hero-tab" onclick="setMode('gig',this)">⚡ Freelance & Gig</button>
+    </div>
+    <h1>İş <em>Ver</em> & <em>Bul</em></h1>
+    <p class="hero-sub">Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.<br>İş ver, iş bul — güvenilir insanlarla.</p>
+    <div class="search-row">
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Beceri, unvan veya şirket ara..." oninput="renderListings()">
+        <button class="search-btn" onclick="renderListings()">Ara</button>
+      </div>
+      <button class="post-btn" onclick="openPostModal()">+ İlan Ver</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Aktif İlan</div></div>
+      <div><div class="hstat-val" id="stat-jobs">—</div><div class="hstat-label">İş İlanı</div></div>
+      <div><div class="hstat-val" id="stat-gigs">—</div><div class="hstat-label">Freelance Hizmet</div></div>
+      <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">İlan ver</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="page-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="filter-box">
+      <div class="filter-box-title">Kategori</div>
+      <div class="filter-opt"><input type="checkbox" id="f-tech" onchange="renderListings()"><label for="f-tech">💻 Teknoloji</label><span id="c-tech"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-translate" onchange="renderListings()"><label for="f-translate">🌐 Tercüme</label><span id="c-translate"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-legal" onchange="renderListings()"><label for="f-legal">⚖️ Hukuki</label><span id="c-legal"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-design" onchange="renderListings()"><label for="f-design">🎨 Tasarım</label><span id="c-design"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-finance" onchange="renderListings()"><label for="f-finance">💶 Finans</label><span id="c-finance"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-care" onchange="renderListings()"><label for="f-care">❤️ Bakım</label><span id="c-care"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-trade" onchange="renderListings()"><label for="f-trade">🔧 Usta işleri</label><span id="c-trade"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-other" onchange="renderListings()"><label for="f-other">📦 Diğer</label><span id="c-other"></span></div>
+    </div>
+
+    <div class="filter-box">
+      <div class="filter-box-title">Çalışma Şekli</div>
+      <div class="filter-opt"><input type="checkbox" id="f-remote" onchange="renderListings()"><label for="f-remote">🌍 Remote</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-onsite" onchange="renderListings()"><label for="f-onsite">📍 Yerinde</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-hybrid" onchange="renderListings()"><label for="f-hybrid">🔄 Hibrit</label></div>
+    </div>
+
+    <div class="filter-box">
+      <div class="filter-box-title">Ülke</div>
+      <div class="filter-opt"><input type="checkbox" id="f-de" onchange="renderListings()"><label for="f-de">🇩🇪 Almanya</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-nl" onchange="renderListings()"><label for="f-nl">🇳🇱 Hollanda</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-be" onchange="renderListings()"><label for="f-be">🇧🇪 Belçika</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-at" onchange="renderListings()"><label for="f-at">🇦🇹 Avusturya</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-gb" onchange="renderListings()"><label for="f-gb">🇬🇧 İngiltere</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-fr" onchange="renderListings()"><label for="f-fr">🇫🇷 Fransa</label></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Category pills -->
+    <div class="cat-pills" id="cat-pills">
+      <button class="cat-pill active" data-cat="all" onclick="setCat('all',this)">Tümü</button>
+      <button class="cat-pill" data-cat="tech" onclick="setCat('tech',this)">💻 Teknoloji</button>
+      <button class="cat-pill" data-cat="translate" onclick="setCat('translate',this)">🌐 Tercüme</button>
+      <button class="cat-pill" data-cat="legal" onclick="setCat('legal',this)">⚖️ Hukuki</button>
+      <button class="cat-pill" data-cat="design" onclick="setCat('design',this)">🎨 Tasarım</button>
+      <button class="cat-pill" data-cat="finance" onclick="setCat('finance',this)">💶 Finans</button>
+      <button class="cat-pill" data-cat="care" onclick="setCat('care',this)">❤️ Bakım</button>
+      <button class="cat-pill" data-cat="trade" onclick="setCat('trade',this)">🔧 Usta işleri</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="results-count" id="results-count"><strong>—</strong> ilan bulundu</div>
+      <select class="sort-select" onchange="renderListings()">
+        <option value="newest">En yeni</option>
+        <option value="featured">Öne çıkanlar</option>
+        <option value="price-asc">Fiyat: Düşükten yükseğe</option>
+        <option value="price-desc">Fiyat: Yüksekten düşüğe</option>
+      </select>
+    </div>
+
+    <div class="listings" id="listings"></div>
+  </main>
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-overlay" id="post-modal" onclick="if(event.target===this)closePostModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>💼 İlan Ver</h3>
+      <button class="modal-close" onclick="closePostModal()">×</button>
+    </div>
+    <div class="modal-body" id="post-form-body">
+      <!-- Type toggle -->
+      <div>
+        <label class="field-label">İlan Türü</label>
+        <div class="type-toggle">
+          <button class="type-btn active job" data-type="job" onclick="selectPostType('job',this)">💼 İş İlanı</button>
+          <button class="type-btn gig" data-type="gig" onclick="selectPostType('gig',this)">⚡ Freelance / Gig</button>
+        </div>
+      </div>
+      <!-- Title -->
+      <div>
+        <label class="field-label">Başlık *</label>
+        <input class="field-input" id="p-title" type="text" placeholder="örn: Almanca-Türkçe Tercüman Aranıyor">
+      </div>
+      <!-- Category + Location -->
+      <div class="field-row">
+        <div>
+          <label class="field-label">Kategori</label>
+          <select class="field-input" id="p-cat">
+            <option value="tech">💻 Teknoloji</option>
+            <option value="translate">🌐 Tercüme</option>
+            <option value="legal">⚖️ Hukuki</option>
+            <option value="design">🎨 Tasarım</option>
+            <option value="finance">💶 Finans</option>
+            <option value="care">❤️ Bakım</option>
+            <option value="trade">🔧 Usta işleri</option>
+            <option value="other">📦 Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Konum</label>
+          <input class="field-input" id="p-location" type="text" placeholder="Frankfurt, DE">
+        </div>
+      </div>
+      <!-- Work type + Price -->
+      <div class="field-row">
+        <div>
+          <label class="field-label">Çalışma Şekli</label>
+          <select class="field-input" id="p-worktype">
+            <option value="remote">🌍 Remote</option>
+            <option value="onsite">📍 Yerinde</option>
+            <option value="hybrid">🔄 Hibrit</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" id="price-label">Ücret / Bütçe</label>
+          <input class="field-input" id="p-price" type="text" placeholder="€500 / ay veya müzakere">
+        </div>
+      </div>
+      <!-- Description -->
+      <div>
+        <label class="field-label">Açıklama *</label>
+        <textarea class="field-input" id="p-desc" rows="4" placeholder="Aranan profil, gereksinimler ve detaylar..."></textarea>
+      </div>
+      <!-- Contact -->
+      <div>
+        <label class="field-label">İletişim (e-posta veya WhatsApp)</label>
+        <input class="field-input" id="p-contact" type="text" placeholder="isim@email.com veya +49...">
+      </div>
+      <!-- Featured upsell -->
+      <label class="featured-upsell">
+        <input type="checkbox" id="p-featured">
+        <div class="featured-upsell-text">
+          <div class="featured-upsell-title">⭐ Öne Çıkan İlan</div>
+          <div class="featured-upsell-sub">Listenin en üstünde göster, 7 gün boyunca altın çerçeveli.</div>
+        </div>
+        <div class="featured-price">€4,99</div>
+      </label>
+      <!-- Error -->
+      <div id="p-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="post-footer">
+      <button class="submit-btn" onclick="submitPost()">İlanı Yayınla →</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Topluluk kurallarına uygun ilanlar yayınlanır. Spam kaldırılır.</div>
+    </div>
+    <div class="post-success" id="post-success">
+      <div style="font-size:48px;">🎉</div>
+      <h3>İlanın yayınlandı!</h3>
+      <p>Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── DATA ──
+  const listings = [
+    { id:1, type:'job', title:'Almanca-Türkçe Tercüman', company:'Müller & Partner Rechtsanwälte', author:'Müller & Partner', location:'Frankfurt, 🇩🇪', cat:'translate', worktype:'onsite', price:'€2.800/ay', desc:'Hukuk büromuz için Almanca-Türkçe tercüman arıyoruz. Adli tercüme deneyimi tercih sebebidir. Tam zamanlı pozisyon.', featured:true, time:'2 saat önce', contact:'jobs@mueller-partner.de' },
+    { id:2, type:'gig', title:'Almanca Belge Çevirisi', company:null, author:'Zeynep K.', location:'Berlin, 🇩🇪 / Remote', cat:'translate', worktype:'remote', price:'€0,12/kelime', desc:'Resmi belgeler, sözleşmeler ve tıbbi raporlar için Almanca-Türkçe çeviri hizmeti. Hızlı teslimat, noter onaylı mümkün.', featured:true, time:'5 saat önce', contact:'zeynep.cevik@gmail.com' },
+    { id:3, type:'job', title:'Frontend Geliştirici', company:'StartupHub Amsterdam', author:'StartupHub', location:'Amsterdam, 🇳🇱', cat:'tech', worktype:'hybrid', price:'€4.500/ay', desc:'React ve TypeScript bilen frontend geliştirici arıyoruz. Türkçe konuşan bir ekibiz, uluslararası proje deneyimi sunuyoruz.', featured:false, time:'1 gün önce', contact:'hr@startuphub.nl' },
+    { id:4, type:'gig', title:'Logo & Kurumsal Kimlik Tasarımı', company:null, author:'Murat D.', location:'Wien, 🇦🇹 / Remote', cat:'design', worktype:'remote', price:'€250\'den başlayan', desc:'10 yıllık deneyimle logo, kartvizit ve kurumsal kimlik tasarımı. Portföyümü görmek için mesaj atın.', featured:false, time:'1 gün önce', contact:'+43 664 123 4567' },
+    { id:5, type:'job', title:'Muhasebe Uzmanı', company:'Demir Steuerberatung', author:'Demir Steuerberatung', location:'München, 🇩🇪', cat:'finance', worktype:'onsite', price:'€3.200/ay', desc:'Türk müvekkillerimize hizmet veren muhasebe ofisimiz için tecrübeli muhasebeci arıyoruz. Türkçe-Almanca iki dilli olmak şart.', featured:false, time:'2 gün önce', contact:'info@demir-steuer.de' },
+    { id:6, type:'gig', title:'Vergi Beyannamesi Danışmanlığı', company:null, author:'Hasan Ö.', location:'Köln, 🇩🇪 / Remote', cat:'finance', worktype:'remote', price:'€80/saat', desc:'Almanya\'da yaşayan Türkler için vergi beyannamesi hazırlama, Kindergeld ve Wohngeld başvuruları konusunda danışmanlık.', featured:false, time:'3 gün önce', contact:'hasan.ozturk@steuer.de' },
+    { id:7, type:'gig', title:'Çocuk Bakıcısı', company:null, author:'Fatma A.', location:'Hamburg, 🇩🇪', cat:'care', worktype:'onsite', price:'€15/saat', desc:'Türkçe ve Almanca konuşan, deneyimli çocuk bakıcısı. Referanslarım mevcuttur. Hafta içi ve hafta sonu müsaitim.', featured:false, time:'3 gün önce', contact:'+49 176 987 6543' },
+    { id:8, type:'job', title:'Serbest Elektrikçi / Usta', company:'Yılmaz Elektrik', author:'Yılmaz Elektrik', location:'Rotterdam, 🇳🇱', cat:'trade', worktype:'onsite', price:'€22/saat', desc:'Elektrik işleri, tesisat kurulumu ve tadilat projelerinde çalışacak deneyimli elektrikçi arıyoruz. Hollanda ehliyet şartı.', featured:false, time:'4 gün önce', contact:'info@yilmaz-elektrik.nl' },
+  ];
+
+  let activeMode = 'all';
+  let activeCat = 'all';
+
+  function setMode(mode, btn) {
+    activeMode = mode;
+    document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderListings();
+  }
+
+  function setCat(cat, btn) {
+    activeCat = cat;
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderListings();
+  }
+
+  function getFiltered() {
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    const checkedCats = ['tech','translate','legal','design','finance','care','trade','other'].filter(c => document.getElementById('f-'+c)?.checked);
+    const checkedWork = ['remote','onsite','hybrid'].filter(w => document.getElementById('f-'+w)?.checked);
+    const checkedCountries = ['de','nl','be','at','gb','fr'].filter(c => document.getElementById('f-'+c)?.checked);
+
+    return listings.filter(l => {
+      if (activeMode !== 'all' && l.type !== activeMode) return false;
+      if (activeCat !== 'all' && l.cat !== activeCat) return false;
+      if (checkedCats.length && !checkedCats.includes(l.cat)) return false;
+      if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
+      if (checkedCountries.length) {
+        const hasCountry = checkedCountries.some(c => l.location.toLowerCase().includes(c === 'de' ? '🇩🇪' : c === 'nl' ? '🇳🇱' : c === 'at' ? '🇦🇹' : c === 'gb' ? '🇬🇧' : c === 'fr' ? '🇫🇷' : '🇧🇪'));
+        if (!hasCountry) return false;
+      }
+      if (q && !l.title.toLowerCase().includes(q) && !l.desc.toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  const catEmoji = { tech:'💻', translate:'🌐', legal:'⚖️', design:'🎨', finance:'💶', care:'❤️', trade:'🔧', other:'📦' };
+  const catColor = { tech:'#185FA5', translate:'#1E7B4B', legal:'#8a6d00', design:'#a83270', finance:'#1E7B4B', care:'#D42B2B', trade:'#6B5E4E', other:'#6B5E4E' };
+  const catBg = { tech:'rgba(24,95,165,.1)', translate:'rgba(30,123,75,.1)', legal:'rgba(201,168,76,.12)', design:'rgba(168,50,112,.1)', finance:'rgba(30,123,75,.1)', care:'rgba(212,43,43,.08)', trade:'rgba(107,94,78,.1)', other:'rgba(107,94,78,.1)' };
+
+  function renderListings() {
+    const filtered = getFiltered();
+    const sorted = [...filtered].sort((a,b) => a.featured === b.featured ? 0 : a.featured ? -1 : 1);
+    const jobs = listings.filter(l => l.type === 'job').length;
+    const gigs = listings.filter(l => l.type === 'gig').length;
+    document.getElementById('stat-total').textContent = listings.length;
+    document.getElementById('stat-jobs').textContent = jobs;
+    document.getElementById('stat-gigs').textContent = gigs;
+    document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> ilan bulundu`;
+
+    const container = document.getElementById('listings');
+    if (!sorted.length) {
+      container.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
+      return;
+    }
+    container.innerHTML = sorted.map(l => `
+      <div class="listing-card ${l.featured ? 'featured' : ''}">
+        ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
+        <div class="listing-avatar" style="background:${catBg[l.cat]};color:${catColor[l.cat]}">${catEmoji[l.cat]}</div>
+        <div class="listing-body">
+          <div class="listing-top">
+            <div class="listing-title">${l.title}</div>
+            <div class="listing-price">${l.price}</div>
+          </div>
+          <div class="listing-meta">
+            <span class="listing-author">${l.company || l.author}</span>
+            <span style="color:var(--sand)">·</span>
+            <span class="listing-location">📍 ${l.location}</span>
+          </div>
+          <div class="listing-desc">${l.desc}</div>
+          <div class="listing-footer">
+            <span class="listing-tag ${l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
+            <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
+            <span class="listing-tag tag-cat">${catEmoji[l.cat]} ${document.querySelector('[data-cat="'+l.cat+'"]')?.textContent || l.cat}</span>
+            <span class="listing-time">${l.time}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── POST MODAL ──
+  let selectedPostType = 'job';
+
+  function openPostModal() {
+    document.getElementById('post-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePostModal() {
+    document.getElementById('post-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('post-success').style.display = 'none';
+    document.getElementById('post-form-body').style.display = 'flex';
+    document.getElementById('post-footer').style.display = 'block';
+    document.getElementById('p-error').style.display = 'none';
+  }
+  function selectPostType(type, btn) {
+    selectedPostType = type;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('price-label').textContent = type === 'gig' ? 'Fiyat' : 'Ücret / Bütçe';
+  }
+  function submitPost() {
+    const title = document.getElementById('p-title').value.trim();
+    const desc  = document.getElementById('p-desc').value.trim();
+    const err   = document.getElementById('p-error');
+    if (!title || !desc) {
+      err.textContent = 'Lütfen en azından başlık ve açıklama girin.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+    document.getElementById('post-form-body').style.display = 'none';
+    document.getElementById('post-footer').style.display = 'none';
+    document.getElementById('post-success').style.display = 'block';
+    setTimeout(() => closePostModal(), 3000);
+  }
+
+  // Init
+  renderListings();
+</script>
+</body>
+</html>
