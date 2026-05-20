@@ -116,10 +116,10 @@
     .eu-section-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 14px; }
 
     /* SUGGEST PROMPT */
-    .suggest-prompt { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: var(--warm); border-radius: 12px; margin-top: 24px; cursor: pointer; transition: background .15s; border: 1px solid var(--sand); }
-    .suggest-prompt:hover { background: var(--sand); }
-    .suggest-prompt-text { flex: 1; font-size: 13px; color: var(--muted); }
-    .suggest-prompt-text strong { color: var(--ink); display: block; margin-bottom: 2px; }
+    .suggest-prompt { display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: var(--navy); border-radius: 14px; margin-top: 24px; cursor: pointer; transition: opacity .2s; border: none; }
+    .suggest-prompt:hover { opacity: .9; }
+    .suggest-prompt-text { flex: 1; font-size: 13px; color: rgba(255,255,255,.65); }
+    .suggest-prompt-text strong { color: var(--white); display: block; margin-bottom: 3px; font-size: 14px; }
 
     /* EMPTY */
     .empty { text-align: center; padding: 40px 24px; color: var(--muted); }
@@ -360,7 +360,7 @@ function render() {
         <strong>${cm.name} için eksik bir kaynak var mı?</strong>
         Topluluk olarak bu sayfayı birlikte geliştirelim — önerin ekibe iletilir.
       </div>
-      <div style="color:var(--red);font-size:18px;">→</div>
+      <div style="color:var(--gold);font-size:20px;flex-shrink:0;">→</div>
     </div>`;
 
   document.getElementById('page-body').innerHTML = headerHtml + pillsHtml + tipHtml + contentHtml + euHtml + suggestHtml;
