@@ -22,18 +22,18 @@
     nav {
       height: 58px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px;
+      padding: 0 16px 0 12px;
       background: rgba(250,247,242,0.95); backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(212,197,169,0.4);
       position: sticky; top: 0; z-index: 100;
     }
-    .nav-left { display: flex; align-items: center; gap: 16px; }
-    .nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--ink); text-decoration: none; }
-    .nav-logo span { color: var(--red); }
-    .nav-divider { width: 1px; height: 18px; background: var(--sand); }
-    .nav-title { font-size: 14px; font-weight: 600; color: var(--ink); }
-    .nav-title span { color: var(--red); }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-left { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; margin-right: 8px; }
+    .nav-tabs { display: flex; gap: 2px; flex: 1; }
+    .nav-tab { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; }
+    .nav-tab:hover { background: var(--warm); color: var(--ink); }
+    .nav-tab.active { background: var(--red); color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
 
     /* ── HERO ── */
@@ -190,11 +190,15 @@
 <!-- NAV -->
 <nav>
   <div class="nav-left">
-    <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
-    <div class="nav-divider"></div>
-    <div class="nav-title">📚 <span>Bilgiler</span></div>
-    <div class="nav-divider"></div>
-    <a href="abibot.html" style="font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">Abi<span style="color:var(--red)">BOT</span></a>
+    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="mahallem.html" data-i18n="nav_community">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html" data-i18n="nav_classifieds">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html" data-i18n="nav_events">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html" data-i18n="nav_businesses">🏢 İşletmeler</a>
+      <a class="nav-tab active" href="library.html" data-i18n="nav_library">📚 Bilgiler</a>
+      <a class="nav-tab" href="abibot.html" data-i18n="nav_abibot">🤖 AbiBOT</a>
+    </div>
   </div>
   <div class="nav-right">
     <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
