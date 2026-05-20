@@ -674,7 +674,7 @@
       <div class="welcome-state" id="welcome-state">
         <div class="welcome-icon"><div class="welcome-icon-inner">AI</div></div>
         <h2 class="welcome-title">Merhaba, ben <em>AbiBOT.</em></h2>
-        <p class="welcome-sub">Avrupa'daki Türkler için hukuki, tıbbi, finansal ve vize sorularını Türkçe, Almanca veya İngilizce cevaplayabilirim. Her soru ücretlidir. Önemli konularda bir insan uzmanına da danışabilirsin.</p>
+        <p class="welcome-sub">Avrupa'daki Türkler için hukuki, tıbbi, finansal ve vize sorularını Türkçe, Almanca, İngilizce, Hollandaca veya Fransızca cevaplayabilirim. Günde <strong>10 soru ücretsiz.</strong> <button onclick="openInfoModal()" style="background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--sand);color:var(--muted);font-size:11px;font-weight:700;vertical-align:middle;margin-left:2px;transition:background .15s;" title="Daha fazla bilgi">ℹ</button></p>
         <div class="welcome-cats">
           <span class="welcome-cat" onclick="selectCatByName('legal')">⚖️ Hukuki</span>
           <span class="welcome-cat" onclick="selectCatByName('medical')">🏥 Tıbbi</span>
@@ -691,7 +691,7 @@
 
     <div class="input-bar">
       <div class="input-wrap">
-        <textarea id="chat-input" placeholder="Sorunuzu Türkçe, Almanca veya İngilizce yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <textarea id="chat-input" placeholder="Sorunuzu Türkçe, Almanca, İngilizce, Hollandaca veya Fransızca yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
         <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Gönder">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
@@ -1478,6 +1478,79 @@
     });
   })();
 
+</script>
+
+<!-- INFO MODAL -->
+<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)closeInfoModal()">
+  <div class="modal modal-flex" style="max-width:500px;">
+    <div style="padding:24px 24px 0;flex-shrink:0;border-bottom:1px solid var(--warm);">
+      <button class="modal-close" onclick="closeInfoModal()">×</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:36px;height:36px;border-radius:9px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:'Playfair Display',serif;font-size:13px;font-weight:900;color:#fff;">AI</span>
+        </div>
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);">AbiBOT Hakkında</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">Bilmeniz gerekenler</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- 1. AI disclaimer -->
+      <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;">🤖 AbiBOT bir yapay zeka asistanıdır</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Yanıtlar, internetteki doğrulanmamış bilgilerin istatistiksel analizi temel alınarak üretilmektedir. Bu nedenle verilen bilgiler kesin, doğru veya güncel olmayabilir. AbiBOT bir avukat, doktor veya finansal danışmanın yerini tutmaz. Önemli kararlar almadan önce mutlaka uzman görüşü alın.</div>
+      </div>
+
+      <!-- 2. Expert review -->
+      <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;">👨‍⚕️ Uzman doğrulaması</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Kesin ve güvenilir bir yanıt için alanında uzman ekibimize danışabilirsiniz. Uzman incelemesi kredi gerektirir. Sol paneldeki <strong>"Uzman İncelesin →"</strong> butonunu kullanın.</div>
+      </div>
+
+      <!-- 3. Solidarity credit -->
+      <div style="background:rgba(30,123,75,.05);border:1px solid rgba(30,123,75,.2);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:#1E7B4B;margin-bottom:6px;">💙 Dayanışma kredisi</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Maddi imkânınız yoksa bazı uzmanlarımız <strong>dayanışma kredisi</strong> sunmaktadır. Uzman seçimi sırasında bu seçeneği görebilirsiniz. Topluluğumuzun dürüst ve dayanışmacı bireylerden oluştuğuna inanıyoruz — bu sistemi birlikte koruyalım.</div>
+      </div>
+
+      <!-- 4. Off-topic policy -->
+      <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;">🔒 Konu dışı sorular</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">AbiBOT yalnızca hukuki, tıbbi, finansal, vize ve konut konularında yanıt verir. Konu dışı sorular yanıtlanmaz ve güvenlik amacıyla kayıt altına alınır.</div>
+      </div>
+
+      <!-- 5. Privacy -->
+      <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;">🔐 Gizlilik</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Sorularınızın gizliliği güvence altındadır. Kişisel verileriniz üçüncü taraflarla paylaşılmaz.</div>
+      </div>
+
+      <!-- 6. Premium -->
+      <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;">⭐ Premium üyelik</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Ücretsiz planda günde <strong>10 soru</strong> sorabilirsiniz. <strong>Premium üyeler</strong> sınırsız AbiBOT sorusu sorabilir ve her ay dayanışma kredisi kazanır.</div>
+      </div>
+
+    </div>
+
+    <div style="padding:16px 24px 24px;border-top:1px solid var(--warm);flex-shrink:0;">
+      <button onclick="closeInfoModal()" style="width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Anladım →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openInfoModal() {
+    document.getElementById('info-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeInfoModal() {
+    document.getElementById('info-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 </script>
 
   <script>
