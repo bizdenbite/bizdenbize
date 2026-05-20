@@ -874,37 +874,63 @@
     en: 'Always respond in ENGLISH. Use clear, friendly English. Avoid overly formal legal jargon — explain things simply.',
   };
 
-  const startersByLang = {
-    tr: [
-      'Almanya\'da işten çıkarılırsam hangi haklarım var?',
-      'Niederlassungserlaubnis için ne gerekiyor?',
-      'Krankenkasse mektubumu anlayamıyorum, ne yapmalıyım?',
-      'Çocuğum için Kindergeld nasıl alırım?',
-    ],
-    de: [
-      'Was sind meine Rechte wenn ich in Deutschland gekündigt werde?',
-      'Was brauche ich für die Niederlassungserlaubnis?',
-      'Ich verstehe meinen Krankenkassenbrief nicht, was soll ich tun?',
-      'Wie beantrage ich Kindergeld für mein Kind?',
-    ],
-    fr: [
-      'Quels sont mes droits si je suis licencié en Allemagne ?',
-      'De quoi ai-je besoin pour un permis de séjour permanent ?',
-      'Je ne comprends pas ma lettre d\'assurance maladie, que faire ?',
-      'Comment demander des allocations familiales pour mon enfant ?',
-    ],
-    nl: [
-      'Wat zijn mijn rechten als ik ontslagen word in Duitsland?',
-      'Wat heb ik nodig voor een permanente verblijfsvergunning?',
-      'Ik begrijp mijn zorgverzekeringbrief niet, wat moet ik doen?',
-      'Hoe vraag ik kinderbijslag aan voor mijn kind?',
-    ],
-    en: [
-      'What are my rights if I get fired in Germany?',
-      'What do I need for a permanent residence permit?',
-      'I don\'t understand my health insurance letter, what should I do?',
-      'How do I apply for child benefit (Kindergeld)?',
-    ],
+  const startersByCat = {
+    legal: {
+      tr: ['Kiracımı mahkemeye vermek istiyorum, nasıl başlarım?', 'Almanya\'da boşanma davası açmak ne kadar sürer?', 'İşverenimden tazminat alabilir miyim?', 'Avukat tutmadan dava açabilir miyim?'],
+      de: ['Wie klage ich gegen meinen Vermieter vor Gericht?', 'Wie lange dauert ein Scheidungsverfahren in Deutschland?', 'Kann ich Schadensersatz von meinem Arbeitgeber verlangen?', 'Kann ich ohne Anwalt klagen?'],
+      en: ['How do I take my landlord to court?', 'How long does a divorce case take in Germany?', 'Can I claim compensation from my employer?', 'Can I file a lawsuit without a lawyer?'],
+      fr: ['Comment poursuivre mon propriétaire en justice ?', 'Combien de temps dure une procédure de divorce en Allemagne ?', 'Puis-je réclamer des dommages à mon employeur ?', 'Puis-je déposer une plainte sans avocat ?'],
+      nl: ['Hoe span ik een rechtszaak aan tegen mijn verhuurder?', 'Hoe lang duurt een echtscheidingsprocedure in Duitsland?', 'Kan ik schadevergoeding eisen van mijn werkgever?', 'Kan ik een rechtszaak starten zonder advocaat?'],
+    },
+    medical: {
+      tr: ['Krankenkasse mektubumu anlayamıyorum, ne yapmalıyım?', 'Özel doktora gidersem sigortam karşılar mı?', 'Almanya\'da psikolog randevusu nasıl alırım?', 'İlaç reçetemi Türkiye\'de kullanabilir miyim?'],
+      de: ['Ich verstehe meinen Krankenkassenbrief nicht, was soll ich tun?', 'Übernimmt meine Versicherung den Privatarzt?', 'Wie bekomme ich einen Psychologen-Termin in Deutschland?', 'Kann ich mein Rezept in der Türkei einlösen?'],
+      en: ['I don\'t understand my health insurance letter, what should I do?', 'Does my insurance cover private doctors?', 'How do I get a psychologist appointment in Germany?', 'Can I use my prescription in Turkey?'],
+      fr: ['Je ne comprends pas ma lettre d\'assurance maladie, que faire ?', 'Mon assurance couvre-t-elle un médecin privé ?', 'Comment obtenir un rendez-vous chez un psychologue en Allemagne ?', 'Puis-je utiliser mon ordonnance en Turquie ?'],
+      nl: ['Ik begrijp mijn zorgverzekeringbrief niet, wat moet ik doen?', 'Vergoedt mijn verzekering een privéarts?', 'Hoe krijg ik een afspraak bij een psycholoog in Duitsland?', 'Kan ik mijn recept gebruiken in Turkije?'],
+    },
+    tax: {
+      tr: ['Çocuğum için Kindergeld nasıl alırım?', 'Almanya\'da vergi beyannamesi vermem gerekiyor mu?', 'Wohngeld başvurusu için belgeler nelerdir?', 'Türkiye\'deki gelirim Almanya\'da vergilendirilir mi?'],
+      de: ['Wie beantrage ich Kindergeld für mein Kind?', 'Muss ich in Deutschland eine Steuererklärung abgeben?', 'Welche Unterlagen brauche ich für Wohngeld?', 'Wird mein Einkommen aus der Türkei in Deutschland besteuert?'],
+      en: ['How do I apply for child benefit (Kindergeld)?', 'Do I need to file a tax return in Germany?', 'What documents do I need for housing benefit (Wohngeld)?', 'Is my income from Turkey taxed in Germany?'],
+      fr: ['Comment demander des allocations familiales (Kindergeld) ?', 'Dois-je déposer une déclaration fiscale en Allemagne ?', 'Quels documents faut-il pour l\'aide au logement (Wohngeld) ?', 'Mon revenu de Turquie est-il imposé en Allemagne ?'],
+      nl: ['Hoe vraag ik kinderbijslag (Kindergeld) aan?', 'Moet ik aangifte doen in Duitsland?', 'Welke documenten heb ik nodig voor woonsubsidie (Wohngeld)?', 'Wordt mijn inkomen uit Turkije belast in Duitsland?'],
+    },
+    visa: {
+      tr: ['Niederlassungserlaubnis için ne gerekiyor?', 'Aile birleşimi başvurusu ne kadar sürer?', 'Oturma iznimiz reddedilirse ne yapabiliriz?', 'Almanya vatandaşlığı için kaç yıl oturma izni gerekiyor?'],
+      de: ['Was brauche ich für die Niederlassungserlaubnis?', 'Wie lange dauert ein Antrag auf Familienzusammenführung?', 'Was können wir tun, wenn unser Aufenthaltstitel abgelehnt wird?', 'Wie viele Jahre Aufenthalt brauche ich für die deutsche Staatsbürgerschaft?'],
+      en: ['What do I need for a permanent residence permit?', 'How long does a family reunification application take?', 'What can we do if our residence permit is rejected?', 'How many years of residence do I need for German citizenship?'],
+      fr: ['De quoi ai-je besoin pour un permis de séjour permanent ?', 'Combien de temps prend une demande de regroupement familial ?', 'Que faire si notre permis de séjour est refusé ?', 'Combien d\'années de résidence faut-il pour la nationalité allemande ?'],
+      nl: ['Wat heb ik nodig voor een permanente verblijfsvergunning?', 'Hoe lang duurt een aanvraag voor gezinshereniging?', 'Wat kunnen we doen als onze verblijfsvergunning wordt afgewezen?', 'Hoeveel jaar verblijf heb ik nodig voor het Duits staatsburgerschap?'],
+    },
+    housing: {
+      tr: ['Ev sahibim depozitomu geri vermedi, ne yapabilirim?', 'Kira kontratımda hangi maddeler önemlidir?', 'Nebenkosten faturası çok yüksek geldi, itiraz edebilir miyim?', 'Kiracıyı tahliye etmek için hangi sebepler geçerlidir?'],
+      de: ['Mein Vermieter gibt meine Kaution nicht zurück, was kann ich tun?', 'Welche Klauseln im Mietvertrag sind wichtig?', 'Meine Nebenkostenabrechnung ist sehr hoch, kann ich widersprechen?', 'Welche Gründe gelten für eine Kündigung des Mieters?'],
+      en: ['My landlord won\'t return my deposit, what can I do?', 'Which clauses in a rental contract are important?', 'My utility bill is very high, can I dispute it?', 'What are valid reasons to evict a tenant?'],
+      fr: ['Mon propriétaire ne rend pas ma caution, que puis-je faire ?', 'Quelles clauses du contrat de location sont importantes ?', 'Ma facture de charges est très élevée, puis-je contester ?', 'Quels motifs sont valables pour expulser un locataire ?'],
+      nl: ['Mijn verhuurder geeft mijn borg niet terug, wat kan ik doen?', 'Welke clausules in een huurcontract zijn belangrijk?', 'Mijn nutsrekening is erg hoog, kan ik bezwaar maken?', 'Welke redenen zijn geldig om een huurder te zetten?'],
+    },
+    employment: {
+      tr: ['Almanya\'da işten çıkarılırsam hangi haklarım var?', 'Deneme süresinde işten atılabilir miyim?', 'İşyerinde ayrımcılığa uğradım, ne yapabilirim?', 'Hasta olduğumda kaç gün ücret alırım?'],
+      de: ['Was sind meine Rechte wenn ich in Deutschland gekündigt werde?', 'Kann ich in der Probezeit gekündigt werden?', 'Ich wurde am Arbeitsplatz diskriminiert, was kann ich tun?', 'Wie viele Tage bekomme ich Lohn wenn ich krank bin?'],
+      en: ['What are my rights if I get fired in Germany?', 'Can I be dismissed during probation?', 'I was discriminated against at work, what can I do?', 'How many days do I get paid when I\'m sick?'],
+      fr: ['Quels sont mes droits si je suis licencié en Allemagne ?', 'Puis-je être licencié pendant la période d\'essai ?', 'J\'ai été victime de discrimination au travail, que faire ?', 'Combien de jours suis-je payé en cas de maladie ?'],
+      nl: ['Wat zijn mijn rechten als ik ontslagen word in Duitsland?', 'Kan ik ontslagen worden tijdens de proeftijd?', 'Ik ben gediscrimineerd op het werk, wat kan ik doen?', 'Hoeveel dagen krijg ik loon als ik ziek ben?'],
+    },
+    school: {
+      tr: ['Çocuğumu Almanya\'da okula nasıl kaydettiririm?', 'Elterngeld başvurusu için ne gerekiyor?', 'Kita için bekleme listesi çok uzun, alternatifim var mı?', 'BAföG için başvurabilir miyim?'],
+      de: ['Wie melde ich mein Kind in Deutschland an der Schule an?', 'Was brauche ich für den Elterngeld-Antrag?', 'Die Warteliste für Kita ist sehr lang, gibt es Alternativen?', 'Kann ich BAföG beantragen?'],
+      en: ['How do I enroll my child in school in Germany?', 'What do I need to apply for parental allowance (Elterngeld)?', 'The Kita waiting list is very long, are there alternatives?', 'Can I apply for BAföG student support?'],
+      fr: ['Comment inscrire mon enfant à l\'école en Allemagne ?', 'Que faut-il pour demander l\'allocation parentale (Elterngeld) ?', 'La liste d\'attente pour la crèche est très longue, y a-t-il des alternatives ?', 'Puis-je demander le BAföG ?'],
+      nl: ['Hoe schrijf ik mijn kind in op school in Duitsland?', 'Wat heb ik nodig voor ouderschapsvergoeding (Elterngeld)?', 'De wachtlijst voor de Kita is erg lang, zijn er alternatieven?', 'Kan ik BAföG aanvragen?'],
+    },
+    insurance: {
+      tr: ['Kaza yaptım, sigortama nasıl bildiririm?', 'Kfz-Versicherung için en ucuz seçeneği nasıl bulurum?', 'Hasar sonrası aracım değer kaybeder mi?', 'Yabancı ehliyetle Almanya\'da araç kullanabilir miyim?'],
+      de: ['Ich hatte einen Unfall, wie melde ich es meiner Versicherung?', 'Wie finde ich die günstigste Kfz-Versicherung?', 'Verliert mein Auto nach einem Schaden an Wert?', 'Darf ich in Deutschland mit einem ausländischen Führerschein fahren?'],
+      en: ['I had an accident, how do I report it to my insurance?', 'How do I find the cheapest car insurance?', 'Does my car lose value after a claim?', 'Can I drive in Germany with a foreign licence?'],
+      fr: ['J\'ai eu un accident, comment le déclarer à mon assurance ?', 'Comment trouver l\'assurance auto la moins chère ?', 'Ma voiture perd-elle de la valeur après un sinistre ?', 'Puis-je conduire en Allemagne avec un permis étranger ?'],
+      nl: ['Ik had een ongeluk, hoe meld ik dit bij mijn verzekering?', 'Hoe vind ik de goedkoopste autoverzekering?', 'Verliest mijn auto waarde na een schadeclaim?', 'Mag ik in Duitsland rijden met een buitenlands rijbewijs?'],
+    },
   };
 
   // ── UI HELPERS ──
@@ -917,6 +943,7 @@
     const d = catData[selectedCat];
     document.getElementById('active-cat-badge').textContent = d.icon + ' ' + d.name;
     document.getElementById('abibot-sub').textContent = d.name + ' kategorisinde yanıtlıyor · TR / DE / EN / FR / NL';
+    updateStarters();
   }
 
   function selectCatByName(cat) {
@@ -934,7 +961,9 @@
 
   function updateStarters() {
     const list = document.getElementById('starters');
-    list.innerHTML = startersByLang[selectedLang].map(s =>
+    const catStarters = startersByCat[selectedCat] || startersByCat['legal'];
+    const questions = catStarters[selectedLang] || catStarters['tr'];
+    list.innerHTML = questions.map(s =>
       `<button class="starter" onclick="useStarter(this)">${s}</button>`
     ).join('');
   }
