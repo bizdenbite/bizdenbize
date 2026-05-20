@@ -6,7 +6,7 @@
   <title>BizdenBize — Öğrenim</title>
   <meta property="og:site_name" content="BizdenBize">
   <meta property="og:title" content="Öğrenim — BizdenBize">
-  <meta property="og:description" content="Avrupa'da dil kursları, yükseköğretim, diploma denkliği ve Ausbildung rehberi.">
+  <meta property="og:description" content="Avrupa'da dil kursları, yükseköğrenim, diploma denkliği ve Ausbildung rehberi.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -19,103 +19,121 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
 
-    /* ── NAV ── */
+    /* NAV */
     nav { height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 12px; background: rgba(250,247,242,0.95); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,0.4); position: sticky; top: 0; z-index: 100; }
     .nav-left { display: flex; align-items: center; gap: 4px; flex: 1; }
     .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; margin-right: 8px; }
     .nav-tabs { display: flex; gap: 2px; flex: 1; }
-    .nav-tab { padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; white-space: nowrap; }
+    .nav-tab { padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: inherit; transition: all .15s; text-decoration: none; white-space: nowrap; }
     .nav-tab:hover { background: var(--warm); color: var(--ink); }
     .nav-tab.active { background: var(--red); color: var(--white); }
     .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
     @media (max-width: 768px) { .nav-tabs { display: none !important; } }
 
-    /* ── HERO ── */
-    .hero { background: var(--navy); padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden; }
+    /* HERO */
+    .hero { background: var(--navy); padding: 44px 24px 0; text-align: center; position: relative; overflow: hidden; }
     .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 80% 0%, rgba(107,63,160,.3) 0%, transparent 55%), radial-gradient(ellipse at 10% 100%, rgba(24,95,165,.25) 0%, transparent 50%); }
-    .hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
-    .hero-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,.3); padding: 4px 12px; border-radius: 20px; margin-bottom: 18px; }
-    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(34px, 5vw, 54px); font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 14px; }
+    .hero-inner { position: relative; max-width: 780px; margin: 0 auto; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,.3); padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(30px, 4vw, 46px); font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 10px; }
     .hero h1 em { color: var(--gold); font-style: normal; }
-    .hero-sub { font-size: 15px; color: rgba(255,255,255,.55); line-height: 1.65; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .hero-sub { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.6; margin-bottom: 28px; }
 
-    /* Topic tabs */
-    .topic-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
-    .topic-tab { display: flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid rgba(255,255,255,.15); background: rgba(255,255,255,.07); color: rgba(255,255,255,.6); font-family: inherit; transition: all .2s; }
-    .topic-tab:hover { border-color: rgba(255,255,255,.3); color: var(--white); }
-    .topic-tab.active { border-color: var(--gold); background: rgba(201,168,76,.15); color: var(--gold); }
+    /* COUNTRY TABS */
+    .country-tabs { display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; overflow-x: auto; scrollbar-width: none; }
+    .country-tabs::-webkit-scrollbar { display: none; }
+    .country-tab { display: flex; align-items: center; gap: 7px; padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; font-family: inherit; color: rgba(255,255,255,.45); transition: all .2s; white-space: nowrap; border-bottom: 3px solid transparent; flex-shrink: 0; }
+    .country-tab:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.05); }
+    .country-tab.active { color: var(--white); border-bottom-color: var(--gold); background: rgba(255,255,255,.07); }
+    .country-tab .flag { font-size: 18px; }
+    .country-tab .count { font-size: 10px; background: rgba(255,255,255,.1); padding: 1px 6px; border-radius: 10px; margin-left: 2px; }
+    .country-tab.active .count { background: rgba(201,168,76,.25); color: var(--gold); }
 
-    /* Search */
-    .search-wrap { display: flex; align-items: center; background: var(--white); border-radius: 10px; padding: 4px 4px 4px 14px; box-shadow: 0 4px 20px rgba(0,0,0,.2); max-width: 500px; margin: 0 auto; }
-    .search-wrap input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--ink); padding: 8px 0; background: none; }
-    .search-wrap input::placeholder { color: var(--sand); }
-    .search-btn { padding: 10px 20px; background: var(--navy); color: var(--white); border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    /* PAGE BODY */
+    .page-body { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
 
-    /* Stats */
-    .hero-stats { display: flex; justify-content: center; gap: 32px; margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); }
-    .hstat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
-    .hstat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+    /* COUNTRY HEADER */
+    .country-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: var(--white); border: 1px solid var(--sand); border-radius: 16px; margin-bottom: 24px; }
+    .country-flag-big { font-size: 44px; flex-shrink: 0; }
+    .country-name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); }
+    .country-desc { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+    .country-stats { display: flex; gap: 16px; margin-left: auto; flex-shrink: 0; }
+    .cstat { text-align: center; }
+    .cstat-val { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .cstat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 
-    /* ── PAGE BODY ── */
-    .page-body { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+    /* TOPIC FILTER */
+    .topic-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+    .topic-pill { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--sand); background: var(--white); color: var(--muted); font-family: inherit; transition: all .15s; white-space: nowrap; }
+    .topic-pill:hover { border-color: var(--ink); color: var(--ink); }
+    .topic-pill.active { border-color: var(--navy); background: var(--navy); color: var(--white); }
 
-    /* ── SECTION HEADERS ── */
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .section-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 10px; }
-    .section-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
-    .section-sep { height: 1px; background: var(--warm); margin: 32px 0; }
+    /* TIP BOX */
+    .tip-box { border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
+    .tip-box.blue { background: rgba(24,95,165,.06); border: 1px solid rgba(24,95,165,.15); }
+    .tip-box.gold { background: rgba(201,168,76,.07); border: 1px solid rgba(201,168,76,.2); }
+    .tip-box.green { background: rgba(30,123,75,.06); border: 1px solid rgba(30,123,75,.15); }
+    .tip-box.purple { background: rgba(107,63,160,.06); border: 1px solid rgba(107,63,160,.15); }
+    .tip-icon { font-size: 22px; flex-shrink: 0; }
+    .tip-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+    .tip-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
 
-    /* ── RESOURCE CARDS ── */
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-    .res-card { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 18px 20px; cursor: pointer; transition: all .2s; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit; }
-    .res-card:hover { border-color: var(--navy); box-shadow: 0 4px 16px rgba(27,58,140,.08); transform: translateY(-1px); }
-    .res-card.featured { border-color: var(--gold); }
-    .card-top { display: flex; align-items: flex-start; gap: 12px; }
-    .card-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    /* TOPIC SECTION */
+    .topic-section { margin-bottom: 28px; }
+    .topic-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--warm); }
+    .topic-section-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .topic-section-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .topic-section-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    /* RESOURCE CARDS */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .res-card { background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: all .2s; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: inherit; }
+    .res-card:hover { border-color: var(--navy); box-shadow: 0 4px 14px rgba(27,58,140,.08); transform: translateY(-1px); }
+    .res-card.pinned { border-color: var(--gold); background: linear-gradient(135deg, #fff 0%, rgba(201,168,76,.03) 100%); }
+    .pin-badge { font-size: 9px; font-weight: 700; background: var(--gold); color: var(--ink); padding: 2px 8px; border-radius: 20px; letter-spacing: .05em; text-transform: uppercase; width: fit-content; }
+    .card-top { display: flex; align-items: flex-start; gap: 10px; }
+    .card-icon { width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .card-info { flex: 1; min-width: 0; }
-    .card-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 2px; }
+    .card-title { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 1px; }
     .card-source { font-size: 11px; color: var(--muted); }
-    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
-    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-    .card-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .card-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
     .tag-free { background: rgba(30,123,75,.08); color: var(--green); }
     .tag-paid { background: rgba(201,168,76,.1); color: #8a6d00; }
     .tag-online { background: rgba(24,95,165,.08); color: var(--blue); }
     .tag-offline { background: rgba(107,63,160,.08); color: var(--purple); }
-    .tag-doc { background: rgba(24,95,165,.08); color: var(--blue); }
-    .tag-guide { background: rgba(30,123,75,.08); color: var(--green); }
-    .tag-link { background: rgba(201,168,76,.1); color: #8a6d00; }
-    .tag-country { background: rgba(27,58,140,.07); color: var(--navy); }
     .tag-verified { background: rgba(30,123,75,.08); color: var(--green); }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--warm); margin-top: auto; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 7px; border-top: 1px solid var(--warm); margin-top: auto; }
     .card-lang { font-size: 10px; color: var(--muted); }
-    .card-arrow { font-size: 14px; color: var(--sand); transition: all .15s; }
+    .card-arrow { font-size: 13px; color: var(--sand); transition: all .15s; }
     .res-card:hover .card-arrow { color: var(--navy); transform: translateX(2px); }
-    .card-disclaimer { font-size: 10px; color: var(--sand); line-height: 1.4; padding-top: 6px; border-top: 1px dashed var(--warm); }
+    .card-disclaimer { font-size: 10px; color: var(--sand); line-height: 1.4; padding-top: 5px; border-top: 1px dashed var(--warm); }
 
-    /* ── HIGHLIGHT CARD (tip/info box) ── */
-    .tip-box { border-radius: 14px; padding: 18px 20px; margin-bottom: 20px; display: flex; gap: 14px; align-items: flex-start; }
-    .tip-box.blue { background: rgba(24,95,165,.06); border: 1px solid rgba(24,95,165,.15); }
-    .tip-box.gold { background: rgba(201,168,76,.07); border: 1px solid rgba(201,168,76,.2); }
-    .tip-box.green { background: rgba(30,123,75,.06); border: 1px solid rgba(30,123,75,.15); }
-    .tip-icon { font-size: 24px; flex-shrink: 0; }
-    .tip-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-    .tip-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    /* EU SECTION */
+    .eu-section { margin-top: 32px; padding-top: 24px; border-top: 2px dashed var(--sand); }
+    .eu-section-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 14px; }
 
-    /* ── EMPTY STATE ── */
-    .empty { text-align: center; padding: 64px 24px; color: var(--muted); }
-    .empty h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); margin-bottom: 8px; }
+    /* SUGGEST PROMPT */
+    .suggest-prompt { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: var(--warm); border-radius: 12px; margin-top: 24px; cursor: pointer; transition: background .15s; border: 1px solid var(--sand); }
+    .suggest-prompt:hover { background: var(--sand); }
+    .suggest-prompt-text { flex: 1; font-size: 13px; color: var(--muted); }
+    .suggest-prompt-text strong { color: var(--ink); display: block; margin-bottom: 2px; }
 
-    /* ── RESULTS BAR ── */
-    .results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .results-count { font-size: 13px; color: var(--muted); }
-    .results-count strong { color: var(--ink); }
+    /* EMPTY */
+    .empty { text-align: center; padding: 40px 24px; color: var(--muted); }
+    .empty h3 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+
+    @media (max-width: 640px) {
+      .country-stats { display: none; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .country-header { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-left">
     <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
@@ -135,184 +153,220 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-tag">✦ Ücretsiz · Doğrulanmış Kaynaklar</div>
+    <div class="hero-tag">✦ Ücretsiz · Doğrulanmış</div>
     <h1>Avrupa'da <em>Öğrenim</em></h1>
-    <p class="hero-sub">Dil kurslarından üniversite başvurularına, diploma denkliğinden Ausbildung'a — Avrupa'da eğitim yolculuğunda yanındayız.</p>
-
-    <div class="topic-tabs">
-      <button class="topic-tab active" data-topic="all" onclick="setTopic('all',this)">Tümü</button>
-      <button class="topic-tab" data-topic="language" onclick="setTopic('language',this)">🗣️ Dil Kursları</button>
-      <button class="topic-tab" data-topic="university" onclick="setTopic('university',this)">🎓 Yükseköğretim</button>
-      <button class="topic-tab" data-topic="diploma" onclick="setTopic('diploma',this)">📜 Diploma Denkliği</button>
-      <button class="topic-tab" data-topic="ausbildung" onclick="setTopic('ausbildung',this)">🏭 Ausbildung</button>
-    </div>
-
-    <div class="search-wrap">
-      <input type="text" id="search-input" placeholder="Kurs, üniversite veya konu ara..." oninput="render()">
-      <button class="search-btn" onclick="render()">Ara</button>
-    </div>
-
-    <div class="hero-stats">
-      <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Kaynak</div></div>
-      <div><div class="hstat-val" id="stat-free">—</div><div class="hstat-label">Ücretsiz</div></div>
-      <div><div class="hstat-val">4</div><div class="hstat-label">Konu</div></div>
-      <div><div class="hstat-val">%100</div><div class="hstat-label">Doğrulanmış</div></div>
+    <p class="hero-sub">Yaşadığın ülkeyi seç — dil kurslarından üniversiteye, diploma denkliğinden Ausbildung'a tüm kaynaklar seni bekliyor.</p>
+    <div class="country-tabs" id="country-tabs">
+      <button class="country-tab active" data-country="de" onclick="setCountry('de',this)"><span class="flag">🇩🇪</span> Almanya <span class="count" id="cnt-de"></span></button>
+      <button class="country-tab" data-country="nl" onclick="setCountry('nl',this)"><span class="flag">🇳🇱</span> Hollanda <span class="count" id="cnt-nl"></span></button>
+      <button class="country-tab" data-country="be" onclick="setCountry('be',this)"><span class="flag">🇧🇪</span> Belçika <span class="count" id="cnt-be"></span></button>
+      <button class="country-tab" data-country="at" onclick="setCountry('at',this)"><span class="flag">🇦🇹</span> Avusturya <span class="count" id="cnt-at"></span></button>
+      <button class="country-tab" data-country="gb" onclick="setCountry('gb',this)"><span class="flag">🇬🇧</span> İngiltere <span class="count" id="cnt-gb"></span></button>
+      <button class="country-tab" data-country="fr" onclick="setCountry('fr',this)"><span class="flag">🇫🇷</span> Fransa <span class="count" id="cnt-fr"></span></button>
     </div>
   </div>
 </div>
 
-<!-- BODY -->
-<div class="page-body" id="page-body">
-  <!-- Rendered dynamically -->
-</div>
+<div class="page-body" id="page-body"></div>
 
 <script>
-  const resources = [
-    // ── DİL KURSLARI ──
-    { id:1, topic:'language', title:'Goethe-Institut — Almanca Kursları', source:'Goethe-Institut', desc:'A1\'den C2\'ye kadar Almanca kursları. Online ve yüz yüze seçenekler mevcut. Sertifika programları işveren ve vize başvurularında kabul görür.', type:'link', cost:'paid', mode:'online', countries:['de','nl','at','be'], lang:['TR','DE','EN'], url:'https://www.goethe.de', verified:true },
-    { id:2, topic:'language', title:'Deutsche Welle — Ücretsiz Almanca', source:'Deutsche Welle', desc:'Türkçe arayüzle Almanca öğren. A1-B1 arası dersler, podcast ve video içerikler tamamen ücretsiz. Göçmenler için özel içerikler mevcut.', type:'link', cost:'free', mode:'online', countries:['de','at','ch'], lang:['TR','DE'], url:'https://learngerman.dw.com', verified:true },
-    { id:3, topic:'language', title:'Volkshochschule (VHS) — Entegrasyon Kursları', source:'Bundesamt für Migration', desc:'Almanya\'da oturma iznine sahip yabancılar için devlet destekli dil ve entegrasyon kursları. Büyük ölçüde ücretsiz veya çok düşük ücretli.', type:'guide', cost:'free', mode:'offline', countries:['de'], lang:['TR','DE'], url:'https://www.bamf.de/DE/Themen/Integration/ZugewanderteTeilnehmende/Integrationskurse/integrationskurse-node.html', verified:true },
-    { id:4, topic:'language', title:'NT2 — Hollandaca Dil Sınavı Rehberi', source:'DUO — Rijksoverheid', desc:'Hollanda\'da oturma izni ve vatandaşlık için zorunlu NT2 dil sınavı hakkında kapsamlı rehber. Sınav hazırlık kaynakları ve kayıt bilgileri.', type:'guide', cost:'free', mode:'online', countries:['nl'], lang:['NL','TR','EN'], url:'https://www.duo.nl/particulier/staatsexamen-nt2', verified:true },
-    { id:5, topic:'language', title:'Duolingo — Almanca & Fransızca', source:'Duolingo', desc:'Günlük 10-15 dakikayla dil öğrenmeye başlamak için ideal. Tamamen ücretsiz, Türkçe arayüz destekli. A2 seviyesine kadar etkili.', type:'link', cost:'free', mode:'online', countries:['de','fr','be','ch'], lang:['TR'], url:'https://www.duolingo.com', verified:true },
-    { id:6, topic:'language', title:'telc Dil Sınavları — Rehber', source:'telc GmbH', desc:'Almanya\'da vize, vatandaşlık ve iş başvurularında kabul gören telc sınav sistemi. Hangi seviye hangi amaç için gerekli? Kapsamlı karşılaştırma.', type:'guide', cost:'free', mode:'online', countries:['de','at'], lang:['TR','DE','EN'], url:'https://www.telc.net', verified:true },
+const countryMeta = {
+  de: { flag:'🇩🇪', name:'Almanya', desc:'Avrupa\'nın en büyük Türk topluluğu — yaklaşık 3 milyon kişi. En kapsamlı eğitim kaynakları burada.', tip:{ type:'blue', icon:'🇩🇪', title:'Almanya\'da öğrenim için bilmeniz gerekenler', text:'Almanca B1 seviyesi entegrasyon kursu zorunlu. Üniversite için genellikle Studienkolleg gerekir. Ausbildung ise hem çalışıp hem öğrenmek için mükemmel bir seçenek.' } },
+  nl: { flag:'🇳🇱', name:'Hollanda', desc:'Hollanda\'da yaklaşık 400.000 Türk kökenli yaşıyor. İngilizce eğitim seçenekleri oldukça geniş.', tip:{ type:'gold', icon:'🇳🇱', title:'Hollanda\'da öğrenim için bilmeniz gerekenler', text:'NT2 dil sınavı oturma izni ve vatandaşlık için zorunlu. Hollanda üniversiteleri çok sayıda İngilizce program sunuyor — Türk öğrenciler için büyük avantaj.' } },
+  be: { flag:'🇧🇪', name:'Belçika', desc:'Belçika\'da Türk topluluğu özellikle Brüksel ve Antwerp\'te yoğun. Hollandaca ve Fransızca iki dilli yapı.', tip:{ type:'purple', icon:'🇧🇪', title:'Belçika\'nın iki dilli yapısı', text:'Flaman bölgesinde Hollandaca (NT2), Valon bölgesinde Fransızca gerekli. Yaşadığınız bölgeye göre dil seçiminizi yapın.' } },
+  at: { flag:'🇦🇹', name:'Avusturya', desc:'Avusturya\'da yaklaşık 300.000 Türk kökenli yaşıyor. Almanya ile benzer eğitim sistemi.', tip:{ type:'green', icon:'🇦🇹', title:'Avusturya\'da Almanya\'ya benzer sistem', text:'Avusturya\'da entegrasyon kursu zorunlu ve Almanya ile büyük ölçüde ortak sistem. DAAD ve Goethe-Institut kaynakları Avusturya için de geçerli.' } },
+  gb: { flag:'🇬🇧', name:'İngiltere', desc:'Brexit sonrası değişen kurallarla İngiltere\'de öğrenim. AB vatandaşlığı avantajı artık geçerli değil.', tip:{ type:'gold', icon:'🇬🇧', title:'Brexit sonrası İngiltere\'de öğrenim', text:'AB üyesi olmayan Türk vatandaşları artık EU öğrenci ücretlerinden yararlanamıyor. UKCISA öğrenci vize rehberi en güncel kaynaktır.' } },
+  fr: { flag:'🇫🇷', name:'Fransa', desc:'Fransa\'da yaklaşık 700.000 Türk kökenli yaşıyor. Fransızca zorunlu — dil öğrenimine öncelik verin.', tip:{ type:'blue', icon:'🇫🇷', title:'Fransa\'da öğrenim için Fransızca şart', text:'Fransız üniversiteleri çoğunlukla Fransızca eğitim veriyor. Campus France Türkiye ofisi üzerinden başvuru yapılıyor. DELF/DALF sınavı dil yeterliliği için gerekli.' } },
+};
 
-    // ── YÜKSEKÖĞRETİM ──
-    { id:7, topic:'university', title:'Almanya\'da Üniversite Başvurusu Rehberi', source:'DAAD — Alman Akademik Değişim Servisi', desc:'Türk öğrencilerin Almanya\'da üniversiteye nasıl başvuracağı, hangi belgelerin gerektiği ve başvuru süreçleri hakkında kapsamlı rehber.', type:'guide', cost:'free', mode:'online', countries:['de'], lang:['TR','DE','EN'], url:'https://www.daad.de/tr/yurt-disinda-ogretim/', verified:true },
-    { id:8, topic:'university', title:'BAföG — Öğrenci Yardımı Başvurusu', source:'Bundesministerium für Bildung', desc:'Almanya\'da yabancı öğrencilerin BAföG başvurusu yapıp yapamayacağı, hangi koşulların gerektiği ve başvuru süreci adım adım anlatılıyor.', type:'guide', cost:'free', mode:'online', countries:['de'], lang:['TR','DE','EN'], url:'https://www.bafög.de', verified:true },
-    { id:9, topic:'university', title:'Studienkolleg — Üniversiteye Hazırlık', source:'Hochschulstart.de', desc:'Türk lise diplomasıyla Almanya\'da üniversiteye doğrudan kabul mümkün olmayabilir. Studienkolleg nedir, nasıl başvurulur, kaç yıl sürer?', type:'guide', cost:'free', mode:'online', countries:['de'], lang:['TR','DE'], url:'https://www.studienkollegs.de', verified:true },
-    { id:10, topic:'university', title:'uni-assist — Yabancı Başvuru Portalı', source:'uni-assist e.V.', desc:'Almanya\'daki pek çok üniversiteye başvurmak için kullanılan merkezi portal. Belge kontrolü, değerlendirme ve başvuru takibi.', type:'link', cost:'paid', mode:'online', countries:['de'], lang:['TR','DE','EN'], url:'https://www.uni-assist.de', verified:true },
-    { id:11, topic:'university', title:'Hollanda\'da Üniversite — Studyfinder', source:'Nuffic / Studyfinder.nl', desc:'Hollanda\'daki tüm üniversite programlarını Türkçe veya İngilizce arayabileceğin resmi platform. İngilizce eğitim veren programlar çok sayıda.', type:'link', cost:'free', mode:'online', countries:['nl'], lang:['EN','NL'], url:'https://www.studyfinder.nl', verified:true },
-    { id:12, topic:'university', title:'Erasmus+ Burs Programı', source:'Avrupa Komisyonu', desc:'Türkiye\'deki üniversite öğrencileri için Avrupa\'da değişim fırsatı. Burs miktarları, başvuru koşulları ve partner üniversiteler hakkında bilgi.', type:'guide', cost:'free', mode:'online', countries:['de','nl','fr','be','at'], lang:['TR','EN'], url:'https://erasmus-plus.ec.europa.eu', verified:true },
+const topicMeta = {
+  language:   { label:'Dil Kursları', emoji:'🗣️', color:'var(--blue)', bg:'rgba(24,95,165,.08)' },
+  university: { label:'Yükseköğrenim', emoji:'🎓', color:'var(--purple)', bg:'rgba(107,63,160,.08)' },
+  diploma:    { label:'Diploma Denkliği', emoji:'📜', color:'var(--gold)', bg:'rgba(201,168,76,.1)' },
+  ausbildung: { label:'Ausbildung / MBO', emoji:'🏭', color:'var(--green)', bg:'rgba(30,123,75,.08)' },
+};
 
-    // ── DİPLOMA DENKLİĞİ ──
-    { id:13, topic:'diploma', title:'Almanya\'da Diploma Tanıma — anabin', source:'KMK / anabin Datenbank', desc:'Türkiye\'den alınan diploma ve derecelerin Almanya\'da tanınıp tanınmadığını öğrenmek için resmi veritabanı. Üniversite ve mesleki yeterlilikler.', type:'link', cost:'free', mode:'online', countries:['de'], lang:['DE','EN'], url:'https://anabin.kmk.org', verified:true },
-    { id:14, topic:'diploma', title:'Make it in Germany — Diploma Denkliği Rehberi', source:'Make it in Germany / BMAS', desc:'Türkiye\'den getirilen mesleki yeterliliklerin Almanya\'da nasıl tanıtılacağı ve hangi kurumların değerlendirme yaptığı adım adım anlatılıyor.', type:'guide', cost:'free', mode:'online', countries:['de'], lang:['TR','DE','EN'], url:'https://www.make-it-in-germany.com/tr/almanyada-yasam/turkce', verified:true },
-    { id:15, topic:'diploma', title:'Hollanda\'da Diploma Değerlendirme — Nuffic', source:'Nuffic', desc:'Türk diplomalarının Hollanda\'da hangi düzeye eşdeğer olduğunu gösteren resmi değerlendirme servisi. İşveren ve üniversiteler tarafından kabul görür.', type:'link', cost:'paid', mode:'online', countries:['nl'], lang:['NL','EN'], url:'https://www.nuffic.nl/en/diploma-recognition', verified:true },
-    { id:16, topic:'diploma', title:'Avrupa Yeterlilikler Çerçevesi (EQF)', source:'Avrupa Komisyonu', desc:'Türk yeterliliklerin Avrupa\'daki karşılığını anlamak için genel rehber. AB genelinde hangi düzeyin ne anlama geldiğini açıklıyor.', type:'guide', cost:'free', mode:'online', countries:['de','nl','fr','be','at'], lang:['TR','EN'], url:'https://europa.eu/europass/eqf', verified:true },
+const resources = [
+  // ALMANYA
+  { id:1,  country:'de', topic:'language',   pinned:true,  title:'VHS Entegrasyon Kursları', source:'Bundesamt für Migration (BAMF)', desc:'Oturma iznine sahip yabancılar için devlet destekli Almanca ve entegrasyon kursları. Büyük ölçüde ücretsiz veya çok düşük ücretli.', cost:'free', mode:'offline', lang:['TR','DE'], url:'https://www.bamf.de/DE/Themen/Integration/ZuwanderteTeilnehmende/Integrationskurse/integrationskurse-node.html', verified:true },
+  { id:2,  country:'de', topic:'language',   pinned:false, title:'Deutsche Welle — Ücretsiz Almanca', source:'Deutsche Welle', desc:'Türkçe arayüzle A1-B1 arası Almanca. Podcast, video ve interaktif dersler tamamen ücretsiz.', cost:'free', mode:'online', lang:['TR','DE'], url:'https://learngerman.dw.com', verified:true },
+  { id:3,  country:'de', topic:'language',   pinned:false, title:'Goethe-Institut Almanca Sertifika', source:'Goethe-Institut', desc:'A1-C2 arası resmi Almanca sertifika kursları ve sınavlar. İşveren ve vize başvurularında kabul görür.', cost:'paid', mode:'online', lang:['TR','DE','EN'], url:'https://www.goethe.de', verified:true },
+  { id:4,  country:'de', topic:'university', pinned:true,  title:'DAAD — Almanya\'da Üniversite Rehberi', source:'DAAD', desc:'Türk öğrenciler için Almanya\'da üniversite başvurusu, belgeler ve süreç. Türkçe danışmanlık hizmeti mevcut.', cost:'free', mode:'online', lang:['TR','DE','EN'], url:'https://www.daad.de/tr', verified:true },
+  { id:5,  country:'de', topic:'university', pinned:false, title:'Studienkolleg — Üniversiteye Hazırlık', source:'Studienkollegs.de', desc:'Türk lise diplomasıyla genellikle doğrudan kabul mümkün değil. Studienkolleg (1 yıl) ile köprüleme programı.', cost:'free', mode:'offline', lang:['TR','DE'], url:'https://www.studienkollegs.de', verified:true },
+  { id:6,  country:'de', topic:'university', pinned:false, title:'BAföG — Öğrenci Maddi Yardımı', source:'Bundesministerium für Bildung', desc:'Yabancı öğrencilerin BAföG başvurusu yapıp yapamayacağı, koşullar ve başvuru süreci.', cost:'free', mode:'online', lang:['TR','DE','EN'], url:'https://www.bafög.de', verified:true },
+  { id:7,  country:'de', topic:'diploma',    pinned:true,  title:'Make it in Germany — Diploma Denkliği', source:'Make it in Germany / BMAS', desc:'Türk diplomalarının Almanya\'da tanıtılması. Türkçe rehber, adım adım süreç ve danışma hattı.', cost:'free', mode:'online', lang:['TR','DE','EN'], url:'https://www.make-it-in-germany.com/tr', verified:true },
+  { id:8,  country:'de', topic:'diploma',    pinned:false, title:'anabin — Diploma Veritabanı', source:'KMK / anabin', desc:'Türk üniversite ve diplomalarının Almanya\'da tanınıp tanınmadığını sorgulayabileceğin resmi veritabanı.', cost:'free', mode:'online', lang:['DE','EN'], url:'https://anabin.kmk.org', verified:true },
+  { id:9,  country:'de', topic:'ausbildung', pinned:true,  title:'Ausbildung Nedir? — Tam Rehber', source:'Bundesagentur für Arbeit', desc:'Almanya\'ya özgü çıraklık sistemi: nasıl çalışır, hangi meslekler var, başvuru süreci ve maaş bilgisi.', cost:'free', mode:'online', lang:['TR','DE'], url:'https://www.arbeitsagentur.de/bildung/ausbildung', verified:true },
+  { id:10, country:'de', topic:'ausbildung', pinned:false, title:'Ausbildung.de — İlan Portalı', source:'Ausbildung.de', desc:'Almanya genelinde Ausbildung ilanlarını şehir ve mesleğe göre filtrele. Türk firmaları da ilan veriyor.', cost:'free', mode:'online', lang:['DE'], url:'https://www.ausbildung.de', verified:true },
 
-    // ── AUSBİLDUNG ──
-    { id:17, topic:'ausbildung', title:'Almanya\'da Ausbildung Nedir?', source:'Bundesagentur für Arbeit', desc:'Almanya\'ya özgü çıraklık sistemi Ausbildung\'un nasıl çalıştığı, hangi mesleklerin mevcut olduğu ve başvuru sürecinin tam açıklaması.', type:'guide', cost:'free', mode:'online', countries:['de'], lang:['TR','DE'], url:'https://www.arbeitsagentur.de/bildung/ausbildung', verified:true },
-    { id:18, topic:'ausbildung', title:'Ausbildung.de — İlan Arama Portalı', source:'Ausbildung.de', desc:'Almanya genelinde Ausbildung ilanlarını arayabileceğin platform. Şehir, meslek ve şirket bazında filtrele. Türk firmaları da ilan veriyor.', type:'link', cost:'free', mode:'online', countries:['de'], lang:['DE'], url:'https://www.ausbildung.de', verified:true },
-    { id:19, topic:'ausbildung', title:'Ausbildungsbegleitende Hilfen (abH)', source:'Bundesagentur für Arbeit', desc:'Ausbildung sürecinde dil ve akademik zorluk yaşayanlar için ücretsiz destekleme programı. Türk gençler için özellikle faydalı.', type:'guide', cost:'free', mode:'offline', countries:['de'], lang:['TR','DE'], url:'https://www.arbeitsagentur.de/bildung/ausbildung/ausbildungsbegleitende-hilfen', verified:true },
-    { id:20, topic:'ausbildung', title:'Hollanda\'da MBO — Beroepsonderwijs', source:'MBO Raad', desc:'Hollanda\'nın mesleki eğitim sistemi MBO hakkında kapsamlı rehber. Seviyeler, başvuru şartları ve Türkçe konuşan danışman desteği.', type:'guide', cost:'free', mode:'online', countries:['nl'], lang:['NL','EN'], url:'https://www.mbo.nl', verified:true },
-  ];
+  // HOLLANDA
+  { id:11, country:'nl', topic:'language',   pinned:true,  title:'NT2 Dil Sınavı Rehberi', source:'DUO — Rijksoverheid', desc:'Hollanda\'da oturma izni ve vatandaşlık için zorunlu NT2 sınavı: başvuru, hazırlık ve sınav merkezleri.', cost:'free', mode:'online', lang:['NL','TR','EN'], url:'https://www.duo.nl/particulier/staatsexamen-nt2', verified:true },
+  { id:12, country:'nl', topic:'language',   pinned:false, title:'Inburgering — Entegrasyon Kursu', source:'DUO', desc:'Hollanda\'da yeni gelenler için zorunlu entegrasyon (inburgering) programı. Dil, toplum ve iş hayatı.', cost:'free', mode:'offline', lang:['NL','EN'], url:'https://www.inburgeren.nl', verified:true },
+  { id:13, country:'nl', topic:'university', pinned:true,  title:'Studyfinder — Tüm Programlar', source:'Nuffic / Studyfinder', desc:'Hollanda\'daki tüm üniversite programlarını arayabileceğin resmi platform. Çok sayıda İngilizce program mevcut.', cost:'free', mode:'online', lang:['EN','NL'], url:'https://www.studyfinder.nl', verified:true },
+  { id:14, country:'nl', topic:'diploma',    pinned:true,  title:'Nuffic — Diploma Değerlendirme', source:'Nuffic', desc:'Türk diplomalarının Hollanda\'daki karşılığını gösteren resmi değerlendirme. İşveren ve üniversiteler kabul eder.', cost:'paid', mode:'online', lang:['NL','EN'], url:'https://www.nuffic.nl/en/diploma-recognition', verified:true },
+  { id:15, country:'nl', topic:'ausbildung', pinned:true,  title:'MBO — Mesleki Eğitim Rehberi', source:'MBO Raad', desc:'Hollanda\'nın mesleki eğitim sistemi MBO: seviyeler, başvuru koşulları ve iş garantisi.', cost:'free', mode:'online', lang:['NL','EN'], url:'https://www.mbo.nl', verified:true },
 
-  let activeTopic = 'all';
+  // BELÇİKA
+  { id:16, country:'be', topic:'language',   pinned:true,  title:'Bon — Flaman Bölgesi Dil Kursları', source:'Bon vzw', desc:'Brüksel ve Flaman bölgesinde Hollandaca kursları. Ücretsiz ve sübvansiyonlu seçenekler mevcut.', cost:'free', mode:'offline', lang:['NL','FR'], url:'https://www.bon.be', verified:true },
+  { id:17, country:'be', topic:'language',   pinned:false, title:'CEFR Fransızca Kursları — Valon Bölgesi', source:'ONEM / Actiris', desc:'Valon bölgesinde yaşayanlar için ücretsiz Fransızca entegrasyon kursları.', cost:'free', mode:'offline', lang:['FR'], url:'https://www.onem.be', verified:true },
+  { id:18, country:'be', topic:'university', pinned:true,  title:'KU Leuven — Türk Öğrenci Rehberi', source:'KU Leuven', desc:'Belçika\'nın en prestijli üniversitelerinden KU Leuven\'de uluslararası başvuru süreci ve burs olanakları.', cost:'free', mode:'online', lang:['EN','NL'], url:'https://www.kuleuven.be/english/admission', verified:true },
 
-  function setTopic(topic, btn) {
-    activeTopic = topic;
-    document.querySelectorAll('.topic-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    render();
-  }
+  // AVUSTURYA
+  { id:19, country:'at', topic:'language',   pinned:true,  title:'ÖSD — Almanca Sertifika Sınavları', source:'Österreichisches Sprachdiplom Deutsch', desc:'Avusturya\'da oturma izni ve vatandaşlık için geçerli resmi Almanca sınavları. A1-C2 arası tüm seviyeler.', cost:'paid', mode:'offline', lang:['TR','DE'], url:'https://www.osd.at', verified:true },
+  { id:20, country:'at', topic:'university', pinned:true,  title:'Üniversite Avusturya — Başvuru Rehberi', source:'Österreichische Universitäten', desc:'Avusturya\'da üniversite başvurusu: Almanya\'ya benzer ancak bazı önemli farklar var. Detaylı karşılaştırma.', cost:'free', mode:'online', lang:['DE','EN'], url:'https://www.studienwahl.at', verified:true },
+  { id:21, country:'at', topic:'ausbildung', pinned:true,  title:'Avusturya\'da Lehre (Ausbildung)', source:'Wirtschaftskammer Österreich', desc:'Avusturya\'nın Ausbildung eşdeğeri Lehre sistemi: meslekler, ücretler ve başvuru.', cost:'free', mode:'online', lang:['DE'], url:'https://www.wko.at/service/bildung-lehre', verified:true },
 
-  function getFiltered() {
-    const q = document.getElementById('search-input').value.toLowerCase().trim();
-    return resources.filter(r => {
-      if (activeTopic !== 'all' && r.topic !== activeTopic) return false;
-      if (q && !r.title.toLowerCase().includes(q) && !r.desc.toLowerCase().includes(q) && !r.source.toLowerCase().includes(q)) return false;
-      return true;
-    });
-  }
+  // İNGİLTERE
+  { id:22, country:'gb', topic:'language',   pinned:true,  title:'British Council — İngilizce Kursları', source:'British Council', desc:'İngiltere\'de İngilizce kursları ve IELTS sınav hazırlığı. Türkiye ofisi üzerinden de erişilebilir.', cost:'paid', mode:'online', lang:['TR','EN'], url:'https://www.britishcouncil.org.tr', verified:true },
+  { id:23, country:'gb', topic:'university', pinned:true,  title:'UCAS — Üniversite Başvuru Sistemi', source:'UCAS', desc:'İngiltere\'deki tüm üniversitelere merkezi başvuru portalı. Personal statement rehberi ve son başvuru tarihleri.', cost:'free', mode:'online', lang:['EN'], url:'https://www.ucas.com', verified:true },
+  { id:24, country:'gb', topic:'university', pinned:false, title:'UKCISA — Uluslararası Öğrenci Rehberi', source:'UKCISA', desc:'Brexit sonrası değişen öğrenci vize kuralları, harç ücretleri ve burslar hakkında güncel bilgi.', cost:'free', mode:'online', lang:['EN'], url:'https://www.ukcisa.org.uk', verified:true },
+  { id:25, country:'gb', topic:'diploma',    pinned:true,  title:'UK ENIC — Diploma Tanıma', source:'UK ENIC', desc:'Türk diplomalarının İngiltere\'deki karşılığını belirleyen resmi kurum. İşveren ve üniversiteler kabul eder.', cost:'paid', mode:'online', lang:['EN'], url:'https://www.enic.org.uk', verified:true },
 
-  const topicMeta = {
-    language:    { label:'Dil Kursları', emoji:'🗣️', color:'var(--blue)', bg:'rgba(24,95,165,.08)' },
-    university:  { label:'Yükseköğretim', emoji:'🎓', color:'var(--purple)', bg:'rgba(107,63,160,.08)' },
-    diploma:     { label:'Diploma Denkliği', emoji:'📜', color:'var(--gold)', bg:'rgba(201,168,76,.1)' },
-    ausbildung:  { label:'Ausbildung', emoji:'🏭', color:'var(--green)', bg:'rgba(30,123,75,.08)' },
-  };
+  // FRANSA
+  { id:26, country:'fr', topic:'language',   pinned:true,  title:'DELF/DALF — Fransızca Sertifika', source:'France Éducation International', desc:'Fransa\'da üniversite ve oturma izni için gereken resmi Fransızca sınavları. Türkiye\'de de alınabilir.', cost:'paid', mode:'offline', lang:['TR','FR'], url:'https://www.france-education-international.fr', verified:true },
+  { id:27, country:'fr', topic:'university', pinned:true,  title:'Campus France Türkiye', source:'Campus France', desc:'Fransa\'da yükseköğrenim için resmi başvuru merkezi. Türkiye ofisi Türkçe danışmanlık sunuyor.', cost:'free', mode:'online', lang:['TR','FR','EN'], url:'https://www.türkiye.campusfrance.org', verified:true },
+  { id:28, country:'fr', topic:'diploma',    pinned:true,  title:'ENIC-NARIC Fransa — Diploma Denkliği', source:'CIEP / France Éducation', desc:'Türk diplomalarının Fransa\'da tanınması için resmi başvuru süreci ve gerekli belgeler.', cost:'paid', mode:'online', lang:['FR','EN'], url:'https://www.france-education-international.fr/enic-naric', verified:true },
 
-  const countryFlag = { de:'🇩🇪', nl:'🇳🇱', at:'🇦🇹', be:'🇧🇪', fr:'🇫🇷', ch:'🇨🇭', gb:'🇬🇧' };
-  const countryName = { de:'Almanya', nl:'Hollanda', at:'Avusturya', be:'Belçika', fr:'Fransa', ch:'İsviçre', gb:'İngiltere' };
+  // AB GENELİ
+  { id:29, country:'eu', topic:'university', pinned:true,  title:'Erasmus+ Burs Programı', source:'Avrupa Komisyonu', desc:'Türkiye\'deki öğrenciler için Avrupa\'da değişim fırsatı. Ülke bazında burs miktarları ve başvuru takvimi.', cost:'free', mode:'online', lang:['TR','EN'], url:'https://erasmus-plus.ec.europa.eu', verified:true },
+  { id:30, country:'eu', topic:'diploma',    pinned:false, title:'Europass — Avrupa CV ve Diploma Eki', source:'Avrupa Komisyonu', desc:'Türk diplomalarının Avrupa\'daki karşılığını göstermek için kullanılan standart format.', cost:'free', mode:'online', lang:['TR','EN'], url:'https://europa.eu/europass', verified:true },
+];
 
-  const tipBoxes = {
-    all: null,
-    language: { type:'blue', icon:'💡', title:'Dil sınavı olmadan iş zor!', text:'Almanya\'da B1 seviyesi entegrasyon kursu zorunlu, C1 çoğu iş için beklenti. Hollanda\'da NT2 vatandaşlık ve oturma izni uzatma için şart. Erkenden başlayın.' },
-    university: { type:'gold', icon:'🎓', title:'Türk lise diplomasıyla Almanya\'da üniversite', text:'Türk lise mezunları genellikle doğrudan üniversiteye kabul edilmez. Önce Studienkolleg (1 yıl hazırlık) gerekebilir veya Türkiye\'de 2 yıl üniversite okumuş olmak gerekir. DAAD danışmanlık için harika bir kaynak.' },
-    diploma: { type:'green', icon:'📜', title:'Denklik = daha iyi iş + maaş', text:'Türk üniversite diplomanızı tanıttırmanız Almanya\'da %20-40 daha yüksek maaş anlamına gelebilir. Süreç zaman alıyor ama kesinlikle değer. Make it in Germany sitesi Türkçe destek sunuyor.' },
-    ausbildung: { type:'blue', icon:'🏭', title:'Ausbildung neden harika bir seçenek?', text:'Ausbildung sırasında hem çalışıp para kazanırsınız (€600-1.200/ay) hem de Almanya\'da kalıcı oturma izni hakkı kazanırsınız. Dil seviyesi B1-B2 genellikle yeterli. Üniversite alternatifi değil, tamamlayıcısı.' },
-  };
+let activeCountry = 'de';
+let activeTopic = 'all';
 
-  function render() {
-    const filtered = getFiltered();
-    const freeCount = resources.filter(r => r.cost === 'free').length;
-    document.getElementById('stat-total').textContent = resources.length;
-    document.getElementById('stat-free').textContent = freeCount;
+// Count per country
+['de','nl','be','at','gb','fr'].forEach(c => {
+  const el = document.getElementById('cnt-'+c);
+  if (el) el.textContent = resources.filter(r => r.country === c).length;
+});
 
-    const body = document.getElementById('page-body');
-
-    if (!filtered.length) {
-      body.innerHTML = `<div class="empty"><div style="font-size:40px;margin-bottom:12px">🔍</div><h3>Sonuç bulunamadı</h3><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
-      return;
-    }
-
-    // Tip box
-    const tip = tipBoxes[activeTopic];
-    const tipHtml = tip ? `<div class="tip-box ${tip.type}"><div class="tip-icon">${tip.icon}</div><div><div class="tip-title">${tip.title}</div><div class="tip-text">${tip.text}</div></div></div>` : '';
-
-    // Group by topic if showing all
-    let html = tipHtml;
-
-    if (activeTopic === 'all') {
-      const topics = ['language','university','diploma','ausbildung'];
-      topics.forEach(t => {
-        const items = filtered.filter(r => r.topic === t);
-        if (!items.length) return;
-        const m = topicMeta[t];
-        const tipAll = tipBoxes[t];
-        html += `
-          <div class="section-header" style="margin-top:${html !== tipHtml ? '32px' : '0'}">
-            <div>
-              <div class="section-title">${m.emoji} ${m.label}</div>
-              <div class="section-sub">${items.length} kaynak</div>
-            </div>
-          </div>
-          ${tipAll ? `<div class="tip-box ${tipAll.type}" style="margin-bottom:16px"><div class="tip-icon">${tipAll.icon}</div><div><div class="tip-title">${tipAll.title}</div><div class="tip-text">${tipAll.text}</div></div></div>` : ''}
-          <div class="cards-grid">${items.map(cardHtml).join('')}</div>
-          <div class="section-sep"></div>`;
-      });
-    } else {
-      html += `
-        <div class="results-bar">
-          <div class="results-count"><strong>${filtered.length}</strong> kaynak bulundu</div>
-        </div>
-        <div class="cards-grid">${filtered.map(cardHtml).join('')}</div>`;
-    }
-
-    body.innerHTML = html;
-  }
-
-  function cardHtml(r) {
-    const m = topicMeta[r.topic];
-    const flags = r.countries.map(c => countryFlag[c] || '').join(' ');
-    return `
-      <a class="res-card" href="${r.url}" target="_blank" rel="noopener">
-        <div class="card-top">
-          <div class="card-icon" style="background:${m.bg};color:${m.color}">${m.emoji}</div>
-          <div class="card-info">
-            <div class="card-title">${r.title}</div>
-            <div class="card-source">${r.source}</div>
-          </div>
-        </div>
-        <div class="card-desc">${r.desc}</div>
-        <div class="card-tags">
-          <span class="card-tag ${r.cost === 'free' ? 'tag-free' : 'tag-paid'}">${r.cost === 'free' ? '✓ Ücretsiz' : '€ Ücretli'}</span>
-          <span class="card-tag ${r.mode === 'online' ? 'tag-online' : 'tag-offline'}">${r.mode === 'online' ? '🌐 Online' : '📍 Yüz Yüze'}</span>
-          <span class="card-tag tag-country">${flags}</span>
-          ${r.verified ? '<span class="card-tag tag-verified">✓ Doğrulandı</span>' : ''}
-        </div>
-        <div class="card-footer">
-          <span class="card-lang">🌐 ${r.lang.join(' · ')}</span>
-          <span class="card-arrow">→</span>
-        </div>
-        <div class="card-disclaimer">⚠️ BizdenBize bu kaynağın içeriğinden hukuki olarak sorumlu değildir.</div>
-      </a>`;
-  }
-
+function setCountry(c, btn) {
+  activeCountry = c;
+  activeTopic = 'all';
+  document.querySelectorAll('.country-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   render();
+}
+
+function setTopic(t, btn) {
+  activeTopic = t;
+  document.querySelectorAll('.topic-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function cardHtml(r) {
+  const m = topicMeta[r.topic];
+  return `
+    <a class="res-card ${r.pinned ? 'pinned' : ''}" href="${r.url}" target="_blank" rel="noopener">
+      ${r.pinned ? '<div class="pin-badge">⭐ Öne Çıkan</div>' : ''}
+      <div class="card-top">
+        <div class="card-icon" style="background:${m.bg};color:${m.color}">${m.emoji}</div>
+        <div class="card-info">
+          <div class="card-title">${r.title}</div>
+          <div class="card-source">${r.source}</div>
+        </div>
+      </div>
+      <div class="card-desc">${r.desc}</div>
+      <div class="card-tags">
+        <span class="card-tag ${r.cost === 'free' ? 'tag-free' : 'tag-paid'}">${r.cost === 'free' ? '✓ Ücretsiz' : '€ Ücretli'}</span>
+        <span class="card-tag ${r.mode === 'online' ? 'tag-online' : 'tag-offline'}">${r.mode === 'online' ? '🌐 Online' : '📍 Yüz Yüze'}</span>
+        ${r.verified ? '<span class="card-tag tag-verified">✓ Doğrulandı</span>' : ''}
+      </div>
+      <div class="card-footer">
+        <span class="card-lang">🌐 ${r.lang.join(' · ')}</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-disclaimer">⚠️ BizdenBize bu kaynağın içeriğinden sorumlu değildir.</div>
+    </a>`;
+}
+
+function render() {
+  const cm = countryMeta[activeCountry];
+  const countryRes = resources.filter(r => r.country === activeCountry);
+  const euRes = resources.filter(r => r.country === 'eu');
+  const freeCount = countryRes.filter(r => r.cost === 'free').length;
+  const topics = ['language','university','diploma','ausbildung'];
+
+  // Topic pills
+  const pillsHtml = `
+    <div class="topic-pills" id="topic-pills">
+      <button class="topic-pill ${activeTopic === 'all' ? 'active' : ''}" onclick="setTopic('all',this)">Tümü</button>
+      ${topics.map(t => {
+        const count = countryRes.filter(r => r.topic === t).length;
+        return count ? `<button class="topic-pill ${activeTopic === t ? 'active' : ''}" onclick="setTopic('${t}',this)">${topicMeta[t].emoji} ${topicMeta[t].label} <span style="opacity:.6;font-size:10px;">${count}</span></button>` : '';
+      }).join('')}
+    </div>`;
+
+  // Country header
+  const headerHtml = `
+    <div class="country-header">
+      <div class="country-flag-big">${cm.flag}</div>
+      <div>
+        <div class="country-name">${cm.name}</div>
+        <div class="country-desc">${cm.desc}</div>
+      </div>
+      <div class="country-stats">
+        <div class="cstat"><div class="cstat-val">${countryRes.length}</div><div class="cstat-label">Kaynak</div></div>
+        <div class="cstat"><div class="cstat-val">${freeCount}</div><div class="cstat-label">Ücretsiz</div></div>
+      </div>
+    </div>`;
+
+  // Tip box
+  const tipHtml = `<div class="tip-box ${cm.tip.type}"><div class="tip-icon">${cm.tip.icon}</div><div><div class="tip-title">${cm.tip.title}</div><div class="tip-text">${cm.tip.text}</div></div></div>`;
+
+  // Content
+  let contentHtml = '';
+  const filteredTopics = activeTopic === 'all' ? topics : [activeTopic];
+
+  filteredTopics.forEach(t => {
+    const items = countryRes.filter(r => r.topic === t);
+    if (!items.length) return;
+    const tm = topicMeta[t];
+    const sorted = [...items].sort((a,b) => b.pinned - a.pinned);
+    contentHtml += `
+      <div class="topic-section">
+        <div class="topic-section-header">
+          <div class="topic-section-icon" style="background:${tm.bg};color:${tm.color}">${tm.emoji}</div>
+          <div class="topic-section-title">${tm.label}</div>
+          <div class="topic-section-count">${items.length} kaynak</div>
+        </div>
+        <div class="cards-grid">${sorted.map(cardHtml).join('')}</div>
+      </div>`;
+  });
+
+  if (!contentHtml) {
+    contentHtml = `<div class="empty"><div style="font-size:36px;margin-bottom:10px">🔍</div><h3>Bu filtre için kaynak bulunamadı</h3><p style="font-size:13px;margin-top:4px">Yakında eklenecek!</p></div>`;
+  }
+
+  // EU section (only in 'all' view)
+  let euHtml = '';
+  if (activeTopic === 'all' && euRes.length) {
+    euHtml = `
+      <div class="eu-section">
+        <div class="eu-section-title">🇪🇺 Tüm AB için geçerli kaynaklar</div>
+        <div class="cards-grid">${euRes.map(cardHtml).join('')}</div>
+      </div>`;
+  }
+
+  // Suggest prompt
+  const suggestHtml = `
+    <div class="suggest-prompt" onclick="alert('Öneri formu yakında açılacak!')">
+      <div style="font-size:24px;">💡</div>
+      <div class="suggest-prompt-text">
+        <strong>${cm.name} için eksik bir kaynak var mı?</strong>
+        Topluluk olarak bu sayfayı birlikte geliştirelim — önerin ekibe iletilir.
+      </div>
+      <div style="color:var(--red);font-size:18px;">→</div>
+    </div>`;
+
+  document.getElementById('page-body').innerHTML = headerHtml + pillsHtml + tipHtml + contentHtml + euHtml + suggestHtml;
+}
+
+render();
 </script>
 </body>
 </html>
