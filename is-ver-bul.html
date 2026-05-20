@@ -364,25 +364,86 @@
         <input class="field-input" id="p-contact" type="text" placeholder="isim@email.com veya +49...">
       </div>
       <!-- Featured upsell -->
-      <label class="featured-upsell">
-        <input type="checkbox" id="p-featured">
-        <div class="featured-upsell-text">
-          <div class="featured-upsell-title">⭐ Öne Çıkan İlan</div>
-          <div class="featured-upsell-sub">Listenin en üstünde göster, 7 gün boyunca altın çerçeveli.</div>
+      <div id="featured-section">
+        <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— isteğe bağlı</span></label>
+        <div style="display:flex;flex-direction:column;gap:6px;" id="bundle-options">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-none-wrap">
+            <input type="radio" name="bundle" value="none" checked onchange="selectBundle('none')" style="accent-color:var(--red);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--ink);">Öne çıkarma — hayır teşekkürler</div><div style="font-size:11px;color:var(--muted);">Standart ilan · 30 gün aktif</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--muted);">Ücretsiz</div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-1-wrap">
+            <input type="radio" name="bundle" value="1" onchange="selectBundle('1')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐ 1 Öne Çıkan İlan</div><div style="font-size:11px;color:var(--muted);">Liste başında · Altın çerçeve · 60 gün aktif</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€4,99</div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;position:relative;" id="bundle-3-wrap">
+            <span style="position:absolute;top:-1px;right:10px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:0 0 6px 6px;letter-spacing:.05em;">EN POPÜLER</span>
+            <input type="radio" name="bundle" value="3" onchange="selectBundle('3')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐ 3 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">3 farklı ilan için kullan · Devredilmez</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€12 <span style="font-size:10px;color:var(--muted);font-weight:400;">€4/ilan</span></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-10-wrap">
+            <input type="radio" name="bundle" value="10" onchange="selectBundle('10')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐⭐ 10 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">Ajanslar ve düzenli işverenler için · 1 yıl geçerli</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€35 <span style="font-size:10px;color:var(--muted);font-weight:400;">€3,50/ilan</span></div>
+          </label>
         </div>
-        <div class="featured-price">€4,99</div>
-      </label>
+      </div>
       <!-- Error -->
       <div id="p-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
     <div class="modal-footer" id="post-footer">
-      <button class="submit-btn" onclick="submitPost()">İlanı Yayınla →</button>
+      <button class="submit-btn" id="post-submit-btn" onclick="submitPost()">İlanı Yayınla →</button>
       <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Topluluk kurallarına uygun ilanlar yayınlanır. Spam kaldırılır.</div>
     </div>
+
+    <!-- PAYMENT STEP -->
+    <div id="payment-step" style="display:none;flex-direction:column;">
+      <div style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+        <!-- Order summary -->
+        <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;">Sipariş Özeti</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--ink);" id="order-desc">⭐ 1 Öne Çıkan İlan</span>
+            <span style="font-size:15px;font-weight:700;color:var(--gold);" id="order-price">€4,99</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);" id="order-sub">60 gün aktif · Liste başında görünüm</div>
+        </div>
+        <!-- Card form -->
+        <div>
+          <label class="field-label">Kart Numarası</label>
+          <input class="field-input" id="pay-card" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div class="field-row">
+          <div>
+            <label class="field-label">Son Kullanma</label>
+            <input class="field-input" id="pay-exp" type="text" placeholder="AA/YY" maxlength="5" oninput="formatExp(this)">
+          </div>
+          <div>
+            <label class="field-label">CVV</label>
+            <input class="field-input" id="pay-cvv" type="text" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Kart Üzerindeki İsim</label>
+          <input class="field-input" id="pay-name" type="text" placeholder="Ayşe Yılmaz">
+        </div>
+        <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--warm);border-radius:8px;">
+          🔒 Ödeme bilgileriniz şifrelenerek işlenir. BizdenBize kart bilgilerinizi saklamaz.
+        </div>
+        <div id="pay-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+      </div>
+      <div style="padding:14px 24px 20px;border-top:1px solid var(--warm);display:flex;gap:8px;">
+        <button onclick="goBackToForm()" style="padding:13px 16px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">← Geri</button>
+        <button onclick="processPayment()" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'" id="pay-btn">Ödemeyi Tamamla →</button>
+      </div>
+    </div>
+
     <div class="post-success" id="post-success">
       <div style="font-size:48px;">🎉</div>
-      <h3>İlanın yayınlandı!</h3>
-      <p>Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!</p>
+      <h3 id="success-title">İlanın yayınlandı!</h3>
+      <p id="success-sub">Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!</p>
     </div>
   </div>
 </div>
@@ -483,25 +544,51 @@
 
   // ── POST MODAL ──
   let selectedPostType = 'job';
+  let selectedBundle = 'none';
+
+  const bundleDetails = {
+    none:  { desc: 'Standart İlan', price: 'Ücretsiz', sub: '30 gün aktif · Standart görünüm' },
+    '1':   { desc: '⭐ 1 Öne Çıkan İlan', price: '€4,99', sub: '60 gün aktif · Liste başında görünüm' },
+    '3':   { desc: '⭐⭐ 3 Öne Çıkan Hak', price: '€12,00', sub: '3 farklı ilan için kullan · Devredilmez' },
+    '10':  { desc: '⭐⭐⭐ 10 Öne Çıkan Hak', price: '€35,00', sub: '10 farklı ilan için · 1 yıl geçerli' },
+  };
+
+  function selectBundle(val) {
+    selectedBundle = val;
+    ['none','1','3','10'].forEach(v => {
+      const wrap = document.getElementById('bundle-'+v+'-wrap');
+      if (wrap) wrap.style.borderColor = v === val ? (v === 'none' ? 'var(--ink)' : 'var(--gold)') : 'var(--sand)';
+    });
+    const btn = document.getElementById('post-submit-btn');
+    btn.textContent = val === 'none' ? 'İlanı Yayınla →' : `Devam Et — ${bundleDetails[val].price} →`;
+  }
 
   function openPostModal() {
     document.getElementById('post-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+
   function closePostModal() {
     document.getElementById('post-modal').classList.remove('open');
     document.body.style.overflow = '';
     document.getElementById('post-success').style.display = 'none';
     document.getElementById('post-form-body').style.display = 'flex';
     document.getElementById('post-footer').style.display = 'block';
+    document.getElementById('payment-step').style.display = 'none';
     document.getElementById('p-error').style.display = 'none';
+    document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💼 İlan Ver';
+    selectedBundle = 'none';
+    selectBundle('none');
+    document.querySelectorAll('input[name="bundle"]')[0].checked = true;
   }
+
   function selectPostType(type, btn) {
     selectedPostType = type;
     document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('price-label').textContent = type === 'gig' ? 'Fiyat' : 'Ücret / Bütçe';
   }
+
   function submitPost() {
     const title = document.getElementById('p-title').value.trim();
     const desc  = document.getElementById('p-desc').value.trim();
@@ -511,10 +598,74 @@
       err.style.display = 'block'; return;
     }
     err.style.display = 'none';
+
+    if (selectedBundle === 'none') {
+      // Free — publish directly
+      showSuccess(false);
+    } else {
+      // Paid — show payment step
+      document.getElementById('post-form-body').style.display = 'none';
+      document.getElementById('post-footer').style.display = 'none';
+      const b = bundleDetails[selectedBundle];
+      document.getElementById('order-desc').textContent = b.desc;
+      document.getElementById('order-price').textContent = b.price;
+      document.getElementById('order-sub').textContent = b.sub;
+      document.getElementById('payment-step').style.display = 'flex';
+      document.getElementById('payment-step').style.flexDirection = 'column';
+      document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💳 Ödeme';
+    }
+  }
+
+  function goBackToForm() {
+    document.getElementById('payment-step').style.display = 'none';
+    document.getElementById('post-form-body').style.display = 'flex';
+    document.getElementById('post-footer').style.display = 'block';
+    document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💼 İlan Ver';
+  }
+
+  function processPayment() {
+    const card = document.getElementById('pay-card').value.replace(/\s/g,'');
+    const exp  = document.getElementById('pay-exp').value;
+    const cvv  = document.getElementById('pay-cvv').value;
+    const name = document.getElementById('pay-name').value.trim();
+    const err  = document.getElementById('pay-error');
+
+    if (card.length < 16 || !exp || cvv.length < 3 || !name) {
+      err.textContent = 'Lütfen tüm kart bilgilerini eksiksiz girin.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+
+    const btn = document.getElementById('pay-btn');
+    btn.textContent = 'İşleniyor...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      document.getElementById('payment-step').style.display = 'none';
+      showSuccess(true);
+    }, 1500);
+  }
+
+  function showSuccess(featured) {
     document.getElementById('post-form-body').style.display = 'none';
     document.getElementById('post-footer').style.display = 'none';
+    document.getElementById('payment-step').style.display = 'none';
     document.getElementById('post-success').style.display = 'block';
-    setTimeout(() => closePostModal(), 3000);
+    document.getElementById('success-title').textContent = featured ? '⭐ İlanın öne çıkarıldı!' : '🎉 İlanın yayınlandı!';
+    document.getElementById('success-sub').innerHTML = featured
+      ? 'İlanın listenin en üstünde görünüyor.<br>60 gün boyunca aktif kalacak!'
+      : 'Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!';
+    setTimeout(() => closePostModal(), 3500);
+  }
+
+  function formatCard(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,16);
+    el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  function formatExp(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    el.value = v;
   }
 
   // Init
