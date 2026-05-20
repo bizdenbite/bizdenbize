@@ -6,11 +6,12 @@ const BB_TRANSLATIONS = {
 
   tr: {
     // Nav
-    nav_community:   'Mahallem',
-    nav_classifieds: 'İlanlar',
-    nav_events:      'Etkinlikler',
-    nav_businesses:  'İşletmeler',
-    nav_abibot:      'AbiBOT',
+    nav_community:   '🏘️ Mahallem',
+    nav_classifieds: '🛍️ İlanlar',
+    nav_events:      '🎉 Etkinlikler',
+    nav_businesses:  '🏢 İşletmeler',
+    nav_library:     '📚 Bilgiler',
+    nav_abibot:      '🤖 AbiBOT',
 
     // Landing hero
     hero_tag:        'Avrupa\'daki Türk Topluluğu',
@@ -98,11 +99,12 @@ const BB_TRANSLATIONS = {
   },
 
   de: {
-    nav_community:   'Meine Nachbarschaft',
-    nav_classifieds: 'Anzeigen',
-    nav_events:      'Veranstaltungen',
-    nav_businesses:  'Unternehmen',
-    nav_abibot:      'AbiBOT',
+    nav_community:   '🏘️ Meine Nachbarschaft',
+    nav_classifieds: '🛍️ Anzeigen',
+    nav_events:      '🎉 Veranstaltungen',
+    nav_businesses:  '🏢 Unternehmen',
+    nav_library:     '📚 Bibliothek',
+    nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Türkische Gemeinschaft in Europa',
     hero_line1:      'Dein',
@@ -176,11 +178,12 @@ const BB_TRANSLATIONS = {
   },
 
   en: {
-    nav_community:   'My Neighbourhood',
-    nav_classifieds: 'Classifieds',
-    nav_events:      'Events',
-    nav_businesses:  'Businesses',
-    nav_abibot:      'AbiBOT',
+    nav_community:   '🏘️ My Neighbourhood',
+    nav_classifieds: '🛍️ Classifieds',
+    nav_events:      '🎉 Events',
+    nav_businesses:  '🏢 Businesses',
+    nav_library:     '📚 Library',
+    nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Turkish Community in Europe',
     hero_line1:      'Your',
@@ -254,11 +257,12 @@ const BB_TRANSLATIONS = {
   },
 
   fr: {
-    nav_community:   'Mon Quartier',
-    nav_classifieds: 'Annonces',
-    nav_events:      'Événements',
-    nav_businesses:  'Entreprises',
-    nav_abibot:      'AbiBOT',
+    nav_community:   '🏘️ Mon Quartier',
+    nav_classifieds: '🛍️ Annonces',
+    nav_events:      '🎉 Événements',
+    nav_businesses:  '🏢 Entreprises',
+    nav_library:     '📚 Bibliothèque',
+    nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Communauté Turque en Europe',
     hero_line1:      'Ton',
@@ -332,11 +336,12 @@ const BB_TRANSLATIONS = {
   },
 
   nl: {
-    nav_community:   'Mijn Buurt',
-    nav_classifieds: 'Advertenties',
-    nav_events:      'Evenementen',
-    nav_businesses:  'Bedrijven',
-    nav_abibot:      'AbiBOT',
+    nav_community:   '🏘️ Mijn Buurt',
+    nav_classifieds: '🛍️ Advertenties',
+    nav_events:      '🎉 Evenementen',
+    nav_businesses:  '🏢 Bedrijven',
+    nav_library:     '📚 Bibliotheek',
+    nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Turkse Gemeenschap in Europa',
     hero_line1:      'Jouw',
