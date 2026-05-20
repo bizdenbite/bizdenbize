@@ -457,7 +457,7 @@
       return;
     }
     container.innerHTML = sorted.map(l => `
-      <div class="listing-card ${l.featured ? 'featured' : ''}">
+      <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail(${l.id})" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
         <div class="listing-avatar" style="background:${catBg[l.cat]};color:${catColor[l.cat]}">${catEmoji[l.cat]}</div>
         <div class="listing-body">
@@ -519,6 +519,94 @@
 
   // Init
   renderListings();
+</script>
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header" id="detail-header">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+        <div id="detail-icon" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"></div>
+        <div style="min-width:0;">
+          <div id="detail-title" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);line-height:1.2;"></div>
+          <div id="detail-company" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeDetailModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Meta row -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="detail-tags"></div>
+      <!-- Price highlight -->
+      <div id="detail-price-box" style="background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.15);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:var(--muted);">💰 Ücret / Bütçe</div>
+        <div id="detail-price" style="font-size:18px;font-weight:700;color:var(--green);"></div>
+      </div>
+      <!-- Description -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">İlan Açıklaması</div>
+        <div id="detail-desc" style="font-size:14px;color:var(--ink);line-height:1.7;"></div>
+      </div>
+      <!-- Details grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="detail-grid"></div>
+      <!-- Disclaimer -->
+      <div style="font-size:11px;color:var(--sand);padding:10px 12px;background:var(--warm);border-radius:8px;line-height:1.5;">
+        ⚠️ BizdenBize bu ilan içeriğinden sorumlu değildir. Doğrulama yapmadan ödeme yapmayın.
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;">
+      <a id="detail-contact-btn" href="#" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'">✉️ İletişime Geç</a>
+      <button onclick="closeDetailModal()" style="padding:13px 20px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openDetail(id) {
+    const l = listings.find(x => x.id === id);
+    if (!l) return;
+
+    document.getElementById('detail-icon').style.background = catBg[l.cat];
+    document.getElementById('detail-icon').style.color = catColor[l.cat];
+    document.getElementById('detail-icon').textContent = catEmoji[l.cat];
+    document.getElementById('detail-title').textContent = l.title;
+    document.getElementById('detail-company').textContent = (l.company || l.author) + '  ·  📍 ' + l.location;
+    document.getElementById('detail-price').textContent = l.price;
+    document.getElementById('detail-desc').textContent = l.desc;
+
+    const tags = document.getElementById('detail-tags');
+    tags.innerHTML = `
+      <span class="listing-tag ${l.type === 'job' ? 'tag-job' : 'tag-gig'}" style="font-size:12px;padding:4px 12px;">${l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
+      <span class="listing-tag tag-remote" style="font-size:12px;padding:4px 12px;">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
+      <span class="listing-tag tag-cat" style="font-size:12px;padding:4px 12px;">${catEmoji[l.cat]} ${document.querySelector('[data-cat="'+l.cat+'"]')?.textContent || l.cat}</span>
+      ${l.featured ? '<span class="listing-tag" style="background:rgba(201,168,76,.15);color:#8a6d00;font-size:12px;padding:4px 12px;">⭐ Öne Çıkan</span>' : ''}
+    `;
+
+    document.getElementById('detail-grid').innerHTML = `
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Konum</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">📍 ${l.location}</div>
+      </div>
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Yayın Tarihi</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">🕐 ${l.time}</div>
+      </div>
+    `;
+
+    // Contact button
+    const contactBtn = document.getElementById('detail-contact-btn');
+    const isEmail = l.contact.includes('@');
+    const isPhone = l.contact.startsWith('+');
+    contactBtn.href = isEmail ? `mailto:${l.contact}` : isPhone ? `tel:${l.contact}` : '#';
+    contactBtn.innerHTML = isEmail ? '✉️ E-posta Gönder' : isPhone ? '📱 Ara / WhatsApp' : '✉️ İletişime Geç';
+
+    document.getElementById('detail-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDetailModal() {
+    document.getElementById('detail-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 </script>
 </body>
 </html>
