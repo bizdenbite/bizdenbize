@@ -31,6 +31,9 @@
       border-bottom: 1px solid rgba(212,197,169,0.4);
     }
     .nav-left { display: flex; align-items: center; gap: 16px; }
+    .nav-tab { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; }
+    .nav-tab:hover { background: var(--warm); color: var(--ink); }
+    .nav-tab.active { background: var(--red); color: var(--white); }
     .nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--ink); text-decoration: none; }
     .nav-logo span { color: var(--red); }
     .nav-divider { width: 1px; height: 18px; background: var(--sand); }
@@ -571,13 +574,17 @@
 <nav>
   <div class="nav-left">
     <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
-    <div class="nav-divider"></div>
-    <a href="library.html" style="font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">📚 Bilgiler</a>
-    <div class="nav-divider"></div>
-    <span class="nav-title">Abi<span>BOT</span></span>
+    <div class="nav-tabs" style="display:flex;gap:2px;margin-left:8px;flex:1;">
+      <a class="nav-tab" href="mahallem.html" data-i18n="nav_community">🏘️ Mahallem</a>
+      <a class="nav-tab" href="classifieds.html" data-i18n="nav_classifieds">🛍️ İlanlar</a>
+      <a class="nav-tab" href="events.html" data-i18n="nav_events">🎉 Etkinlikler</a>
+      <a class="nav-tab" href="business.html" data-i18n="nav_businesses">🏢 İşletmeler</a>
+      <a class="nav-tab" href="library.html" data-i18n="nav_library">📚 Bilgiler</a>
+      <a class="nav-tab active" href="abibot.html" data-i18n="nav_abibot">🤖 AbiBOT</a>
+    </div>
   </div>
   <div class="nav-right">
-    <div class="credit-pill"  style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">12 kredi</span></div>
+    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">12 kredi</span></div>
     <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
   </div>
 </nav>
