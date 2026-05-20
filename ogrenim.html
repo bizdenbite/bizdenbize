@@ -354,7 +354,7 @@ function render() {
 
   // Suggest prompt
   const suggestHtml = `
-    <div class="suggest-prompt" onclick="alert('Öneri formu yakında açılacak!')">
+    <div class="suggest-prompt" onclick="openSuggestModal('${activeCountry}')">
       <div style="font-size:24px;">💡</div>
       <div class="suggest-prompt-text">
         <strong>${cm.name} için eksik bir kaynak var mı?</strong>
@@ -367,6 +367,139 @@ function render() {
 }
 
 render();
+</script>
+<!-- SUGGEST MODAL -->
+<div id="suggest-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(26,18,8,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeSuggestModal()">
+  <div style="background:var(--white);border-radius:20px;max-width:480px;width:90%;max-height:90vh;display:flex;flex-direction:column;animation:slideUp .3s ease;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <div style="padding:22px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);">💡 Kaynak Öner</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Ekip inceleyip onayladıktan sonra sayfaya eklenecek.</div>
+      </div>
+      <button onclick="closeSuggestModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;" id="suggest-form-body">
+
+      <div id="suggest-success" style="display:none;text-align:center;padding:32px 16px;">
+        <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;">Teşekkürler!</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;">Öneriniz ekibimize iletildi. İnceledikten sonra sayfaya ekleyeceğiz. Topluluğa katkın için teşekkürler! 💙</div>
+      </div>
+
+      <div id="suggest-fields" style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Country (pre-filled) -->
+        <div>
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Ülke</label>
+          <select id="sug-country" style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;cursor:pointer;">
+            <option value="de">🇩🇪 Almanya</option>
+            <option value="nl">🇳🇱 Hollanda</option>
+            <option value="be">🇧🇪 Belçika</option>
+            <option value="at">🇦🇹 Avusturya</option>
+            <option value="gb">🇬🇧 İngiltere</option>
+            <option value="fr">🇫🇷 Fransa</option>
+            <option value="eu">🇪🇺 Tüm AB</option>
+          </select>
+        </div>
+        <!-- Topic -->
+        <div>
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Konu</label>
+          <select id="sug-topic" style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;cursor:pointer;">
+            <option value="language">🗣️ Dil Kursları</option>
+            <option value="university">🎓 Yükseköğrenim</option>
+            <option value="diploma">📜 Diploma Denkliği</option>
+            <option value="ausbildung">🏭 Ausbildung / MBO</option>
+          </select>
+        </div>
+        <!-- Title -->
+        <div>
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Kaynak Başlığı *</label>
+          <input id="sug-title" type="text" placeholder="örn: Goethe-Institut Online Kursları" style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--sand)'">
+        </div>
+        <!-- URL -->
+        <div>
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Link / URL *</label>
+          <input id="sug-url" type="url" placeholder="https://..." style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--sand)'">
+        </div>
+        <!-- Why useful -->
+        <div>
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Neden faydalı? *</label>
+          <textarea id="sug-desc" rows="3" placeholder="Bu kaynak topluluk için neden önemli?" style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;resize:none;line-height:1.5;transition:border-color .15s;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--sand)'"></textarea>
+        </div>
+        <!-- Error -->
+        <div id="sug-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+      </div>
+    </div>
+
+    <div id="suggest-footer" style="padding:14px 24px 20px;border-top:1px solid var(--warm);flex-shrink:0;">
+      <button onclick="submitSuggestion()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;" onmouseover="this.style.background='#243d9c'" onmouseout="this.style.background='var(--navy)'">Ekibe Gönder →</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">İnceleme sonrası sayfaya eklenir. Spam gönderilmez.</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+
+<script>
+  function openSuggestModal(country) {
+    document.getElementById('sug-country').value = country || 'de';
+    document.getElementById('suggest-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSuggestModal() {
+    document.getElementById('suggest-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    ['sug-title','sug-url','sug-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('sug-error').style.display = 'none';
+    document.getElementById('suggest-success').style.display = 'none';
+    document.getElementById('suggest-fields').style.display = 'flex';
+    document.getElementById('suggest-footer').style.display = 'block';
+  }
+
+  function submitSuggestion() {
+    const title = document.getElementById('sug-title').value.trim();
+    const url   = document.getElementById('sug-url').value.trim();
+    const desc  = document.getElementById('sug-desc').value.trim();
+    const err   = document.getElementById('sug-error');
+
+    if (!title || !url || !desc) {
+      err.textContent = 'Lütfen zorunlu alanları doldurun: Başlık, Link ve Açıklama.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+
+    const suggestion = {
+      title, url, desc,
+      country: document.getElementById('sug-country').value,
+      topic:   document.getElementById('sug-topic').value,
+      submitted_at: new Date().toISOString(),
+      page: 'ogrenim'
+    };
+
+    // Supabase if available, else mailto fallback
+    if (window.supabase) {
+      window.supabase.from('library_suggestions').insert([suggestion])
+        .then(({ error }) => { error ? sendMailto(suggestion) : showSuccess(); });
+    } else {
+      sendMailto(suggestion);
+    }
+  }
+
+  function sendMailto(s) {
+    const body = `Kaynak: ${s.title}\nLink: ${s.url}\nÜlke: ${s.country}\nKonu: ${s.topic}\nAçıklama: ${s.desc}`;
+    window.location.href = `mailto:admin@bizdenbize.com?subject=Öğrenim Kaynak Önerisi: ${encodeURIComponent(s.title)}&body=${encodeURIComponent(body)}`;
+    showSuccess();
+  }
+
+  function showSuccess() {
+    document.getElementById('suggest-fields').style.display = 'none';
+    document.getElementById('suggest-footer').style.display = 'none';
+    document.getElementById('suggest-success').style.display = 'block';
+    setTimeout(() => closeSuggestModal(), 3500);
+  }
 </script>
 </body>
 </html>
