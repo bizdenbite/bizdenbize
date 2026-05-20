@@ -11,6 +11,7 @@ const BB_TRANSLATIONS = {
     nav_events:      '🎉 Etkinlikler',
     nav_businesses:  '🏢 İşletmeler',
     nav_library:     '📚 Bilgiler',
+    nav_jobs:        '💼 İş Ver & Bul',
     nav_abibot:      '🤖 AbiBOT',
 
     // Landing hero
@@ -104,6 +105,7 @@ const BB_TRANSLATIONS = {
     nav_events:      '🎉 Veranstaltungen',
     nav_businesses:  '🏢 Unternehmen',
     nav_library:     '📚 Bibliothek',
+    nav_jobs:        '💼 Jobs & Gigs',
     nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Türkische Gemeinschaft in Europa',
@@ -183,6 +185,7 @@ const BB_TRANSLATIONS = {
     nav_events:      '🎉 Events',
     nav_businesses:  '🏢 Businesses',
     nav_library:     '📚 Library',
+    nav_jobs:        '💼 Jobs & Gigs',
     nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Turkish Community in Europe',
@@ -262,6 +265,7 @@ const BB_TRANSLATIONS = {
     nav_events:      '🎉 Événements',
     nav_businesses:  '🏢 Entreprises',
     nav_library:     '📚 Bibliothèque',
+    nav_jobs:        '💼 Jobs & Gigs',
     nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Communauté Turque en Europe',
@@ -341,6 +345,7 @@ const BB_TRANSLATIONS = {
     nav_events:      '🎉 Evenementen',
     nav_businesses:  '🏢 Bedrijven',
     nav_library:     '📚 Bibliotheek',
+    nav_jobs:        '💼 Jobs & Gigs',
     nav_abibot:      '🤖 AbiBOT',
 
     hero_tag:        'Turkse Gemeenschap in Europa',
