@@ -132,9 +132,9 @@
     }
   
     /* ── MOBILE NAV ── */
-    .hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; background: none; border: none; cursor: pointer; border-radius: 8px; flex-shrink: 0; margin-left: auto; }
-    .hamburger:hover { background: var(--warm); }
-    .hamburger span { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; transition: all .3s ease; }
+    .hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 38px; height: 38px; background: var(--red); border: none; cursor: pointer; border-radius: 8px; flex-shrink: 0; transition: background .15s; }
+    .hamburger:hover { background: var(--red2); }
+    .hamburger span { display: block; width: 20px; height: 2.5px; background: #ffffff; border-radius: 2px; transition: all .3s ease; }
     .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
