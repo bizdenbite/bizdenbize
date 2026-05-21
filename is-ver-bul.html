@@ -524,6 +524,16 @@
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    // Hide/show sidebar and cat pills based on mode
+    const sidebar = document.querySelector('.sidebar');
+    const catPills = document.getElementById('cat-pills');
+    if (mode === 'migration') {
+      if (sidebar) sidebar.style.display = 'none';
+      if (catPills) catPills.style.display = 'none';
+    } else {
+      if (sidebar) sidebar.style.display = '';
+      if (catPills) catPills.style.display = '';
+    }
     renderListings();
   }
 
