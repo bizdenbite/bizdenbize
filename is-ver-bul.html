@@ -266,7 +266,7 @@
       <button class="hero-tab active" onclick="setMode('all',this)">Tümü</button>
       <button class="hero-tab" onclick="setMode('job',this)">💼 İş İlanları</button>
       <button class="hero-tab" onclick="setMode('gig',this)">⚡ Freelance & Gig</button>
-      <button class="hero-tab" onclick="setMode('migration',this)" style="border:1px solid rgba(212,43,43,.3);">✈️ İş Göçü</button>
+      <button class="hero-tab" onclick="setMode('migration',this)" style="border:1px solid rgba(212,43,43,.3);">✈️ Avrupa'ya Göç</button>
     </div>
     <h1>İş <em>Ver</em> & <em>Bul</em></h1>
     <p class="hero-sub">Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.<br>İş ver, iş bul — güvenilir insanlarla.</p>
@@ -512,7 +512,7 @@
     { id:7, type:'gig', title:'Çocuk Bakıcısı', company:null, author:'Fatma A.', location:'Hamburg, 🇩🇪', cat:'care', worktype:'onsite', price:'€15/saat', desc:'Türkçe ve Almanca konuşan, deneyimli çocuk bakıcısı. Referanslarım mevcuttur. Hafta içi ve hafta sonu müsaitim.', featured:false, time:'3 gün önce', contact:'+49 176 987 6543' },
     { id:8, type:'job', title:'Serbest Elektrikçi / Usta', company:'Yılmaz Elektrik', author:'Yılmaz Elektrik', location:'Rotterdam, 🇳🇱', cat:'trade', worktype:'onsite', price:'€22/saat', desc:'Elektrik işleri, tesisat kurulumu ve tadilat projelerinde çalışacak deneyimli elektrikçi arıyoruz. Hollanda ehliyet şartı.', featured:false, time:'4 gün önce', contact:'info@yilmaz-elektrik.nl' },
     // İŞ GÖÇÜ
-    { id:9, type:'migration', title:'Türkiye\'den Almanya\'ya İş Göçü Danışmanlığı', company:null, author:'Ahmet Yıldız', location:'Frankfurt, 🇩🇪 / Remote', cat:'migration', worktype:'remote', price:'€150/başvuru', desc:'Almanya Fachkräfteeinwanderungsgesetz kapsamında iş vizesi başvurusu. Türkiye\'deki diploma denkliği, iş arama süreçleri ve vize başvurusu. 12 yıllık deneyim, 200+ başarılı başvuru.', featured:true, time:'1 gün önce', contact:'ahmet@yildiz-beratung.de', verified:true, badge:'✅ Doğrulanmış Danışman' },
+    { id:9, type:'migration', title:'Türkiye'den Almanya'ya İş Vizesi Danışmanlığı', company:null, author:'Ahmet Yıldız', location:'Frankfurt, 🇩🇪 / Remote', cat:'migration', worktype:'remote', price:'€150/başvuru', desc:'Almanya Fachkräfteeinwanderungsgesetz kapsamında iş vizesi başvurusu. Türkiye\'deki diploma denkliği, iş arama süreçleri ve vize başvurusu. 12 yıllık deneyim, 200+ başarılı başvuru.', featured:true, time:'1 gün önce', contact:'ahmet@yildiz-beratung.de', verified:true, badge:'✅ Doğrulanmış Danışman' },
     { id:10, type:'migration', title:'Hemşire & Bakıcı — Almanya İş Yerleştirme', company:'Pflege Connect GmbH', author:'Pflege Connect', location:'München, 🇩🇪', cat:'migration', worktype:'onsite', price:'Ücretsiz', desc:'Almanya\'da çalışmak isteyen hemşire ve yaşlı bakıcıları doğrudan işverenlerle buluşturuyoruz. Dil kursu desteği ve vize yardımı sağlanır. İşveren tarafından ücretlendiriliyoruz — sizden para almıyoruz.', featured:true, time:'2 gün önce', contact:'info@pflege-connect.de', verified:true, badge:'✅ Doğrulanmış Danışman' },
     { id:11, type:'migration', title:'İnşaat & Usta İşleri — Almanya İş Fırsatları', company:'Bau Türk GmbH', author:'Bau Türk', location:'Berlin, 🇩🇪', cat:'migration', worktype:'onsite', price:'Ücretsiz', desc:'Almanya\'daki inşaat firmalarıyla doğrudan bağlantı. Elektrikçi, tesisatçı, boyacı, kaynakçı arayan firmalar için ücretsiz yerleştirme. Almanca dil şartı yok — Türkçe konuşan ekip vardır.', featured:false, time:'3 gün önce', contact:'info@bauturk.de', verified:true, badge:'✅ Doğrulanmış Danışman' },
   ];
@@ -607,7 +607,7 @@
           </div>
           <div class="listing-desc">${l.desc}</div>
           <div class="listing-footer">
-            <span class="listing-tag ${l.type === 'migration' ? 'tag-job' : l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'migration' ? '✈️ İş Göçü' : l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
+            <span class="listing-tag ${l.type === 'migration' ? 'tag-job' : l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'migration' ? '✈️ Avrupa'ya Göç' : l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
             <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
             <span class="listing-time">${l.time}</span>
           </div>
