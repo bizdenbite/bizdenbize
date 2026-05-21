@@ -97,6 +97,7 @@
     /* ── MAIN ── */
     .main { min-width: 0; }
     .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 8px; flex-wrap: wrap; }
+    .migration-country-btn.active { border-color: var(--red) !important; background: var(--red) !important; color: #fff !important; }
     .results-count { font-size: 13px; color: var(--muted); }
     .results-count strong { color: var(--ink); }
     .sort-select { padding: 7px 12px; border: 1.5px solid var(--sand); border-radius: 8px; font-family: inherit; font-size: 12px; color: var(--ink); background: var(--white); cursor: pointer; outline: none; }
@@ -324,6 +325,18 @@
   <!-- MAIN -->
   <main class="main">
     <!-- Category pills -->
+  <!-- MIGRATION COUNTRY BAR -->
+  <div id="migration-country-bar" style="display:none;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Ülke</span>
+    <button class="migration-country-btn active" onclick="setMigrationCountry('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇳🇱',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇧🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇦🇹',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇬🇧',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere</button>
+    <button class="migration-country-btn" onclick="setMigrationCountry('🇫🇷',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa</button>
+  </div>
+
     <div class="cat-pills" id="cat-pills">
       <button class="cat-pill active" data-cat="all" onclick="setCat('all',this)">Tümü</button>
       <button class="cat-pill" data-cat="tech" onclick="setCat('tech',this)">💻 Teknoloji</button>
@@ -520,6 +533,15 @@
   let activeMode = 'all';
   let activeCat = 'all';
 
+  let activeMigrationCountry = 'all';
+
+  function setMigrationCountry(country, btn) {
+    activeMigrationCountry = country;
+    document.querySelectorAll('.migration-country-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderListings();
+  }
+
   function setMode(mode, btn) {
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
@@ -527,14 +549,18 @@
     const sidebar = document.querySelector('.sidebar');
     const catPills = document.getElementById('cat-pills');
     const pageBody = document.querySelector('.page-body');
+    const migrationCountryBar = document.getElementById('migration-country-bar');
     if (mode === 'migration') {
       if (sidebar) sidebar.style.display = 'none';
       if (catPills) catPills.style.display = 'none';
+      if (migrationCountryBar) migrationCountryBar.style.display = 'flex';
       if (pageBody) pageBody.style.gridTemplateColumns = '1fr';
     } else {
       if (sidebar) sidebar.style.display = '';
       if (catPills) catPills.style.display = '';
+      if (migrationCountryBar) migrationCountryBar.style.display = 'none';
       if (pageBody) pageBody.style.gridTemplateColumns = '';
+      activeMigrationCountry = 'all';
     }
     renderListings();
   }
@@ -573,7 +599,11 @@
 
   function renderListings() {
     const filtered = activeMode === 'migration'
-      ? listings.filter(l => l.type === 'migration')
+      ? listings.filter(l => {
+          if (l.type !== 'migration') return false;
+          if (activeMigrationCountry !== 'all' && !l.location.includes(activeMigrationCountry)) return false;
+          return true;
+        })
       : getFiltered();
     const sorted = [...filtered].sort((a,b) => a.featured === b.featured ? 0 : a.featured ? -1 : 1);
     const jobs = listings.filter(l => l.type === 'job').length;
