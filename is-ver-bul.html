@@ -97,6 +97,7 @@
     /* ── MAIN ── */
     .main { min-width: 0; }
     .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 8px; flex-wrap: wrap; }
+    .country-filter-btn.active { border-color: var(--red) !important; background: var(--red) !important; color: #fff !important; }
     .migration-country-btn.active { border-color: var(--red) !important; background: var(--red) !important; color: #fff !important; }
     .results-count { font-size: 13px; color: var(--muted); }
     .results-count strong { color: var(--ink); }
@@ -311,30 +312,21 @@
       <div class="filter-opt"><input type="checkbox" id="f-hybrid" onchange="renderListings()"><label for="f-hybrid">🔄 Hibrit</label></div>
     </div>
 
-    <div class="filter-box">
-      <div class="filter-box-title">Ülke</div>
-      <div class="filter-opt"><input type="checkbox" id="f-de" onchange="renderListings()"><label for="f-de">🇩🇪 Almanya</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-nl" onchange="renderListings()"><label for="f-nl">🇳🇱 Hollanda</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-be" onchange="renderListings()"><label for="f-be">🇧🇪 Belçika</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-at" onchange="renderListings()"><label for="f-at">🇦🇹 Avusturya</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-gb" onchange="renderListings()"><label for="f-gb">🇬🇧 İngiltere</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-fr" onchange="renderListings()"><label for="f-fr">🇫🇷 Fransa</label></div>
-    </div>
   </aside>
 
   <!-- MAIN -->
   <main class="main">
     <!-- Category pills -->
-  <!-- MIGRATION COUNTRY BAR -->
-  <div id="migration-country-bar" style="display:none;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+  <!-- COUNTRY BAR — shown for all tabs -->
+  <div id="country-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
     <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Ülke</span>
-    <button class="migration-country-btn active" onclick="setMigrationCountry('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇳🇱',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇧🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇦🇹',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇬🇧',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere</button>
-    <button class="migration-country-btn" onclick="setMigrationCountry('🇫🇷',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa</button>
+    <button class="country-filter-btn active" onclick="setCountryFilter('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇳🇱',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇧🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇦🇹',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇬🇧',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇫🇷',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa</button>
   </div>
 
     <div class="cat-pills" id="cat-pills">
@@ -551,12 +543,21 @@
 
   let activeMigrationCountry = 'all';
 
-  function setMigrationCountry(country, btn) {
+  function setCountryFilter(country, btn) {
     activeMigrationCountry = country;
-    document.querySelectorAll('.migration-country-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    document.querySelectorAll('.country-filter-btn').forEach(b => {
+      b.style.borderColor = 'var(--sand)';
+      b.style.background = 'var(--white)';
+      b.style.color = 'var(--muted)';
+    });
+    btn.style.borderColor = 'var(--red)';
+    btn.style.background = 'var(--red)';
+    btn.style.color = '#fff';
     renderListings();
   }
+
+  // Keep old name as alias for backward compat
+  function setMigrationCountry(country, btn) { setCountryFilter(country, btn); }
 
   function setMode(mode, btn) {
     activeMode = mode;
@@ -565,19 +566,24 @@
     const sidebar = document.querySelector('.sidebar');
     const catPills = document.getElementById('cat-pills');
     const pageBody = document.querySelector('.page-body');
-    const migrationCountryBar = document.getElementById('migration-country-bar');
     if (mode === 'migration') {
       if (sidebar) sidebar.style.display = 'none';
       if (catPills) catPills.style.display = 'none';
-      if (migrationCountryBar) migrationCountryBar.style.display = 'flex';
       if (pageBody) pageBody.style.gridTemplateColumns = '1fr';
     } else {
       if (sidebar) sidebar.style.display = '';
       if (catPills) catPills.style.display = '';
-      if (migrationCountryBar) migrationCountryBar.style.display = 'none';
       if (pageBody) pageBody.style.gridTemplateColumns = '';
-      activeMigrationCountry = 'all';
     }
+    // Reset country filter on mode switch
+    activeMigrationCountry = 'all';
+    document.querySelectorAll('.country-filter-btn').forEach(b => {
+      b.style.borderColor = 'var(--sand)';
+      b.style.background = 'var(--white)';
+      b.style.color = 'var(--muted)';
+    });
+    const allBtn = document.querySelector('.country-filter-btn');
+    if (allBtn) { allBtn.style.borderColor = 'var(--red)'; allBtn.style.background = 'var(--red)'; allBtn.style.color = '#fff'; }
     renderListings();
   }
 
@@ -592,18 +598,14 @@
     const q = document.getElementById('search-input').value.toLowerCase().trim();
     const checkedCats = ['tech','translate','legal','design','finance','care','trade','other'].filter(c => document.getElementById('f-'+c)?.checked);
     const checkedWork = ['remote','onsite','hybrid'].filter(w => document.getElementById('f-'+w)?.checked);
-    const checkedCountries = ['de','nl','be','at','gb','fr'].filter(c => document.getElementById('f-'+c)?.checked);
 
     return listings.filter(l => {
       if (activeMode !== 'all' && l.type !== activeMode) return false;
-      if (activeMode === 'all' && l.type === 'migration') return false; // hide migration from 'all' view
+      if (activeMode === 'all' && l.type === 'migration') return false;
       if (activeCat !== 'all' && l.cat !== activeCat) return false;
+      if (activeMigrationCountry !== 'all' && !l.location.includes(activeMigrationCountry)) return false;
       if (checkedCats.length && !checkedCats.includes(l.cat)) return false;
       if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
-      if (checkedCountries.length) {
-        const hasCountry = checkedCountries.some(c => l.location.toLowerCase().includes(c === 'de' ? '🇩🇪' : c === 'nl' ? '🇳🇱' : c === 'at' ? '🇦🇹' : c === 'gb' ? '🇬🇧' : c === 'fr' ? '🇫🇷' : '🇧🇪'));
-        if (!hasCountry) return false;
-      }
       if (q && !l.title.toLowerCase().includes(q) && !l.desc.toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
       return true;
     });
