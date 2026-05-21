@@ -524,15 +524,17 @@
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // Hide/show sidebar and cat pills based on mode
     const sidebar = document.querySelector('.sidebar');
     const catPills = document.getElementById('cat-pills');
+    const pageBody = document.querySelector('.page-body');
     if (mode === 'migration') {
       if (sidebar) sidebar.style.display = 'none';
       if (catPills) catPills.style.display = 'none';
+      if (pageBody) pageBody.style.gridTemplateColumns = '1fr';
     } else {
       if (sidebar) sidebar.style.display = '';
       if (catPills) catPills.style.display = '';
+      if (pageBody) pageBody.style.gridTemplateColumns = '';
     }
     renderListings();
   }
@@ -600,7 +602,7 @@
       container.innerHTML = scamWarning + `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
       return;
     }
-    container.innerHTML = scamWarning + sorted.map(l => `
+    container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
       <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail(${l.id})" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
         <div class="listing-avatar" style="background:${catBg[l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.cat]||'#185FA5'}">${catEmoji[l.cat]||'✈️'}</div>
@@ -622,7 +624,7 @@
             <span class="listing-time">${l.time}</span>
           </div>
         </div>
-      </div>`).join('');
+      </div>`).join('') + `</div>`;
   }
 
   // ── POST MODAL ──
