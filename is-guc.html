@@ -488,11 +488,11 @@
     <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Ülke</span>
     <button class="country-filter-btn active" onclick="setCountryFilter('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
     <button class="country-filter-btn" onclick="setCountryFilter('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇳🇱',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇧🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇦🇹',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇬🇧',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇫🇷',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa</button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa <span style="font-size:9px;opacity:.6;">Yakında</span></button>
   </div>
 
     <div class="cat-pills" id="cat-pills">
@@ -709,6 +709,13 @@
 
   let activeMigrationCountry = 'all';
 
+  function showYakinda() {
+    const tip = document.createElement('div');
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;';
+    tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
   function setCountryFilter(country, btn) {
     activeMigrationCountry = country;
     document.querySelectorAll('.country-filter-btn').forEach(b => {

@@ -474,12 +474,12 @@
     <span class="filter-label">Ülke</span>
     <button class="filter-btn active" data-filter="country" data-value="all" onclick="setFilter('country','all',this)">Tümü</button>
     <button class="filter-btn" data-filter="country" data-value="de" onclick="setFilter('country','de',this)">🇩🇪 Almanya</button>
-    <button class="filter-btn" data-filter="country" data-value="nl" onclick="setFilter('country','nl',this)">🇳🇱 Hollanda</button>
-    <button class="filter-btn" data-filter="country" data-value="be" onclick="setFilter('country','be',this)">🇧🇪 Belçika</button>
-    <button class="filter-btn" data-filter="country" data-value="at" onclick="setFilter('country','at',this)">🇦🇹 Avusturya</button>
-    <button class="filter-btn" data-filter="country" data-value="fr" onclick="setFilter('country','fr',this)">🇫🇷 Fransa</button>
+    <button class="filter-btn" data-filter="country" data-value="nl" onclick="showYakinda()">🇳🇱 Hollanda <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
+    <button class="filter-btn" data-filter="country" data-value="be" onclick="showYakinda()">🇧🇪 Belçika <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
+    <button class="filter-btn" data-filter="country" data-value="at" onclick="showYakinda()">🇦🇹 Avusturya <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
+    <button class="filter-btn" data-filter="country" data-value="fr" onclick="showYakinda()">🇫🇷 Fransa <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
     <button class="filter-btn" data-filter="country" data-value="eu" onclick="setFilter('country','eu',this)">🇪🇺 Tüm AB</button>
-    <button class="filter-btn" data-filter="country" data-value="gb" onclick="setFilter('country','gb',this)">🇬🇧 İngiltere</button>
+    <button class="filter-btn" data-filter="country" data-value="gb" onclick="showYakinda()">🇬🇧 İngiltere <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
 
     <div class="filter-divider"></div>
 
@@ -656,6 +656,13 @@
   let activeFilters = { cat: 'all', country: 'all', type: 'all' };
 
   // ── FILTER LOGIC ──
+  function showYakinda() {
+    const tip = document.createElement('div');
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;';
+    tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
   function setFilter(filterKey, value, btn) {
     activeFilters[filterKey] = value;
     document.querySelectorAll(`[data-filter="${filterKey}"]`).forEach(b => b.classList.remove('active'));

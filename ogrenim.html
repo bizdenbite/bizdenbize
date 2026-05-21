@@ -375,11 +375,11 @@
     <p class="hero-sub">Yaşadığın ülkeyi seç — dil kurslarından üniversiteye, diploma denkliğinden Ausbildung'a tüm kaynaklar seni bekliyor.</p>
     <div class="country-tabs" id="country-tabs">
       <button class="country-tab active" data-country="de" onclick="setCountry('de',this)"><span class="flag">🇩🇪</span> Almanya <span class="count" id="cnt-de"></span></button>
-      <button class="country-tab" data-country="nl" onclick="setCountry('nl',this)"><span class="flag">🇳🇱</span> Hollanda <span class="count" id="cnt-nl"></span></button>
-      <button class="country-tab" data-country="be" onclick="setCountry('be',this)"><span class="flag">🇧🇪</span> Belçika <span class="count" id="cnt-be"></span></button>
-      <button class="country-tab" data-country="at" onclick="setCountry('at',this)"><span class="flag">🇦🇹</span> Avusturya <span class="count" id="cnt-at"></span></button>
-      <button class="country-tab" data-country="gb" onclick="setCountry('gb',this)"><span class="flag">🇬🇧</span> İngiltere <span class="count" id="cnt-gb"></span></button>
-      <button class="country-tab" data-country="fr" onclick="setCountry('fr',this)"><span class="flag">🇫🇷</span> Fransa <span class="count" id="cnt-fr"></span></button>
+      <button class="country-tab" data-country="nl" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇳🇱</span> Hollanda <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-nl"></span></button>
+      <button class="country-tab" data-country="be" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇧🇪</span> Belçika <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-be"></span></button>
+      <button class="country-tab" data-country="at" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇦🇹</span> Avusturya <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-at"></span></button>
+      <button class="country-tab" data-country="gb" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇬🇧</span> İngiltere <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-gb"></span></button>
+      <button class="country-tab" data-country="fr" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇫🇷</span> Fransa <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-fr"></span></button>
     </div>
   </div>
 </div>
@@ -458,7 +458,14 @@ let activeTopic = 'all';
   if (el) el.textContent = resources.filter(r => r.country === c).length;
 });
 
-function setCountry(c, btn) {
+function showYakinda() {
+    const tip = document.createElement('div');
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;animation:fadeIn .2s ease;';
+    tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
+  function setCountry(c, btn) {
   activeCountry = c;
   activeTopic = 'all';
   document.querySelectorAll('.country-tab').forEach(b => b.classList.remove('active'));
