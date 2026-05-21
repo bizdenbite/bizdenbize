@@ -590,6 +590,57 @@
         max-width: 100% !important;
       }
     }
+  
+    /* ── DROPDOWN NAV ── */
+    .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
+    .nav-menu { display:flex;gap:2px;flex:1;align-items:center; }
+    .nav-item { position:relative; }
+    .nav-item-btn {
+      display:flex;align-items:center;gap:5px;
+      padding:8px 12px; border-radius:7px;
+      font-size:13px;font-weight:500;color:var(--muted,#6B5E4E);
+      cursor:pointer;border:none;background:none;
+      font-family:'Instrument Sans',sans-serif;
+      transition:all .15s; white-space:nowrap;
+    }
+    .nav-item-btn:hover,.nav-item-btn.open { background:var(--warm,#F0EAE0);color:var(--ink,#1A1208); }
+    .nav-item-btn.active { background:var(--red,#D42B2B);color:#fff; }
+    .nav-item-btn .chevron { font-size:9px;opacity:.5;transition:transform .2s; }
+    .nav-item-btn.open .chevron { transform:rotate(180deg); }
+    .nav-dropdown {
+      display:none;position:absolute;top:calc(100% + 8px);left:0;
+      background:var(--white,#fff);border:1px solid rgba(212,197,169,.5);
+      border-radius:12px;padding:8px;min-width:200px;
+      box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;
+    }
+    .nav-dropdown.open { display:block;animation:dropIn .15s ease; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .nav-dropdown a {
+      display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;
+      font-size:13px;font-weight:500;color:var(--ink,#1A1208);text-decoration:none;transition:background .12s;white-space:nowrap;
+    }
+    .nav-dropdown a:hover { background:var(--warm,#F0EAE0); }
+    .nav-dropdown a.active { color:var(--red,#D42B2B);font-weight:600; }
+    .nav-dropdown hr { border:none;border-top:1px solid var(--warm,#F0EAE0);margin:4px 0; }
+    .nav-right { display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto; }
+    .hamburger { display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red,#D42B2B);border:none;cursor:pointer;border-radius:8px;flex-shrink:0; }
+    .hamburger:hover { background:#E8393A; }
+    .hamburger span { display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s; }
+    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto; }
+    .mobile-menu.open { display:flex; }
+    .mm-header { display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm,#F0EAE0);height:58px;flex-shrink:0; }
+    .mm-section { padding:12px 20px 4px; }
+    .mm-section-title { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted,#6B5E4E);margin-bottom:6px; }
+    .mm-link { display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink,#1A1208);font-size:14px;font-weight:500;transition:background .15s; }
+    .mm-link:hover { background:var(--warm,#F0EAE0); }
+    .mm-link.active { background:rgba(212,43,43,.07);color:#D42B2B;font-weight:600; }
+    .mm-link-icon { font-size:20px;width:28px;text-align:center;flex-shrink:0; }
+    .mm-footer { padding:16px 20px 32px;border-top:1px solid var(--warm,#F0EAE0);margin-top:auto; }
+    @media (max-width:900px) { .nav-menu { display:none!important; } .hamburger { display:flex!important; } }
+
   </style>
 
   <!-- PWA -->
@@ -613,41 +664,166 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
-  <script src="i18n.js"></script>
+  <script src="i18n.js">
+  function toggleDropdown(id, btn) {
+    const dropdown = document.getElementById(id);
+    const isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    if (!isOpen) { dropdown.classList.add('open'); btn.classList.add('open'); }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    }
+  });
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    document.querySelectorAll('.nav-dropdown a, .mm-link').forEach(a => {
+      if ((a.getAttribute('href')||'').split('?')[0] === page) a.classList.add('active');
+    });
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
+    });
+  })();
+
+</script>
 </head>
 <body>
-
-<!-- TOP NAV -->
-<nav class="topnav">
-  <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
-  <div class="nav-search">
-    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:#D4C5A9;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input placeholder="Mahallende ara...">
-  </div>
-  <div class="nav-tabs">
-    <a class="nav-tab" href="mahallem.html" data-i18n="nav_community">🏘️ Mahallem</a>
-    <a class="nav-tab" href="classifieds.html" data-i18n="nav_classifieds">🛍️ İlanlar</a>
-    <a class="nav-tab" href="event-detail.html" data-i18n="nav_events">🎉 Etkinlikler</a>
-    <a class="nav-tab" href="business.html" data-i18n="nav_businesses">🏢 İşletmeler</a>
-    <a class="nav-tab" href="is-ver-bul.html">💼 İş Ver &amp; Bul</a>
-      <a class="nav-tab" href="ogrenim.html">🎓 Öğrenim</a>
-      <a class="nav-tab" href="library.html" data-i18n="nav_library">📚 Bilgiler</a>
-    <a class="nav-tab" href="abibot.html" data-i18n="nav_abibot">🤖 AbiBOT</a>
+<!-- NAV -->
+<nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
+  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+  <div class="nav-menu">
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-mahallem">
+        <a href="mahallem.html">🏘️ Komşularım</a>
+        <a href="events.html">🎉 Etkinlikler</a>
+        <a href="mahallem.html">📝 Paylaşımlar</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-is',this)">💼 İş & Güç <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-is">
+        <a href="is-guc.html">💼 İş İlanları</a>
+        <a href="is-guc.html">⚡ Freelance & Gig</a>
+        <a href="is-guc.html">✈️ Avrupa'ya Göç</a>
+        <hr>
+        <a href="business.html">🏢 İşletmeler</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-ogrenim',this)">🎓 Öğrenim <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ogrenim">
+        <a href="ogrenim.html">🗣️ Dil Kursları</a>
+        <a href="ogrenim.html">🎓 Yüksek Öğrenim</a>
+        <a href="ogrenim.html">📜 Diploma Denkliği</a>
+        <a href="ogrenim.html">🏭 Ausbildung</a>
+        <a href="ogrenim.html">📚 Weiterbildung</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-emlak">
+        <a href="classifieds.html">🔑 Kiralık Ev</a>
+        <a href="classifieds.html">🏡 Satılık Ev</a>
+        <a href="classifieds.html">🤝 Sublet</a>
+        <a href="classifieds.html">👥 Paylaşımlı Ev</a>
+        <hr>
+        <a href="classifieds.html">📋 Tüm Emlak İlanları</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ilanlar">
+        <a href="classifieds.html">🚗 Araç</a>
+        <a href="classifieds.html">🛋️ Ev Eşyası</a>
+        <a href="classifieds.html">📱 Elektronik</a>
+        <a href="classifieds.html">👗 Giyim</a>
+        <a href="classifieds.html">📋 Tümü</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-bilgiler',this)">📚 Bilgiler <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-bilgiler">
+        <a href="library.html">📚 Tüm Kaynaklar</a>
+        <hr>
+        <a href="library.html">💶 Kindergeld & Sosyal Yardımlar</a>
+        <a href="library.html">🏫 Okul & Çocuklar</a>
+        <a href="library.html">🛂 Vize & Oturum</a>
+        <a href="library.html">🚗 Sigorta</a>
+        <a href="library.html">💼 Çalışma Hayatı</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-abibot">
+        <a href="abibot.html">🤖 AbiBOT'a Sor</a>
+        <hr>
+        <a href="abibot.html">⚖️ Hukuk</a>
+        <a href="abibot.html">🏥 Tıbbi</a>
+        <a href="abibot.html">💼 Çalışma & Sigorta</a>
+        <a href="abibot.html">💶 Vergi & Finans</a>
+        <a href="abibot.html">🛂 Vize & Oturum</a>
+        <a href="abibot.html">👶 Okul & Yardımlar</a>
+        <a href="abibot.html">✈️ Avrupa'ya Göç</a>
+      </div>
+    </div>
   </div>
   <div class="nav-right">
-    <button class="nav-notif">
-      🔔<div class="notif-dot"></div>
-    </button>
-    <div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">—</div>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="nav-notif">🔔<div class="notif-dot"></div></button><div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">—</div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
+<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mm-header">
-    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);">Bizden<span style="color:var(--red)">Bize</span></div>
+    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+    <button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;line-height:1;">×</button>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">Topluluk</div>
+    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Komşularım</a>
+    <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">İş & Güç</div>
+    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">💼</span>İş İlanları</a>
+    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">⚡</span>Freelance & Gig</a>
+    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">✈️</span>Avrupa'ya Göç</a>
+    <a class="mm-link" href="business.html"><span class="mm-link-icon">🏢</span>İşletmeler</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">Öğrenim</div>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🗣️</span>Dil Kursları</a>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Yüksek Öğrenim</a>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🏭</span>Ausbildung</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">Konut & Emlak</div>
+    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🔑</span>Kiralık Ev</a>
+    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🏡</span>Satılık Ev</a>
+    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">👥</span>Paylaşımlı Ev</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">İlanlar & Bilgiler</div>
+    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
+    <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
+    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
+  </div>
+  <div class="mm-footer">
+    <a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div>
+      <div><div style="font-size:13px;font-weight:600;">Profilim</div><div style="font-size:11px;color:#6B5E4E;">Hesabımı gör</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- TOP NAV -->
     <button onclick="toggleMenu()" style="background:none;border:none;font-size:28px;color:var(--muted);cursor:pointer;line-height:1;padding:0 4px;">×</button>
   </div>
   <div class="mm-links">
@@ -655,7 +831,7 @@
     <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
     <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
     <a class="mm-link" href="business.html"><span class="mm-link-icon">🏢</span>İşletmeler</a>
-    <a class="mm-link" href="is-ver-bul.html"><span class="mm-link-icon">💼</span>İş Ver & Bul</a>
+    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">💼</span>İş Ver & Bul</a>
     <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Öğrenim</a>
     <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
     <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
@@ -1229,7 +1405,7 @@
           <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
           <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
           <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
-          <a href="is-ver-bul.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
+          <a href="is-guc.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
           <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
           <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgiler</a>
           <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
