@@ -565,9 +565,9 @@
     });
   }
 
-  const catEmoji = { tech:'💻', translate:'🌐', legal:'⚖️', design:'🎨', finance:'💶', care:'❤️', trade:'🔧', other:'📦' };
-  const catColor = { tech:'#185FA5', translate:'#1E7B4B', legal:'#8a6d00', design:'#a83270', finance:'#1E7B4B', care:'#D42B2B', trade:'#6B5E4E', other:'#6B5E4E' };
-  const catBg = { tech:'rgba(24,95,165,.1)', translate:'rgba(30,123,75,.1)', legal:'rgba(201,168,76,.12)', design:'rgba(168,50,112,.1)', finance:'rgba(30,123,75,.1)', care:'rgba(212,43,43,.08)', trade:'rgba(107,94,78,.1)', other:'rgba(107,94,78,.1)' };
+  const catEmoji = { tech:'💻', translate:'🌐', legal:'⚖️', design:'🎨', finance:'💶', care:'❤️', trade:'🔧', other:'📦', migration:'✈️' };
+  const catColor = { tech:'#185FA5', translate:'#1E7B4B', legal:'#8a6d00', design:'#a83270', finance:'#1E7B4B', care:'#D42B2B', trade:'#6B5E4E', other:'#6B5E4E', migration:'#185FA5' };
+  const catBg    = { tech:'rgba(24,95,165,.1)', translate:'rgba(30,123,75,.1)', legal:'rgba(201,168,76,.12)', design:'rgba(168,50,112,.1)', finance:'rgba(30,123,75,.1)', care:'rgba(212,43,43,.08)', trade:'rgba(107,94,78,.1)', other:'rgba(107,94,78,.1)', migration:'rgba(24,95,165,.1)' };
 
   function renderListings() {
     const filtered = activeMode === 'migration'
@@ -603,9 +603,9 @@
     container.innerHTML = scamWarning + sorted.map(l => `
       <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail(${l.id})" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
-        ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
-        <div class="listing-avatar" style="background:${catBg[l.cat]||'rgba(30,123,75,.1)'};color:${catColor[l.cat]||'var(--green)'}">${catEmoji[l.cat]||'✈️'}</div>
+        <div class="listing-avatar" style="background:${catBg[l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.cat]||'#185FA5'}">${catEmoji[l.cat]||'✈️'}</div>
         <div class="listing-body">
+          ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
           <div class="listing-top">
             <div class="listing-title">${l.title}</div>
             <div class="listing-price">${l.price}</div>
