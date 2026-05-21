@@ -662,6 +662,10 @@
           <span class="cat-icon">🚗</span>
           <div class="cat-info"><div class="cat-name">Sigorta & Araç</div></div>
         </div>
+        <div class="cat-item" data-cat="migration" data-price="5" data-icon="✈️" onclick="selectCat(this)">
+          <span class="cat-icon">✈️</span>
+          <div class="cat-info"><div class="cat-name">İş Göçü</div><span class="cat-badge" style="background:rgba(212,43,43,.1);color:var(--red);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700;">YENİ</span></div>
+        </div>
       </div>
     </div>
 
@@ -722,6 +726,7 @@
           <span class="welcome-cat" onclick="selectCatByName('visa')">🛂 Vize</span>
           <span class="welcome-cat" onclick="selectCatByName('tax')">💶 Vergi</span>
           <span class="welcome-cat" onclick="selectCatByName('housing')">🏠 Konut</span>
+          <span class="welcome-cat" onclick="selectCatByName('migration')" style="background:rgba(212,43,43,.08);border-color:rgba(212,43,43,.2);color:var(--red);">✈️ İş Göçü</span>
         </div>
       </div>
     </div>
@@ -896,6 +901,10 @@
     employment: { name: 'İş & Çalışma', icon: '💼',  price: 3 },
     school:     { name: 'Okul & Yardımlar', icon: '👶', price: 2 },
     insurance:  { name: 'Sigorta & Araç', icon: '🚗', price: 2 },
+    migration:  { name: 'İş Göçü',      icon: '✈️',  price: 5 },
+    employment: { name: 'İş & Çalışma', icon: '💼',  price: 3 },
+    school:     { name: 'Okul & Yardımlar', icon: '👶', price: 2 },
+    insurance:  { name: 'Sigorta & Araç', icon: '🚗', price: 2 },
   };
 
   const systemPrompts = {
@@ -904,6 +913,19 @@
     tax:        `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in TAX and FINANCE — German Steuer, Dutch belasting, income tax, Kindergeld, Wohngeld, social benefits, and financial planning for Turkish diaspora.`,
     visa:       `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in VISA and RESIDENCE PERMITS — Niederlassungserlaubnis, Aufenthaltstitel, family reunification, citizenship applications, and EU free movement rights for Turkish citizens.`,
     housing:    `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in HOUSING and TENANCY — German Mietrecht, rental contracts, deposit rules, tenant rights, Nebenkosten, and housing benefits for Turkish residents in Europe.`,
+    migration:  `You are AbiBOT, an AI assistant on BizdenBize helping Turkish people in Turkey who want to find work and move to Europe — especially Germany, Netherlands, Austria, and Belgium. Your audience is working-class people: factory workers, truck drivers, healthcare workers, skilled tradespeople, construction workers. They are NOT necessarily highly educated and may be vulnerable to exploitation by unqualified job placement consultants who take their money and deliver nothing.
+
+Your role is to:
+1. Explain the LEGITIMATE process for finding work in Europe from Turkey
+2. Explain what real job offers look like and what red flags to watch for
+3. Warn clearly about common scams — fake contracts, upfront payment demands, fake employer names
+4. Guide users toward official channels only: Make it in Germany, Bundesagentur für Arbeit, official embassy visa processes
+5. Explain work visa types: Fachkräfteeinwanderungsgesetz, Blaue Karte, sector-specific visas
+6. Help users understand their rights BEFORE they sign anything or pay anyone
+
+CRITICAL SCAM WARNING — always include when relevant: Hiçbir meşru işveren veya danışman sizden önceden para talep etmez. Para isteyen kişilerden uzak durun.
+
+Be simple, direct, and protective. Use plain Turkish. These users may be desperate and that makes them vulnerable — your job is to protect them, not just inform them.`,
     employment: `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in EMPLOYMENT and LABOR LAW — Kündigung, Arbeitsvertrag, sick leave, discrimination at work, unemployment benefits (ALG), and workers' rights in Germany and Europe.`,
     school:     `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in SCHOOLS, CHILDREN, and SOCIAL BENEFITS — Kindergeld, Elterngeld, school enrollment, childcare (Kita), Bafög, and family support systems for Turkish families in Europe.`,
     insurance:  `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in INSURANCE and VEHICLES — Kfz-Versicherung, Haftpflicht, car registration, accidents, claims, and navigating German/European insurance as a Turkish resident.`,
@@ -965,7 +987,13 @@
       fr: ['Comment inscrire mon enfant à l\'école en Allemagne ?', 'Que faut-il pour demander l\'allocation parentale (Elterngeld) ?', 'La liste d\'attente pour la crèche est très longue, y a-t-il des alternatives ?', 'Puis-je demander le BAföG ?'],
       nl: ['Hoe schrijf ik mijn kind in op school in Duitsland?', 'Wat heb ik nodig voor ouderschapsvergoeding (Elterngeld)?', 'De wachtlijst voor de Kita is erg lang, zijn er alternatieven?', 'Kan ik BAföG aanvragen?'],
     },
-    insurance: {
+    migration: {
+      tr: ['Almanya\'da iş bulmak için nereden başlamalıyım?', 'Bir danışman benden para istedi, bu dolandırıcılık mı?', 'Almanya çalışma vizesi için hangi belgeler gerekli?', 'Mavi Kart nedir, kimler başvurabilir?'],
+      de: ['Wo soll ich anfangen, um in Deutschland Arbeit zu finden?', 'Ein Berater hat Geld von mir verlangt – ist das Betrug?', 'Welche Dokumente brauche ich für ein Arbeitsvisum nach Deutschland?', 'Was ist die Blaue Karte und wer kann sie beantragen?'],
+      en: ['Where do I start to find work in Germany?', 'A consultant asked me for money — is this a scam?', 'What documents do I need for a German work visa?', 'What is the Blue Card and who can apply?'],
+      fr: ['Par où commencer pour trouver du travail en Allemagne ?', 'Un conseiller m\'a demandé de l\'argent — est-ce une arnaque ?', 'Quels documents faut-il pour un visa de travail allemand ?', 'Qu\'est-ce que la Carte Bleue et qui peut en faire la demande ?'],
+      nl: ['Waar begin ik om werk te vinden in Duitsland?', 'Een adviseur vroeg geld van me — is dit oplichterij?', 'Welke documenten heb ik nodig voor een Duits werkvisum?', 'Wat is de Blauwe Kaart en wie kan die aanvragen?'],
+    },
       tr: ['Kaza yaptım, sigortama nasıl bildiririm?', 'Kfz-Versicherung için en ucuz seçeneği nasıl bulurum?', 'Hasar sonrası aracım değer kaybeder mi?', 'Yabancı ehliyetle Almanya\'da araç kullanabilir miyim?'],
       de: ['Ich hatte einen Unfall, wie melde ich es meiner Versicherung?', 'Wie finde ich die günstigste Kfz-Versicherung?', 'Verliert mein Auto nach einem Schaden an Wert?', 'Darf ich in Deutschland mit einem ausländischen Führerschein fahren?'],
       en: ['I had an accident, how do I report it to my insurance?', 'How do I find the cheapest car insurance?', 'Does my car lose value after a claim?', 'Can I drive in Germany with a foreign licence?'],
