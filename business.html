@@ -395,7 +395,8 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
-  <script src="i18n.js">
+  <script src="i18n.js"></script>
+<script>
   function toggleDropdown(id, btn) {
     const dropdown = document.getElementById(id);
     const isOpen = dropdown.classList.contains('open');
@@ -425,7 +426,6 @@
       if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
     });
   })();
-
 </script>
 </head>
 <body>

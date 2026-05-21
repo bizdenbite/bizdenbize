@@ -203,6 +203,37 @@
     @media (max-width:900px) { .nav-menu { display:none!important; } .hamburger { display:flex!important; } }
 
   </style>
+<script>
+  function toggleDropdown(id, btn) {
+    const dropdown = document.getElementById(id);
+    const isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    if (!isOpen) { dropdown.classList.add('open'); btn.classList.add('open'); }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    }
+  });
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    document.querySelectorAll('.nav-dropdown a, .mm-link').forEach(a => {
+      if ((a.getAttribute('href')||'').split('?')[0] === page) a.classList.add('active');
+    });
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
+    });
+  })();
+</script>
 </head>
 <body>
 <!-- NAV -->
@@ -585,35 +616,7 @@ render();
     });
   });
 
-  function toggleDropdown(id, btn) {
-    const dropdown = document.getElementById(id);
-    const isOpen = dropdown.classList.contains('open');
-    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
-    if (!isOpen) { dropdown.classList.add('open'); btn.classList.add('open'); }
-  }
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.nav-item')) {
-      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-      document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
-    }
-  });
-  function toggleMenu() {
-    const hb = document.getElementById('hamburger');
-    const menu = document.getElementById('mobile-menu');
-    hb.classList.toggle('open');
-    menu.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-  }
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
-    document.querySelectorAll('.nav-dropdown a, .mm-link').forEach(a => {
-      if ((a.getAttribute('href')||'').split('?')[0] === page) a.classList.add('active');
-    });
-    document.querySelectorAll('.nav-item').forEach(item => {
-      if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
-    });
-  })();
+  
 
 </script>
 <!-- SUGGEST MODAL -->

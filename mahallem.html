@@ -664,7 +664,8 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
-  <script src="i18n.js">
+  <script src="i18n.js"></script>
+<script>
   function toggleDropdown(id, btn) {
     const dropdown = document.getElementById(id);
     const isOpen = dropdown.classList.contains('open');
@@ -694,7 +695,6 @@
       if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
     });
   })();
-
 </script>
 </head>
 <body>
@@ -826,16 +826,6 @@
 <!-- TOP NAV -->
     <button onclick="toggleMenu()" style="background:none;border:none;font-size:28px;color:var(--muted);cursor:pointer;line-height:1;padding:0 4px;">×</button>
   </div>
-  <div class="mm-links">
-    <a class="mm-link active" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
-    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
-    <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
-    <a class="mm-link" href="business.html"><span class="mm-link-icon">🏢</span>İşletmeler</a>
-    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">💼</span>İş Ver & Bul</a>
-    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Öğrenim</a>
-    <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
-    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
-  </div>
   <div class="mm-footer">
     <a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);">
       <div style="width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div>
@@ -843,10 +833,6 @@
     </a>
   </div>
 </div>
-    </a>
-  </div>
-</div>
-</nav>
 
 <div class="layout">
 
