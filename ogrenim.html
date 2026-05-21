@@ -130,6 +130,27 @@
       .cards-grid { grid-template-columns: 1fr; }
       .country-header { flex-wrap: wrap; }
     }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; background: none; border: none; cursor: pointer; border-radius: 8px; flex-shrink: 0; margin-left: auto; }
+    .hamburger:hover { background: var(--warm); }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; transition: all .3s ease; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; inset: 0; z-index: 200; flex-direction: column; background: var(--white); }
+    .mobile-menu.open { display: flex; }
+    .mm-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--warm); height: 58px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; overflow-y: auto; }
+    .mm-link { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 15px; font-weight: 500; transition: background .15s; }
+    .mm-link:hover { background: var(--warm); }
+    .mm-link.active { background: rgba(212,43,43,.07); color: var(--red); font-weight: 600; }
+    .mm-link-icon { font-size: 22px; width: 30px; text-align: center; flex-shrink: 0; }
+    .mm-footer { padding: 16px 20px; border-top: 1px solid var(--warm); }
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+    }
   </style>
 </head>
 <body>
@@ -151,6 +172,34 @@
   <div class="nav-right">
     <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
   </div>
+
+<!-- HAMBURGER + MOBILE MENU -->
+<button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mm-header">
+    <img src="logo.png" alt="BizdenBize" style="height:36px;">
+    <button onclick="toggleMenu()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;">×</button>
+  </div>
+  <div class="mm-links">
+    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
+    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
+    <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
+    <a class="mm-link" href="business.html"><span class="mm-link-icon">🏢</span>İşletmeler</a>
+    <a class="mm-link" href="is-ver-bul.html"><span class="mm-link-icon">💼</span>İş Ver & Bul</a>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Öğrenim</a>
+    <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
+    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
+  </div>
+  <div class="mm-footer">
+    <a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div>
+      <div><div style="font-size:13px;font-weight:600;">Profilim</div><div style="font-size:11px;color:var(--muted);">Hesabımı gör</div></div>
+    </a>
+  </div>
+</div>
 </nav>
 
 <div class="hero">
@@ -367,6 +416,28 @@ function render() {
 }
 
 render();
+
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Auto-highlight active link
+  window.addEventListener('DOMContentLoaded', () => {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+    // Close on outside click
+    document.getElementById('mobile-menu')?.addEventListener('click', e => {
+      if (e.target === e.currentTarget) toggleMenu();
+    });
+  });
 </script>
 <!-- SUGGEST MODAL -->
 <div id="suggest-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(26,18,8,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeSuggestModal()">
