@@ -198,6 +198,7 @@
     .cbar-soon-badge { font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600; }
 
   </style>
+  <script src="supabase.js"></script>
 </head>
 <body>
 
@@ -461,42 +462,69 @@ function render() {
   }
 }
 
-function renderDoctors() {
-  const cityQ = (document.getElementById('f-city')?.value || '').toLowerCase();
-  const insQ = document.getElementById('f-insurance')?.value || 'all';
-  const filtered = doctors.filter(d => {
-    if (cityQ && !d.city.toLowerCase().includes(cityQ)) return false;
-    if (insQ !== 'all' && !d.insurance.includes(insQ)) return false;
-    if (activeSpec !== 'all' && d.spec !== activeSpec) return false;
-    return true;
-  });
+async function renderDoctors() {
+  const cityQ = document.getElementById('f-city')?.value || '';
+  const insQ  = document.getElementById('f-insurance')?.value || 'all';
+  const grid  = document.getElementById('doctor-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
+
+  let allDoctors = [];
+  try {
+    allDoctors = await BB.getDoctors({ city: cityQ, insurance: insQ === 'all' ? '' : insQ });
+  } catch(e) { console.error('Doctor fetch error:', e); }
+
+  const filtered = allDoctors.filter(d => activeSpec === 'all' || d.specialty === activeSpec);
   const count = document.getElementById('doc-count');
   if (count) count.innerHTML = `<strong>${filtered.length}</strong> doktor bulundu`;
-  const grid = document.getElementById('doctor-grid');
-  if (!grid) return;
+  document.getElementById('stat-doctors').textContent = allDoctors.length;
+
   if (!filtered.length) { grid.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;">Bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin veya doktor önerin.</p></div>`; return; }
   grid.innerHTML = filtered.map(d => `
     <div class="doctor-card" onclick="openDoctor(${d.id})">
       <div class="doctor-top">
-        <div class="doctor-avatar">${d.emoji}</div>
+        <div class="doctor-avatar">👨‍⚕️</div>
         <div class="doctor-info">
           <div class="doctor-name">${d.name}</div>
-          <div class="doctor-spec">${d.spec}</div>
+          <div class="doctor-spec">${d.specialty}</div>
           <div class="doctor-location">📍 ${d.city}</div>
         </div>
       </div>
       <div class="doctor-tags">
         <span class="doctor-tag tag-turkish">🇹🇷 Türkçe</span>
-        <span class="doctor-tag tag-insurance">${d.insurance}</span>
+        <span class="doctor-tag tag-insurance">${d.insurance || ''}</span>
         ${d.verified ? '<span class="doctor-tag tag-verified">✅ Doğrulandı</span>' : ''}
       </div>
-      <div class="doctor-rating">⭐ ${d.rating} <span style="color:var(--sand);">(${d.reviews} değerlendirme)</span></div>
+      <div class="doctor-rating">⭐ ${d.rating || '—'} <span style="color:var(--sand);">(${d.review_count || 0} değerlendirme)</span></div>
       <div class="doctor-footer">
         <span style="font-size:12px;color:var(--muted);">📍 ${d.city}</span>
-        <button class="doctor-contact-btn" onclick="event.stopPropagation();openDoctor(${d.id})">İletişim →</button>
+        <button class="doctor-contact-btn" onclick="event.stopPropagation();openDoctorById(${d.id})">İletişim →</button>
       </div>
       <div class="disclaimer">⚠️ BizdenBize tıbbi tavsiye vermez. Tanı ve tedavi için doktorunuza başvurun.</div>
     </div>`).join('');
+
+  // Store fetched data for detail modal
+  window._doctors = allDoctors;
+}
+
+function openDoctorById(id) {
+  const d = (window._doctors || []).find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('dm-avatar').textContent = '👨‍⚕️';
+  document.getElementById('dm-name').textContent = d.name;
+  document.getElementById('dm-spec').textContent = d.specialty;
+  document.getElementById('dm-desc').textContent = d.description || '';
+  document.getElementById('dm-info').innerHTML = `
+    <div class="info-box"><div class="info-box-label">Şehir</div><div class="info-box-val">📍 ${d.city}</div></div>
+    <div class="info-box"><div class="info-box-label">Sigorta</div><div class="info-box-val">${d.insurance || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${(d.languages||[]).join(' / ')}</div></div>
+    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating || '—'} (${d.review_count || 0})</div></div>`;
+  document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
+  document.getElementById('dm-phone-btn').onclick = () => window.location.href = `tel:${d.phone}`;
+  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${(d.phone||'').replace(/\s|\+|-/g,'')}`, '_blank');
+  document.getElementById('doctor-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 }
 
 function openDoctor(id) {

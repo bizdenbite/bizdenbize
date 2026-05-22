@@ -154,6 +154,7 @@
     .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
   </style>
+  <script src="supabase.js"></script>
 </head>
 <body>
 
@@ -407,23 +408,31 @@ function togglePill(type, btn) {
   renderTutors();
 }
 
-function renderTutors() {
-  const q = (document.getElementById('f-search').value || '').toLowerCase();
-  const subj = document.getElementById('f-subject').value;
+async function renderTutors() {
+  const q     = (document.getElementById('f-search').value || '').toLowerCase();
+  const subj  = document.getElementById('f-subject').value;
   const level = document.getElementById('f-level').value;
+  const grid  = document.getElementById('tutor-grid');
+  if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
 
-  const filtered = tutors.filter(t => {
-    if (q && !t.name.toLowerCase().includes(q) && !t.subject.toLowerCase().includes(q) && !t.desc.toLowerCase().includes(q)) return false;
-    if (subj !== 'all' && t.subject !== subj) return false;
-    if (level !== 'all' && !t.levels.includes(level)) return false;
-    if (activePills.online && t.format !== 'online' && t.format !== 'both') return false;
-    if (activePills.inperson && t.format !== 'inperson' && t.format !== 'both') return false;
-    if (activePills.free && t.price !== 'free') return false;
+  let allTutors = [];
+  try {
+    allTutors = await BB.getTutors({
+      subject: subj !== 'all' ? subj : '',
+      free: activePills.free,
+      format: activePills.online ? 'online' : activePills.inperson ? 'inperson' : ''
+    });
+  } catch(e) { console.error('Tutor fetch error:', e); }
+
+  const filtered = allTutors.filter(t => {
+    if (q && !t.name.toLowerCase().includes(q) && !t.subject.toLowerCase().includes(q) && !(t.description||'').toLowerCase().includes(q)) return false;
+    if (level !== 'all' && !(t.levels||[]).includes(level)) return false;
     return true;
   });
 
-  document.getElementById('stat-total').textContent = tutors.length;
-  document.getElementById('stat-free').textContent = tutors.filter(t => t.price === 'free').length;
+  window._tutors = allTutors;
+  document.getElementById('stat-total').textContent = allTutors.length;
+  document.getElementById('stat-free').textContent = allTutors.filter(t => t.price_type === 'free').length;
   document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> öğretmen bulundu`;
 
   const grid = document.getElementById('tutor-grid');
@@ -432,7 +441,7 @@ function renderTutors() {
     return;
   }
 
-  const isFree = t => t.price === 'free';
+  const isFree = t => t.price_type === 'free';
   grid.innerHTML = filtered.map((t, i) => `
     <div class="tutor-card ${isFree(t) ? 'free-card' : ''}" onclick="openDetail(${t.id})">
       <div class="card-top">
@@ -450,10 +459,10 @@ function renderTutors() {
         ${t.format === 'online' || t.format === 'both' ? '<span class="ctag ctag-online">🌍 Online</span>' : ''}
         ${t.format === 'inperson' || t.format === 'both' ? '<span class="ctag ctag-inperson">📍 Yüz yüze</span>' : ''}
       </div>
-      <div class="card-desc">${t.desc}</div>
+      <div class="card-desc">${t.description}</div>
       <div class="card-rating">⭐ ${t.rating} <span style="color:var(--sand);">(${t.reviews} değerlendirme)</span></div>
       <div class="card-footer">
-        <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${t.priceLabel}</span>
+        <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${t.price_label}</span>
         <button class="card-contact-btn ${isFree(t) ? 'free' : 'paid'}" onclick="event.stopPropagation();openDetail(${t.id})">İletişim →</button>
       </div>
     </div>`).join('');
@@ -469,7 +478,7 @@ function openDetail(id) {
   document.getElementById('dm-subject').textContent = t.subject + ' · ' + t.city;
   document.getElementById('dm-desc').textContent = t.desc;
   document.getElementById('dm-info').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.priceLabel}</div></div>
+    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.price_label}</div></div>
     <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : '📍 Yüz yüze'}</div></div>
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating} (${t.reviews})</div></div>
     <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${t.levels.join(', ')}</div></div>`;
@@ -488,13 +497,24 @@ function closeDetailModal() { document.getElementById('detail-modal').classList.
 function openTutorModal() { document.getElementById('tutor-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeTutorModal() { document.getElementById('tutor-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('tm-success').style.display='none'; document.getElementById('tm-body').style.display='flex'; document.getElementById('tm-footer').style.display='flex'; document.getElementById('tm-error').style.display='none'; }
 function togglePriceInput(v) { document.getElementById('tm-price-input-wrap').style.display = v === 'paid' ? 'block' : 'none'; }
-function submitTutor() {
-  const name = document.getElementById('tm-name').value.trim();
-  const desc = document.getElementById('tm-desc').value.trim();
+async function submitTutor() {
+  const name    = document.getElementById('tm-name').value.trim();
+  const desc    = document.getElementById('tm-desc').value.trim();
   const contact = document.getElementById('tm-contact').value.trim();
-  const err = document.getElementById('tm-error');
+  const err     = document.getElementById('tm-error');
   if (!name || !desc || !contact) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
+  try {
+    await BB.submitTutor({
+      name, description: desc, contact,
+      subject:    document.getElementById('tm-subject').value,
+      levels:     [document.getElementById('tm-level').value],
+      city:       document.getElementById('tm-city').value.trim(),
+      format:     document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
+      priceType:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
+      priceLabel: document.getElementById('tm-price').value.trim() || null,
+    });
+  } catch(e) { console.error('Tutor submit error:', e); }
   document.getElementById('tm-body').style.display='none';
   document.getElementById('tm-footer').style.display='none';
   document.getElementById('tm-success').style.display='block';
