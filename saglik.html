@@ -240,6 +240,16 @@
     <div class="hero-tag">🏥 Türkçe Konuşan Sağlık Rehberi</div>
     <h1>Sağlığınız için <em>Doğru Adres</em></h1>
     <p class="hero-sub">Avrupa'da Türkçe konuşan doktorlar, sağlık rehberleri ve Krankenkasse bilgisi — tek bir yerde.</p>
+
+    <!-- Country filter -->
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
+      <button onclick="setCountry('de',this)" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-family:inherit;" id="c-de">🇩🇪 Almanya</button>
+      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇳🇱 Hollanda <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
+      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇧🇪 Belçika <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
+      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇦🇹 Avusturya <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
+      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇬🇧 İngiltere <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
+      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇫🇷 Fransa <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
+    </div>
     <div class="section-tabs" id="section-tabs">
       <button class="section-tab active" data-section="doctors" onclick="setSection('doctors',this)">🏥 Doktor Bul</button>
       <button class="section-tab" data-section="kranken" onclick="setSection('kranken',this)">📋 Krankenkasse</button>
@@ -357,6 +367,19 @@ function setSpec(s, btn) {
   activeSpec = s;
   document.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  renderDoctors();
+}
+
+function showYakinda() {
+  const tip = document.createElement('div');
+  tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;';
+  tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
+  document.body.appendChild(tip);
+  setTimeout(() => tip.remove(), 2500);
+}
+
+function setCountry(c, btn) {
+  // Only DE is active for now
   renderDoctors();
 }
 
