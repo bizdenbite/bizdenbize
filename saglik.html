@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Sağlık</title>
-  <script src="supabase.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
   function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
@@ -349,6 +348,21 @@
 </div>
 
 <script>
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
 const doctors = [
   { id:1, name:"Dr. Ayşe Yıldız", spec:"Aile Hekimi", city:"Frankfurt", address:"Bergerstr. 45, 60316 Frankfurt", phone:"+49 69 456 7890", insurance:"GKV", lang:"TR/DE", rating:4.9, reviews:34, emoji:"👩‍⚕️", desc:"20 yıllık deneyimli aile hekimi. Türkçe, Almanca ve İngilizce konuşuyor. Yeni hastalar kabul ediyor.", verified:true },
   { id:2, name:"Dr. Mehmet Aslan", spec:"Dahiliye", city:"Berlin", address:"Kurfürstenstr. 12, 10785 Berlin", phone:"+49 30 123 4567", insurance:"GKV & PKV", lang:"TR/DE/EN", rating:4.7, reviews:28, emoji:"👨‍⚕️", desc:"İç hastalıkları uzmanı. Diyabet, hipertansiyon ve kalp hastalıkları konusunda deneyimli.", verified:true },
@@ -471,7 +485,10 @@ async function renderDoctors() {
 
   let allDoctors = [];
   try {
-    allDoctors = await BB.getDoctors({ city: cityQ, insurance: insQ === 'all' ? '' : insQ });
+    let params = 'active=eq.true&order=verified.desc,rating.desc';
+      if (cityQ) params += '&city=ilike.*' + encodeURIComponent(cityQ) + '*';
+      if (insQ !== 'all') params += '&insurance=ilike.*' + encodeURIComponent(insQ) + '*';
+      allDoctors = await sbGet('doctors', params);
   } catch(e) { console.error('Doctor fetch error:', e); }
 
   const filtered = allDoctors.filter(d => activeSpec === 'all' || d.specialty === activeSpec);

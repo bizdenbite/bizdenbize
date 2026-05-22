@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Nachhilfe & Özel Ders</title>
-  <script src="supabase.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
   function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
@@ -387,17 +386,32 @@
 </div>
 
 <script>
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
 const avatarColors = ['#4338CA','#0891B2','#D42B2B','#1E7B4B','#C9A84C','#6B3FA0','#D97706'];
 
 const tutors = [
-  { id:1, name:"Ayşe Demir", subject:"Mathematik", levels:["Gymnasium","Abitur"], city:"Berlin", format:"online", price:"free", priceLabel:"Ücretsiz 🎁", rating:4.9, reviews:18, desc:"Matematik mühendisiyim, Gymnasium ve Abitur öğrencilerine ücretsiz destek veriyorum. Haftada 2 saat müsaitim. Türkçe açıklama yapabilirim.", contact:"ayse.demir@email.de", turkish:true },
-  { id:2, name:"Murat Şen", subject:"Deutsch", levels:["Grundschule","Hauptschule","Realschule"], city:"Frankfurt", format:"both", price:"paid", priceLabel:"€15/saat", rating:4.8, reviews:31, desc:"Almanya'da 10 yıldır Almanca öğretmeniyim. Türk çocuklarına özel ders veriyorum. İlkokul'dan Realschule'ye tüm seviyelerde deneyimim var.", contact:"+49 69 123 4567", turkish:true },
-  { id:3, name:"Selin Kaya", subject:"Mathematik", levels:["Realschule","Gymnasium"], city:"München", format:"inperson", price:"paid", priceLabel:"€20/saat", rating:4.7, reviews:22, desc:"Lise matematik öğretmeniyim. Türkçe ders anlatıyorum. Realschule ve Gymnasium öğrencilerine sınav hazırlığı konusunda uzmanım.", contact:"selin.kaya@nachhilfe.de", turkish:true },
-  { id:4, name:"Hasan Öz", subject:"Physik", levels:["Gymnasium","Abitur"], city:"Köln", format:"online", price:"paid", priceLabel:"€25/saat", rating:4.9, reviews:14, desc:"Fizik doktorasını tamamlamış biri olarak Abitur sınavına hazırlanan öğrencilere destek veriyorum. Online ders için Zoom kullanıyorum.", contact:"hasan.oz@physics.de", turkish:true },
-  { id:5, name:"Fatma Çelik", subject:"Englisch", levels:["Grundschule","Hauptschule","Realschule","Gymnasium"], city:"Hamburg", format:"both", price:"paid", priceLabel:"€18/saat", rating:4.6, reviews:27, desc:"İngilizce dili ve edebiyatı mezunuyum. Tüm seviyelere ders veriyorum. Özellikle konuşma ve yazma becerilerini geliştirmeye odaklanıyorum.", contact:"+49 40 987 6543", turkish:true },
-  { id:6, name:"Kemal Arslan", subject:"Türkçe", levels:["Grundschule","Hauptschule","Realschule"], city:"Düsseldorf", format:"both", price:"free", priceLabel:"Ücretsiz 🎁", rating:4.8, reviews:9, desc:"İki dilli çocuklara Türkçe okuma-yazma öğretiyorum. Almanya'da büyüyen Türk çocuklarının ana dilini koruması çok önemli.", contact:"kemal.arslan@email.de", turkish:true },
-  { id:7, name:"Zehra Yıldız", subject:"Chemie", levels:["Gymnasium","Abitur"], city:"Stuttgart", format:"online", price:"paid", priceLabel:"€22/saat", rating:4.7, reviews:11, desc:"Kimya mühendisi ve serbest öğretmen. Abitur'a hazırlanan öğrencilere özel ders veriyorum. Türkçe ve Almanca ders anlatabiliyorum.", contact:"zehra.yildiz@chem.de", turkish:true },
-  { id:8, name:"Ali Koca", subject:"Mathematik", levels:["Grundschule","Hauptschule"], city:"Berlin", format:"inperson", price:"free", priceLabel:"Ücretsiz 🎁", rating:5.0, reviews:6, desc:"Üniversite öğrencisiyim, ilkokul ve ortaokul öğrencilerine ücretsiz matematik dersi veriyorum. Topluluk desteği olarak yapıyorum.", contact:"+49 176 555 1234", turkish:true },
+  { id:1, name:"Ayşe Demir", subject:"Mathematik", levels:["Gymnasium","Abitur"], city:"Berlin", format:"online", price:"free", price_label:"Ücretsiz 🎁", rating:4.9, reviews:18, desc:"Matematik mühendisiyim, Gymnasium ve Abitur öğrencilerine ücretsiz destek veriyorum. Haftada 2 saat müsaitim. Türkçe açıklama yapabilirim.", contact:"ayse.demir@email.de", turkish:true },
+  { id:2, name:"Murat Şen", subject:"Deutsch", levels:["Grundschule","Hauptschule","Realschule"], city:"Frankfurt", format:"both", price:"paid", price_label:"€15/saat", rating:4.8, reviews:31, desc:"Almanya'da 10 yıldır Almanca öğretmeniyim. Türk çocuklarına özel ders veriyorum. İlkokul'dan Realschule'ye tüm seviyelerde deneyimim var.", contact:"+49 69 123 4567", turkish:true },
+  { id:3, name:"Selin Kaya", subject:"Mathematik", levels:["Realschule","Gymnasium"], city:"München", format:"inperson", price:"paid", price_label:"€20/saat", rating:4.7, reviews:22, desc:"Lise matematik öğretmeniyim. Türkçe ders anlatıyorum. Realschule ve Gymnasium öğrencilerine sınav hazırlığı konusunda uzmanım.", contact:"selin.kaya@nachhilfe.de", turkish:true },
+  { id:4, name:"Hasan Öz", subject:"Physik", levels:["Gymnasium","Abitur"], city:"Köln", format:"online", price:"paid", price_label:"€25/saat", rating:4.9, reviews:14, desc:"Fizik doktorasını tamamlamış biri olarak Abitur sınavına hazırlanan öğrencilere destek veriyorum. Online ders için Zoom kullanıyorum.", contact:"hasan.oz@physics.de", turkish:true },
+  { id:5, name:"Fatma Çelik", subject:"Englisch", levels:["Grundschule","Hauptschule","Realschule","Gymnasium"], city:"Hamburg", format:"both", price:"paid", price_label:"€18/saat", rating:4.6, reviews:27, desc:"İngilizce dili ve edebiyatı mezunuyum. Tüm seviyelere ders veriyorum. Özellikle konuşma ve yazma becerilerini geliştirmeye odaklanıyorum.", contact:"+49 40 987 6543", turkish:true },
+  { id:6, name:"Kemal Arslan", subject:"Türkçe", levels:["Grundschule","Hauptschule","Realschule"], city:"Düsseldorf", format:"both", price:"free", price_label:"Ücretsiz 🎁", rating:4.8, reviews:9, desc:"İki dilli çocuklara Türkçe okuma-yazma öğretiyorum. Almanya'da büyüyen Türk çocuklarının ana dilini koruması çok önemli.", contact:"kemal.arslan@email.de", turkish:true },
+  { id:7, name:"Zehra Yıldız", subject:"Chemie", levels:["Gymnasium","Abitur"], city:"Stuttgart", format:"online", price:"paid", price_label:"€22/saat", rating:4.7, reviews:11, desc:"Kimya mühendisi ve serbest öğretmen. Abitur'a hazırlanan öğrencilere özel ders veriyorum. Türkçe ve Almanca ders anlatabiliyorum.", contact:"zehra.yildiz@chem.de", turkish:true },
+  { id:8, name:"Ali Koca", subject:"Mathematik", levels:["Grundschule","Hauptschule"], city:"Berlin", format:"inperson", price:"free", price_label:"Ücretsiz 🎁", rating:5.0, reviews:6, desc:"Üniversite öğrencisiyim, ilkokul ve ortaokul öğrencilerine ücretsiz matematik dersi veriyorum. Topluluk desteği olarak yapıyorum.", contact:"+49 176 555 1234", turkish:true },
 ];
 
 let activePills = { online: false, inperson: false, free: false };
@@ -417,11 +431,12 @@ async function renderTutors() {
 
   let allTutors = [];
   try {
-    allTutors = await BB.getTutors({
-      subject: subj !== 'all' ? subj : '',
-      free: activePills.free,
-      format: activePills.online ? 'online' : activePills.inperson ? 'inperson' : ''
-    });
+    let params = 'active=eq.true&order=verified.desc,rating.desc';
+      if (subj !== 'all') params += '&subject=eq.' + encodeURIComponent(subj);
+      if (activePills.free) params += '&price_type=eq.free';
+      if (activePills.online) params += '&format=in.(online,both)';
+      if (activePills.inperson) params += '&format=in.(inperson,both)';
+      allTutors = await sbGet('tutors', params);
   } catch(e) { console.error('Tutor fetch error:', e); }
 
   const filtered = allTutors.filter(t => {
@@ -505,14 +520,14 @@ async function submitTutor() {
   if (!name || !desc || !contact) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
   try {
-    await BB.submitTutor({
+    await sbPost('tutors', {
       name, description: desc, contact,
       subject:    document.getElementById('tm-subject').value,
       levels:     [document.getElementById('tm-level').value],
       city:       document.getElementById('tm-city').value.trim(),
       format:     document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
-      priceType:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
-      priceLabel: document.getElementById('tm-price').value.trim() || null,
+      price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
+      price_label: document.getElementById('tm-price').value.trim() || null,
     });
   } catch(e) { console.error('Tutor submit error:', e); }
   document.getElementById('tm-body').style.display='none';
