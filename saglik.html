@@ -10,6 +10,25 @@
   function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
   document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('click',e=>{if(!e.target.closest('.nav-item')){document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.remove('open'));}});});
   function toggleMenu(){const hb=document.getElementById('hamburger'),menu=document.getElementById('mobile-menu');hb.classList.toggle('open');menu.classList.toggle('open');document.body.style.overflow=menu.classList.contains('open')?'hidden':'';}
+  
+  function setCbarCountry(c, btn) {
+    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (typeof renderDoctors === 'function') renderDoctors();
+    if (typeof renderSwaps === 'function') renderSwaps();
+    if (typeof render === 'function') render();
+    if (typeof renderListings === 'function') renderListings();
+  }
+  function showYakinda() {
+    if (document.getElementById('yakinda-toast')) return;
+    const tip = document.createElement('div');
+    tip.id = 'yakinda-toast';
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
+    tip.textContent = 'Bu ulke yakinda ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
+
   </script>
   <style>
     :root{
@@ -169,6 +188,15 @@
     .success-screen{display:none;text-align:center;padding:40px 20px;}
     .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
+  
+    /* ── COUNTRY BAR ── */
+    .cbar-btn { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px; }
+    .cbar-btn:hover { border-color:var(--ink);color:var(--ink); }
+    .cbar-btn.active { border-color:var(--red);background:var(--red);color:#fff; }
+    .cbar-soon { opacity:.55;cursor:default!important; }
+    .cbar-soon:hover { border-color:var(--sand)!important;color:var(--muted)!important; }
+    .cbar-soon-badge { font-size:9px;background:rgba(107,94,78,.12);padding:1px 5px;border-radius:8px;font-weight:600; }
+
   </style>
 </head>
 <body>
@@ -240,16 +268,6 @@
     <div class="hero-tag">🏥 Türkçe Konuşan Sağlık Rehberi</div>
     <h1>Sağlığınız için <em>Doğru Adres</em></h1>
     <p class="hero-sub">Avrupa'da Türkçe konuşan doktorlar, sağlık rehberleri ve Krankenkasse bilgisi — tek bir yerde.</p>
-
-    <!-- Country filter -->
-    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
-      <button onclick="setCountry('de',this)" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-family:inherit;" id="c-de">🇩🇪 Almanya</button>
-      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇳🇱 Hollanda <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
-      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇧🇪 Belçika <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
-      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇦🇹 Avusturya <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
-      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇬🇧 İngiltere <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
-      <button onclick="showYakinda()" style="padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);cursor:default;font-family:inherit;opacity:.6;">🇫🇷 Fransa <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span></button>
-    </div>
     <div class="section-tabs" id="section-tabs">
       <button class="section-tab active" data-section="doctors" onclick="setSection('doctors',this)">🏥 Doktor Bul</button>
       <button class="section-tab" data-section="kranken" onclick="setSection('kranken',this)">📋 Krankenkasse</button>
@@ -264,6 +282,18 @@
       <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Rehberler</div></div>
     </div>
   </div>
+</div>
+
+<!-- COUNTRY BAR -->
+<div id="country-bar" style="background:var(--white);border-bottom:1px solid var(--warm);padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:4px;">Ülke</span>
+  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
+  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
 </div>
 
 <!-- PAGE BODY -->
@@ -369,20 +399,6 @@ function setSpec(s, btn) {
   btn.classList.add('active');
   renderDoctors();
 }
-
-function showYakinda() {
-  const tip = document.createElement('div');
-  tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;';
-  tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
-  document.body.appendChild(tip);
-  setTimeout(() => tip.remove(), 2500);
-}
-
-function setCountry(c, btn) {
-  // Only DE is active for now
-  renderDoctors();
-}
-
 function render() {
   const body = document.getElementById('page-body');
   if (activeSection === 'doctors') {
