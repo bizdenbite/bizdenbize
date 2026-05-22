@@ -153,6 +153,21 @@
     .success-screen{display:none;text-align:center;padding:40px 20px;}
     .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
+
+    /* ── PAGE TABS ── */
+    .page-tabs{display:flex;gap:4px;background:var(--warm);border-radius:12px;padding:4px;margin-bottom:20px;width:fit-content;}
+    .page-tab{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);transition:all .2s;}
+    .page-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+    /* Seeker cards */
+    .seeker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .seeker-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all .2s;}
+    .seeker-card:hover{border-color:var(--indigo);box-shadow:0 4px 14px rgba(67,56,202,.08);}
+    .seeker-name{font-size:14px;font-weight:700;color:var(--ink);}
+    .seeker-subject{font-size:12px;color:var(--indigo);font-weight:600;}
+    .seeker-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+    .seeker-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--warm);}
+    .contact-seeker-btn{padding:7px 14px;background:var(--indigo);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+
   </style>
 </head>
 <body>
@@ -216,7 +231,7 @@
     <p class="hero-sub">Çocuğunuz için güvenilir, Türkçe konuşan özel öğretmen bulun — ya da kendi derslerinizi listeleyin.</p>
     <div class="hero-btns">
       <button class="btn-gold" onclick="openTutorModal()">✏️ Ders Ver</button>
-      <button class="btn-ghost-white" onclick="openSeekModal()">🔍 Öğretmen Arıyorum</button>
+      <button class="btn-ghost-white" onclick="switchTab('seekers')">🔍 Öğretmen Arıyorum İlanı Ver</button>
     </div>
     <div class="hero-stats">
       <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Öğretmen</div></div>
@@ -270,11 +285,29 @@
 
 <!-- BODY -->
 <div class="page-body">
-  <div class="toolbar">
-    <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
-    <button class="seek-btn" onclick="openSeekModal()">🔍 Öğretmen Arıyorum</button>
+  <!-- PAGE TABS -->
+  <div class="page-tabs">
+    <button class="page-tab active" id="tab-tutors" onclick="switchTab('tutors')">✏️ Ders Verenler</button>
+    <button class="page-tab" id="tab-seekers" onclick="switchTab('seekers')">🔍 Ders Arayanlar</button>
   </div>
-  <div class="tutor-grid" id="tutor-grid"></div>
+
+  <!-- TUTOR VIEW -->
+  <div id="view-tutors">
+    <div class="toolbar">
+      <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
+      <button class="seek-btn" onclick="switchTab('seekers')">🔍 Ders Arıyorum İlanı Ver</button>
+    </div>
+    <div class="tutor-grid" id="tutor-grid"></div>
+  </div>
+
+  <!-- SEEKER VIEW -->
+  <div id="view-seekers" style="display:none;">
+    <div class="toolbar">
+      <div class="results-count" id="seeker-count"><strong>—</strong> ders arayan bulundu</div>
+      <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
+    </div>
+    <div class="seeker-grid" id="seeker-grid"></div>
+  </div>
 </div>
 
 <!-- TUTOR DETAIL MODAL -->
@@ -536,6 +569,61 @@ async function submitTutor() {
   setTimeout(() => closeTutorModal(), 3000);
 }
 
+
+let activeTab = 'tutors';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-tutors').classList.toggle('active', tab === 'tutors');
+  document.getElementById('tab-seekers').classList.toggle('active', tab === 'seekers');
+  document.getElementById('view-tutors').style.display  = tab === 'tutors'  ? 'block' : 'none';
+  document.getElementById('view-seekers').style.display = tab === 'seekers' ? 'block' : 'none';
+  // Also show/hide filter bar
+  const fbar = document.querySelector('.filter-bar');
+  if (fbar) fbar.style.display = tab === 'tutors' ? 'block' : 'none';
+  if (tab === 'seekers') renderSeekers();
+}
+
+async function renderSeekers() {
+  const grid = document.getElementById('seeker-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
+  let requests = [];
+  try {
+    requests = await sbGet('seeker_requests', 'active=eq.true&order=created_at.desc');
+  } catch(e) { console.error('Seeker fetch error:', e); }
+  document.getElementById('seeker-count').innerHTML = `<strong>${requests.length}</strong> ders arayan bulundu`;
+  if (!requests.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1">
+      <div style="font-size:40px;margin-bottom:12px">🔍</div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div>
+      <p style="font-size:13px;margin-bottom:16px;">İlk ders arayan siz olun!</p>
+      <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = requests.map(r => `
+    <div class="seeker-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div>
+          <div class="seeker-name">👨‍👩‍👧 ${r.parent_name}</div>
+          <div class="seeker-subject">${r.subject}${r.level ? ' · ' + r.level : ''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${r.city || 'Belirtilmemiş'}</div>
+        </div>
+        ${r.budget ? `<div style="font-size:12px;font-weight:700;color:var(--indigo);white-space:nowrap;">${r.budget}</div>` : ''}
+      </div>
+      ${r.description ? `<div class="seeker-desc">${r.description}</div>` : ''}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(67,56,202,.07);color:var(--indigo);">${r.subject}</span>
+        ${r.level ? `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">${r.level}</span>` : ''}
+      </div>
+      <div class="seeker-footer">
+        <span style="font-size:11px;color:var(--sand);">${new Date(r.created_at).toLocaleDateString('tr-TR')}</span>
+        <button class="contact-seeker-btn" onclick="window.location.href='mailto:${r.contact}'">İletişim →</button>
+      </div>
+    </div>`).join('');
+}
+
 function openSeekModal() { document.getElementById('seek-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeSeekModal() { document.getElementById('seek-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('sk-success').style.display='none'; document.getElementById('sk-body').style.display='flex'; document.getElementById('sk-footer').style.display='flex'; document.getElementById('sk-error').style.display='none'; }
 function submitSeek() {
@@ -654,6 +742,21 @@ renderTutors();
     @media (max-width: 480px) {
       footer > div > div:first-child { grid-template-columns: 1fr !important; }
     }
+
+    /* ── PAGE TABS ── */
+    .page-tabs{display:flex;gap:4px;background:var(--warm);border-radius:12px;padding:4px;margin-bottom:20px;width:fit-content;}
+    .page-tab{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);transition:all .2s;}
+    .page-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+    /* Seeker cards */
+    .seeker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .seeker-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all .2s;}
+    .seeker-card:hover{border-color:var(--indigo);box-shadow:0 4px 14px rgba(67,56,202,.08);}
+    .seeker-name{font-size:14px;font-weight:700;color:var(--ink);}
+    .seeker-subject{font-size:12px;color:var(--indigo);font-weight:600;}
+    .seeker-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+    .seeker-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--warm);}
+    .contact-seeker-btn{padding:7px 14px;background:var(--indigo);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+
   </style>
 </footer>
 </body>
