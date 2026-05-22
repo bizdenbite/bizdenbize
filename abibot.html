@@ -20,7 +20,7 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
-    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); display: flex; flex-direction: column; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
     /* ── NAV ── */
     nav {
@@ -112,7 +112,9 @@
     .starter:hover { border-color: var(--red); color: var(--ink); background: rgba(192,57,43,.03); }
 
     /* ── CHAT AREA ── */
-    .chat-area { display: flex; flex-direction: column; height: calc(100vh - 58px); }
+    .chat-area { display: flex; flex-direction: column; height: calc(100vh - 58px); overflow: hidden; }
+    /* Override injected nav CSS that conflicts with abibot layout */
+    nav { position: sticky !important; }
     .chat-header {
       padding: 16px 28px; border-bottom: 1px solid rgba(212,197,169,.3);
       display: flex; align-items: center; gap: 14px; flex-shrink: 0;
