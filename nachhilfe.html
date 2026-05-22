@@ -475,7 +475,7 @@ async function renderTutors() {
         ${t.format === 'inperson' || t.format === 'both' ? '<span class="ctag ctag-inperson">📍 Yüz yüze</span>' : ''}
       </div>
       <div class="card-desc">${t.description}</div>
-      <div class="card-rating">⭐ ${t.rating} <span style="color:var(--sand);">(${t.reviews} değerlendirme)</span></div>
+      <div class="card-rating">⭐ ${t.rating} <span style="color:var(--sand);">(${t.review_count || 0} değerlendirme)</span></div>
       <div class="card-footer">
         <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${t.price_label}</span>
         <button class="card-contact-btn ${isFree(t) ? 'free' : 'paid'}" onclick="event.stopPropagation();openDetail(${t.id})">İletişim →</button>
@@ -484,18 +484,18 @@ async function renderTutors() {
 }
 
 function openDetail(id) {
-  const t = tutors.find(x => x.id === id);
+  const t = (window._tutors || []).find(x => x.id === id);
   if (!t) return;
   const i = tutors.indexOf(t);
   document.getElementById('dm-avatar').style.background = avatarColors[i % avatarColors.length];
   document.getElementById('dm-avatar').textContent = t.name.split(' ').map(n=>n[0]).join('').slice(0,2);
   document.getElementById('dm-name').textContent = t.name;
   document.getElementById('dm-subject').textContent = t.subject + ' · ' + t.city;
-  document.getElementById('dm-desc').textContent = t.desc;
+  document.getElementById('dm-desc').textContent = t.description || '';
   document.getElementById('dm-info').innerHTML = `
     <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.price_label}</div></div>
-    <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : '📍 Yüz yüze'}</div></div>
-    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating} (${t.reviews})</div></div>
+    <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : t.format === 'inperson' ? '📍 Yüz yüze' : t.format || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating || '—'} (${t.review_count || 0})</div></div>
     <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${t.levels.join(', ')}</div></div>`;
   document.getElementById('dm-tags').innerHTML = `
     ${t.turkish ? '<span class="ctag ctag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe ders</span>' : ''}
