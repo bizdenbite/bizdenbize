@@ -259,6 +259,15 @@
     .mm-footer { padding:16px 20px 32px;border-top:1px solid var(--warm,#F0EAE0);margin-top:auto; }
     @media (max-width:900px) { .nav-menu { display:none!important; } .hamburger { display:flex!important; } }
 
+  
+    /* ── COUNTRY BAR ── */
+    .cbar-btn { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px; }
+    .cbar-btn:hover { border-color:rgba(255,255,255,.5);color:#fff; }
+    .cbar-btn.active { border-color:var(--red);background:var(--red);color:#fff; }
+    .cbar-soon { opacity:.45;cursor:default!important; }
+    .cbar-soon:hover { border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.6)!important; }
+    .cbar-soon-badge { font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600; }
+
   </style>
 <script>
   function toggleDropdown(id, btn) {
@@ -290,7 +299,23 @@
       if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
     });
   })();
-</script>
+  
+  function setCbarCountry(c, btn) {
+    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (typeof renderListings === 'function') renderListings();
+  }
+  function showYakinda() {
+    if (document.getElementById('yakinda-toast')) return;
+    const tip = document.createElement('div');
+    tip.id = 'yakinda-toast';
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
+    tip.textContent = 'Bu ulke yakinda ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
+
+  </script>
 </head>
 <body>
 <!-- NAV -->
@@ -403,6 +428,11 @@
     <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Yüksek Öğrenim</a>
     <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🏭</span>Ausbildung</a>
   </div>
+  <div class="mm-section"><div class="mm-section-title">Sağlık</div>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
+  </div>
   <div class="mm-section"><div class="mm-section-title">Konut & Emlak</div>
     <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🔑</span>Kiralık Ev</a>
     <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🏡</span>Satılık Ev</a>
@@ -457,6 +487,17 @@
 </div>
 
 <!-- BODY -->
+<!-- COUNTRY BAR -->
+<div id="country-bar" style="background:var(--ink);border-bottom:none;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
+  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
+  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
+</div>
 <div class="page-body">
 
   <!-- SIDEBAR -->
@@ -710,30 +751,7 @@
   let activeCat = 'all';
 
   let activeMigrationCountry = 'all';
-
-  function showYakinda() {
-    const tip = document.createElement('div');
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:999;';
-    tip.textContent = '🚀 Bu ülke yakında ekleniyor!';
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 2500);
-  }
-  function setCountryFilter(country, btn) {
-    activeMigrationCountry = country;
-    document.querySelectorAll('.country-filter-btn').forEach(b => {
-      b.style.borderColor = 'var(--sand)';
-      b.style.background = 'var(--white)';
-      b.style.color = 'var(--muted)';
-    });
-    btn.style.borderColor = 'var(--red)';
-    btn.style.background = 'var(--red)';
-    btn.style.color = '#fff';
-    renderListings();
-  }
-
   // Keep old name as alias for backward compat
-  function setMigrationCountry(country, btn) { setCountryFilter(country, btn); }
-
   function setMode(mode, btn) {
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
