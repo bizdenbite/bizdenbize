@@ -450,7 +450,7 @@ async function renderTutors() {
   document.getElementById('stat-free').textContent = allTutors.filter(t => t.price_type === 'free').length;
   document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> öğretmen bulundu`;
 
-  const grid = document.getElementById('tutor-grid');
+  if (!grid) return;
   if (!filtered.length) {
     grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px;margin-bottom:16px;">Farklı filtreler deneyin ya da ihtiyacınızı paylaşın.</p><button class="seek-btn" onclick="openSeekModal()">🔍 Öğretmen Arıyorum</button></div>`;
     return;
