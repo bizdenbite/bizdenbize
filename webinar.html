@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Webinarlar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+  function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
+  document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('click',e=>{if(!e.target.closest('.nav-item')){document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.remove('open'));}});});
+  function toggleMenu(){const hb=document.getElementById('hamburger'),menu=document.getElementById('mobile-menu');hb.classList.toggle('open');menu.classList.toggle('open');document.body.style.overflow=menu.classList.contains('open')?'hidden':'';}
+  </script>
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --gold:#C9A84C; --green:#1E7B4B; --blue:#185FA5; --purple:#6B3FA0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:200;background:rgba(250,247,242,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;}
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
+    .nav-menu{display:flex;gap:2px;flex:1;align-items:center;}
+    .nav-item{position:relative;}
+    .nav-item-btn{display:flex;align-items:center;gap:5px;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s;white-space:nowrap;}
+    .nav-item-btn:hover,.nav-item-btn.open{background:var(--warm);color:var(--ink);}
+    .nav-item-btn.active{background:var(--red);color:#fff;}
+    .nav-item-btn .chevron{font-size:9px;opacity:.5;transition:transform .2s;}
+    .nav-item-btn.open .chevron{transform:rotate(180deg);}
+    .nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;}
+    .nav-dropdown.open{display:block;animation:dropIn .15s ease;}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    .nav-dropdown a{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;transition:background .12s;white-space:nowrap;}
+    .nav-dropdown a:hover{background:var(--warm);}
+    .nav-dropdown a.active{color:var(--red);font-weight:600;}
+    .nav-dropdown hr{border:none;border-top:1px solid var(--warm);margin:4px 0;}
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+    .hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red);border:none;cursor:pointer;border-radius:8px;flex-shrink:0;}
+    .hamburger span{display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s;}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-menu{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto;}
+    .mobile-menu.open{display:flex;}
+    .mm-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm);height:58px;flex-shrink:0;}
+    .mm-section{padding:12px 20px 4px;}
+    .mm-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;}
+    .mm-link{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;transition:background .15s;}
+    .mm-link:hover{background:var(--warm);}
+    .mm-link.active{background:rgba(212,43,43,.07);color:var(--red);font-weight:600;}
+    .mm-link-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+    .mm-footer{padding:16px 20px 32px;border-top:1px solid var(--warm);margin-top:auto;}
+    @media(max-width:900px){.nav-menu{display:none!important;}.hamburger{display:flex!important;}}
+
+    /* HERO */
+    .hero{background:var(--purple);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 0%,rgba(201,168,76,.2) 0%,transparent 55%),radial-gradient(ellipse at 10% 100%,rgba(212,43,43,.15) 0%,transparent 50%);}
+    .hero-inner{position:relative;max-width:700px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;margin-bottom:18px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(34px,5vw,54px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
+    .hero h1 em{color:var(--gold);font-style:normal;}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:28px;}
+
+    /* Filter tabs */
+    .filter-tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:0;}
+    .filter-tab{padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-family:inherit;transition:all .2s;}
+    .filter-tab:hover{border-color:rgba(255,255,255,.4);color:#fff;}
+    .filter-tab.active{border-color:var(--gold);background:rgba(201,168,76,.15);color:var(--gold);}
+
+    .hero-stats{display:flex;justify-content:center;gap:32px;margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
+    .hstat-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;}
+    .hstat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
+
+    /* FEATURED UPCOMING */
+    .featured-section{background:var(--white);border-bottom:1px solid var(--warm);padding:32px 24px;}
+    .featured-inner{max-width:1100px;margin:0 auto;}
+    .section-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .section-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .featured-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+    .featured-card{background:linear-gradient(135deg,var(--purple) 0%,#8B4FCF 100%);border-radius:16px;padding:24px;color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+    .featured-card:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(107,63,160,.3);}
+    .featured-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06);}
+    .featured-card-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:10px;}
+    .featured-card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+    .featured-card-host{font-size:12px;color:rgba(255,255,255,.65);margin-bottom:12px;}
+    .featured-card-meta{display:flex;gap:10px;flex-wrap:wrap;}
+    .featured-meta-item{font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px;}
+    .featured-card-price{position:absolute;top:20px;right:20px;font-size:13px;font-weight:700;color:var(--gold);}
+    .featured-card-btn{margin-top:16px;display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .2s;}
+    .featured-card-btn:hover{background:rgba(255,255,255,.25);}
+
+    /* PAGE BODY */
+    .page-body{max-width:1100px;margin:0 auto;padding:28px 24px 80px;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+    .results-count{font-size:13px;color:var(--muted);}
+    .results-count strong{color:var(--ink);}
+    .host-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+    .host-btn:hover{background:#5a3390;}
+
+    /* WEBINAR GRID */
+    .webinar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .webinar-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;}
+    .webinar-card:hover{border-color:var(--purple);box-shadow:0 6px 24px rgba(107,63,160,.1);transform:translateY(-1px);}
+    .webinar-card.bizdenbize{border-color:rgba(107,63,160,.3);background:linear-gradient(135deg,#fff 0%,rgba(107,63,160,.03) 100%);}
+    .card-header{padding:16px 18px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+    .card-host-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+    .badge-bb{background:rgba(107,63,160,.1);color:var(--purple);}
+    .badge-community{background:rgba(30,123,75,.08);color:var(--green);}
+    .card-price-badge{font-size:11px;font-weight:700;color:var(--green);}
+    .card-price-badge.paid{color:var(--gold);}
+    .card-body{padding:12px 18px 16px;flex:1;display:flex;flex-direction:column;gap:8px;}
+    .card-topic{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);}
+    .card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);line-height:1.3;}
+    .card-host{font-size:12px;color:var(--muted);}
+    .card-desc{font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .card-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+    .card-meta-tag{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--warm);color:var(--muted);display:flex;align-items:center;gap:4px;}
+    .card-footer{padding:12px 18px;border-top:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;}
+    .card-spots{font-size:11px;color:var(--muted);}
+    .card-spots span{color:var(--red);font-weight:700;}
+    .card-register-btn{padding:7px 14px;background:var(--purple);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+    .card-register-btn:hover{background:#5a3390;}
+    .card-register-btn.free{background:var(--green);}
+    .card-register-btn.free:hover{background:#166d40;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(26,18,8,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;max-width:540px;width:92%;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .3s ease;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-header{padding:22px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .modal-close{background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1;flex-shrink:0;}
+    .modal-body{overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+    .modal-footer{padding:14px 24px 20px;border-top:1px solid var(--warm);flex-shrink:0;display:flex;gap:8px;}
+    .field-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;}
+    .field-input{width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s;}
+    .field-input:focus{border-color:var(--purple);}
+    textarea.field-input{resize:none;min-height:80px;line-height:1.5;}
+    select.field-input{cursor:pointer;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .btn-purple{flex:1;padding:13px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+    .btn-purple:hover{background:#5a3390;}
+    .btn-green{flex:1;padding:13px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .info-box{background:var(--warm);border-radius:10px;padding:12px 14px;}
+    .info-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;}
+    .info-box-val{font-size:13px;font-weight:600;color:var(--ink);}
+    .success-screen{display:none;text-align:center;padding:40px 20px;}
+    .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
+    .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+  <div class="nav-menu">
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-mahallem"><a href="mahallem.html">🏘️ Komşularım</a><a href="events.html">🎉 Etkinlikler</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-is',this)">💼 İş & Güç <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-is"><a href="is-guc.html">💼 İş İlanları</a><a href="is-guc.html">⚡ Freelance</a><a href="is-guc.html">✈️ Avrupa'ya Göç</a><hr><a href="business.html">🏢 İşletmeler</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn active" onclick="toggleDropdown('dd-ogrenim',this)">🎓 Öğrenim <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ogrenim">
+        <a href="ogrenim.html">🗣️ Dil Kursları</a>
+        <a href="ogrenim.html">🎓 Yüksek Öğrenim</a>
+        <a href="ogrenim.html">📜 Diploma Denkliği</a>
+        <a href="ogrenim.html">🏭 Ausbildung</a>
+        <hr>
+        <a href="webinar.html" class="active">🎥 Webinarlar</a>
+      </div>
+    </div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-emlak"><a href="classifieds.html">🔑 Kiralık Ev</a><a href="classifieds.html">🏡 Satılık Ev</a><a href="ev-takasi.html">🔄 Ev Takası</a><hr><a href="classifieds.html">📋 Tüm İlanlar</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ilanlar"><a href="classifieds.html">🚗 Araç</a><a href="classifieds.html">🛋️ Ev Eşyası</a><a href="classifieds.html">📱 Elektronik</a><a href="classifieds.html">📋 Tümü</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-bilgiler',this)">📚 Bilgiler <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-bilgiler"><a href="library.html">📚 Tüm Kaynaklar</a><hr><a href="library.html">💶 Kindergeld</a><a href="library.html">🛂 Vize</a><a href="library.html">💼 Çalışma</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-abibot"><a href="abibot.html">🤖 AbiBOT'a Sor</a><hr><a href="abibot.html">⚖️ Hukuk</a><a href="abibot.html">🏥 Tıbbi</a><a href="abibot.html">✈️ Avrupa'ya Göç</a></div></div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mm-header"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div><button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;">×</button></div>
+  <div class="mm-section"><div class="mm-section-title">Öğrenim</div>
+    <a class="mm-link active" href="webinar.html"><span class="mm-link-icon">🎥</span>Webinarlar</a>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🗣️</span>Dil Kursları</a>
+    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Yüksek Öğrenim</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">Diğer</div>
+    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
+    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
+  </div>
+  <div class="mm-footer"><a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;"><div style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div><div><div style="font-size:13px;font-weight:600;">Profilim</div></div></a></div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🎥 Canlı & Kayıtlı Eğitimler</div>
+    <h1>Avrupa'da <em>Webinarlar</em></h1>
+    <p class="hero-sub">Uzmanlardan ve topluluk üyelerinden canlı eğitimler — hukuk, sağlık, finans, kariyer ve daha fazlası.</p>
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">Tümü</button>
+      <button class="filter-tab" data-filter="upcoming" onclick="setFilter('upcoming',this)">📅 Yaklaşan</button>
+      <button class="filter-tab" data-filter="recorded" onclick="setFilter('recorded',this)">▶️ Kayıtlı</button>
+      <button class="filter-tab" data-filter="free" onclick="setFilter('free',this)">✓ Ücretsiz</button>
+      <button class="filter-tab" data-filter="bizdenbize" onclick="setFilter('bizdenbize',this)">⭐ BizdenBize</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Webinar</div></div>
+      <div><div class="hstat-val" id="stat-free">—</div><div class="hstat-label">Ücretsiz</div></div>
+      <div><div class="hstat-val" id="stat-upcoming">—</div><div class="hstat-label">Bu Ay</div></div>
+      <div><div class="hstat-val">Türkçe</div><div class="hstat-label">Dil</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<div class="featured-section" id="featured-section">
+  <div class="featured-inner">
+    <div class="section-title">🔥 Öne Çıkan Webinarlar</div>
+    <div class="section-sub">Kaçırma — yakında başlıyor</div>
+    <div class="featured-grid" id="featured-grid"></div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="page-body">
+  <div class="toolbar">
+    <div class="results-count" id="results-count"><strong>—</strong> webinar bulundu</div>
+    <button class="host-btn" onclick="openHostModal()">🎥 Webinar Düzenle</button>
+  </div>
+  <div class="webinar-grid" id="webinar-grid"></div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="register-modal" onclick="if(event.target===this)closeRegisterModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:4px;" id="reg-topic"></div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);" id="reg-title"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;" id="reg-host"></div>
+      </div>
+      <button class="modal-close" onclick="closeRegisterModal()">×</button>
+    </div>
+    <div class="modal-body" id="reg-body">
+      <div class="info-grid" id="reg-info"></div>
+      <div id="reg-desc-box"></div>
+      <div>
+        <label class="field-label">Adınız *</label>
+        <input class="field-input" id="reg-name" type="text" placeholder="Ayşe Yılmaz">
+      </div>
+      <div>
+        <label class="field-label">E-posta *</label>
+        <input class="field-input" id="reg-email" type="email" placeholder="email@example.com">
+      </div>
+      <div id="reg-price-box" style="display:none;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;">💳 Ödeme Bilgileri</div>
+        <div style="font-size:12px;color:var(--muted);">Kayıt tamamlanınca ödeme sayfasına yönlendirileceksiniz.</div>
+      </div>
+      <div id="reg-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="reg-footer">
+      <button class="btn-purple" id="reg-submit-btn" onclick="submitRegister()">Kayıt Ol →</button>
+    </div>
+    <div class="success-screen" id="reg-success">
+      <div style="font-size:48px;">🎉</div>
+      <h3>Kaydınız alındı!</h3>
+      <p id="reg-success-msg">Webinar bağlantısı e-postanıza gönderilecek.<br>Görüşmek üzere!</p>
+    </div>
+  </div>
+</div>
+
+<!-- HOST MODAL -->
+<div class="modal-overlay" id="host-modal" onclick="if(event.target===this)closeHostModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🎥 Webinar Düzenle</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Topluluğa yönelik webinarını yayınla</div></div>
+      <button class="modal-close" onclick="closeHostModal()">×</button>
+    </div>
+    <div class="modal-body" id="host-body">
+      <div>
+        <label class="field-label">Webinar Başlığı *</label>
+        <input class="field-input" id="h-title" type="text" placeholder="örn: Almanya'da Kira Sözleşmesi Hakları">
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="field-label">Konu</label>
+          <select class="field-input" id="h-topic">
+            <option>⚖️ Hukuk</option>
+            <option>🏥 Sağlık</option>
+            <option>💶 Finans & Vergi</option>
+            <option>🛂 Vize & Göç</option>
+            <option>💼 Kariyer</option>
+            <option>🗣️ Dil</option>
+            <option>🏠 Emlak</option>
+            <option>📦 Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Ücret</label>
+          <select class="field-input" id="h-price">
+            <option value="free">✓ Ücretsiz</option>
+            <option value="paid">€ Ücretli</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div><label class="field-label">Tarih *</label><input class="field-input" id="h-date" type="date"></div>
+        <div><label class="field-label">Saat *</label><input class="field-input" id="h-time" type="time" value="19:00"></div>
+      </div>
+      <div>
+        <label class="field-label">Süre</label>
+        <select class="field-input" id="h-duration">
+          <option>30 dakika</option>
+          <option>45 dakika</option>
+          <option selected>60 dakika</option>
+          <option>90 dakika</option>
+          <option>2 saat</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Açıklama *</label>
+        <textarea class="field-input" id="h-desc" rows="3" placeholder="Webinarda ne öğrenecekler? Kime yönelik?"></textarea>
+      </div>
+      <div>
+        <label class="field-label">Hakkınızda</label>
+        <input class="field-input" id="h-host" type="text" placeholder="Adınız, uzmanlık alanınız...">
+      </div>
+      <div id="h-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="host-footer">
+      <button class="btn-purple" onclick="submitHost()">Webinarı Yayınla →</button>
+    </div>
+    <div class="success-screen" id="host-success">
+      <div style="font-size:48px;">🎥</div>
+      <h3>Webinarın yayınlandı!</h3>
+      <p>Ekibimiz inceleyip onayladıktan sonra topluluk görebilecek.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const webinars = [
+  { id:1, title:"Almanya'da Kira Sözleşmesi: Haklarınız ve Tuzaklar", topic:"⚖️ Hukuk", host:"Av. Selin Kaya", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-06-14", time:"19:00", duration:"60 dk", spots:48, spotsLeft:12, desc:"Mietvertrag'ı imzalamadan önce bilmeniz gerekenler. Depozito, Nebenkosten, tahliye hakları ve sık yapılan hatalar.", featured:true, lang:"TR" },
+  { id:2, title:"Kindergeld ve Elterngeld: Başvuru Rehberi", topic:"💶 Finans", host:"BizdenBize Uzman Ekibi", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-06-21", time:"20:00", duration:"45 dk", spots:100, spotsLeft:67, desc:"Almanya'da çocuk parası ve doğum yardımı için adım adım başvuru rehberi. Belgeler, süreçler ve sık sorulan sorular.", featured:true, lang:"TR" },
+  { id:3, title:"Hollanda'da İş Kurma: KVK Kayıt ve ZZP", topic:"💼 Kariyer", host:"Murat Demir", hostType:"community", type:"upcoming", price:"paid", priceVal:15, date:"2025-06-28", time:"19:30", duration:"90 dk", spots:30, spotsLeft:8, desc:"Hollanda'da serbest çalışmak veya şirket kurmak isteyenler için kapsamlı rehber. KVK kaydı, vergi numarası, BTW.", featured:false, lang:"TR" },
+  { id:4, title:"Almanca B1 Sınavına Hazırlık: Pratik Taktikler", topic:"🗣️ Dil", host:"Zeynep Arslan", hostType:"community", type:"recorded", price:"free", priceVal:0, date:"2025-05-10", time:"18:00", duration:"60 dk", spots:200, spotsLeft:0, desc:"B1 sınavını geçmek için en etkili çalışma yöntemleri. Dinleme, okuma, yazma ve konuşma bölümleri için ipuçları.", featured:false, lang:"TR" },
+  { id:5, title:"Almanya'da Sağlık Sistemi: Krankenkasse Seçimi", topic:"🏥 Sağlık", host:"Dr. Ahmet Yıldız", hostType:"bizdenbize", type:"recorded", price:"free", priceVal:0, date:"2025-05-03", time:"19:00", duration:"60 dk", spots:150, spotsLeft:0, desc:"GKV vs PKV, hangi kasaya üye olmalı, ek sigortalar, diş hekimi kapsamı ve Türkiye'ye giderken sigorta.", featured:false, lang:"TR" },
+  { id:6, title:"Almanya Vatandaşlığı: 2024 Yeni Kanun Rehberi", topic:"🛂 Vize", host:"Av. Fatma Öz", hostType:"community", type:"upcoming", price:"paid", priceVal:20, date:"2025-07-05", time:"20:00", duration:"90 dk", spots:40, spotsLeft:22, desc:"Ocak 2024'te yürürlüğe giren yeni vatandaşlık kanunu: çifte vatandaşlık, başvuru koşulları ve dikkat edilmesi gerekenler.", featured:false, lang:"TR" },
+  { id:7, title:"Ev Satın Almak: Finanzierung ve Notar Süreci", topic:"🏠 Emlak", host:"BizdenBize Uzman Ekibi", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-07-12", time:"19:00", duration:"60 dk", spots:60, spotsLeft:41, desc:"Almanya'da ev satın alma süreci: banka kredisi, noterde imza, Grundbuch kaydı ve dikkat edilmesi gerekenler.", featured:false, lang:"TR" },
+  { id:8, title:"LinkedIn ile İş Bulma: Türkler için Taktikler", topic:"💼 Kariyer", host:"Hasan Bozkurt", hostType:"community", type:"recorded", price:"paid", priceVal:10, date:"2025-04-20", time:"18:30", duration:"60 dk", spots:80, spotsLeft:0, desc:"Almanya iş piyasasında LinkedIn profilini nasıl optimize edersin, işveren nasıl bulursun, Alman şirketlerine nasıl başvurursun.", featured:false, lang:"TR" },
+];
+
+let activeFilter = 'all';
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function getFiltered() {
+  return webinars.filter(w => {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'upcoming') return w.type === 'upcoming';
+    if (activeFilter === 'recorded') return w.type === 'recorded';
+    if (activeFilter === 'free') return w.price === 'free';
+    if (activeFilter === 'bizdenbize') return w.hostType === 'bizdenbize';
+    return true;
+  });
+}
+
+function formatDate(d, t) {
+  const [y,m,day] = d.split('-');
+  const months = ['','Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  return `${day} ${months[parseInt(m)]} ${y}${t ? ' · ' + t : ''}`;
+}
+
+function render() {
+  const filtered = getFiltered();
+  const freeCount = webinars.filter(w => w.price === 'free').length;
+  const upcomingCount = webinars.filter(w => w.type === 'upcoming').length;
+  document.getElementById('stat-total').textContent = webinars.length;
+  document.getElementById('stat-free').textContent = freeCount;
+  document.getElementById('stat-upcoming').textContent = upcomingCount;
+  document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> webinar bulundu`;
+
+  // Featured
+  const featured = webinars.filter(w => w.featured && w.type === 'upcoming');
+  const featuredSection = document.getElementById('featured-section');
+  featuredSection.style.display = (activeFilter === 'all' || activeFilter === 'upcoming') && featured.length ? 'block' : 'none';
+  document.getElementById('featured-grid').innerHTML = featured.map(w => `
+    <div class="featured-card" onclick="openRegister(${w.id})">
+      <div class="featured-card-price">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</div>
+      <div class="featured-card-tag">${w.topic}</div>
+      <div class="featured-card-title">${w.title}</div>
+      <div class="featured-card-host">👤 ${w.host}</div>
+      <div class="featured-card-meta">
+        <span class="featured-meta-item">📅 ${formatDate(w.date, w.time)}</span>
+        <span class="featured-meta-item">⏱️ ${w.duration}</span>
+        <span class="featured-meta-item">🪑 ${w.spotsLeft} yer kaldı</span>
+      </div>
+      <button class="featured-card-btn">Hemen Kayıt Ol →</button>
+    </div>`).join('');
+
+  // Main grid
+  const grid = document.getElementById('webinar-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🎥</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(w => `
+    <div class="webinar-card ${w.hostType === 'bizdenbize' ? 'bizdenbize' : ''}" onclick="openRegister(${w.id})">
+      <div class="card-header">
+        <span class="card-host-badge ${w.hostType === 'bizdenbize' ? 'badge-bb' : 'badge-community'}">${w.hostType === 'bizdenbize' ? '⭐ BizdenBize' : '👥 Topluluk'}</span>
+        <span class="card-price-badge ${w.price === 'paid' ? 'paid' : ''}">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-topic">${w.topic}</div>
+        <div class="card-title">${w.title}</div>
+        <div class="card-host">👤 ${w.host}</div>
+        <div class="card-desc">${w.desc}</div>
+        <div class="card-meta-row">
+          <span class="card-meta-tag">${w.type === 'upcoming' ? '📅' : '▶️'} ${w.type === 'upcoming' ? formatDate(w.date, w.time) : 'Kayıtlı'}</span>
+          <span class="card-meta-tag">⏱️ ${w.duration}</span>
+          <span class="card-meta-tag">🌐 ${w.lang}</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-spots">${w.type === 'upcoming' && w.spotsLeft > 0 ? `<span>${w.spotsLeft}</span> yer kaldı` : w.type === 'recorded' ? '▶️ Hemen izle' : '❌ Dolu'}</div>
+        <button class="card-register-btn ${w.price === 'free' ? 'free' : ''}" onclick="event.stopPropagation();openRegister(${w.id})">${w.type === 'recorded' ? 'İzle' : 'Kayıt Ol'}</button>
+      </div>
+    </div>`).join('');
+}
+
+let currentWebinar = null;
+
+function openRegister(id) {
+  currentWebinar = webinars.find(w => w.id === id);
+  if (!currentWebinar) return;
+  const w = currentWebinar;
+  document.getElementById('reg-topic').textContent = w.topic;
+  document.getElementById('reg-title').textContent = w.title;
+  document.getElementById('reg-host').textContent = '👤 ' + w.host;
+  document.getElementById('reg-info').innerHTML = `
+    <div class="info-box"><div class="info-box-label">${w.type === 'recorded' ? 'Kayıt Tarihi' : 'Tarih & Saat'}</div><div class="info-box-val">${formatDate(w.date, w.time)}</div></div>
+    <div class="info-box"><div class="info-box-label">Süre</div><div class="info-box-val">⏱️ ${w.duration}</div></div>
+    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</div></div>
+    <div class="info-box"><div class="info-box-label">${w.type === 'upcoming' ? 'Kalan Yer' : 'Durum'}</div><div class="info-box-val">${w.type === 'upcoming' ? w.spotsLeft + ' yer' : '▶️ Kayıtlı'}</div></div>`;
+  document.getElementById('reg-desc-box').innerHTML = `<div style="font-size:13px;color:var(--ink);line-height:1.7;">${w.desc}</div>`;
+  document.getElementById('reg-price-box').style.display = w.price === 'paid' ? 'block' : 'none';
+  document.getElementById('reg-submit-btn').textContent = w.type === 'recorded' ? (w.price === 'free' ? 'Hemen İzle →' : 'Satın Al →') : (w.price === 'free' ? 'Ücretsiz Kayıt Ol →' : `€${w.priceVal} Öde & Kayıt Ol →`);
+  document.getElementById('register-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeRegisterModal() {
+  document.getElementById('register-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('reg-success').style.display = 'none';
+  document.getElementById('reg-body').style.display = 'flex';
+  document.getElementById('reg-footer').style.display = 'flex';
+  document.getElementById('reg-error').style.display = 'none';
+}
+function submitRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  if (!name || !email) { document.getElementById('reg-error').textContent = 'Lütfen adınızı ve e-postanızı girin.'; document.getElementById('reg-error').style.display = 'block'; return; }
+  document.getElementById('reg-body').style.display = 'none';
+  document.getElementById('reg-footer').style.display = 'none';
+  document.getElementById('reg-success').style.display = 'block';
+  const w = currentWebinar;
+  document.getElementById('reg-success-msg').textContent = w.type === 'recorded' ? 'Webinar bağlantısı e-postanıza gönderildi. İyi seyirler!' : 'Webinar bağlantısı başlamadan önce e-postanıza gönderilecek. Görüşmek üzere!';
+  setTimeout(() => closeRegisterModal(), 3500);
+}
+function openHostModal() { document.getElementById('host-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeHostModal() { document.getElementById('host-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('host-success').style.display = 'none'; document.getElementById('host-body').style.display = 'flex'; document.getElementById('host-footer').style.display = 'flex'; document.getElementById('h-error').style.display = 'none'; }
+function submitHost() {
+  const title = document.getElementById('h-title').value.trim();
+  const desc = document.getElementById('h-desc').value.trim();
+  const date = document.getElementById('h-date').value;
+  if (!title || !desc || !date) { document.getElementById('h-error').textContent = 'Lütfen zorunlu alanları doldurun.'; document.getElementById('h-error').style.display = 'block'; return; }
+  document.getElementById('host-body').style.display = 'none';
+  document.getElementById('host-footer').style.display = 'none';
+  document.getElementById('host-success').style.display = 'block';
+  setTimeout(() => closeHostModal(), 3000);
+}
+
+render();
+</script>
+</body>
+</html>
