@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Sağlık</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+  function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
+  document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('click',e=>{if(!e.target.closest('.nav-item')){document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.remove('open'));}});});
+  function toggleMenu(){const hb=document.getElementById('hamburger'),menu=document.getElementById('mobile-menu');hb.classList.toggle('open');menu.classList.toggle('open');document.body.style.overflow=menu.classList.contains('open')?'hidden':'';}
+  </script>
+  <style>
+    :root{
+      --red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;
+      --sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;
+      --gold:#C9A84C;--green:#1E7B4B;--green2:#166d40;--green-light:rgba(30,123,75,.08);--blue:#185FA5;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:200;background:rgba(250,247,242,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;}
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
+    .nav-menu{display:flex;gap:2px;flex:1;align-items:center;}
+    .nav-item{position:relative;}
+    .nav-item-btn{display:flex;align-items:center;gap:5px;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s;white-space:nowrap;}
+    .nav-item-btn:hover,.nav-item-btn.open{background:var(--warm);color:var(--ink);}
+    .nav-item-btn.active{background:var(--red);color:#fff;}
+    .nav-item-btn .chevron{font-size:9px;opacity:.5;transition:transform .2s;}
+    .nav-item-btn.open .chevron{transform:rotate(180deg);}
+    .nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:210px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;}
+    .nav-dropdown.open{display:block;animation:dropIn .15s ease;}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    .nav-dropdown a{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;transition:background .12s;white-space:nowrap;}
+    .nav-dropdown a:hover{background:var(--warm);}
+    .nav-dropdown a.active{color:var(--red);font-weight:600;}
+    .nav-dropdown hr{border:none;border-top:1px solid var(--warm);margin:4px 0;}
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+    .hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red);border:none;cursor:pointer;border-radius:8px;flex-shrink:0;}
+    .hamburger span{display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s;}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-menu{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto;}
+    .mobile-menu.open{display:flex;}
+    .mm-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm);height:58px;flex-shrink:0;}
+    .mm-section{padding:12px 20px 4px;}
+    .mm-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;}
+    .mm-link{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;transition:background .15s;}
+    .mm-link:hover{background:var(--warm);}
+    .mm-link.active{background:rgba(212,43,43,.07);color:var(--red);font-weight:600;}
+    .mm-link-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+    .mm-footer{padding:16px 20px 32px;border-top:1px solid var(--warm);margin-top:auto;}
+    @media(max-width:900px){.nav-menu{display:none!important;}.hamburger{display:flex!important;}}
+
+    /* HERO */
+    .hero{background:#0F4C2A;padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 0%,rgba(201,168,76,.18) 0%,transparent 55%),radial-gradient(ellipse at 5% 100%,rgba(30,123,75,.3) 0%,transparent 50%);}
+    .hero-inner{position:relative;max-width:700px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(201,168,76,.9);border:1px solid rgba(201,168,76,.3);padding:4px 12px;border-radius:20px;margin-bottom:18px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(34px,5vw,54px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
+    .hero h1 em{color:var(--gold);font-style:normal;}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px;}
+
+    /* SECTION TABS */
+    .section-tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+    .section-tab{padding:9px 20px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);font-family:inherit;transition:all .2s;}
+    .section-tab:hover{border-color:rgba(255,255,255,.3);color:#fff;}
+    .section-tab.active{border-color:var(--gold);background:rgba(201,168,76,.2);color:var(--gold);}
+
+    .hero-stats{display:flex;justify-content:center;gap:32px;margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);}
+    .hstat-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;}
+    .hstat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
+
+    /* EMERGENCY BANNER */
+    .emergency-bar{background:#0F4C2A;padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
+    .emergency-bar-text{font-size:13px;font-weight:600;color:#fff;}
+    .emergency-numbers{display:flex;gap:12px;flex-wrap:wrap;}
+    .emergency-num{font-size:13px;font-weight:700;color:#fff;text-decoration:none;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);}
+    .emergency-num:hover{background:rgba(255,255,255,.25);}
+
+    /* BODY */
+    .page-body{max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
+
+    /* DOCTOR DIRECTORY */
+    .dir-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+    .dir-filter-input{padding:8px 14px;border:1.5px solid var(--sand);border-radius:20px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--white);outline:none;transition:border-color .15s;min-width:160px;}
+    .dir-filter-input:focus{border-color:var(--green);}
+    .dir-filter-select{padding:8px 14px;border:1.5px solid var(--sand);border-radius:20px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--white);outline:none;cursor:pointer;}
+    .dir-filter-btn{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+    .dir-filter-btn.active{border-color:var(--green);background:var(--green);color:#fff;}
+    .results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+    .results-count{font-size:13px;color:var(--muted);}
+    .results-count strong{color:var(--ink);}
+    .add-doctor-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 4px 12px rgba(201,168,76,.3);}
+    .add-doctor-btn:hover{background:#d4a93c;transform:translateY(-1px);}
+
+    /* DOCTOR CARDS */
+    .doctor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .doctor-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:all .2s;}
+    .doctor-card:hover{border-color:var(--green);box-shadow:0 4px 16px rgba(30,123,75,.1);transform:translateY(-1px);}
+    .doctor-top{display:flex;align-items:flex-start;gap:12px;}
+    .doctor-avatar{width:52px;height:52px;border-radius:12px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .doctor-info{flex:1;min-width:0;}
+    .doctor-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+    .doctor-spec{font-size:12px;color:var(--green);font-weight:600;}
+    .doctor-location{font-size:12px;color:var(--muted);margin-top:2px;}
+    .doctor-tags{display:flex;gap:5px;flex-wrap:wrap;}
+    .doctor-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
+    .tag-turkish{background:rgba(212,43,43,.08);color:var(--red);}
+    .tag-insurance{background:rgba(30,123,75,.08);color:var(--green);}
+    .tag-private{background:rgba(201,168,76,.1);color:#8a6d00;}
+    .tag-verified{background:rgba(30,123,75,.08);color:var(--green);}
+    .doctor-rating{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
+    .doctor-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--warm);margin-top:auto;}
+    .doctor-contact-btn{padding:7px 14px;background:var(--green);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .disclaimer{font-size:10px;color:var(--sand);padding-top:5px;border-top:1px dashed var(--warm);}
+
+    /* GUIDE CARDS */
+    .guides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+    .guide-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;}
+    .guide-card:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(30,123,75,.08);transform:translateY(-1px);}
+    .guide-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--warm);}
+    .guide-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3;}
+    .guide-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+    .guide-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--warm);}
+    .guide-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);}
+
+    /* SECTION HEADER */
+    .section-header{margin-bottom:20px;}
+    .section-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .section-sub{font-size:13px;color:var(--muted);}
+    .section-sep{height:1px;background:var(--warm);margin:36px 0;}
+
+    /* TIP BOX */
+    .tip-box{border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+    .tip-box.red{background:rgba(212,43,43,.06);border:1px solid rgba(212,43,43,.15);}
+    .tip-box.gold{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);}
+    .tip-box.green{background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.15);}
+    .tip-icon{font-size:22px;flex-shrink:0;}
+    .tip-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+    .tip-text{font-size:12px;color:var(--muted);line-height:1.6;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(26,18,8,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;max-width:520px;width:92%;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .3s ease;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-header{padding:22px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .modal-close{background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1;flex-shrink:0;}
+    .modal-body{overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+    .modal-footer{padding:14px 24px 20px;border-top:1px solid var(--warm);flex-shrink:0;display:flex;gap:8px;}
+    .field-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;}
+    .field-input{width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .15s;}
+    .field-input:focus{border-color:var(--green);}
+    textarea.field-input{resize:none;min-height:70px;line-height:1.5;}
+    select.field-input{cursor:pointer;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .btn-red{flex:1;padding:13px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+    .btn-red:hover{background:var(--green2);}
+    .btn-wa{flex:1;padding:13px;background:#25D366;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .info-box{background:var(--warm);border-radius:10px;padding:12px 14px;}
+    .info-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;}
+    .info-box-val{font-size:13px;font-weight:600;color:var(--ink);}
+    .success-screen{display:none;text-align:center;padding:40px 20px;}
+    .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
+    .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+  <div class="nav-menu">
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-mahallem"><a href="mahallem.html">🏘️ Komşularım</a><a href="events.html">🎉 Etkinlikler</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-is',this)">💼 İş & Güç <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-is"><a href="is-guc.html">💼 İş İlanları</a><a href="is-guc.html">⚡ Freelance</a><a href="is-guc.html">✈️ Avrupa'ya Göç</a><hr><a href="business.html">🏢 İşletmeler</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-ogrenim',this)">🎓 Öğrenim <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ogrenim"><a href="ogrenim.html">🗣️ Dil Kursları</a><a href="ogrenim.html">🎓 Yüksek Öğrenim</a><a href="ogrenim.html">📜 Diploma Denkliği</a><a href="ogrenim.html">🏭 Ausbildung</a><hr><a href="webinar.html">🎥 Webinarlar</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn active" onclick="toggleDropdown('dd-saglik',this)">🏥 Sağlık <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-saglik">
+        <a href="saglik.html" class="active">🏥 Doktor Bul</a>
+        <a href="saglik.html">📋 Krankenkasse Rehberi</a>
+        <a href="saglik.html">🧠 Ruh Sağlığı</a>
+        <a href="saglik.html">💊 İlaç & Reçete</a>
+        <a href="saglik.html">🤰 Aile & Hamilelik</a>
+        <hr>
+        <a href="saglik.html">🚨 Acil Durumlar</a>
+      </div>
+    </div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-emlak"><a href="classifieds.html">🔑 Kiralık Ev</a><a href="classifieds.html">🏡 Satılık Ev</a><a href="ev-takasi.html">🔄 Ev Takası</a><hr><a href="classifieds.html">📋 Tüm İlanlar</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-ilanlar"><a href="classifieds.html">🚗 Araç</a><a href="classifieds.html">🛋️ Ev Eşyası</a><a href="classifieds.html">📋 Tümü</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-bilgiler',this)">📚 Bilgiler <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-bilgiler"><a href="library.html">📚 Tüm Kaynaklar</a><hr><a href="library.html">💶 Kindergeld</a><a href="library.html">🛂 Vize</a></div></div>
+    <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
+      <div class="nav-dropdown" id="dd-abibot"><a href="abibot.html">🤖 AbiBOT'a Sor</a><hr><a href="abibot.html">⚖️ Hukuk</a><a href="abibot.html">🏥 Tıbbi</a><a href="abibot.html">✈️ Avrupa'ya Göç</a></div></div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mm-header"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div><button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;">×</button></div>
+  <div class="mm-section"><div class="mm-section-title">Sağlık</div>
+    <a class="mm-link active" href="saglik.html"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">💊</span>İlaç & Reçete</a>
+    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
+  </div>
+  <div class="mm-section"><div class="mm-section-title">Diğer</div>
+    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
+    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
+  </div>
+  <div class="mm-footer"><a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;"><div style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div><div><div style="font-size:13px;font-weight:600;">Profilim</div></div></a></div>
+</div>
+
+<!-- EMERGENCY BAR -->
+<div class="emergency-bar">
+  <span class="emergency-bar-text">🚨 Acil Durumda:</span>
+  <div class="emergency-numbers">
+    <a class="emergency-num" href="tel:112">112 — Ambulans</a>
+    <a class="emergency-num" href="tel:110">110 — Polis</a>
+    <a class="emergency-num" href="tel:116117">116 117 — Nöbetçi Doktor</a>
+    <a class="emergency-num" href="tel:0800111 0 111">0800 111 0 111 — Kriz Hattı</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🏥 Türkçe Konuşan Sağlık Rehberi</div>
+    <h1>Sağlığınız için <em>Doğru Adres</em></h1>
+    <p class="hero-sub">Avrupa'da Türkçe konuşan doktorlar, sağlık rehberleri ve Krankenkasse bilgisi — tek bir yerde.</p>
+    <div class="section-tabs" id="section-tabs">
+      <button class="section-tab active" data-section="doctors" onclick="setSection('doctors',this)">🏥 Doktor Bul</button>
+      <button class="section-tab" data-section="kranken" onclick="setSection('kranken',this)">📋 Krankenkasse</button>
+      <button class="section-tab" data-section="mental" onclick="setSection('mental',this)">🧠 Ruh Sağlığı</button>
+      <button class="section-tab" data-section="ilac" onclick="setSection('ilac',this)">💊 İlaç & Reçete</button>
+      <button class="section-tab" data-section="aile" onclick="setSection('aile',this)">🤰 Aile & Hamilelik</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-val" id="stat-doctors">48</div><div class="hstat-label">Türkçe Doktor</div></div>
+      <div><div class="hstat-val">12</div><div class="hstat-label">Şehir</div></div>
+      <div><div class="hstat-val">%100</div><div class="hstat-label">Topluluk Doğrulaması</div></div>
+      <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Rehberler</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body" id="page-body"></div>
+
+<!-- DOCTOR DETAIL MODAL -->
+<div class="modal-overlay" id="doctor-modal" onclick="if(event.target===this)closeDoctorModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="dm-avatar" style="width:52px;height:52px;border-radius:12px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"></div>
+        <div><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;" id="dm-name"></div><div style="font-size:12px;color:var(--red);font-weight:600;" id="dm-spec"></div></div>
+      </div>
+      <button class="modal-close" onclick="closeDoctorModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid" id="dm-info"></div>
+      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Hakkında</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="dm-desc"></div></div>
+      <div style="font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;" id="dm-tags"></div>
+      <div class="tip-box red"><div class="tip-icon">⚠️</div><div><div class="tip-title">Önemli Uyarı</div><div class="tip-text">BizdenBize tıbbi tavsiye vermez. Bu bilgiler yalnızca doktora ulaşmanıza yardımcı olmak içindir. Acil durumlarda 112'yi arayın.</div></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-red" id="dm-phone-btn">📞 Ara</button>
+      <button class="btn-wa" id="dm-wa-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DOCTOR MODAL -->
+<div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal">
+    <div class="modal-header"><div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🏥 Doktor Ekle</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Türkçe konuşan bir doktor önerin — ekip onaylar.</div></div><button class="modal-close" onclick="closeAddModal()">×</button></div>
+    <div class="modal-body" id="add-body">
+      <div class="field-row">
+        <div><label class="field-label">Doktor Adı *</label><input class="field-input" id="a-name" type="text" placeholder="Dr. Ayşe Kaya"></div>
+        <div><label class="field-label">Uzmanlık *</label><select class="field-input" id="a-spec"><option>Aile Hekimi</option><option>Dahiliye</option><option>Kadın Doğum</option><option>Çocuk Doktoru</option><option>Diş Hekimi</option><option>Psikiyatrist</option><option>Psikolog</option><option>Göz Doktoru</option><option>Ortopedi</option><option>Deri Hastalıkları</option><option>Diğer</option></select></div>
+      </div>
+      <div class="field-row">
+        <div><label class="field-label">Şehir *</label><input class="field-input" id="a-city" type="text" placeholder="Frankfurt"></div>
+        <div><label class="field-label">Telefon</label><input class="field-input" id="a-phone" type="tel" placeholder="+49 69 123 456"></div>
+      </div>
+      <div><label class="field-label">Adres</label><input class="field-input" id="a-address" type="text" placeholder="Mustergasse 12, 60311 Frankfurt"></div>
+      <div><label class="field-label">Sigorta</label><select class="field-input" id="a-insurance"><option>GKV (Yasal Sigorta)</option><option>PKV (Özel Sigorta)</option><option>Her İkisi</option></select></div>
+      <div><label class="field-label">Neden Öneriyorsunuz?</label><textarea class="field-input" id="a-desc" rows="2" placeholder="Türkçe konuşuyor, sabırlı, iyi muamele ediyor..."></textarea></div>
+      <div id="a-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="add-footer"><button class="btn-red" onclick="submitAdd()">Ekibe Gönder →</button></div>
+    <div class="success-screen" id="add-success"><div style="font-size:48px;">🏥</div><h3>Teşekkürler!</h3><p>Öneriniz ekibimize iletildi.<br>Onaylandıktan sonra dizine eklenecek.</p></div>
+  </div>
+</div>
+
+<script>
+const doctors = [
+  { id:1, name:"Dr. Ayşe Yıldız", spec:"Aile Hekimi", city:"Frankfurt", address:"Bergerstr. 45, 60316 Frankfurt", phone:"+49 69 456 7890", insurance:"GKV", lang:"TR/DE", rating:4.9, reviews:34, emoji:"👩‍⚕️", desc:"20 yıllık deneyimli aile hekimi. Türkçe, Almanca ve İngilizce konuşuyor. Yeni hastalar kabul ediyor.", verified:true },
+  { id:2, name:"Dr. Mehmet Aslan", spec:"Dahiliye", city:"Berlin", address:"Kurfürstenstr. 12, 10785 Berlin", phone:"+49 30 123 4567", insurance:"GKV & PKV", lang:"TR/DE/EN", rating:4.7, reviews:28, emoji:"👨‍⚕️", desc:"İç hastalıkları uzmanı. Diyabet, hipertansiyon ve kalp hastalıkları konusunda deneyimli.", verified:true },
+  { id:3, name:"Dr. Fatma Kocak", spec:"Kadın Doğum", city:"München", address:"Maximilianstr. 8, 80539 München", phone:"+49 89 234 5678", insurance:"GKV", lang:"TR/DE", rating:4.8, reviews:41, emoji:"👩‍⚕️", desc:"Kadın doğum uzmanı. Hamilelik takibi, doğum hazırlığı ve jinekoloji. Türk hastalara özel yaklaşım.", verified:true },
+  { id:4, name:"Dr. Hasan Demir", spec:"Psikiyatrist", city:"Köln", address:"Schildergasse 22, 50667 Köln", phone:"+49 221 345 6789", insurance:"GKV & PKV", lang:"TR/DE", rating:4.6, reviews:19, emoji:"🧠", desc:"Psikiyatri ve psikoterapi. Göç stresi, depresyon ve anksiyete konusunda uzmanlaşmış.", verified:true },
+  { id:5, name:"Dr. Zeynep Ak", spec:"Çocuk Doktoru", city:"Hamburg", address:"Mönckebergstr. 5, 20095 Hamburg", phone:"+49 40 567 8901", insurance:"GKV", lang:"TR/DE/EN", rating:4.9, reviews:52, emoji:"👶", desc:"Çocuk sağlığı ve hastalıkları uzmanı. Bebekten ergene kadar tüm yaş gruplarına hizmet veriyor.", verified:true },
+  { id:6, name:"Dr. Ali Kaya", spec:"Diş Hekimi", city:"Düsseldorf", address:"Königsallee 14, 40212 Düsseldorf", phone:"+49 211 678 9012", insurance:"GKV & PKV", lang:"TR/DE", rating:4.7, reviews:36, emoji:"🦷", desc:"Genel diş hekimliği, implant ve estetik diş tedavileri. Ağrısız tedavi anlayışı.", verified:true },
+  { id:7, name:"Psikolog Selin Çelik", spec:"Psikolog", city:"Stuttgart", address:"Königstr. 28, 70173 Stuttgart", phone:"+49 711 789 0123", insurance:"PKV", lang:"TR/DE", rating:4.8, reviews:23, emoji:"🧠", desc:"Klinik psikolog. Bireysel terapi, çift terapisi ve göç psikolojisi alanlarında uzman.", verified:true },
+  { id:8, name:"Dr. Mustafa Yurt", spec:"Göz Doktoru", city:"Frankfurt", address:"Zeil 33, 60313 Frankfurt", phone:"+49 69 890 1234", insurance:"GKV", lang:"TR/DE", rating:4.5, reviews:17, emoji:"👁️", desc:"Oftalmoloji uzmanı. Gözlük reçetesi, katarakt ve göz tansiyonu tedavileri.", verified:false },
+];
+
+const guides = {
+  kranken: [
+    { emoji:"📋", title:"Krankenkasse Nedir ve Nasıl Seçilir?", desc:"GKV vs PKV farkı, hangi kasayı seçmeli, katkı payları ve aile sigortası hakkında kapsamlı rehber.", tag:"Temel Rehber", url:"library.html" },
+    { emoji:"💳", title:"Krankenkasse'ye Nasıl Üye Olunur?", desc:"İşe başlarken sigorta kaydı, öğrenci sigortası ve Türkiye'den gelenler için özel bilgiler.", tag:"Başlangıç", url:"library.html" },
+    { emoji:"🦷", title:"Diş Hekimi Kapsamı: Ne Karşılanır?", desc:"GKV'nin diş tedavilerinde neyi karşıladığı, Festzuschuss sistemi ve ek sigorta gerekliliği.", tag:"Diş Sağlığı", url:"library.html" },
+    { emoji:"🌍", title:"Türkiye'ye Giderken Sigorta", desc:"Yurt dışı seyahatte ne karşılanır, Türkiye'de hastane ve ilaç masrafları için bilmeniz gerekenler.", tag:"Seyahat", url:"library.html" },
+  ],
+  mental: [
+    { emoji:"🧠", title:"Almanya'da Psikolog / Psikiyatrist Nasıl Bulunur?", desc:"Bekleme listeleri uzun — Kassenzulassung olan terapist bulma, hangi sigorta ne karşılar.", tag:"Rehber", url:"library.html" },
+    { emoji:"💙", title:"Göç Stresi ve Uyum Zorluğu", desc:"Yeni bir ülkede yaşamanın psikolojik boyutu. Türk toplulukları için destek kaynakları.", tag:"Ruh Sağlığı", url:"library.html" },
+    { emoji:"📞", title:"Kriz Hatları ve Acil Destek", desc:"Almanya'da 7/24 ulaşabileceğiniz kriz hatları, Türkçe destek sunan kuruluşlar.", tag:"Acil", url:"library.html" },
+    { emoji:"👫", title:"Çift ve Aile Terapisi", desc:"Almanya'da Türkçe çift terapisi nerede bulunur, GKV kapsamı ve özel seçenekler.", tag:"Aile", url:"library.html" },
+  ],
+  ilac: [
+    { emoji:"💊", title:"Türkiye'den Getirilen İlaçlar: Ne Yapmalı?", desc:"Türkiye'de yazılan reçeteler Almanya'da geçerli mi? İlaç eşdeğerleri nasıl bulunur?", tag:"İlaç", url:"library.html" },
+    { emoji:"🏥", title:"Almanya'da Reçete Sistemi", desc:"Privatrezept vs Kassenrezept farkı, hangi ilaçlar sigorta kapsamında, eczane kullanımı.", tag:"Rehber", url:"library.html" },
+    { emoji:"🌿", title:"Bitkisel İlaçlar ve Takviyeler", desc:"Türkiye'de yaygın kullanılan bitkisel ürünlerin Almanya'daki durumu ve alternatifleri.", tag:"Tamamlayıcı", url:"library.html" },
+  ],
+  aile: [
+    { emoji:"🤰", title:"Hamilelik Sürecinde Haklar", desc:"Mutterschutz, Elterngeld, Elternzeit ve hamile çalışanların yasal hakları.", tag:"Hamilelik", url:"library.html" },
+    { emoji:"👶", title:"Doğum Sonrası: İlk Adımlar", desc:"Bebek doktoruna kayıt, Kindergeld başvurusu, Kita için bekleme listesi ve aşı takvimi.", tag:"Bebek", url:"library.html" },
+    { emoji:"📅", title:"Çocuk Aşı Takvimi Almanya", desc:"STIKO önerilen aşı takvimi, okul öncesi zorunlu aşılar ve Türkiye'de yapılan aşıların tanınması.", tag:"Aşı", url:"library.html" },
+  ],
+};
+
+let activeSection = 'doctors';
+let activeSpec = 'all';
+let activeCity = '';
+
+function setSection(s, btn) {
+  activeSection = s;
+  document.querySelectorAll('.section-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setSpec(s, btn) {
+  activeSpec = s;
+  document.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDoctors();
+}
+
+function render() {
+  const body = document.getElementById('page-body');
+  if (activeSection === 'doctors') {
+    body.innerHTML = `
+      <div class="section-header"><div class="section-title">🏥 Türkçe Konuşan Doktorlar</div><div class="section-sub">Topluluk tarafından önerilen ve doğrulanmış sağlık profesyonelleri</div></div>
+      <div class="dir-filters">
+        <input class="dir-filter-input" id="f-city" type="text" placeholder="🔍 Şehir ara..." oninput="renderDoctors()">
+        <select class="dir-filter-select" id="f-insurance" onchange="renderDoctors()">
+          <option value="all">Tüm Sigortalar</option>
+          <option value="GKV">GKV (Yasal)</option>
+          <option value="PKV">PKV (Özel)</option>
+        </select>
+      </div>
+      <div class="dir-filters" id="spec-filters">
+        <button class="dir-filter-btn active spec-btn" onclick="setSpec('all',this)">Tümü</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Aile Hekimi',this)">👨‍👩‍👧 Aile</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Psikiyatrist',this)">🧠 Psikiyatri</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Psikolog',this)">🧠 Psikolog</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Kadın Doğum',this)">🤰 Kadın Doğum</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Çocuk Doktoru',this)">👶 Çocuk</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('Diş Hekimi',this)">🦷 Diş</button>
+      </div>
+      <div class="results-bar">
+        <div class="results-count" id="doc-count"><strong>${doctors.length}</strong> doktor bulundu</div>
+        <button class="add-doctor-btn" onclick="openAddModal()">+ Doktor / Klinik Öner</button>
+      </div>
+      <div class="doctor-grid" id="doctor-grid"></div>`;
+    renderDoctors();
+  } else {
+    const data = guides[activeSection];
+    const titles = { kranken:'📋 Krankenkasse Rehberi', mental:'🧠 Ruh Sağlığı', ilac:'💊 İlaç & Reçete', aile:'🤰 Aile & Hamilelik' };
+    const subs = { kranken:'Almanya sağlık sigortası sistemi hakkında bilmeniz gereken her şey', mental:'Göç stresinden profesyonel desteğe — ruh sağlığı kaynakları', ilac:'Türkiye\'den getirilen ilaçlar, reçete sistemi ve daha fazlası', aile:'Hamilelikten bebekliğe Almanya\'da aile sağlığı' };
+    const tips = {
+      kranken: { type:'gold', icon:'💡', title:'Krankenkasse seçimi önemli!', text:'Almanya\'da yasal sigorta şirketleri arasında kapsam farkı az olsa da hizmet kalitesi, ek yardımlar ve müşteri hizmetleri farklılık gösterir. Kayıt olmadan önce karşılaştırın.' },
+      mental: { type:'red', icon:'🧠', title:'Yardım almak güçlü olmaktır', text:'Türk toplulukları arasında psikolojik destek almak hala tabu görülebilir. Ancak göç stresi, yalnızlık ve uyum zorluğu gerçek sağlık sorunlarıdır. Yardım istemekten çekinmeyin.' },
+      ilac: { type:'gold', icon:'💊', title:'Türkiye\'den ilaç getirirken dikkat', text:'AB ülkelerine kişisel kullanım için sınırlı miktarda ilaç getirilebilir. Uyuşturucu içeren ilaçlar için özel izin gerekebilir. Gümrükte sorun yaşamamak için reçetenizi yanınızda bulundurun.' },
+      aile: { type:'green', icon:'🤰', title:'Hamile çalışanlar için önemli', text:'Almanya\'da hamilelik boyunca işten çıkarılma yasağı var. Mutterschutz doğumdan 6 hafta önce başlar. Elterngeld başvurusunu doğumdan sonra en geç 3 ay içinde yapın.' },
+    };
+    const t = tips[activeSection];
+    body.innerHTML = `
+      <div class="section-header"><div class="section-title">${titles[activeSection]}</div><div class="section-sub">${subs[activeSection]}</div></div>
+      <div class="tip-box ${t.type}"><div class="tip-icon">${t.icon}</div><div><div class="tip-title">${t.title}</div><div class="tip-text">${t.text}</div></div></div>
+      <div class="guides-grid">${data.map(g => `
+        <a class="guide-card" href="${g.url}">
+          <div class="guide-icon">${g.emoji}</div>
+          <div class="guide-title">${g.title}</div>
+          <div class="guide-desc">${g.desc}</div>
+          <div class="guide-footer">
+            <span class="guide-tag">${g.tag}</span>
+            <span style="font-size:13px;color:var(--sand);">→</span>
+          </div>
+        </a>`).join('')}</div>
+      <div style="margin-top:24px;padding:16px 20px;background:var(--white);border:1px solid var(--sand);border-radius:12px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:28px;">🤖</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">Sağlık sorunuz mu var?</div><div style="font-size:12px;color:var(--muted);">AbiBOT Tıbbi kategorisinde sorularınızı yanıtlıyor. Günde 10 soru ücretsiz.</div></div>
+        <a href="abibot.html" style="padding:9px 16px;background:var(--green);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">AbiBOT'a Sor →</a>
+      </div>`;
+  }
+}
+
+function renderDoctors() {
+  const cityQ = (document.getElementById('f-city')?.value || '').toLowerCase();
+  const insQ = document.getElementById('f-insurance')?.value || 'all';
+  const filtered = doctors.filter(d => {
+    if (cityQ && !d.city.toLowerCase().includes(cityQ)) return false;
+    if (insQ !== 'all' && !d.insurance.includes(insQ)) return false;
+    if (activeSpec !== 'all' && d.spec !== activeSpec) return false;
+    return true;
+  });
+  const count = document.getElementById('doc-count');
+  if (count) count.innerHTML = `<strong>${filtered.length}</strong> doktor bulundu`;
+  const grid = document.getElementById('doctor-grid');
+  if (!grid) return;
+  if (!filtered.length) { grid.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;">Bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin veya doktor önerin.</p></div>`; return; }
+  grid.innerHTML = filtered.map(d => `
+    <div class="doctor-card" onclick="openDoctor(${d.id})">
+      <div class="doctor-top">
+        <div class="doctor-avatar">${d.emoji}</div>
+        <div class="doctor-info">
+          <div class="doctor-name">${d.name}</div>
+          <div class="doctor-spec">${d.spec}</div>
+          <div class="doctor-location">📍 ${d.city}</div>
+        </div>
+      </div>
+      <div class="doctor-tags">
+        <span class="doctor-tag tag-turkish">🇹🇷 Türkçe</span>
+        <span class="doctor-tag tag-insurance">${d.insurance}</span>
+        ${d.verified ? '<span class="doctor-tag tag-verified">✅ Doğrulandı</span>' : ''}
+      </div>
+      <div class="doctor-rating">⭐ ${d.rating} <span style="color:var(--sand);">(${d.reviews} değerlendirme)</span></div>
+      <div class="doctor-footer">
+        <span style="font-size:12px;color:var(--muted);">📍 ${d.city}</span>
+        <button class="doctor-contact-btn" onclick="event.stopPropagation();openDoctor(${d.id})">İletişim →</button>
+      </div>
+      <div class="disclaimer">⚠️ BizdenBize tıbbi tavsiye vermez. Tanı ve tedavi için doktorunuza başvurun.</div>
+    </div>`).join('');
+}
+
+function openDoctor(id) {
+  const d = doctors.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('dm-avatar').textContent = d.emoji;
+  document.getElementById('dm-name').textContent = d.name;
+  document.getElementById('dm-spec').textContent = d.spec;
+  document.getElementById('dm-desc').textContent = d.desc;
+  document.getElementById('dm-info').innerHTML = `
+    <div class="info-box"><div class="info-box-label">Şehir</div><div class="info-box-val">📍 ${d.city}</div></div>
+    <div class="info-box"><div class="info-box-label">Sigorta</div><div class="info-box-val">${d.insurance}</div></div>
+    <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${d.lang}</div></div>
+    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating} (${d.reviews})</div></div>`;
+  document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span><span class="doctor-tag tag-insurance" style="font-size:11px;padding:3px 10px;">${d.insurance}</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
+  document.getElementById('dm-phone-btn').onclick = () => window.location.href = `tel:${d.phone}`;
+  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${d.phone.replace(/\s|\+|-/g,'')}`, '_blank');
+  document.getElementById('doctor-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDoctorModal() { document.getElementById('doctor-modal').classList.remove('open'); document.body.style.overflow = ''; }
+
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('add-success').style.display = 'none'; document.getElementById('add-body').style.display = 'flex'; document.getElementById('add-footer').style.display = 'flex'; document.getElementById('a-error').style.display = 'none'; }
+function submitAdd() {
+  const name = document.getElementById('a-name').value.trim();
+  const city = document.getElementById('a-city').value.trim();
+  if (!name || !city) { document.getElementById('a-error').textContent = 'Lütfen doktor adı ve şehir girin.'; document.getElementById('a-error').style.display = 'block'; return; }
+  document.getElementById('add-body').style.display = 'none';
+  document.getElementById('add-footer').style.display = 'none';
+  document.getElementById('add-success').style.display = 'block';
+  setTimeout(() => closeAddModal(), 3000);
+}
+
+render();
+</script>
+<!-- SITE FOOTER -->
+<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Top row -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
+
+      <!-- Brand -->
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
+        <!-- Social -->
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
+          <a href="https://twitter.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="X / Twitter">𝕏</a>
+          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
+          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
+        </div>
+      </div>
+
+      <!-- Platform -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
+          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
+          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
+          <a href="is-ver-bul.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
+          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
+          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgiler</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
+        </div>
+      </div>
+
+      <!-- Destek -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
+          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
+          <a href="mailto:info@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">info@bizdenbize.com</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
+        </div>
+      </div>
+
+      <!-- Yasal -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
+          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
+          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
+          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">KVKK / GDPR</a>
+          <a href="ilan-kurallari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Language bar -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span style="font-size:11px;color:rgba(255,255,255,.25);margin-right:4px;align-self:center;">Dil:</span>
+      <a href="?lang=tr" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇹🇷 Türkçe</a>
+      <a href="?lang=de" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇩🇪 Deutsch</a>
+      <a href="?lang=en" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇬🇧 English</a>
+      <a href="?lang=nl" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇳🇱 Nederlands</a>
+      <a href="?lang=fr" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇫🇷 Français</a>
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
+    </div>
+
+  </div>
+
+  <style>
+    @media (max-width: 768px) {
+      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      footer > div > div:first-child { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</footer>
+</body>
+</html>
