@@ -303,7 +303,7 @@
   <div id="view-seekers" style="display:none;">
     <div class="toolbar">
       <div class="results-count" id="seeker-count"><strong>—</strong> özel öğretmen arayan bulundu</div>
-      <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
+      <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openSeekModal()">+ İlan Ver</button>
     </div>
     <div class="seeker-grid" id="seeker-grid"></div>
   </div>
@@ -602,7 +602,7 @@ async function renderSeekers() {
       <div style="font-size:40px;margin-bottom:12px">🔍</div>
       <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div>
       <p style="font-size:13px;margin-bottom:16px;">İlk ilanı siz verin!</p>
-      <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
+      <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openSeekModal()">+ İlan Ver</button>
     </div>`;
     return;
   }
