@@ -259,8 +259,8 @@
 <!-- FILTER BAR -->
 <div class="filter-bar">
   <div class="filter-bar-inner">
-    <input class="fbar-input" id="f-search" type="text" placeholder="🔍 Konu veya isim ara..." oninput="renderTutors()">
-    <select class="fbar-select" id="f-subject" onchange="renderTutors()">
+    <input class="fbar-input" id="f-search" type="text" placeholder="🔍 Konu veya isim ara..." oninput="filterAndRender()">
+    <select class="fbar-select" id="f-subject" onchange="filterAndRender()">
       <option value="all">Tüm Dersler</option>
       <option value="Mathematik">📐 Mathematik</option>
       <option value="Deutsch">📖 Deutsch</option>
@@ -271,7 +271,7 @@
       <option value="Türkçe">🇹🇷 Türkçe</option>
       <option value="Diğer">📦 Diğer</option>
     </select>
-    <select class="fbar-select" id="f-level" onchange="renderTutors()">
+    <select class="fbar-select" id="f-level" onchange="filterAndRender()">
       <option value="all">Tüm Seviyeler</option>
       <option value="Grundschule">Grundschule (1-4)</option>
       <option value="Hauptschule">Hauptschule</option>
@@ -444,33 +444,41 @@ function togglePill(type, btn) {
 }
 
 async function renderTutors() {
-  const q     = (document.getElementById('f-search').value || '').toLowerCase();
-  const subj  = document.getElementById('f-subject').value;
-  const level = document.getElementById('f-level').value;
-  const grid  = document.getElementById('tutor-grid');
+  const grid = document.getElementById('tutor-grid');
   if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
 
   let allTutors = [];
   try {
     let params = 'active=eq.true&order=verified.desc,rating.desc';
-      if (subj !== 'all') params += '&subject=eq.' + encodeURIComponent(subj);
-      if (activePills.free) params += '&price_type=eq.free';
-      if (activePills.online) params += '&format=in.(online,both)';
-      if (activePills.inperson) params += '&format=in.(inperson,both)';
-      allTutors = await sbGet('tutors', params);
+    if (activePills.free) params += '&price_type=eq.free';
+    if (activePills.online) params += '&format=in.(online,both)';
+    if (activePills.inperson) params += '&format=in.(inperson,both)';
+    allTutors = await sbGet('tutors', params);
   } catch(e) { console.error('Tutor fetch error:', e); }
-
-  const filtered = allTutors.filter(t => {
-    if (q && !t.name.toLowerCase().includes(q) && !t.subject.toLowerCase().includes(q) && !(t.description||'').toLowerCase().includes(q)) return false;
-    if (level !== 'all' && !(t.levels||[]).includes(level)) return false;
-    return true;
-  });
 
   window._tutors = allTutors;
   document.getElementById('stat-total').textContent = allTutors.length;
   document.getElementById('stat-free').textContent = allTutors.filter(t => t.price_type === 'free').length;
+
+  filterAndRender();
+}
+
+function filterAndRender() {
+  const q     = (document.getElementById('f-search').value || '').toLowerCase();
+  const subj  = document.getElementById('f-subject').value;
+  const level = document.getElementById('f-level').value;
+  const allTutors = window._tutors || [];
+
+  const filtered = allTutors.filter(t => {
+    if (q && !t.name.toLowerCase().includes(q) && !t.subject.toLowerCase().includes(q) && !(t.description||'').toLowerCase().includes(q)) return false;
+    if (subj !== 'all' && t.subject !== subj) return false;
+    if (level !== 'all' && !(t.levels||[]).includes(level)) return false;
+    return true;
+  });
+
   document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> öğretmen bulundu`;
 
+  const grid = document.getElementById('tutor-grid');
   if (!grid) return;
   if (!filtered.length) {
     grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin ya da yukarıdaki butonları kullanın.</p></div>`;
