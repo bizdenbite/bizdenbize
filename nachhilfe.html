@@ -229,9 +229,15 @@
     <div class="hero-tag">✏️ Türkçe Konuşan Öğretmenler</div>
     <h1>Nachhilfe & <em>Özel Ders</em></h1>
     <p class="hero-sub">Çocuğunuz için güvenilir, Türkçe konuşan özel öğretmen bulun — ya da kendi derslerinizi listeleyin.</p>
+    <!-- Tabs in hero -->
+    <div style="display:flex;gap:4px;background:rgba(255,255,255,.12);border-radius:12px;padding:4px;justify-content:center;margin-bottom:16px;">
+      <button class="page-tab active" id="tab-tutors-hero" onclick="switchTab('tutors')" style="color:#fff;padding:10px 24px;font-size:14px;">✏️ Özel Ders Verenler</button>
+      <button class="page-tab" id="tab-seekers-hero" onclick="switchTab('seekers')" style="padding:10px 24px;font-size:14px;">🔍 Özel Ders Arayanlar</button>
+    </div>
+    <!-- Action buttons below tabs -->
     <div class="hero-btns">
       <button class="btn-gold" onclick="openTutorModal()">✏️ Özel Ders Ver</button>
-      <button class="btn-ghost-white" onclick="switchTab('seekers')">🔍 Özel Ders Arıyorum</button>
+      <button class="btn-ghost-white" onclick="openSeekModal()">🔍 Özel Ders Arıyorum</button>
     </div>
     <div class="hero-stats">
       <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Öğretmen</div></div>
@@ -285,12 +291,6 @@
 
 <!-- BODY -->
 <div class="page-body">
-  <!-- PAGE TABS -->
-  <div class="page-tabs">
-    <button class="page-tab active" id="tab-tutors" onclick="switchTab('tutors')">✏️ Özel Ders Verenler</button>
-    <button class="page-tab" id="tab-seekers" onclick="switchTab('seekers')">🔍 Özel Ders Arayanlar</button>
-  </div>
-
   <!-- TUTOR VIEW -->
   <div id="view-tutors">
     <div class="toolbar">
@@ -574,8 +574,13 @@ let activeTab = 'tutors';
 
 function switchTab(tab) {
   activeTab = tab;
-  document.getElementById('tab-tutors').classList.toggle('active', tab === 'tutors');
-  document.getElementById('tab-seekers').classList.toggle('active', tab === 'seekers');
+  ['tab-tutors-hero','tab-seekers-hero'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('active'); el.style.color=''; }
+  });
+  const activeId = tab === 'tutors' ? 'tab-tutors-hero' : 'tab-seekers-hero';
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) { activeEl.classList.add('active'); activeEl.style.color='#fff'; }
   document.getElementById('view-tutors').style.display  = tab === 'tutors'  ? 'block' : 'none';
   document.getElementById('view-seekers').style.display = tab === 'seekers' ? 'block' : 'none';
   // Also show/hide filter bar
