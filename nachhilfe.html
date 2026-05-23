@@ -626,16 +626,28 @@ async function renderSeekers() {
 
 function openSeekModal() { document.getElementById('seek-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeSeekModal() { document.getElementById('seek-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('sk-success').style.display='none'; document.getElementById('sk-body').style.display='flex'; document.getElementById('sk-footer').style.display='flex'; document.getElementById('sk-error').style.display='none'; }
-function submitSeek() {
-  const name = document.getElementById('sk-name').value.trim();
+async function submitSeek() {
+  const name    = document.getElementById('sk-name').value.trim();
   const contact = document.getElementById('sk-contact').value.trim();
-  const err = document.getElementById('sk-error');
+  const err     = document.getElementById('sk-error');
   if (!name || !contact) { err.textContent='Lütfen adınızı ve iletişim bilgisini girin.'; err.style.display='block'; return; }
   err.style.display='none';
+  try {
+    await sbPost('seeker_requests', {
+      parent_name: name,
+      city:        document.getElementById('sk-city').value.trim() || null,
+      subject:     document.getElementById('sk-subject').value,
+      level:       document.getElementById('sk-level').value,
+      budget:      document.getElementById('sk-budget').value,
+      description: document.getElementById('sk-desc').value.trim() || null,
+      contact:     contact,
+      active:      true
+    });
+  } catch(e) { console.error('Seeker submit error:', e); }
   document.getElementById('sk-body').style.display='none';
   document.getElementById('sk-footer').style.display='none';
   document.getElementById('sk-success').style.display='block';
-  setTimeout(() => closeSeekModal(), 3000);
+  setTimeout(() => { closeSeekModal(); if (activeTab === 'seekers') renderSeekers(); }, 2500);
 }
 
 function setCbarCountry(c, btn) {
