@@ -230,8 +230,8 @@
     <h1>Nachhilfe & <em>Özel Ders</em></h1>
     <p class="hero-sub">Çocuğunuz için güvenilir, Türkçe konuşan özel öğretmen bulun — ya da kendi derslerinizi listeleyin.</p>
     <div class="hero-btns">
-      <button class="btn-gold" onclick="openTutorModal()">✏️ Ders Ver</button>
-      <button class="btn-ghost-white" onclick="switchTab('seekers')">🔍 Öğretmen Arıyorum İlanı Ver</button>
+      <button class="btn-gold" onclick="openTutorModal()">✏️ Özel Ders Ver</button>
+      <button class="btn-ghost-white" onclick="switchTab('seekers')">🔍 Özel Ders Arıyorum</button>
     </div>
     <div class="hero-stats">
       <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Öğretmen</div></div>
@@ -287,15 +287,15 @@
 <div class="page-body">
   <!-- PAGE TABS -->
   <div class="page-tabs">
-    <button class="page-tab active" id="tab-tutors" onclick="switchTab('tutors')">✏️ Ders Verenler</button>
-    <button class="page-tab" id="tab-seekers" onclick="switchTab('seekers')">🔍 Ders Arayanlar</button>
+    <button class="page-tab active" id="tab-tutors" onclick="switchTab('tutors')">✏️ Özel Ders Verenler</button>
+    <button class="page-tab" id="tab-seekers" onclick="switchTab('seekers')">🔍 Özel Ders Arayanlar</button>
   </div>
 
   <!-- TUTOR VIEW -->
   <div id="view-tutors">
     <div class="toolbar">
       <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
-      <button class="seek-btn" onclick="switchTab('seekers')">🔍 Ders Arıyorum İlanı Ver</button>
+      <button class="seek-btn" onclick="switchTab('seekers')">🔍 Özel Ders Arıyorum</button>
     </div>
     <div class="tutor-grid" id="tutor-grid"></div>
   </div>
@@ -303,7 +303,7 @@
   <!-- SEEKER VIEW -->
   <div id="view-seekers" style="display:none;">
     <div class="toolbar">
-      <div class="results-count" id="seeker-count"><strong>—</strong> ders arayan bulundu</div>
+      <div class="results-count" id="seeker-count"><strong>—</strong> özel ders arayan bulundu</div>
       <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
     </div>
     <div class="seeker-grid" id="seeker-grid"></div>
@@ -592,12 +592,12 @@ async function renderSeekers() {
   try {
     requests = await sbGet('seeker_requests', 'active=eq.true&order=created_at.desc');
   } catch(e) { console.error('Seeker fetch error:', e); }
-  document.getElementById('seeker-count').innerHTML = `<strong>${requests.length}</strong> ders arayan bulundu`;
+  document.getElementById('seeker-count').innerHTML = `<strong>${requests.length}</strong> özel ders arayan bulundu`;
   if (!requests.length) {
     grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1">
       <div style="font-size:40px;margin-bottom:12px">🔍</div>
       <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div>
-      <p style="font-size:13px;margin-bottom:16px;">İlk ders arayan siz olun!</p>
+      <p style="font-size:13px;margin-bottom:16px;">İlk ilanı siz verin!</p>
       <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
     </div>`;
     return;
