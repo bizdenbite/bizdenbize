@@ -232,7 +232,7 @@
     <!-- Tabs in hero -->
     <div style="display:flex;gap:4px;background:rgba(255,255,255,.12);border-radius:12px;padding:4px;justify-content:center;margin-bottom:16px;">
       <button class="page-tab active" id="tab-tutors-hero" onclick="switchTab('tutors')" style="color:#fff;background:rgba(255,255,255,.2);padding:10px 24px;font-size:14px;">✏️ Özel Ders Verenler</button>
-      <button class="page-tab" id="tab-seekers-hero" onclick="switchTab('seekers')" style="color:rgba(255,255,255,.65);padding:10px 24px;font-size:14px;">🔍 Özel Ders Arayanlar</button>
+      <button class="page-tab" id="tab-seekers-hero" onclick="switchTab('seekers')" style="color:rgba(255,255,255,.65);padding:10px 24px;font-size:14px;">🔍 Özel Öğretmen Arayanlar</button>
     </div>
 
     <div class="hero-stats">
@@ -293,7 +293,7 @@
       <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
       <div style="display:flex;gap:8px;">
         <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openTutorModal()">✏️ Özel Ders Veriyorum</button>
-        <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openSeekModal()">🔍 Özel Ders Arıyorum</button>
+        <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openSeekModal()">🔍 Özel Öğretmen Arıyorum</button>
       </div>
     </div>
     <div class="tutor-grid" id="tutor-grid"></div>
@@ -302,7 +302,7 @@
   <!-- SEEKER VIEW -->
   <div id="view-seekers" style="display:none;">
     <div class="toolbar">
-      <div class="results-count" id="seeker-count"><strong>—</strong> özel ders arayan bulundu</div>
+      <div class="results-count" id="seeker-count"><strong>—</strong> özel öğretmen arayan bulundu</div>
       <button class="seek-btn" onclick="openSeekModal()">+ İlan Ver</button>
     </div>
     <div class="seeker-grid" id="seeker-grid"></div>
@@ -596,7 +596,7 @@ async function renderSeekers() {
   try {
     requests = await sbGet('seeker_requests', 'active=eq.true&order=created_at.desc');
   } catch(e) { console.error('Seeker fetch error:', e); }
-  document.getElementById('seeker-count').innerHTML = `<strong>${requests.length}</strong> özel ders arayan bulundu`;
+  document.getElementById('seeker-count').innerHTML = `<strong>${requests.length}</strong> özel öğretmen arayan bulundu`;
   if (!requests.length) {
     grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1">
       <div style="font-size:40px;margin-bottom:12px">🔍</div>
