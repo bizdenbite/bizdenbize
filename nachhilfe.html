@@ -484,7 +484,7 @@ async function renderTutors() {
 
   if (!grid) return;
   if (!filtered.length) {
-    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px;margin-bottom:16px;">Farklı filtreler deneyin ya da ihtiyacınızı paylaşın.</p><button class="seek-btn" onclick="openSeekModal()">🔍 Öğretmen Arıyorum</button></div>`;
+    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin ya da yukarıdaki butonları kullanın.</p></div>`;
     return;
   }
 
