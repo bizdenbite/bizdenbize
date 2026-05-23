@@ -291,7 +291,10 @@
   <div id="view-tutors">
     <div class="toolbar">
       <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
-      <button class="seek-btn" onclick="switchTab('seekers')">🔍 Özel Ders Arıyorum</button>
+      <div style="display:flex;gap:8px;">
+        <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openTutorModal()">✏️ Özel Ders Ver</button>
+        <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="switchTab('seekers')">🔍 Özel Ders Arıyorum</button>
+      </div>
     </div>
     <div class="tutor-grid" id="tutor-grid"></div>
   </div>
