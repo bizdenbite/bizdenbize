@@ -271,23 +271,23 @@
       </div>
       <div class="filter-box">
       <div class="filter-box-title">Nerede?</div>
-      <input class="filter-input" id="f-city" type="text" placeholder="Şehir ara..." oninput="renderSwaps()">
+      <input class="filter-input" id="f-city" type="text" placeholder="Şehir ara..." oninput="filterAndRenderSwaps()">
     </div>
     <div class="filter-box">
       <div class="filter-box-title">Nereye Gitmek İstiyor?</div>
-      <input class="filter-input" id="f-dest" type="text" placeholder="Hedef şehir..." oninput="renderSwaps()">
+      <input class="filter-input" id="f-dest" type="text" placeholder="Hedef şehir..." oninput="filterAndRenderSwaps()">
     </div>
     <div class="filter-box">
       <div class="filter-box-title">Ev Tipi</div>
-      <div class="filter-opt"><input type="checkbox" id="f-daire" onchange="renderSwaps()"><label for="f-daire">🏢 Daire</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-ev" onchange="renderSwaps()"><label for="f-ev">🏡 Müstakil Ev</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-villa" onchange="renderSwaps()"><label for="f-villa">🌊 Villa / Yazlık</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-daire" onchange="filterAndRenderSwaps()"><label for="f-daire">🏢 Daire</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-ev" onchange="filterAndRenderSwaps()"><label for="f-ev">🏡 Müstakil Ev</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-villa" onchange="filterAndRenderSwaps()"><label for="f-villa">🌊 Villa / Yazlık</label></div>
     </div>
     <div class="filter-box">
       <div class="filter-box-title">Aile Büyüklüğü</div>
-      <div class="filter-opt"><input type="checkbox" id="f-1" onchange="renderSwaps()"><label for="f-1">👤 1-2 kişi</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-family" onchange="renderSwaps()"><label for="f-family">👨‍👩‍👧 Aile (3-5)</label></div>
-      <div class="filter-opt"><input type="checkbox" id="f-large" onchange="renderSwaps()"><label for="f-large">👨‍👩‍👧‍👦 Büyük Aile (6+)</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-1" onchange="filterAndRenderSwaps()"><label for="f-1">👤 1-2 kişi</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-family" onchange="filterAndRenderSwaps()"><label for="f-family">👨‍👩‍👧 Aile (3-5)</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-large" onchange="filterAndRenderSwaps()"><label for="f-large">👨‍👩‍👧‍👦 Büyük Aile (6+)</label></div>
     </div>
     <div class="trust-box">
       <div class="trust-icon">🛡️</div>
@@ -299,7 +299,7 @@
   <main>
     <div class="results-bar">
       <div class="results-count" id="results-count"><strong>—</strong> takas ilanı</div>
-      <select class="sort-select" onchange="renderSwaps()">
+      <select class="sort-select" onchange="filterAndRenderSwaps()">
         <option value="new">En yeni</option>
         <option value="soon">Yakında müsait</option>
       </select>
@@ -364,16 +364,41 @@
 </div>
 
 <script>
-const swaps = [
-  { id:1, city:"Frankfurt", country:"🇩🇪", dest:"İstanbul veya Ankara", type:"Daire", rooms:"3+1", from:"2025-07-01", to:"2025-07-31", family:"Aile (3-5)", desc:"Sachsenhausen'da merkezi, tam donanımlı 3+1 dairemiz. 85m², 2 banyo, balkon, çamaşır makinesi. Sessiz mahalle, tramvay durağına 3 dk.", user:"Ayşe K.", avatar:"AK", verified:true, featured:true, emoji:"🏙️", contact:"+49 176 123 4567" },
-  { id:2, city:"Amsterdam", country:"🇳🇱", dest:"Frankfurt veya Köln", type:"Daire", rooms:"2+1", from:"2025-08-01", to:"2025-08-21", family:"1-2 kişi", desc:"Jordaan semtinde kanal manzaralı tarihi daire. 65m², tamamen restore edilmiş, bisiklet dahil. Şehrin kalbinde.", user:"Murat D.", avatar:"MD", verified:true, featured:false, emoji:"🏡", contact:"murat@email.nl" },
-  { id:3, city:"Viyana", country:"🇦🇹", dest:"İstanbul", type:"Daire", rooms:"2+1", from:"2025-06-15", to:"2025-07-15", family:"Aile (3-5)", desc:"1. bölge, opera binasına yürüme mesafesinde. 70m², tam donanımlı, Türkçe konuşan komşular, bebek karyolası mevcut.", user:"Fatma A.", avatar:"FA", verified:true, featured:true, emoji:"🎭", contact:"+43 664 987 6543" },
-  { id:4, city:"Berlin", country:"🇩🇪", dest:"Antalya veya İzmir", type:"Daire", rooms:"1+1", from:"2025-09-01", to:"2025-09-30", family:"1-2 kişi", desc:"Prenzlauer Berg, 55m², modern döşenmiş, çalışma alanı var, hızlı internet. Sanatçı mahallesi, çok kültürlü ortam.", user:"Hasan B.", avatar:"HB", verified:true, featured:false, emoji:"🏛️", contact:"hasan@email.de" },
-  { id:5, city:"Londra", country:"🇬🇧", dest:"Paris veya Berlin", type:"Müstakil Ev", rooms:"4+1 ve üzeri", family:"Büyük Aile (6+)", from:"2025-07-15", to:"2025-08-15", desc:"East London, 120m² müstakil ev, bahçe, 4 yatak odası. Büyük aile için ideal. Metro durağına 10 dk.", user:"Zeynep O.", avatar:"ZO", verified:true, featured:false, emoji:"🏘️", contact:"zeynep@email.co.uk" },
-  { id:6, city:"Brüksel", country:"🇧🇪", dest:"Almanya veya Hollanda", type:"Daire", rooms:"2+1", from:"2025-08-10", to:"2025-09-10", family:"1-2 kişi", desc:"AB kurumlarına yakın, 68m², iki balkonlu, tam donanımlı. Sessiz Ixelles semtinde.", user:"Kerim Y.", avatar:"KY", verified:true, featured:false, emoji:"🇧🇪", contact:"+32 470 123 456" },
-];
 
-function renderSwaps() {
+
+
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
+async function renderSwaps() {
+  const grid = document.getElementById('swap-grid');
+  if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
+
+  let allSwaps = [];
+  try {
+    allSwaps = await sbGet('swap_offers', 'active=eq.true&order=featured.desc,created_at.desc');
+  } catch(e) { console.error('Swap fetch error:', e); }
+
+  window._swaps = allSwaps;
+  document.getElementById('stat-total').textContent = allSwaps.length;
+
+  filterAndRenderSwaps();
+}
+
+function filterAndRenderSwaps() {
+  const allSwaps = window._swaps || [];
   const cityQ = (document.getElementById('f-city').value||'').toLowerCase();
   const destQ = (document.getElementById('f-dest').value||'').toLowerCase();
   const typeDaire = document.getElementById('f-daire').checked;
@@ -383,15 +408,14 @@ function renderSwaps() {
   const famF = document.getElementById('f-family').checked;
   const famL = document.getElementById('f-large').checked;
 
-  let filtered = swaps.filter(s => {
-    if (cityQ && !s.city.toLowerCase().includes(cityQ) && !s.country.includes(cityQ)) return false;
-    if (destQ && !s.dest.toLowerCase().includes(destQ)) return false;
-    if ((typeDaire||typeEv||typeVilla) && !((typeDaire && s.type==='Daire')||(typeEv && s.type==='Müstakil Ev')||(typeVilla && s.type==='Villa / Yazlık'))) return false;
-    if ((fam1||famF||famL) && !((fam1 && s.family==='1-2 kişi')||(famF && s.family==='Aile (3-5)')||(famL && s.family==='Büyük Aile (6+)'))) return false;
+  let filtered = allSwaps.filter(s => {
+    if (cityQ && !s.city.toLowerCase().includes(cityQ)) return false;
+    if (destQ && !s.destinationination.toLowerCase().includes(destQ)) return false;
+    if ((typeDaire||typeEv||typeVilla) && !((typeDaire && s.home_type==='Daire')||(typeEv && s.home_type==='Müstakil Ev')||(typeVilla && s.home_type==='Villa / Yazlık'))) return false;
+    if ((fam1||famF||famL) && !((fam1 && s.family_size_size==='1-2 kişi')||(famF && s.family_size_size==='Aile (3-5)')||(famL && s.family_size_size==='Büyük Aile (6+)'))) return false;
     return true;
   });
 
-  document.getElementById('stat-total').textContent = swaps.length;
   document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> takas ilanı`;
 
   const grid = document.getElementById('swap-grid');
@@ -401,9 +425,9 @@ function renderSwaps() {
   }
 
   grid.innerHTML = filtered.map(s => `
-    <div class="swap-card ${s.featured?'featured':''}" onclick="openDetail(${s.id})">
+    <div class="swap-card ${s.featured?'featured':''}" onclick="openDetail(s.id)">
       <div class="card-img">
-        <div style="font-size:52px">${s.emoji}</div>
+        <div style="font-size:52px">${"🏠"}</div>
         ${s.verified?'<div class="card-verified">✅ Doğrulanmış</div>':''}
         ${s.featured?'<div class="card-featured-badge">⭐ Öne Çıkan</div>':''}
       </div>
@@ -415,19 +439,19 @@ function renderSwaps() {
         <div class="card-wants">
           <span>Gitmek istiyor:</span>
           <span class="card-wants-arrow">→</span>
-          <span class="card-wants-dest">${s.dest}</span>
+          <span class="card-wants-dest">${s.destination}</span>
         </div>
         <div class="card-details">
-          <span class="card-detail-tag">${s.type}</span>
+          <span class="card-detail-tag">${s.home_type}</span>
           <span class="card-detail-tag">${s.rooms}</span>
-          <span class="card-detail-tag">👨‍👩‍👧 ${s.family}</span>
-          <span class="card-detail-tag">📅 ${formatDate(s.from)}</span>
+          <span class="card-detail-tag">👨‍👩‍👧 ${s.family_size}</span>
+          <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
         </div>
         <div class="card-desc">${s.desc}</div>
         <div class="card-footer">
           <div class="card-user">
-            <div class="card-avatar">${s.avatar}</div>
-            <span class="card-username">${s.user}</span>
+            <div class="card-avatar">${s.user_name ? s.user_name.split(" ").map(n=>n[0]).join("").slice(0,2) : "??"}</div>
+            <span class="card-username">${s.user_name}</span>
           </div>
           <span class="card-date">→</span>
         </div>
@@ -443,21 +467,21 @@ function formatDate(d) {
 }
 
 function openDetail(id) {
-  const s = swaps.find(x => x.id===id);
+  const s = (window._swaps||[]).find(x => x.id===id);
   if (!s) return;
-  document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${s.emoji}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
-  document.getElementById('d-city').textContent = `${s.country} ${s.city}`;
-  document.getElementById('d-dest').textContent = s.dest;
-  document.getElementById('d-dates').textContent = `${formatDate(s.from)} – ${formatDate(s.to)}`;
-  document.getElementById('d-desc').textContent = s.desc;
+  document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
+  document.getElementById('d-city').textContent = `📍 ${s.city}`;
+  document.getElementById('d-dest').textContent = s.destinationination;
+  document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.to)}`;
+  document.getElementById('d-desc').textContent = s.description;
   document.getElementById('d-info-grid').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${s.type} · ${s.rooms}</div></div>
-    <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family}</div></div>
-    <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user}</div></div>
-    <div class="info-box"><div class="info-box-label">Gitmek İstiyor</div><div class="info-box-val">→ ${s.dest}</div></div>`;
-  const isPhone = s.contact.startsWith('+');
-  document.getElementById('d-msg-btn').onclick = () => window.location.href = `mailto:${s.contact}`;
-  document.getElementById('d-wa-btn').onclick = () => window.open(`https://wa.me/${s.contact.replace(/\s|\+/g,'')}`, '_blank');
+    <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${s.home_type} · ${s.rooms}</div></div>
+    <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
+    <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}</div></div>
+    <div class="info-box"><div class="info-box-label">Gitmek İstiyor</div><div class="info-box-val">→ ${s.destination}</div></div>`;
+  const isPhone = (s.contact||'').startsWith('+');
+  document.getElementById('d-msg-btn').onclick = () => { if(isPhone) window.location.href=`tel:${s.contact}`; else window.location.href=`mailto:${s.contact}`; };
+  document.getElementById('d-wa-btn').onclick = () => window.open(`https://wa.me/${(s.contact||'').replace(/\s|\+/g,'')}`, '_blank');
   document.getElementById('detail-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -472,22 +496,40 @@ function closePostModal() {
   document.getElementById('post-footer').style.display='block';
   document.getElementById('p-error').style.display='none';
 }
-function submitPost() {
+async function submitPost() {
   const city = document.getElementById('p-city').value.trim();
   const dest = document.getElementById('p-dest').value.trim();
   const desc = document.getElementById('p-desc').value.trim();
   const from = document.getElementById('p-from').value;
-  const to = document.getElementById('p-to').value;
-  const err = document.getElementById('p-error');
+  const to   = document.getElementById('p-to').value;
+  const err  = document.getElementById('p-error');
   if (!city||!dest||!desc||!from||!to) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
+  try {
+    await sbPost('swap_offers', {
+      user_name:      document.getElementById('p-name')?.value.trim() || 'Anonim',
+      city,
+      destination:    dest,
+      description:    desc,
+      available_from: from,
+      available_to:   to,
+      home_type:      document.getElementById('p-type')?.value || null,
+      rooms:          document.getElementById('p-rooms')?.value || null,
+      family_size:    document.getElementById('p-family')?.value || null,
+      contact:        document.getElementById('p-contact')?.value.trim() || null,
+      country:        'de',
+      featured:       false,
+      verified:       false,
+      active:         true
+    });
+  } catch(e) { console.error('Swap submit error:', e); }
   document.getElementById('post-body').style.display='none';
   document.getElementById('post-footer').style.display='none';
   document.getElementById('post-success').style.display='block';
-  setTimeout(() => closePostModal(), 3000);
+  setTimeout(() => { closePostModal(); renderSwaps(); }, 2500);
 }
 
-renderSwaps();
+document.addEventListener("DOMContentLoaded", function() { renderSwaps(); });
 </script>
 </body>
 </html>
