@@ -718,17 +718,34 @@
 </div>
 
 <script>
-  // ── DATA ──
-  const listings = [
-    { id:1, type:'job', title:'Almanca-Türkçe Tercüman', company:'Müller & Partner Rechtsanwälte', author:'Müller & Partner', location:'Frankfurt, 🇩🇪', cat:'translate', worktype:'onsite', price:'€2.800/ay', desc:'Hukuk büromuz için Almanca-Türkçe tercüman arıyoruz. Adli tercüme deneyimi tercih sebebidir. Tam zamanlı pozisyon.', featured:true, time:'2 saat önce', contact:'jobs@mueller-partner.de' },
-    { id:2, type:'gig', title:'Almanca Belge Çevirisi', company:null, author:'Zeynep K.', location:'Berlin, 🇩🇪 / Remote', cat:'translate', worktype:'remote', price:'€0,12/kelime', desc:'Resmi belgeler, sözleşmeler ve tıbbi raporlar için Almanca-Türkçe çeviri hizmeti. Hızlı teslimat, noter onaylı mümkün.', featured:true, time:'5 saat önce', contact:'zeynep.cevik@gmail.com' },
-    { id:3, type:'job', title:'Frontend Geliştirici', company:'StartupHub Amsterdam', author:'StartupHub', location:'Amsterdam, 🇳🇱', cat:'tech', worktype:'hybrid', price:'€4.500/ay', desc:'React ve TypeScript bilen frontend geliştirici arıyoruz. Türkçe konuşan bir ekibiz, uluslararası proje deneyimi sunuyoruz.', featured:false, time:'1 gün önce', contact:'hr@startuphub.nl' },
-    { id:4, type:'gig', title:'Logo & Kurumsal Kimlik Tasarımı', company:null, author:'Murat D.', location:'Wien, 🇦🇹 / Remote', cat:'design', worktype:'remote', price:'€250\'den başlayan', desc:'10 yıllık deneyimle logo, kartvizit ve kurumsal kimlik tasarımı. Portföyümü görmek için mesaj atın.', featured:false, time:'1 gün önce', contact:'+43 664 123 4567' },
-    { id:5, type:'job', title:'Muhasebe Uzmanı', company:'Demir Steuerberatung', author:'Demir Steuerberatung', location:'München, 🇩🇪', cat:'finance', worktype:'onsite', price:'€3.200/ay', desc:'Türk müvekkillerimize hizmet veren muhasebe ofisimiz için tecrübeli muhasebeci arıyoruz. Türkçe-Almanca iki dilli olmak şart.', featured:false, time:'2 gün önce', contact:'info@demir-steuer.de' },
-    { id:6, type:'gig', title:'Vergi Beyannamesi Danışmanlığı', company:null, author:'Hasan Ö.', location:'Köln, 🇩🇪 / Remote', cat:'finance', worktype:'remote', price:'€80/saat', desc:'Almanya\'da yaşayan Türkler için vergi beyannamesi hazırlama, Kindergeld ve Wohngeld başvuruları konusunda danışmanlık.', featured:false, time:'3 gün önce', contact:'hasan.ozturk@steuer.de' },
-    { id:7, type:'gig', title:'Çocuk Bakıcısı', company:null, author:'Fatma A.', location:'Hamburg, 🇩🇪', cat:'care', worktype:'onsite', price:'€15/saat', desc:'Türkçe ve Almanca konuşan, deneyimli çocuk bakıcısı. Referanslarım mevcuttur. Hafta içi ve hafta sonu müsaitim.', featured:false, time:'3 gün önce', contact:'+49 176 987 6543' },
-    { id:8, type:'job', title:'Serbest Elektrikçi / Usta', company:'Yılmaz Elektrik', author:'Yılmaz Elektrik', location:'Rotterdam, 🇳🇱', cat:'trade', worktype:'onsite', price:'€22/saat', desc:'Elektrik işleri, tesisat kurulumu ve tadilat projelerinde çalışacak deneyimli elektrikçi arıyoruz. Hollanda ehliyet şartı.', featured:false, time:'4 gün önce', contact:'info@yilmaz-elektrik.nl' },
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
 
+  function timeAgo(ts) {
+    if (!ts) return '';
+    const diff = (Date.now() - new Date(ts)) / 1000;
+    if (diff < 3600) return Math.round(diff / 60) + ' dk önce';
+    if (diff < 86400) return Math.round(diff / 3600) + ' saat önce';
+    if (diff < 604800) return Math.round(diff / 86400) + ' gün önce';
+    return Math.round(diff / 604800) + ' hafta önce';
+  }
+
+  // ── DB LISTINGS — populated from Supabase ──
+  window._dbListings = [];
+
+  // ── MIGRATION DATA (hardcoded — no DB table) ──
+  const listings = [
     // ── AVRUPA'YA GÖÇ ──
     { id:9,  type:"migration", title:"Almanya İş Vizesi Danışmanlığı",         company:null,                    author:"Ahmet Yıldız",     location:"Frankfurt, 🇩🇪 / Remote",  cat:"migration", worktype:"remote",  price:"€150/başvuru", desc:"Almanya Fachkräfteeinwanderungsgesetz kapsamında iş vizesi başvurusu. Diploma denkliği, iş arama ve vize desteği. 12 yıllık deneyim.", featured:true,  time:"1 gün önce",  contact:"ahmet@yildiz-beratung.de",  verified:true, badge:"✅ Doğrulanmış Danışman" },
     { id:10, type:"migration", title:"Hemşire & Bakıcı — Almanya Yerleştirme", company:"Pflege Connect GmbH",   author:"Pflege Connect",   location:"München, 🇩🇪",              cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Almanya bakım sektöründe hemşire ve yaşlı bakıcıları işverenlerle buluşturuyoruz. Dil kursu ve vize desteği dahil. Sizden ücret almıyoruz.", featured:true,  time:"2 gün önce",  contact:"info@pflege-connect.de",    verified:true, badge:"✅ Doğrulanmış Danışman" },
@@ -783,7 +800,11 @@
     } else {
       const postBtn = document.querySelector('.post-btn');
       if (postBtn) { postBtn.textContent = '+ İlan Ver'; postBtn.onclick = openPostModal; }
-      renderListings();
+      if (mode === 'migration') {
+        renderListings();
+      } else {
+        fetchListings();
+      }
     }
 
     // Reset country bar
@@ -805,15 +826,14 @@
     const q = document.getElementById('search-input').value.toLowerCase().trim();
     const checkedCats = ['tech','translate','legal','design','finance','care','trade','other'].filter(c => document.getElementById('f-'+c)?.checked);
     const checkedWork = ['remote','onsite','hybrid'].filter(w => document.getElementById('f-'+w)?.checked);
+    const dbItems = window._dbListings || [];
 
-    return listings.filter(l => {
+    return dbItems.filter(l => {
       if (activeMode !== 'all' && l.type !== activeMode) return false;
-      if (activeMode === 'all' && l.type === 'migration') return false;
       if (activeCat !== 'all' && l.cat !== activeCat) return false;
-      if (activeMigrationCountry !== 'all' && !l.location.includes(activeMigrationCountry)) return false;
       if (checkedCats.length && !checkedCats.includes(l.cat)) return false;
       if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
-      if (q && !l.title.toLowerCase().includes(q) && !l.desc.toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
+      if (q && !(l.title||'').toLowerCase().includes(q) && !(l.description||'').toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
       return true;
     });
   }
@@ -895,6 +915,7 @@
   }
 
   function renderListings() {
+    const dbItems = window._dbListings || [];
     const filtered = activeMode === 'migration'
       ? listings.filter(l => {
           if (l.type !== 'migration') return false;
@@ -903,9 +924,9 @@
         })
       : getFiltered();
     const sorted = [...filtered].sort((a,b) => a.featured === b.featured ? 0 : a.featured ? -1 : 1);
-    const jobs = listings.filter(l => l.type === 'job').length;
-    const gigs = listings.filter(l => l.type === 'gig').length;
-    document.getElementById('stat-total').textContent = listings.filter(l => l.type !== 'migration').length;
+    const jobs = dbItems.filter(l => l.type === 'job').length;
+    const gigs = dbItems.filter(l => l.type === 'gig').length;
+    document.getElementById('stat-total').textContent = jobs + gigs;
     document.getElementById('stat-jobs').textContent = jobs;
     document.getElementById('stat-gigs').textContent = gigs;
     document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> ilan bulundu`;
@@ -926,29 +947,33 @@
       </div>` : '';
 
     if (!sorted.length) {
-      container.innerHTML = scamWarning + `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
+      if (activeMode === 'migration') {
+        container.innerHTML = scamWarning + `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
+      } else {
+        container.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">📋</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div><p style="font-size:13px;margin-bottom:16px">İlk ilanı sen ver!</p><button onclick="openPostModal()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
+      }
       return;
     }
     container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
-      <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail(${l.id})" style="cursor:pointer;">
+      <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
         <div class="listing-avatar" style="background:${catBg[l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.cat]||'#185FA5'}">${catEmoji[l.cat]||'✈️'}</div>
         <div class="listing-body">
           ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
           <div class="listing-top">
             <div class="listing-title">${l.title}</div>
-            <div class="listing-price">${l.price}</div>
+            <div class="listing-price">${l.price||''}</div>
           </div>
           <div class="listing-meta">
-            <span class="listing-author">${l.company || l.author}</span>
+            <span class="listing-author">${l.company || l.author || ''}</span>
             <span style="color:var(--sand)">·</span>
-            <span class="listing-location">📍 ${l.location}</span>
+            <span class="listing-location">📍 ${l.location||''}</span>
           </div>
-          <div class="listing-desc">${l.desc}</div>
+          <div class="listing-desc">${l.description||l.desc||''}</div>
           <div class="listing-footer">
             <span class="listing-tag ${l.type === 'migration' ? 'tag-job' : l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'migration' ? "✈️ Avrupa'ya Göç" : l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
             <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
-            <span class="listing-time">${l.time}</span>
+            <span class="listing-time">${l.created_at ? timeAgo(l.created_at) : (l.time||'')}</span>
           </div>
         </div>
       </div>`).join('') + `</div>`;
@@ -1026,7 +1051,10 @@
     document.getElementById('price-label').textContent = type === 'gig' ? 'Fiyat' : 'Ücret / Bütçe';
   }
 
-  function submitPost() {
+  // Pending post stored between form → payment steps
+  let _pendingPost = null;
+
+  async function submitPost() {
     const title = document.getElementById('p-title').value.trim();
     const desc  = document.getElementById('p-desc').value.trim();
     const err   = document.getElementById('p-error');
@@ -1036,9 +1064,26 @@
     }
     err.style.display = 'none';
 
+    _pendingPost = {
+      type:        selectedPostType,
+      title,
+      company:     null,
+      author:      'Anonim',
+      location:    document.getElementById('p-location').value.trim() || 'Almanya',
+      cat:         document.getElementById('p-cat').value,
+      worktype:    document.getElementById('p-worktype').value,
+      price:       document.getElementById('p-price').value.trim() || null,
+      description: desc,
+      contact:     document.getElementById('p-contact').value.trim() || null,
+      active:      true,
+      country:     'de',
+    };
+
     if (selectedBundle === 'none') {
-      // Free — publish directly
+      _pendingPost.featured = false;
+      try { await sbPost('listings', _pendingPost); } catch(e) { console.error('Listing insert error:', e); }
       showSuccess(false);
+      setTimeout(() => fetchListings(), 3600);
     } else {
       // Paid — show payment step
       document.getElementById('post-form-body').style.display = 'none';
@@ -1077,9 +1122,14 @@
     btn.textContent = 'İşleniyor...';
     btn.disabled = true;
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      if (_pendingPost) {
+        _pendingPost.featured = true;
+        try { await sbPost('listings', _pendingPost); } catch(e) { console.error('Featured listing insert error:', e); }
+      }
       document.getElementById('payment-step').style.display = 'none';
       showSuccess(true);
+      setTimeout(() => fetchListings(), 3600);
     }, 1500);
   }
 
@@ -1105,8 +1155,23 @@
     el.value = v;
   }
 
+  async function fetchListings() {
+    if (activeMode !== 'migration' && activeMode !== 'seeker') {
+      const container = document.getElementById('listings');
+      if (container) container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
+    }
+    try {
+      const data = await sbGet('listings', 'active=eq.true&order=featured.desc,created_at.desc');
+      window._dbListings = data;
+    } catch(e) {
+      console.error('Listings fetch error:', e);
+      window._dbListings = [];
+    }
+    renderListings();
+  }
+
   // Init
-  renderListings();
+  fetchListings();
 
   function toggleMenu() {
     const hb = document.getElementById('hamburger');
@@ -1179,7 +1244,7 @@
 
 <script>
   function openDetail(id) {
-    const l = listings.find(x => x.id === id);
+    const l = (window._dbListings||[]).find(x => x.id === id) || listings.find(x => String(x.id) === String(id));
     if (!l) return;
 
     document.getElementById('detail-icon').style.background = catBg[l.cat];
@@ -1188,7 +1253,7 @@
     document.getElementById('detail-title').textContent = l.title;
     document.getElementById('detail-company').textContent = (l.company || l.author) + '  ·  📍 ' + l.location;
     document.getElementById('detail-price').textContent = l.price;
-    document.getElementById('detail-desc').textContent = l.desc;
+    document.getElementById('detail-desc').textContent = l.description || l.desc || '';
 
     const tags = document.getElementById('detail-tags');
     tags.innerHTML = `
