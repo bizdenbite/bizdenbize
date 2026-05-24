@@ -433,7 +433,7 @@ function filterAndRenderSwaps() {
       </div>
       <div class="card-body">
         <div class="card-location">
-          <span class="card-flag">${{de:"🇩🇪",nl:"🇳🇱",be:"🇧🇪",at:"🇦🇹",gb:"🇬🇧",fr:"🇫🇷"}[(s.country||'').toLowerCase()]||s.country}</span>
+          <span class="card-flag"><img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" alt="${(s.country||'').toUpperCase()}" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;"></span>
           <span class="card-city">${s.city}</span>
         </div>
         <div class="card-wants">
@@ -470,7 +470,7 @@ function openDetail(id) {
   const s = (window._swaps||[]).find(x => x.id===id);
   if (!s) return;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
-  document.getElementById('d-city').textContent = `📍 ${s.city}`;
+  document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
   document.getElementById('d-dest').textContent = s.destination;
   document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
