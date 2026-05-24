@@ -433,7 +433,7 @@ function filterAndRenderSwaps() {
       </div>
       <div class="card-body">
         <div class="card-location">
-          <span class="card-flag">${s.country}</span>
+          <span class="card-flag">${{de:"🇩🇪",nl:"🇳🇱",be:"🇧🇪",at:"🇦🇹",gb:"🇬🇧",fr:"🇫🇷"}[s.country]||s.country}</span>
           <span class="card-city">${s.city}</span>
         </div>
         <div class="card-wants">
@@ -447,7 +447,7 @@ function filterAndRenderSwaps() {
           <span class="card-detail-tag">👨‍👩‍👧 ${s.family_size}</span>
           <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
         </div>
-        <div class="card-desc">${s.desc}</div>
+        <div class="card-desc">${s.description||""}</div>
         <div class="card-footer">
           <div class="card-user">
             <div class="card-avatar">${s.user_name ? s.user_name.split(" ").map(n=>n[0]).join("").slice(0,2) : "??"}</div>
