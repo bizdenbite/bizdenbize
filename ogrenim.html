@@ -739,7 +739,16 @@ render();
     document.getElementById('suggest-footer').style.display = 'block';
   }
 
-  function submitSuggestion() {
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
+  async function submitSuggestion() {
     const title = document.getElementById('sug-title').value.trim();
     const url   = document.getElementById('sug-url').value.trim();
     const desc  = document.getElementById('sug-desc').value.trim();
@@ -752,25 +761,19 @@ render();
     err.style.display = 'none';
 
     const suggestion = {
-      title, url, desc,
-      country: document.getElementById('sug-country').value,
-      topic:   document.getElementById('sug-topic').value,
-      submitted_at: new Date().toISOString(),
-      page: 'ogrenim'
+      title,
+      url,
+      description: desc,
+      country:     document.getElementById('sug-country').value || null,
+      topic:       document.getElementById('sug-topic').value || null,
+      page:        'ogrenim',
     };
 
-    // Supabase if available, else mailto fallback
-    if (window.supabase) {
-      window.supabase.from('library_suggestions').insert([suggestion])
-        .then(({ error }) => { error ? sendMailto(suggestion) : showSuccess(); });
-    } else {
-      sendMailto(suggestion);
+    try {
+      await sbPost('suggestions', suggestion);
+    } catch(e) {
+      console.error('Suggestion insert error:', e);
     }
-  }
-
-  function sendMailto(s) {
-    const body = `Kaynak: ${s.title}\nLink: ${s.url}\nÜlke: ${s.country}\nKonu: ${s.topic}\nAçıklama: ${s.desc}`;
-    window.location.href = `mailto:admin@bizdenbize.com?subject=Öğrenim Kaynak Önerisi: ${encodeURIComponent(s.title)}&body=${encodeURIComponent(body)}`;
     showSuccess();
   }
 

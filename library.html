@@ -947,7 +947,16 @@
     selectedSugType = btn.dataset.type;
   }
 
-  function submitSuggestion() {
+  // ── Supabase Integration ──
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
+  async function submitSuggestion() {
     const title = document.getElementById('sug-title').value.trim();
     const url   = document.getElementById('sug-url').value.trim();
     const desc  = document.getElementById('sug-desc').value.trim();
@@ -960,32 +969,21 @@
     }
     err.style.display = 'none';
 
-    // Build suggestion object for Supabase or mailto fallback
     const suggestion = {
       title,
       url,
-      cat:     document.getElementById('sug-cat').value,
-      country: document.getElementById('sug-country').value,
-      type:    selectedSugType,
-      desc,
-      submitted_at: new Date().toISOString(),
+      description: desc,
+      cat:         document.getElementById('sug-cat').value || null,
+      country:     document.getElementById('sug-country').value || null,
+      type:        selectedSugType || null,
+      page:        'library',
     };
 
-    // Try Supabase if available, else mailto fallback
-    if (window.supabase) {
-      window.supabase.from('library_suggestions').insert([suggestion])
-        .then(({ error }) => {
-          if (error) sendMailtoFallback(suggestion);
-          else showSuggestSuccess();
-        });
-    } else {
-      sendMailtoFallback(suggestion);
+    try {
+      await sbPost('suggestions', suggestion);
+    } catch(e) {
+      console.error('Suggestion insert error:', e);
     }
-  }
-
-  function sendMailtoFallback(s) {
-    const body = `Kaynak Başlığı: ${s.title}\nLink: ${s.url}\nKategori: ${s.cat}\nÜlke: ${s.country}\nTür: ${s.type}\nAçıklama: ${s.desc}`;
-    window.location.href = `mailto:admin@bizdenbize.com?subject=Kütüphane Kaynak Önerisi: ${encodeURIComponent(s.title)}&body=${encodeURIComponent(body)}`;
     showSuggestSuccess();
   }
 
