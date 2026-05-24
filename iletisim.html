@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — İletişim</title>
+  <meta name="description" content="BizdenBize ile iletişime geçin — sorularınız, geri bildirimleriniz ve bildirileriniz için.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link img{height:44px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+
+    /* HERO */
+    .hero{background:var(--ink);padding:56px 24px 48px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 0%,rgba(27,58,140,.28) 0%,transparent 55%);}
+    .hero-inner{position:relative;max-width:600px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,50px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;}
+
+    /* BODY */
+    .page-body{max-width:960px;margin:0 auto;padding:48px 24px 80px;display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start;}
+    @media(max-width:840px){.page-body{grid-template-columns:1fr;}}
+
+    /* FORM */
+    .form-section{}
+    .form-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .form-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+    .field-group{display:flex;flex-direction:column;gap:16px;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .field-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;}
+    .field-input{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .15s;}
+    .field-input:focus{border-color:var(--navy);}
+    textarea.field-input{resize:none;min-height:130px;line-height:1.6;}
+    select.field-input{cursor:pointer;}
+    .submit-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;margin-top:4px;}
+    .submit-btn:hover{background:#2348A8;}
+    .form-note{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;}
+    .success-msg{display:none;text-align:center;padding:40px 20px;background:var(--white);border:1px solid var(--sand);border-radius:16px;}
+    .success-msg h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
+    .success-msg p{font-size:14px;color:var(--muted);line-height:1.6;}
+
+    /* SIDEBAR */
+    .contact-sidebar{display:flex;flex-direction:column;gap:16px;}
+    .contact-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px 22px;}
+    .cc-icon{font-size:24px;margin-bottom:8px;}
+    .cc-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .cc-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:10px;}
+    .cc-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;transition:color .15s;}
+    .cc-link:hover{color:#2348A8;}
+    .abibot-card{background:var(--ink);border-radius:16px;padding:20px 22px;}
+    .abibot-card .cc-title{color:#fff;}
+    .abibot-card .cc-desc{color:rgba(255,255,255,.5);}
+    .abibot-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .2s;margin-top:4px;}
+    .abibot-btn:hover{background:#d4a93c;}
+    .response-time{background:rgba(30,123,75,.07);border:1px solid rgba(30,123,75,.2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;}
+    .rt-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+    .rt-text{font-size:12px;color:var(--green);font-weight:500;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">İletişim</span>
+  </div>
+  <a href="mahallem.html" class="nav-back">← Geri dön</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">✉️ İletişim</div>
+    <h1>Merhaba, nasıl yardımcı olabiliriz?</h1>
+    <p class="hero-sub">Ekibimiz genellikle 24-48 saat içinde yanıt verir. Acil sorular için AbiBOT'u deneyin.</p>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- FORM -->
+  <div class="form-section">
+    <h2 class="form-title">Bize Yazın</h2>
+    <p class="form-sub">Sorularınız, geri bildirimleriniz veya iş birliği teklifleriniz için formu doldurun.</p>
+
+    <div id="contact-form">
+      <div class="field-group">
+        <div class="field-row">
+          <div>
+            <label class="field-label">Adınız *</label>
+            <input class="field-input" id="c-name" type="text" placeholder="Ayşe Yılmaz">
+          </div>
+          <div>
+            <label class="field-label">E-posta *</label>
+            <input class="field-input" id="c-email" type="email" placeholder="email@example.com">
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Konu</label>
+          <select class="field-input" id="c-subject">
+            <option value="">Konu seçin...</option>
+            <option value="genel">💬 Genel Soru</option>
+            <option value="teknik">🔧 Teknik Sorun</option>
+            <option value="bildir">🚨 İlan / Kullanıcı Bildirimi</option>
+            <option value="isbirligi">🤝 İş Birliği</option>
+            <option value="basin">📰 Basın & Medya</option>
+            <option value="kvkk">🔒 KVKK / Veri Talebi</option>
+            <option value="diger">📦 Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Mesajınız *</label>
+          <textarea class="field-input" id="c-message" rows="5" placeholder="Mesajınızı buraya yazın..."></textarea>
+        </div>
+        <div id="c-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+        <button class="submit-btn" onclick="submitContact()">Gönder →</button>
+        <p class="form-note">Verileriniz yalnızca talebinize yanıt vermek için kullanılır. <a href="gizlilik.html" style="color:var(--navy)">Gizlilik Politikası</a></p>
+      </div>
+    </div>
+
+    <div class="success-msg" id="contact-success">
+      <div style="font-size:48px;">✅</div>
+      <h3>Mesajınız iletildi!</h3>
+      <p>24-48 saat içinde e-posta adresinize yanıt göndereceğiz.<br>Teşekkür ederiz!</p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="contact-sidebar">
+
+    <div class="response-time">
+      <div class="rt-dot"></div>
+      <div class="rt-text">Ortalama yanıt süresi: <strong>24-48 saat</strong></div>
+    </div>
+
+    <div class="contact-card">
+      <div class="cc-icon">📧</div>
+      <div class="cc-title">E-posta</div>
+      <div class="cc-desc">Genel sorular ve geri bildirimler için.</div>
+      <a href="mailto:info@bizdenbize.com" class="cc-link">info@bizdenbize.com →</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="cc-icon">⚖️</div>
+      <div class="cc-title">Yasal & KVKK</div>
+      <div class="cc-desc">Hukuki konular, veri talepleri ve KVKK başvuruları.</div>
+      <a href="mailto:legal@bizdenbize.com" class="cc-link">legal@bizdenbize.com →</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="cc-icon">🚨</div>
+      <div class="cc-title">Güvenlik & Bildirimi</div>
+      <div class="cc-desc">Dolandırıcılık, kural ihlali veya güvenlik açığı bildirimi.</div>
+      <a href="mailto:guvenlik@bizdenbize.com" class="cc-link">guvenlik@bizdenbize.com →</a>
+    </div>
+
+    <div class="abibot-card">
+      <div class="cc-icon">🤖</div>
+      <div class="cc-title">Hızlı Cevap İstiyorsanız</div>
+      <div class="cc-desc">Vize, oturum izni, Kindergeld gibi konularda AbiBOT anında yanıt verir.</div>
+      <a href="abibot.html" class="abibot-btn">🤖 AbiBOT'a Sor</a>
+    </div>
+
+    <div class="contact-card" style="background:rgba(27,58,140,.04);border-color:rgba(27,58,140,.15);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;">📍 Adres</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;">
+        BizdenBize UG (haftungsbeschränkt)<br>
+        Musterstraße 1<br>
+        60311 Frankfurt am Main<br>
+        Deutschland
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+  // Supabase integration
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+
+  async function submitContact() {
+    const name    = document.getElementById('c-name').value.trim();
+    const email   = document.getElementById('c-email').value.trim();
+    const subject = document.getElementById('c-subject').value;
+    const message = document.getElementById('c-message').value.trim();
+    const err     = document.getElementById('c-error');
+
+    if (!name || !email || !message) {
+      err.textContent = 'Lütfen Ad, E-posta ve Mesaj alanlarını doldurun.';
+      err.style.display = 'block'; return;
+    }
+    if (!email.includes('@')) {
+      err.textContent = 'Geçerli bir e-posta adresi girin.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+
+    try {
+      await fetch(_SB_URL + '/rest/v1/contact_messages', {
+        method: 'POST',
+        headers: { ..._SB_H, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ name, email, subject, message })
+      });
+    } catch(e) { console.error('Contact submit error:', e); }
+
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+  }
+</script>
+</body>
+</html>

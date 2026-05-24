@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Sık Sorulan Sorular</title>
+  <meta name="description" content="BizdenBize hakkında sık sorulan sorular ve cevapları.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+    nav{position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link img{height:44px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+
+    /* HERO */
+    .hero{background:var(--ink);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 0%,rgba(27,58,140,.3) 0%,transparent 55%),radial-gradient(ellipse at 10% 100%,rgba(201,168,76,.15) 0%,transparent 50%);}
+    .hero-inner{position:relative;max-width:640px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
+    .hero h1 em{color:var(--gold);font-style:italic;}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:24px;}
+    .hero-search{display:flex;max-width:480px;margin:0 auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;overflow:hidden;}
+    .hero-search input{flex:1;padding:12px 16px;background:none;border:none;outline:none;font-family:inherit;font-size:14px;color:#fff;}
+    .hero-search input::placeholder{color:rgba(255,255,255,.35);}
+
+    /* BODY */
+    .page-body{max-width:860px;margin:0 auto;padding:48px 24px 80px;display:grid;grid-template-columns:200px 1fr;gap:40px;}
+    @media(max-width:768px){.page-body{grid-template-columns:1fr;}.faq-sidebar{display:none;}}
+
+    /* SIDEBAR */
+    .faq-sidebar{position:sticky;top:80px;height:fit-content;display:flex;flex-direction:column;gap:4px;}
+    .faq-sidebar-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:6px;}
+    .faq-cat-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;transition:all .15s;text-align:left;width:100%;}
+    .faq-cat-btn:hover{background:var(--warm);color:var(--ink);}
+    .faq-cat-btn.active{background:rgba(27,58,140,.08);color:var(--navy);font-weight:600;}
+
+    /* FAQ ITEMS */
+    .faq-group{margin-bottom:36px;}
+    .faq-group-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+    .faq-group-title::before{content:'';display:block;width:3px;height:20px;background:var(--navy);border-radius:2px;flex-shrink:0;}
+    .faq-item{background:var(--white);border:1px solid var(--sand);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
+    .faq-item.open{border-color:var(--navy);}
+    .faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;gap:12px;}
+    .faq-q-text{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4;}
+    .faq-chevron{font-size:12px;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+    .faq-item.open .faq-chevron{transform:rotate(180deg);}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+    .faq-item.open .faq-a{max-height:400px;}
+    .faq-a-inner{padding:0 20px 18px;font-size:14px;color:var(--muted);line-height:1.75;}
+    .faq-a-inner a{color:var(--navy);text-decoration:none;}
+    .faq-a-inner a:hover{text-decoration:underline;}
+    .faq-a-inner strong{color:var(--ink);}
+
+    /* CTA */
+    .cta-box{background:var(--navy);border-radius:16px;padding:28px 32px;text-align:center;margin-top:20px;}
+    .cta-box h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;}
+    .cta-box p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:20px;line-height:1.6;}
+    .cta-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;transition:all .2s;}
+    .cta-btn:hover{background:#d4a93c;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Sık Sorulan Sorular</span>
+  </div>
+  <a href="mahallem.html" class="nav-back">← Geri dön</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">❓ SSS</div>
+    <h1>Sık Sorulan <em>Sorular</em></h1>
+    <p class="hero-sub">BizdenBize hakkında merak ettiğiniz her şey burada.</p>
+    <div class="hero-search">
+      <input type="text" id="faq-search" placeholder="Soru ara... (örn: üyelik, güvenlik)" oninput="filterFaqs()">
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <aside class="faq-sidebar">
+    <div class="faq-sidebar-label">Kategoriler</div>
+    <button class="faq-cat-btn active" onclick="filterCat('all', this)">📋 Tümü</button>
+    <button class="faq-cat-btn" onclick="filterCat('platform', this)">🏘️ Platform</button>
+    <button class="faq-cat-btn" onclick="filterCat('account', this)">👤 Hesap</button>
+    <button class="faq-cat-btn" onclick="filterCat('listings', this)">📌 İlanlar</button>
+    <button class="faq-cat-btn" onclick="filterCat('security', this)">🔒 Güvenlik</button>
+    <button class="faq-cat-btn" onclick="filterCat('payment', this)">💳 Ödeme</button>
+    <button class="faq-cat-btn" onclick="filterCat('abibot', this)">🤖 AbiBOT</button>
+  </aside>
+
+  <main id="faq-main">
+
+    <div class="faq-group" data-cat="platform">
+      <div class="faq-group-title">🏘️ Platform Hakkında</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">BizdenBize nedir?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">BizdenBize, Avrupa'daki Türk göçmen topluluğu için tasarlanmış bir dijital mahalle platformudur. İş bulma, ev takası, sağlık rehberi, eğitim kaynakları ve topluluk etkinlikleri gibi konularda yardımcı olur. Şu an Almanya öncelikli yayındayız; diğer ülkeler yakında eklenecek.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Hangi ülkeleri kapsıyor?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Şu an <strong>Almanya</strong> tam aktif. Hollanda, Belçika, Avusturya, İngiltere ve Fransa yakında eklenecek. Türkiye bağlantılı içerikler (ev takası, dil kaynakları) tüm platformda mevcut.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">BizdenBize ücretsiz mi?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Temel üyelik ve platform hizmetlerinin tamamı <strong>ücretsizdir</strong>. İş ilanlarında "Öne Çıkan" seçeneği ücretlidir (€4,99/ilan). AbiBOT, kütüphane, ev takası ve topluluk özellikleri tamamen ücretsizdir.</div></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-cat="account">
+      <div class="faq-group-title">👤 Hesap ve Üyelik</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Nasıl üye olabilirim?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Şu an <a href="mahallem.html">bizdenbize.vercel.app</a> üzerinden siteyi kullanabilirsiniz. Tam üyelik sistemi (e-posta + profil) yakında devreye giriyor. Şimdi tüm özelliklere oturum açmadan erişebilirsiniz.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Hesabımı nasıl silebilirim?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner"><a href="mailto:info@bizdenbize.com">info@bizdenbize.com</a> adresine "Hesap Silme Talebi" konusuyla e-posta gönderin. Verileriniz GDPR/KVKK gereği 30 gün içinde kalıcı olarak silinir.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Profilimi Türkçe mi Almanca mı oluşturmalıyım?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Her iki dilde de profilinizi tamamlayabilirsiniz. Platform TR/DE/EN çok dilli yapıdadır. Topluluk ağırlıklı olarak Türkçe kullanmaktadır.</div></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-cat="listings">
+      <div class="faq-group-title">📌 İlanlar</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">İlan vermek ücretli mi?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Standart ilanlar tamamen <strong>ücretsiz</strong> ve 30 gün aktif kalır. "Öne Çıkan" ilanlar €4,99 ve 60 gün aktif kalır, listenin en üstünde görünür.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">İlanım neden görünmüyor?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">İlanlar yayınlandıktan hemen sonra aktif olur, inceleme gerekmez. Görünmüyorsa sayfayı yenileyin. Sorun devam ederse <a href="iletisim.html">iletişime geçin</a>.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Ev takasında para alıp verebilir miyim?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner"><strong>Hayır.</strong> Ev Takası bölümü tamamen parasız takas sistemidir. Para talep eden ilanlar dolandırıcılık sayılır ve kaldırılır. Lütfen bu tür ilanları bildirin.</div></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-cat="security">
+      <div class="faq-group-title">🔒 Güvenlik</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Verilerim güvende mi?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Verileriniz EU-Frankfurt bölgesindeki Supabase sunucularında saklanır. GDPR ve KVKK tam uyumlu çalışıyoruz. Şifreler şifrelenmiş, ödeme bilgileri ise yalnızca Stripe tarafından işlenir. Detaylar için <a href="gizlilik.html">Gizlilik Politikası</a>'mıza bakın.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Dolandırıcı bir ilanla karşılaşırsam ne yapmalıyım?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner"><a href="iletisim.html">İletişim formundan</a> veya <a href="mailto:guvenlik@bizdenbize.com">guvenlik@bizdenbize.com</a> adresinden bildirin. İlan incelenir ve 24 saat içinde kaldırılır. Para transfer etmeden önce mutlaka kimlik doğrulaması yapın.</div></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-cat="payment">
+      <div class="faq-group-title">💳 Ödeme</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Hangi ödeme yöntemlerini kabul ediyorsunuz?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Stripe aracılığıyla Visa, Mastercard, American Express ve SEPA banka havalesi kabul edilmektedir. Apple Pay ve Google Pay desteği yakında geliyor.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">İade alabilir miyim?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">İlan yayınlanmadan önce tam iade yapılır. Yayınlandıktan sonra iade yapılmamaktadır. Teknik sorun nedeniyle ilan yayınlanamazsa tam iade garanti edilir. İade için: <a href="mailto:billing@bizdenbize.com">billing@bizdenbize.com</a></div></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-cat="abibot">
+      <div class="faq-group-title">🤖 AbiBOT</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">AbiBOT ne işe yarar?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">AbiBOT, Avrupa'daki Türk göçmenler için yapay zeka destekli bir rehberdir. Vize, oturum izni, Kindergeld, Krankenversicherung, diploma denkliği gibi konularda Türkçe, Almanca ve İngilizce cevaplar verir. <a href="abibot.html">Hemen deneyin →</a></div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">AbiBOT'un cevapları ne kadar güvenilir?</span>
+          <span class="futed-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">AbiBOT genel bilgi sunar, hukuki veya tıbbi tavsiye değildir. Resmi kararlar için mutlaka yetkili kurumlara veya uzman avukat/doktora danışın. AbiBOT'u "ilk adım" olarak düşünün.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">AbiBOT'a sorduklarım saklanıyor mu?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Sorularınız anonim olarak iyileştirme amacıyla 12 ay saklanır, kişisel bilgilerinizle ilişkilendirilmez. Detaylar için <a href="gizlilik.html">Gizlilik Politikası</a>'na bakın.</div></div>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <h3>Sorunuz hâlâ cevapsız mı?</h3>
+      <p>Ekibimiz size yardımcı olmaktan mutluluk duyar. Ayrıca AbiBOT'a da sorabilirsiniz!</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="iletisim.html" class="cta-btn">✉️ Bize Yazın</a>
+        <a href="abibot.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.2);border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">🤖 AbiBOT'a Sor</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleFaq(qEl) {
+    const item = qEl.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function filterCat(cat, btn) {
+    document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.faq-group').forEach(g => {
+      g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
+    });
+  }
+
+  function filterFaqs() {
+    const q = document.getElementById('faq-search').value.toLowerCase();
+    document.querySelectorAll('.faq-item').forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    document.querySelectorAll('.faq-group').forEach(g => {
+      const visible = [...g.querySelectorAll('.faq-item')].some(i => i.style.display !== 'none');
+      g.style.display = visible ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

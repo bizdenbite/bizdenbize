@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Kullanım Koşulları</title>
+  <meta name="description" content="BizdenBize kullanım koşulları — platforma üyelik ve kullanım şartları.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link img{height:44px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+    .shell{display:grid;grid-template-columns:240px 1fr;gap:0;padding-top:58px;min-height:100vh;}
+    .sidebar{padding:32px 20px;border-right:1px solid rgba(212,197,169,.3);position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;}
+    .section-nav{display:flex;flex-direction:column;gap:1px;}
+    .section-nav-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:6px;}
+    .section-link{font-size:12px;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s;display:block;text-decoration:none;}
+    .section-link:hover{background:var(--warm);color:var(--ink);}
+    .last-updated{font-size:11px;color:var(--muted);padding:16px 10px 0;border-top:1px solid var(--warm);margin-top:20px;line-height:1.5;}
+    .other-links{margin-top:20px;display:flex;flex-direction:column;gap:4px;}
+    .other-link{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:7px;text-decoration:none;transition:background .15s;}
+    .other-link:hover{background:var(--warm);color:var(--navy);}
+    .main-content{padding:40px 60px 80px;max-width:820px;}
+    .legal-hero{margin-bottom:36px;}
+    .lh-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
+    .lh-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--ink);letter-spacing:-.6px;line-height:1.1;margin-bottom:10px;}
+    .lh-sub{font-size:14px;color:var(--muted);line-height:1.65;}
+    .legal-section{margin-bottom:36px;scroll-margin-top:80px;}
+    .ls-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+    .ls-title::before{content:'';display:block;width:3px;height:22px;background:var(--navy);border-radius:2px;flex-shrink:0;}
+    .ls-body{font-size:14px;color:var(--muted);line-height:1.8;}
+    .ls-body p{margin-bottom:12px;}
+    .ls-body p:last-child{margin-bottom:0;}
+    .ls-body strong{color:var(--ink);font-weight:600;}
+    .ls-body a{color:var(--navy);text-decoration:none;}
+    .ls-body a:hover{text-decoration:underline;}
+    .ls-body ul{margin:10px 0 10px 20px;display:flex;flex-direction:column;gap:6px;}
+    .ls-body li{line-height:1.6;}
+    .info-box{border-radius:12px;padding:16px 20px;margin-bottom:16px;border-left:3px solid;}
+    .info-box.blue{background:rgba(27,58,140,.05);border-color:var(--navy);}
+    .info-box.red{background:rgba(212,43,43,.05);border-color:var(--red);}
+    .info-box.gold{background:rgba(201,168,76,.08);border-color:var(--gold);}
+    .ib-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .info-box.blue .ib-title{color:var(--navy);}
+    .info-box.red .ib-title{color:var(--red);}
+    .info-box.gold .ib-title{color:#854F0B;}
+    .ib-body{font-size:13px;color:var(--muted);line-height:1.6;}
+    .section-divider{height:1px;background:var(--warm);margin:36px 0;}
+    .lang-content{display:none;}
+    .lang-content.active{display:block;}
+    .lang-switch{display:flex;gap:5px;margin-bottom:24px;}
+    .lang-btn{flex:1;padding:7px 6px;border-radius:8px;border:1.5px solid var(--sand);background:var(--white);font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--muted);transition:all .15s;text-align:center;}
+    .lang-btn:hover{border-color:var(--navy);color:var(--navy);}
+    .lang-btn.active{border-color:var(--navy);background:var(--navy);color:var(--white);}
+    @media(max-width:900px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.main-content{padding:24px 20px 60px;}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Kullanım Koşulları</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="legal.html" class="nav-back">📋 Tüm Yasal Belgeler</a>
+    <a href="mahallem.html" class="nav-back">← Geri dön</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 TR</button>
+      <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+    <div class="section-nav">
+      <div class="section-nav-label">Bölümler</div>
+      <a class="section-link" href="#section-eligibility">Üyelik</a>
+      <a class="section-link" href="#section-conduct">Davranış Kuralları</a>
+      <a class="section-link" href="#section-content">İçerik Politikası</a>
+      <a class="section-link" href="#section-listings">İlan Kuralları</a>
+      <a class="section-link" href="#section-payments">Ödemeler</a>
+      <a class="section-link" href="#section-liability">Sorumluluk</a>
+      <a class="section-link" href="#section-termination">Hesap Feshi</a>
+    </div>
+    <div class="last-updated">
+      Son güncelleme:<br><strong>Haziran 2025</strong><br><br>
+      Sorularınız için:<br><a href="mailto:legal@bizdenbize.com" style="color:var(--navy)">legal@bizdenbize.com</a>
+    </div>
+    <div class="other-links">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:4px;">İlgili Belgeler</div>
+      <a href="gizlilik.html" class="other-link">🔒 Gizlilik Politikası</a>
+      <a href="kvkk.html" class="other-link">🇹🇷 KVKK</a>
+      <a href="legal.html" class="other-link">🏢 Impressum</a>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+    <!-- TR -->
+    <div class="lang-content active" id="content-tr">
+      <div class="legal-hero">
+        <div class="lh-badge">📋 Kullanım Koşulları</div>
+        <h1 class="lh-title">Kullanım Koşulları</h1>
+        <p class="lh-sub">BizdenBize'yi kullanarak bu koşulları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.</p>
+      </div>
+
+      <div class="info-box blue">
+        <div class="ib-title">📌 Özet</div>
+        <div class="ib-body">BizdenBize, Avrupa'daki Türk topluluğu için bir platform. Gerçek kimliğinizle, dürüstlükle ve topluluk ruhuna uygun şekilde kullanmanızı bekliyoruz. Spam, dolandırıcılık ve hakaret kesinlikle yasaktır.</div>
+      </div>
+
+      <div class="legal-section" id="section-eligibility">
+        <h2 class="ls-title">Üyelik Koşulları</h2>
+        <div class="ls-body">
+          <p>BizdenBize'ye üye olmak için:</p>
+          <ul>
+            <li>18 yaşını doldurmuş olmanız gerekmektedir.</li>
+            <li>Gerçek kimliğinizle kayıt olmanız zorunludur.</li>
+            <li>Her kullanıcı yalnızca bir hesap açabilir.</li>
+            <li>Avrupa'da ikamet etmeniz veya Avrupa ile bağlantılı olmanız önerilir.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-conduct">
+        <h2 class="ls-title">Davranış Kuralları</h2>
+        <div class="ls-body">
+          <p>Platformda aşağıdakiler kesinlikle yasaktır:</p>
+          <ul>
+            <li>Hakaret, ayrımcılık, nefret söylemi veya taciz</li>
+            <li>Dolandırıcılık, yanıltıcı bilgi veya sahte kimlik</li>
+            <li>Spam, toplu mesaj veya bot kullanımı</li>
+            <li>Kötü amaçlı yazılım veya phishing linkleri paylaşmak</li>
+            <li>Fikri mülkiyet haklarının ihlali</li>
+            <li>Başka kullanıcıların kişisel bilgilerini izinsiz paylaşmak</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-content">
+        <h2 class="ls-title">İçerik Politikası</h2>
+        <div class="ls-body">
+          <p>Paylaştığınız içerikler için tam sorumluluk size aittir. BizdenBize, kurallara aykırı içerikleri önceden haber vermeksizin kaldırma hakkını saklı tutar.</p>
+          <p><strong>İzin verilen içerikler:</strong> Gerçek deneyimler, topluluk yardımlaşması, iş ilanları, etkinlik duyuruları, kaynak önerileri.</p>
+          <p><strong>Yasak içerikler:</strong> Yetişkin içerik, siyasi propaganda, ticari spam, kişisel bilgilerin ifşası.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-listings">
+        <h2 class="ls-title">İlan Kuralları</h2>
+        <div class="ls-body">
+          <ul>
+            <li>İlanlar gerçek ve güncel bilgi içermelidir.</li>
+            <li>İş ilanlarında işveren gerçek bir kurum/kişi olmalıdır.</li>
+            <li>Ev takası ilanlarında para talep etmek yasaktır.</li>
+            <li>Sahte veya yanıltıcı ilanlar hesap kapatılmasına yol açar.</li>
+            <li>Öne çıkarma ücreti ödenen ilanlar 60 gün, standart ilanlar 30 gün aktif kalır.</li>
+          </ul>
+        </div>
+        <div class="info-box red">
+          <div class="ib-title">🚨 Dolandırıcılık Uyarısı</div>
+          <div class="ib-body">Önceden para veya kişisel belge talep eden ilanları <a href="iletisim.html" style="color:var(--red)">bildirin</a>. Meşru işverenler asla önceden ücret talep etmez.</div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-payments">
+        <h2 class="ls-title">Ödemeler ve İadeler</h2>
+        <div class="ls-body">
+          <p>Öne çıkarma ilanı ödemeleri Stripe aracılığıyla güvenli şekilde işlenir.</p>
+          <p><strong>İade politikası:</strong> İlan yayınlanmadan önce iade talep edilebilir. İlan yayınlandıktan sonra iade yapılmaz. Teknik sorunlar nedeniyle ilan yayınlanamamışsa tam iade sağlanır.</p>
+          <p>İade talepleri için: <a href="mailto:billing@bizdenbize.com">billing@bizdenbize.com</a></p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-liability">
+        <h2 class="ls-title">Sorumluluk Reddi</h2>
+        <div class="ls-body">
+          <p>BizdenBize bir <strong>aracı platform</strong>dur. Kullanıcılar arasındaki anlaşmalar, iş sözleşmeleri, ev takası düzenlemeleri veya diğer etkileşimlerden doğan uyuşmazlıklarda BizdenBize taraf değildir ve sorumluluk kabul etmez.</p>
+          <p>Platform "olduğu gibi" sunulmaktadır. Hizmet kesintileri veya teknik aksaklıklar nedeniyle oluşan zararlardan sorumluluk kabul edilmez.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-termination">
+        <h2 class="ls-title">Hesap Feshi</h2>
+        <div class="ls-body">
+          <p>İstediğiniz zaman hesabınızı kapatabilirsiniz. Hesap kapatıldığında verileriniz 30 gün içinde silinir.</p>
+          <p>BizdenBize, bu koşulları ihlal eden hesapları önceden uyarı yapmaksızın askıya alma veya kapatma hakkını saklı tutar.</p>
+          <p>Bu koşullar Alman hukukuna tabi olup anlaşmazlıklarda Frankfurt am Main mahkemeleri yetkilidir.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DE -->
+    <div class="lang-content" id="content-de">
+      <div class="legal-hero">
+        <div class="lh-badge">📋 Nutzungsbedingungen</div>
+        <h1 class="lh-title">Nutzungsbedingungen</h1>
+        <p class="lh-sub">Durch die Nutzung von BizdenBize stimmen Sie diesen Bedingungen zu. Bitte lesen Sie diese sorgfältig.</p>
+      </div>
+      <div class="legal-section">
+        <h2 class="ls-title">Mitgliedschaft</h2>
+        <div class="ls-body">
+          <ul>
+            <li>Sie müssen mindestens 18 Jahre alt sein.</li>
+            <li>Eine Registrierung mit echter Identität ist erforderlich.</li>
+            <li>Jeder Nutzer darf nur ein Konto erstellen.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Verhaltensregeln</h2>
+        <div class="ls-body">
+          <p>Auf der Plattform sind folgende Handlungen verboten: Beleidigung, Diskriminierung, Hassrede, Betrug, Spam und Phishing-Links.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Haftungsausschluss</h2>
+        <div class="ls-body">
+          <p>BizdenBize ist eine <strong>Vermittlungsplattform</strong>. Für Vereinbarungen zwischen Nutzern übernimmt BizdenBize keine Haftung. Die Plattform wird "wie besehen" bereitgestellt.</p>
+          <p>Diese Bedingungen unterliegen deutschem Recht. Gerichtsstand ist Frankfurt am Main.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div class="lang-content" id="content-en">
+      <div class="legal-hero">
+        <div class="lh-badge">📋 Terms of Service</div>
+        <h1 class="lh-title">Terms of Service</h1>
+        <p class="lh-sub">By using BizdenBize, you agree to these terms. Please read them carefully.</p>
+      </div>
+      <div class="legal-section">
+        <h2 class="ls-title">Eligibility</h2>
+        <div class="ls-body">
+          <ul>
+            <li>You must be at least 18 years old.</li>
+            <li>Registration with your real identity is required.</li>
+            <li>Each user may only have one account.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Prohibited Conduct</h2>
+        <div class="ls-body">
+          <p>The following are strictly prohibited: harassment, discrimination, hate speech, fraud, spam, phishing, and impersonation.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Disclaimer</h2>
+        <div class="ls-body">
+          <p>BizdenBize is an <strong>intermediary platform</strong>. We are not party to agreements between users. The platform is provided "as is". These terms are governed by German law; Frankfurt am Main courts have jurisdiction.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setLang(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+    document.querySelectorAll('.lang-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('content-' + lang).classList.add('active');
+  }
+</script>
+</body>
+</html>

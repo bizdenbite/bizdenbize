@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Hakkımızda</title>
+  <meta name="description" content="BizdenBize hakkında — Avrupa'daki Türk topluluğu için kurulmuş dijital mahalle.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link img{height:44px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+
+    /* HERO */
+    .hero{background:var(--ink);padding:80px 24px 72px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(27,58,140,.35) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(212,43,43,.2) 0%,transparent 50%);}
+    .hero-inner{position:relative;max-width:680px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:4px 14px;border-radius:20px;margin-bottom:20px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,60px);font-weight:900;color:#fff;line-height:1.05;margin-bottom:16px;}
+    .hero h1 em{color:var(--gold);font-style:italic;}
+    .hero-sub{font-size:16px;color:rgba(255,255,255,.55);line-height:1.7;max-width:520px;margin:0 auto;}
+
+    /* MISSION */
+    .mission-section{max-width:800px;margin:0 auto;padding:64px 24px 0;}
+    .mission-quote{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,30px);font-style:italic;color:var(--ink);line-height:1.5;text-align:center;padding:0 20px;margin-bottom:48px;position:relative;}
+    .mission-quote::before{content:'"';font-size:80px;color:var(--sand);position:absolute;top:-20px;left:0;line-height:1;font-family:'Playfair Display',serif;}
+
+    /* PILLARS */
+    .pillars{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:64px;}
+    .pillar{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px 20px;}
+    .pillar-icon{font-size:32px;margin-bottom:12px;}
+    .pillar-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+    .pillar-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+    /* STORY */
+    .story-section{background:var(--white);border-top:1px solid var(--warm);border-bottom:1px solid var(--warm);padding:64px 24px;}
+    .story-inner{max-width:760px;margin:0 auto;}
+    .story-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
+    .story-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,38px);font-weight:900;color:var(--ink);margin-bottom:24px;line-height:1.15;}
+    .story-body{font-size:15px;color:var(--muted);line-height:1.8;display:flex;flex-direction:column;gap:16px;}
+
+    /* STATS */
+    .stats-section{max-width:800px;margin:0 auto;padding:56px 24px;}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
+    .stat-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:24px 20px;text-align:center;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:6px;}
+
+    /* VALUES */
+    .values-section{background:var(--navy);padding:64px 24px;}
+    .values-inner{max-width:800px;margin:0 auto;}
+    .values-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px;}
+    .values-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,38px);font-weight:900;color:#fff;margin-bottom:36px;line-height:1.15;}
+    .values-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .value-item{border-top:1px solid rgba(255,255,255,.15);padding-top:20px;}
+    .value-num{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-bottom:6px;}
+    .value-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;}
+    .value-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;}
+
+    /* CTA */
+    .cta-section{max-width:800px;margin:0 auto;padding:64px 24px 80px;text-align:center;}
+    .cta-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,36px);font-weight:900;color:var(--ink);margin-bottom:12px;}
+    .cta-sub{font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+    .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;transition:all .2s;}
+    .btn-primary:hover{background:#b82424;transform:translateY(-1px);}
+    .btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;background:transparent;color:var(--ink);border:1.5px solid var(--sand);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;transition:all .2s;}
+    .btn-ghost:hover{border-color:var(--ink);}
+
+    @media(max-width:640px){.values-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Hakkımızda</span>
+  </div>
+  <a href="mahallem.html" class="nav-back">← Geri dön</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🏘️ Dijital Mahalle</div>
+    <h1>Bizden <em>Bize</em></h1>
+    <p class="hero-sub">Avrupa'daki Türk göçmen topluluğu için kurulmuş, topluluktan topluluğa dijital mahalle platformu.</p>
+  </div>
+</div>
+
+<div class="mission-section">
+  <div class="mission-quote">
+    Yurt dışında Türk olmak — yalnız değil, birlikte daha güçlüyüz.
+  </div>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">🏘️</div>
+      <div class="pillar-title">Topluluk</div>
+      <div class="pillar-desc">Almanya'dan Hollanda'ya, Belçika'dan İngiltere'ye — aynı dili konuşan bir mahalle.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🤝</div>
+      <div class="pillar-title">Güven</div>
+      <div class="pillar-desc">Doğrulanmış üyeler, şeffaf ilanlar, gerçek insanlar. Dolandırıcılığa sıfır tolerans.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🌍</div>
+      <div class="pillar-title">Erişim</div>
+      <div class="pillar-desc">Almanca bürokratik kâbusu Türkçe çözmek için AbiBOT ve kütüphane kaynaklarımız.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">💡</div>
+      <div class="pillar-title">Bilgi</div>
+      <div class="pillar-desc">Sağlık rehberi, iş ilanları, öğrenim kaynakları — hepsi bir arada, ücretsiz.</div>
+    </div>
+  </div>
+</div>
+
+<div class="story-section">
+  <div class="story-inner">
+    <div class="story-label">Hikayemiz</div>
+    <h2 class="story-title">Neden BizdenBize?</h2>
+    <div class="story-body">
+      <p>Almanya'ya taşınan her Türk, benzer sorularla karşılaşır: Krankenversicherung nasıl seçilir? Kindergeld başvurusu nasıl yapılır? Diploma denkliği ne kadar sürer? Bu soruların cevabı çoğunlukla WhatsApp gruplarında, tanıdıklardan tanıdıklara ulaşır.</p>
+      <p>BizdenBize, bu bilgiyi organize etmek, bu topluluk enerjisini bir platforma taşımak ve Avrupa'daki her Türk'ün aynı kalitede bilgiye erişmesini sağlamak için kuruldu.</p>
+      <p>Frankfurt'tan başlıyoruz. Çünkü Almanya, Türk göçünün kalbidir. Ve oradan tüm Avrupa'ya yayılacağız — <strong>bizden bize</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val">15+</div>
+      <div class="stat-label">Aktif sayfa ve özellik</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">6</div>
+      <div class="stat-label">Avrupa ülkesi</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">EU-🇩🇪</div>
+      <div class="stat-label">Frankfurt sunucuları</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">%100</div>
+      <div class="stat-label">GDPR & KVKK uyumlu</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">TR/DE</div>
+      <div class="stat-label">İki dilli platform</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">0€</div>
+      <div class="stat-label">Temel kullanım ücreti</div>
+    </div>
+  </div>
+</div>
+
+<div class="values-section">
+  <div class="values-inner">
+    <div class="values-label">Değerlerimiz</div>
+    <h2 class="values-title">Bizi biz yapan prensipler</h2>
+    <div class="values-grid">
+      <div class="value-item">
+        <div class="value-num">01</div>
+        <div class="value-title">Topluluk önce gelir</div>
+        <div class="value-desc">Her karar önce topluluğun çıkarına göre alınır. Reklam kabul etmiyoruz, ilanı para için öne çıkarmıyoruz — sadece güven.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-num">02</div>
+        <div class="value-title">Şeffaflık</div>
+        <div class="value-desc">Ne yaptığımızı, neden yaptığımızı açıkça paylaşırız. Gizlilik politikamız, kullanım koşullarımız — hepsi açık ve anlaşılır Türkçe.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-num">03</div>
+        <div class="value-title">Güvenli alan</div>
+        <div class="value-desc">Taciz, ayrımcılık ve dolandırıcılığa sıfır tolerans. Doğrulanmış üye sistemi, ihlal bildirme mekanizması, 24 saatte müdahale.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-num">04</div>
+        <div class="value-title">Erişilebilirlik</div>
+        <div class="value-desc">Temel özellikler her zaman ücretsiz. Almanca bilmeden de, Almanya sistemini anlamaya çalışırken de yalnız hissetmemelisiniz.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <h2 class="cta-title">Topluluğa katılın</h2>
+  <p class="cta-sub">BizdenBize bir platform değil, bir mahalle. Ve her mahallede herkese yer var.</p>
+  <div class="cta-btns">
+    <a href="mahallem.html" class="btn-primary">🏘️ Mahallem'e Git</a>
+    <a href="iletisim.html" class="btn-ghost">✉️ Bize Yazın</a>
+  </div>
+</div>
+
+</body>
+</html>
