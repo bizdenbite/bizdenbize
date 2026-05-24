@@ -829,9 +829,10 @@
     const dbItems = window._dbListings || [];
 
     return dbItems.filter(l => {
+      const lcat = l.category || l.cat || '';
       if (activeMode !== 'all' && l.type !== activeMode) return false;
-      if (activeCat !== 'all' && l.cat !== activeCat) return false;
-      if (checkedCats.length && !checkedCats.includes(l.cat)) return false;
+      if (activeCat !== 'all' && lcat !== activeCat) return false;
+      if (checkedCats.length && !checkedCats.includes(lcat)) return false;
       if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
       if (q && !(l.title||'').toLowerCase().includes(q) && !(l.description||'').toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
       return true;
@@ -957,7 +958,7 @@
     container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
       <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
-        <div class="listing-avatar" style="background:${catBg[l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.cat]||'#185FA5'}">${catEmoji[l.cat]||'✈️'}</div>
+        <div class="listing-avatar" style="background:${catBg[l.category||l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.category||l.cat]||'#185FA5'}">${catEmoji[l.category||l.cat]||'✈️'}</div>
         <div class="listing-body">
           ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
           <div class="listing-top">
@@ -1070,7 +1071,7 @@
       company:     null,
       author:      'Anonim',
       location:    document.getElementById('p-location').value.trim() || 'Almanya',
-      cat:         document.getElementById('p-cat').value,
+      category:    document.getElementById('p-cat').value,
       worktype:    document.getElementById('p-worktype').value,
       price:       document.getElementById('p-price').value.trim() || null,
       description: desc,
@@ -1247,19 +1248,21 @@
     const l = (window._dbListings||[]).find(x => x.id === id) || listings.find(x => String(x.id) === String(id));
     if (!l) return;
 
-    document.getElementById('detail-icon').style.background = catBg[l.cat];
-    document.getElementById('detail-icon').style.color = catColor[l.cat];
-    document.getElementById('detail-icon').textContent = catEmoji[l.cat];
+    const lcat = l.category || l.cat || 'other';
+    document.getElementById('detail-icon').style.background = catBg[lcat] || 'rgba(24,95,165,.1)';
+    document.getElementById('detail-icon').style.color = catColor[lcat] || '#185FA5';
+    document.getElementById('detail-icon').textContent = catEmoji[lcat] || '📋';
     document.getElementById('detail-title').textContent = l.title;
     document.getElementById('detail-company').textContent = (l.company || l.author) + '  ·  📍 ' + l.location;
     document.getElementById('detail-price').textContent = l.price;
     document.getElementById('detail-desc').textContent = l.description || l.desc || '';
 
     const tags = document.getElementById('detail-tags');
+    const lcat = l.category || l.cat || '';
     tags.innerHTML = `
       <span class="listing-tag ${l.type === 'job' ? 'tag-job' : 'tag-gig'}" style="font-size:12px;padding:4px 12px;">${l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
       <span class="listing-tag tag-remote" style="font-size:12px;padding:4px 12px;">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
-      <span class="listing-tag tag-cat" style="font-size:12px;padding:4px 12px;">${catEmoji[l.cat]} ${document.querySelector('[data-cat="'+l.cat+'"]')?.textContent || l.cat}</span>
+      <span class="listing-tag tag-cat" style="font-size:12px;padding:4px 12px;">${catEmoji[lcat]} ${document.querySelector('[data-cat="'+lcat+'"]')?.textContent || lcat}</span>
       ${l.featured ? '<span class="listing-tag" style="background:rgba(201,168,76,.15);color:#8a6d00;font-size:12px;padding:4px 12px;">⭐ Öne Çıkan</span>' : ''}
     `;
 
