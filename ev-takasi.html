@@ -410,9 +410,9 @@ function filterAndRenderSwaps() {
 
   let filtered = allSwaps.filter(s => {
     if (cityQ && !s.city.toLowerCase().includes(cityQ)) return false;
-    if (destQ && !s.destinationination.toLowerCase().includes(destQ)) return false;
+    if (destQ && !(s.destination||'').toLowerCase().includes(destQ)) return false;
     if ((typeDaire||typeEv||typeVilla) && !((typeDaire && s.home_type==='Daire')||(typeEv && s.home_type==='Müstakil Ev')||(typeVilla && s.home_type==='Villa / Yazlık'))) return false;
-    if ((fam1||famF||famL) && !((fam1 && s.family_size_size==='1-2 kişi')||(famF && s.family_size_size==='Aile (3-5)')||(famL && s.family_size_size==='Büyük Aile (6+)'))) return false;
+    if ((fam1||famF||famL) && !((fam1 && (s.family_size||'').includes('1-2'))||(famF && (s.family_size||'').includes('3-5'))||(famL && (s.family_size||'').includes('6+')))) return false;
     return true;
   });
 
@@ -425,7 +425,7 @@ function filterAndRenderSwaps() {
   }
 
   grid.innerHTML = filtered.map(s => `
-    <div class="swap-card ${s.featured?'featured':''}" onclick="openDetail(s.id)">
+    <div class="swap-card ${s.featured?'featured':''}" onclick="openDetail('${s.id}')">
       <div class="card-img">
         <div style="font-size:52px">${"🏠"}</div>
         ${s.verified?'<div class="card-verified">✅ Doğrulanmış</div>':''}
@@ -471,8 +471,8 @@ function openDetail(id) {
   if (!s) return;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').textContent = `📍 ${s.city}`;
-  document.getElementById('d-dest').textContent = s.destinationination;
-  document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.to)}`;
+  document.getElementById('d-dest').textContent = s.destination;
+  document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
   document.getElementById('d-info-grid').innerHTML = `
     <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${s.home_type} · ${s.rooms}</div></div>
