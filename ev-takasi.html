@@ -433,7 +433,7 @@ function filterAndRenderSwaps() {
       </div>
       <div class="card-body">
         <div class="card-location">
-          <span class="card-flag">${{de:"🇩🇪",nl:"🇳🇱",be:"🇧🇪",at:"🇦🇹",gb:"🇬🇧",fr:"🇫🇷"}[s.country]||s.country}</span>
+          <span class="card-flag">${{de:"🇩🇪",nl:"🇳🇱",be:"🇧🇪",at:"🇦🇹",gb:"🇬🇧",fr:"🇫🇷"}[(s.country||'').toLowerCase()]||s.country}</span>
           <span class="card-city">${s.city}</span>
         </div>
         <div class="card-wants">
