@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Çerez Politikası</title>
+  <meta name="description" content="BizdenBize çerez politikası — hangi çerezleri kullandığımız ve nasıl yönetebileceğiniz.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link img{height:44px;width:auto;}
+    .nav-divider{width:1px;height:18px;background:var(--sand);}
+    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
+    .nav-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;}
+    .nav-back:hover{color:var(--navy);}
+    .shell{display:grid;grid-template-columns:240px 1fr;gap:0;padding-top:58px;min-height:100vh;}
+    .sidebar{padding:32px 20px;border-right:1px solid rgba(212,197,169,.3);position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;}
+    .lang-switch{display:flex;gap:5px;margin-bottom:24px;}
+    .lang-btn{flex:1;padding:7px 6px;border-radius:8px;border:1.5px solid var(--sand);background:var(--white);font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;color:var(--muted);transition:all .15s;text-align:center;}
+    .lang-btn:hover{border-color:var(--navy);color:var(--navy);}
+    .lang-btn.active{border-color:var(--navy);background:var(--navy);color:var(--white);}
+    .section-nav{display:flex;flex-direction:column;gap:1px;}
+    .section-nav-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:6px;}
+    .section-link{font-size:12px;color:var(--muted);padding:5px 10px;border-radius:6px;display:block;text-decoration:none;transition:all .15s;}
+    .section-link:hover{background:var(--warm);color:var(--ink);}
+    .last-updated{font-size:11px;color:var(--muted);padding:16px 10px 0;border-top:1px solid var(--warm);margin-top:20px;line-height:1.5;}
+    .other-links{margin-top:20px;display:flex;flex-direction:column;gap:4px;}
+    .other-link{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:7px;text-decoration:none;transition:background .15s;}
+    .other-link:hover{background:var(--warm);color:var(--navy);}
+    .main-content{padding:40px 60px 80px;max-width:820px;}
+    .lang-content{display:none;}
+    .lang-content.active{display:block;}
+    .legal-hero{margin-bottom:36px;}
+    .lh-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
+    .lh-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--ink);letter-spacing:-.6px;line-height:1.1;margin-bottom:10px;}
+    .lh-sub{font-size:14px;color:var(--muted);line-height:1.65;}
+    .legal-section{margin-bottom:36px;scroll-margin-top:80px;}
+    .ls-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+    .ls-title::before{content:'';display:block;width:3px;height:22px;background:var(--navy);border-radius:2px;flex-shrink:0;}
+    .ls-body{font-size:14px;color:var(--muted);line-height:1.8;}
+    .ls-body p{margin-bottom:12px;}
+    .ls-body p:last-child{margin-bottom:0;}
+    .ls-body strong{color:var(--ink);font-weight:600;}
+    .ls-body a{color:var(--navy);text-decoration:none;}
+    .ls-body a:hover{text-decoration:underline;}
+    .ls-body ul{margin:10px 0 10px 20px;display:flex;flex-direction:column;gap:6px;}
+    .ls-body li{line-height:1.6;}
+    .cookie-table{width:100%;border-collapse:collapse;margin-top:12px;}
+    .cookie-table th{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:2px solid var(--sand);}
+    .cookie-table td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--warm);color:var(--muted);vertical-align:top;}
+    .cookie-table td:first-child{color:var(--ink);font-weight:500;width:25%;}
+    .cookie-table tr:last-child td{border-bottom:none;}
+    .cookie-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+    .badge-required{background:rgba(30,123,75,.1);color:var(--green);}
+    .badge-optional{background:rgba(27,58,140,.08);color:var(--navy);}
+    .info-box{border-radius:12px;padding:16px 20px;margin-bottom:16px;border-left:3px solid;}
+    .info-box.gold{background:rgba(201,168,76,.08);border-color:var(--gold);}
+    .info-box.blue{background:rgba(27,58,140,.05);border-color:var(--navy);}
+    .ib-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .info-box.gold .ib-title{color:#854F0B;}
+    .info-box.blue .ib-title{color:var(--navy);}
+    .ib-body{font-size:13px;color:var(--muted);line-height:1.6;}
+    .section-divider{height:1px;background:var(--warm);margin:36px 0;}
+    .pref-btn{padding:12px 24px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .2s;}
+    .pref-btn:hover{background:#2348A8;}
+    @media(max-width:900px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.main-content{padding:24px 20px 60px;}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Çerez Politikası</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="legal.html#cookies" class="nav-back">📋 Tüm Yasal Belgeler</a>
+    <a href="mahallem.html" class="nav-back">← Geri dön</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 TR</button>
+      <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+    <div class="section-nav">
+      <div class="section-nav-label">Bölümler</div>
+      <a class="section-link" href="#section-what">Çerez Nedir?</a>
+      <a class="section-link" href="#section-types">Kullandığımız Çerezler</a>
+      <a class="section-link" href="#section-third">Üçüncü Taraf Çerezler</a>
+      <a class="section-link" href="#section-manage">Çerezleri Yönetme</a>
+    </div>
+    <div class="last-updated">
+      Son güncelleme:<br><strong>Haziran 2025</strong><br><br>
+      Sorularınız için:<br><a href="mailto:legal@bizdenbize.com" style="color:var(--navy)">legal@bizdenbize.com</a>
+    </div>
+    <div class="other-links">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:4px;">İlgili Belgeler</div>
+      <a href="gizlilik.html" class="other-link">🔒 Gizlilik Politikası</a>
+      <a href="kvkk.html" class="other-link">🇹🇷 KVKK</a>
+      <a href="kullanim-kosullari.html" class="other-link">📋 Kullanım Koşulları</a>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+    <!-- TR -->
+    <div class="lang-content active" id="content-tr">
+      <div class="legal-hero">
+        <div class="lh-badge">🍪 Çerez Politikası</div>
+        <h1 class="lh-title">Çerez Politikası</h1>
+        <p class="lh-sub">BizdenBize, deneyiminizi iyileştirmek için çerezler kullanmaktadır. Bu politika, hangi çerezleri kullandığımızı ve bunları nasıl yönetebileceğinizi açıklamaktadır.</p>
+      </div>
+
+      <div class="info-box gold">
+        <div class="ib-title">🍪 Kısa Özet</div>
+        <div class="ib-body">Yalnızca platformun çalışması için zorunlu çerezleri otomatik olarak kullanıyoruz. Analitik ve tercih çerezleri yalnızca onayınızla aktif olur. Reklam çerezi <strong>kullanmıyoruz</strong>.</div>
+      </div>
+
+      <div class="legal-section" id="section-what">
+        <h2 class="ls-title">Çerez Nedir?</h2>
+        <div class="ls-body">
+          <p>Çerezler, bir web sitesini ziyaret ettiğinizde tarayıcınız tarafından cihazınıza kaydedilen küçük metin dosyalarıdır. Oturumunuzu açık tutmak, dil tercihinizi hatırlamak ve güvenliği sağlamak gibi işlevler için kullanılırlar.</p>
+          <p>Çerezler zarar veremez; yalnızca metin içerirler ve tarayıcınız üzerinden kolayca silinebilirler.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-types">
+        <h2 class="ls-title">Kullandığımız Çerezler</h2>
+        <table class="cookie-table">
+          <tr>
+            <th>Çerez</th>
+            <th>Amaç</th>
+            <th>Süre</th>
+            <th>Tür</th>
+          </tr>
+          <tr>
+            <td>sb-session</td>
+            <td>Supabase oturum yönetimi — giriş durumunuzu korur</td>
+            <td>7 gün</td>
+            <td><span class="cookie-badge badge-required">Zorunlu</span></td>
+          </tr>
+          <tr>
+            <td>sb-refresh-token</td>
+            <td>Oturum yenileme tokeni</td>
+            <td>30 gün</td>
+            <td><span class="cookie-badge badge-required">Zorunlu</span></td>
+          </tr>
+          <tr>
+            <td>bdb-lang</td>
+            <td>Seçtiğiniz dil tercihini hatırlar (TR/DE/EN)</td>
+            <td>1 yıl</td>
+            <td><span class="cookie-badge badge-optional">Tercih</span></td>
+          </tr>
+          <tr>
+            <td>bdb-country</td>
+            <td>Seçtiğiniz ülkeyi hatırlar (DE/NL/BE...)</td>
+            <td>1 yıl</td>
+            <td><span class="cookie-badge badge-optional">Tercih</span></td>
+          </tr>
+          <tr>
+            <td>stripe-mid</td>
+            <td>Stripe ödeme güvenlik çerezi</td>
+            <td>Oturum</td>
+            <td><span class="cookie-badge badge-required">Zorunlu</span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-third">
+        <h2 class="ls-title">Üçüncü Taraf Çerezler</h2>
+        <div class="ls-body">
+          <p><strong>Stripe</strong> — Ödeme işlemlerinde Stripe'ın kendi güvenlik çerezleri kullanılır. Stripe'ın çerez politikası için: <a href="https://stripe.com/privacy" target="_blank">stripe.com/privacy</a></p>
+          <p><strong>Google Fonts</strong> — Yazı tipleri için Google Fonts CDN kullanılır. Google'ın gizlilik politikası: <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></p>
+          <p>BizdenBize, reklam ağlarından veya sosyal medya platformlarından <strong>herhangi bir izleme çerezi kullanmamaktadır</strong>.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="legal-section" id="section-manage">
+        <h2 class="ls-title">Çerezleri Nasıl Yönetirsiniz?</h2>
+        <div class="ls-body">
+          <p>Çerez tercihlerinizi dilediğiniz zaman değiştirebilirsiniz:</p>
+          <ul>
+            <li><strong>Tarayıcı ayarları</strong> — Tüm tarayıcılar çerezleri silme ve engelleme seçeneği sunar.</li>
+            <li><strong>Zorunlu çerezler</strong> — Bunlar engellenirse platform düzgün çalışmayabilir.</li>
+            <li><strong>Tercih çerezleri</strong> — Engelleyebilirsiniz; dil ve ülke seçimleriniz her ziyarette sıfırlanır.</li>
+          </ul>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="pref-btn" onclick="clearPrefs()">🗑️ Tercih Çerezlerini Temizle</button>
+          <a href="gizlilik.html" style="display:inline-flex;align-items:center;padding:12px 20px;border:1.5px solid var(--sand);border-radius:9px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--sand)';this.style.color='var(--muted)'">🔒 Gizlilik Politikası</a>
+        </div>
+        <div class="info-box blue" style="margin-top:20px;">
+          <div class="ib-title">📚 Tarayıcı Kılavuzları</div>
+          <div class="ib-body">
+            <a href="https://support.google.com/chrome/answer/95647" target="_blank">Chrome</a> ·
+            <a href="https://support.mozilla.org/tr/kb/cerezleri-silme" target="_blank">Firefox</a> ·
+            <a href="https://support.apple.com/tr-tr/guide/safari/sfri11471/mac" target="_blank">Safari</a> ·
+            <a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-çerezleri-silme" target="_blank">Edge</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DE -->
+    <div class="lang-content" id="content-de">
+      <div class="legal-hero">
+        <div class="lh-badge">🍪 Cookie-Richtlinie</div>
+        <h1 class="lh-title">Cookie-Richtlinie</h1>
+        <p class="lh-sub">BizdenBize verwendet Cookies zur Verbesserung Ihrer Erfahrung. Diese Richtlinie erklärt, welche Cookies wir verwenden und wie Sie diese verwalten können.</p>
+      </div>
+      <div class="legal-section">
+        <h2 class="ls-title">Was sind Cookies?</h2>
+        <div class="ls-body">
+          <p>Cookies sind kleine Textdateien, die von Ihrem Browser auf Ihrem Gerät gespeichert werden. Sie werden für Funktionen wie die Sitzungsverwaltung, Spracheinstellungen und Sicherheit verwendet.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Verwendete Cookies</h2>
+        <div class="ls-body">
+          <p><strong>Notwendige Cookies</strong> — Für den Betrieb der Plattform unbedingt erforderlich (Sitzungsverwaltung, Sicherheit). Kein Einverständnis erforderlich.</p>
+          <p><strong>Präferenz-Cookies</strong> — Speichern Sprach- und Ländereinstellungen. Werden nur mit Ihrer Zustimmung aktiviert.</p>
+          <p><strong>Zahlungs-Cookies</strong> — Von Stripe für die Zahlungssicherheit verwendet.</p>
+          <p>BizdenBize verwendet <strong>keine Werbe- oder Tracking-Cookies</strong> von Drittanbietern.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Cookie-Verwaltung</h2>
+        <div class="ls-body">
+          <p>Sie können Cookies jederzeit über Ihre Browsereinstellungen löschen oder blockieren. Das Blockieren notwendiger Cookies kann die Funktionalität der Plattform beeinträchtigen.</p>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="pref-btn" onclick="clearPrefs()">🗑️ Präferenz-Cookies löschen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div class="lang-content" id="content-en">
+      <div class="legal-hero">
+        <div class="lh-badge">🍪 Cookie Policy</div>
+        <h1 class="lh-title">Cookie Policy</h1>
+        <p class="lh-sub">BizdenBize uses cookies to improve your experience. This policy explains what cookies we use and how you can manage them.</p>
+      </div>
+      <div class="legal-section">
+        <h2 class="ls-title">What Are Cookies?</h2>
+        <div class="ls-body">
+          <p>Cookies are small text files stored by your browser on your device. They are used for session management, language preferences, and security functions.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Cookies We Use</h2>
+        <div class="ls-body">
+          <p><strong>Essential cookies</strong> — Required for the platform to function (session management, security). No consent needed.</p>
+          <p><strong>Preference cookies</strong> — Remember your language and country selection. Activated only with your consent.</p>
+          <p><strong>Payment cookies</strong> — Used by Stripe for payment security.</p>
+          <p>BizdenBize does <strong>not</strong> use any advertising or third-party tracking cookies.</p>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="legal-section">
+        <h2 class="ls-title">Managing Cookies</h2>
+        <div class="ls-body">
+          <p>You can delete or block cookies at any time through your browser settings. Blocking essential cookies may affect platform functionality.</p>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="pref-btn" onclick="clearPrefs()">🗑️ Clear Preference Cookies</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setLang(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+    document.querySelectorAll('.lang-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('content-' + lang).classList.add('active');
+  }
+
+  function clearPrefs() {
+    ['bdb-lang','bdb-country'].forEach(key => {
+      document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      localStorage.removeItem(key);
+    });
+    const btn = event.target;
+    btn.textContent = '✅ Temizlendi!';
+    setTimeout(() => btn.textContent = '🗑️ Tercih Çerezlerini Temizle', 2500);
+  }
+</script>
+</body>
+</html>
