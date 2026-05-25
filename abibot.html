@@ -182,7 +182,7 @@
     .bubble.ai { background: var(--white); border: 1px solid var(--sand); color: var(--ink); border-radius: 4px 14px 14px 14px; }
     .bubble.user { background: var(--ink); color: var(--white); border-radius: 14px 4px 14px 14px; }
     .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
-    .msg-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .msg-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
     .msg-action {
       font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 6px;
       border: 1px solid var(--sand); background: var(--warm); color: var(--muted);
@@ -191,6 +191,30 @@
     .msg-action:hover { border-color: var(--red); color: var(--red); }
     .msg-action.escalate-btn { background: var(--ink); color: var(--white); border-color: var(--ink); }
     .msg-action.escalate-btn:hover { background: var(--red); border-color: var(--red); }
+    .translate-wrap { position: relative; display: inline-block; }
+    .translate-dropdown {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
+      background: var(--white); border: 1px solid var(--sand); border-radius: 10px;
+      padding: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 50;
+      display: none; flex-direction: column; gap: 2px; min-width: 140px;
+    }
+    .translate-dropdown.open { display: flex; }
+    .translate-opt {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; color: var(--ink); cursor: pointer;
+      border: none; background: none; font-family: inherit; text-align: left; transition: background .12s;
+    }
+    .translate-opt:hover { background: var(--warm); }
+    .translation-box {
+      margin-top: 10px; padding: 14px 16px; background: rgba(27,58,140,.04);
+      border: 1px solid rgba(27,58,140,.15); border-radius: 10px; border-left: 3px solid var(--navy);
+    }
+    .translation-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .translation-lang-badge { font-size: 11px; font-weight: 700; color: var(--navy); letter-spacing: .05em; }
+    .translation-close { font-size: 14px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 0; line-height: 1; }
+    .translation-close:hover { color: var(--red); }
+    .translation-text { font-size: 13px; color: var(--ink); line-height: 1.75; }
+    .translation-actions { display: flex; gap: 6px; margin-top: 10px; }
 
     /* Disclaimer */
     .ai-disclaimer {
@@ -1524,6 +1548,15 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       <div class="msg-actions">
         <button class="msg-action" onclick="copyAnswer(this)">📋 Kopyala</button>
         <button class="msg-action" onclick="downloadAnswer(this)">⬇️ PDF indir</button>
+        <div class="translate-wrap">
+          <button class="msg-action" onclick="toggleTranslateMenu(this)">🌐 Çevir ▾</button>
+          <div class="translate-dropdown">
+            <button class="translate-opt" onclick="translateAnswer(this, 'de')">🇩🇪 Almanca</button>
+            <button class="translate-opt" onclick="translateAnswer(this, 'en')">🇬🇧 İngilizce</button>
+            <button class="translate-opt" onclick="translateAnswer(this, 'fr')">🇫🇷 Fransızca</button>
+            <button class="translate-opt" onclick="translateAnswer(this, 'nl')">🇳🇱 Hollandaca</button>
+          </div>
+        </div>
         <button class="msg-action escalate-btn" onclick="openEscalate()">👨‍⚕️ Uzmana gönder →</button>
       </div>
       <div class="ai-disclaimer">⚠️ Bu yanıt bilgi amaçlıdır ve profesyonel tavsiye yerine geçmez. Önemli kararlar için bir uzmana danışın.</div>
@@ -1956,8 +1989,129 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   }
 
   function downloadAnswer(btn) {
-    btn.textContent = '✓ İndiriliyor...';
-    setTimeout(() => btn.textContent = '⬇️ PDF indir', 2000);
+    const msgBody = btn.closest('.msg-body');
+    const bubble = msgBody ? msgBody.querySelector('.bubble') : null;
+    const content = bubble ? bubble.innerText : '';
+    if (!content) return;
+    btn.textContent = '⏳ Hazırlanıyor...';
+    const category = document.querySelector('.cat-item.active')?.querySelector('.cat-name')?.textContent || 'AbiBOT';
+    const date = new Date().toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' });
+    const printHTML = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>AbiBOT — ${category}</title>
+<style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:0 24px;color:#1A1208;font-size:14px;line-height:1.7;}
+.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #D42B2B;padding-bottom:12px;margin-bottom:24px;}
+.logo{font-size:22px;font-weight:900;color:#D42B2B;}.logo span{color:#1A1208;}
+.meta{font-size:12px;color:#6B5E4E;text-align:right;}
+.category{display:inline-block;background:#F0EAE0;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;color:#6B5E4E;}
+.disclaimer{margin-top:32px;padding:12px 16px;background:#FEF9EC;border-left:3px solid #C9A84C;font-size:12px;color:#6B5E4E;border-radius:0 8px 8px 0;}
+.footer{margin-top:32px;border-top:1px solid #D4C5A9;padding-top:12px;font-size:11px;color:#6B5E4E;text-align:center;}</style>
+</head><body>
+<div class="header"><div class="logo">Bizden<span>Bize</span></div><div class="meta">AbiBOT — Dijital Abiniz<br>${date}</div></div>
+<div class="category">📂 ${category}</div>
+${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
+<div class="disclaimer">⚠️ Bu yanıt bilgi amaçlıdır ve profesyonel hukuki, tıbbi veya finansal tavsiye yerine geçmez.</div>
+<div class="footer">bizdenbize.com · Avrupa'daki Türk topluluğu için dijital mahalle</div>
+</body></html>`;
+    const w = window.open('','_blank','width=800,height=700');
+    w.document.write(printHTML); w.document.close(); w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 500);
+    btn.textContent = '✅ PDF indirildi';
+    setTimeout(() => btn.textContent = '⬇️ PDF indir', 3000);
+  }
+
+  function toggleTranslateMenu(btn) {
+    const dropdown = btn.nextElementSibling;
+    const isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('.translate-dropdown.open').forEach(d => d.classList.remove('open'));
+    if (!isOpen) dropdown.classList.add('open');
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.translate-wrap')) {
+      document.querySelectorAll('.translate-dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+  });
+
+  const langNames = { de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce', fr: '🇫🇷 Fransızca', nl: '🇳🇱 Hollandaca' };
+  const langInstructs = {
+    de: 'Translate the following answer into German. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
+    en: 'Translate the following answer into English. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
+    fr: 'Translate the following answer into French. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
+    nl: 'Translate the following answer into Dutch. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
+  };
+
+  async function translateAnswer(btn, lang) {
+    btn.closest('.translate-dropdown').classList.remove('open');
+    const msgBody = btn.closest('.msg-body');
+    const bubble = msgBody?.querySelector('.bubble');
+    if (!bubble) return;
+    const originalText = bubble.innerText;
+    const existing = msgBody.querySelector('.translation-box');
+    if (existing) existing.remove();
+    const box = document.createElement('div');
+    box.className = 'translation-box';
+    box.innerHTML = `
+      <div class="translation-box-header">
+        <span class="translation-lang-badge">${langNames[lang]}</span>
+        <button class="translation-close" onclick="this.closest('.translation-box').remove()">✕</button>
+      </div>
+      <div class="translation-text" style="color:var(--muted)">⏳ Çeviriliyor...</div>`;
+    const actionsEl = msgBody.querySelector('.msg-actions');
+    actionsEl.insertAdjacentElement('afterend', box);
+    try {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_ANON, 'Authorization':'Bearer ' + SUPABASE_ANON },
+        body: JSON.stringify({
+          messages: [{ role:'user', content: langInstructs[lang] + '\n\n' + originalText }],
+          systemPrompt: 'You are a professional translator. Translate accurately and preserve all formatting including bold and line breaks.',
+        }),
+      });
+      const d = await res.json();
+      const translated = d.answer || '';
+      box.querySelector('.translation-text').innerHTML = translated.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+      const transActions = document.createElement('div');
+      transActions.className = 'translation-actions';
+      transActions.innerHTML = `
+        <button class="msg-action" onclick="copyTranslation(this)">📋 Kopyala</button>
+        <button class="msg-action" onclick="downloadTranslation(this,'${lang}')">⬇️ PDF indir</button>`;
+      box.appendChild(transActions);
+    } catch(e) {
+      box.querySelector('.translation-text').textContent = 'Çeviri başarısız oldu. Lütfen tekrar deneyin.';
+    }
+  }
+
+  function copyTranslation(btn) {
+    const text = btn.closest('.translation-box').querySelector('.translation-text').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✅ Kopyalandı';
+      setTimeout(() => btn.textContent = '📋 Kopyala', 2000);
+    });
+  }
+
+  function downloadTranslation(btn, lang) {
+    const text = btn.closest('.translation-box').querySelector('.translation-text').innerText;
+    const langLabel = langNames[lang] || lang;
+    const date = new Date().toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' });
+    const printHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AbiBOT — ${langLabel}</title>
+<style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:0 24px;color:#1A1208;font-size:14px;line-height:1.7;}
+.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1B3A8C;padding-bottom:12px;margin-bottom:24px;}
+.logo{font-size:22px;font-weight:900;color:#D42B2B;}.logo span{color:#1A1208;}
+.meta{font-size:12px;color:#6B5E4E;text-align:right;}
+.badge{display:inline-block;background:#E8EEF8;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;color:#1B3A8C;}
+.disclaimer{margin-top:32px;padding:12px 16px;background:#FEF9EC;border-left:3px solid #C9A84C;font-size:12px;color:#6B5E4E;border-radius:0 8px 8px 0;}
+.footer{margin-top:32px;border-top:1px solid #D4C5A9;padding-top:12px;font-size:11px;color:#6B5E4E;text-align:center;}</style>
+</head><body>
+<div class="header"><div class="logo">Bizden<span>Bize</span></div><div class="meta">AbiBOT — ${langLabel}<br>${date}</div></div>
+<div class="badge">${langLabel}</div>
+${text.replace(/\n/g,'<br>')}
+<div class="disclaimer">⚠️ This answer is for informational purposes only and does not replace professional advice.</div>
+<div class="footer">bizdenbize.com · Digital neighbourhood for the Turkish community in Europe</div>
+</body></html>`;
+    const w = window.open('','_blank','width=800,height=700');
+    w.document.write(printHTML); w.document.close(); w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 500);
+    btn.textContent = '✅ PDF indirildi';
+    setTimeout(() => btn.textContent = '⬇️ PDF indir', 3000);
   }
 </script>
 <script>
