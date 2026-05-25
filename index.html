@@ -719,6 +719,7 @@
   <div class="nav-links">
     <a href="#nasil-calisir">Nasıl çalışır?</a>
     <a href="#ozellikler">Özellikler</a>
+    <a href="uzmanlar.html">Uzmanlar</a>
     <a href="login.html?tab=register" class="nav-cta">Listeye katıl →</a>
   </div>
 </nav>
@@ -918,6 +919,98 @@
 
   </div>
 </section>
+
+<!-- EXPERTS SECTION -->
+<section id="uzmanlar" style="padding:100px 48px;background:var(--ink);">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px;flex-wrap:wrap;gap:20px;">
+      <div>
+        <span class="section-tag" style="color:var(--gold);">👨‍⚖️ Uzman Ekibimiz</span>
+        <h2 style="color:var(--white);margin-top:8px;">Türkçe konuşan,<br><em style="color:var(--red);font-style:normal;">sizi anlayan uzmanlar.</em></h2>
+        <p style="font-size:15px;color:rgba(255,255,255,.5);margin-top:12px;max-width:420px;line-height:1.65;">
+          AbiBOT'un yanıtı yetmediğinde, alanında uzman Türkçe konuşan profesyonellerimiz devreye girer.
+        </p>
+      </div>
+      <a href="uzmanlar.html" style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;flex-shrink:0;"
+         onmouseover="this.style.background='rgba(255,255,255,.14)';this.style.color='#fff'"
+         onmouseout="this.style.background='rgba(255,255,255,.08)';this.style.color='rgba(255,255,255,.8)'">
+        Tüm Uzmanları Gör →
+      </a>
+    </div>
+
+    <!-- Expert Cards (live from Supabase) -->
+    <div id="hp-experts-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:40px;">
+      <!-- Skeleton loading state -->
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;height:180px;"></div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;height:180px;"></div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div style="text-align:center;padding-top:32px;border-top:1px solid rgba(255,255,255,.08);">
+      <p style="font-size:14px;color:rgba(255,255,255,.4);margin-bottom:16px;">İlk inceleme ücretsiz. Sonrası için kredi satın alabilirsiniz.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="abibot.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--red);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;"
+           onmouseover="this.style.background='#E8393A'" onmouseout="this.style.background='var(--red)'">
+          🤖 AbiBOT'u Dene
+        </a>
+        <a href="uzmanlar.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;"
+           onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+          👨‍⚖️ Uzmanları Gör →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const sb = createClient(
+    'https://wxjudojlwksivhzjnmim.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY'
+  );
+  const CAT_ICONS = {legal:'⚖️',visa:'🛂',medical:'🏥',tax:'💶',housing:'🏠',employment:'💼',school:'🎓',insurance:'🚗',migration:'✈️'};
+  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+
+  const { data } = await sb.from('expert_rating_summary').select('*').eq('is_active', true).limit(3);
+  const grid = document.getElementById('hp-experts-grid');
+  if (!data?.length) { grid.innerHTML = ''; return; }
+
+  grid.innerHTML = data.map(e => {
+    const name = `${e.first_name||''} ${e.last_name||''}`.trim() || 'Uzman';
+    const initials = ((e.first_name?.[0]||'')+(e.last_name?.[0]||'')).toUpperCase()||'U';
+    const color = COLORS[name.charCodeAt(0) % COLORS.length];
+    const avg = e.avg_rating ? parseFloat(e.avg_rating).toFixed(1) : null;
+    const stars = avg ? '⭐'.repeat(Math.round(parseFloat(avg))) + '☆'.repeat(5 - Math.round(parseFloat(avg))) : '☆☆☆☆☆';
+    const cats = (e.categories||[]).slice(0,3).map(c=>`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);">${CAT_ICONS[c]||''} ${c}</span>`).join('');
+    return `
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;transition:all .2s;"
+           onmouseover="this.style.background='rgba(255,255,255,.09)';this.style.borderColor='rgba(255,255,255,.2)'"
+           onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.borderColor='rgba(255,255,255,.1)'">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:46px;height:46px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;">${initials}</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;">${name}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;">${e.title||'Uzman'}</div>
+          </div>
+          ${e.is_verified ? '<span style="margin-left:auto;font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(30,123,75,.2);color:#4ADE80;flex-shrink:0;">✓ Doğrulandı</span>' : ''}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;">${cats}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:14px;line-height:1;">${stars}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:3px;">${avg ? avg+'/5 · '+e.total_rated+' değerlendirme' : 'Henüz değerlendirilmedi'}</div>
+          </div>
+          <a href="expert-profile.html?id=${e.expert_id}" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.7);text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,.15);border-radius:7px;transition:all .15s;"
+             onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.color='#fff'"
+             onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">
+            👤 Profil
+          </a>
+        </div>
+      </div>`;
+  }).join('');
+</script>
 
 <!-- WAITLIST -->
 <section class="waitlist-section" id="bekle">
