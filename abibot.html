@@ -1981,13 +1981,12 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
       const review = {
         user_id: userId,
-        user_email: userEmail,
-        user_name: userEmail.split('@')[0],
         category: selectedCat || 'legal',
+        language: selectedLang || 'tr',
         question: lastQuestion || '',
         abibot_answer: lastAnswer || '',
         status: 'pending',
-        is_probono: type === 'probono',
+        credits_charged: (type === 'free' || type === 'probono') ? 0 : 5,
       };
 
       const { error } = await sb.from('expert_reviews').insert(review);
