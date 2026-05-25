@@ -112,22 +112,20 @@
 </div>
 
 <!-- Filter Bar -->
-<div class="filter-bar" style="justify-content:space-between;">
-  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-    <span class="filter-label">Kategori:</span>
-    <button class="filter-pill active" onclick="setFilter('all',this)">Tümü</button>
-    <button class="filter-pill" onclick="setFilter('legal',this)">⚖️ Hukuki</button>
-    <button class="filter-pill" onclick="setFilter('visa',this)">🛂 Vize</button>
-    <button class="filter-pill" onclick="setFilter('medical',this)">🏥 Tıbbi</button>
-    <button class="filter-pill" onclick="setFilter('tax',this)">💶 Vergi</button>
-    <button class="filter-pill" onclick="setFilter('housing',this)">🏠 Konut</button>
-    <button class="filter-pill" onclick="setFilter('employment',this)">💼 İş</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:7px 14px;min-width:220px;transition:border-color .2s;flex-shrink:0;"
+<div class="filter-bar">
+  <span class="filter-label">Kategori:</span>
+  <button class="filter-pill active" onclick="setFilter('all',this)">Tümü</button>
+  <button class="filter-pill" onclick="setFilter('legal',this)">⚖️ Hukuki</button>
+  <button class="filter-pill" onclick="setFilter('visa',this)">🛂 Vize</button>
+  <button class="filter-pill" onclick="setFilter('medical',this)">🏥 Tıbbi</button>
+  <button class="filter-pill" onclick="setFilter('tax',this)">💶 Vergi</button>
+  <button class="filter-pill" onclick="setFilter('housing',this)">🏠 Konut</button>
+  <button class="filter-pill" onclick="setFilter('employment',this)">💼 İş</button>
+  <div style="display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--sand);border-radius:20px;padding:6px 14px;min-width:180px;transition:border-color .2s;"
        onfocusin="this.style.borderColor='var(--ink)'" onfocusout="this.style.borderColor='var(--sand)'">
-    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <input id="expert-search" type="text" placeholder="Uzman ara..." oninput="renderExperts()"
-      style="border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);width:100%;">
+      style="border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--ink);width:100%;">
   </div>
 </div>
 
