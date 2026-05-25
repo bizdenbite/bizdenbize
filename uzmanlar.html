@@ -211,19 +211,23 @@
       experts = experts.filter(e => {
         const name = `${e.first_name||''} ${e.last_name||''}`.toLowerCase();
         const title = (e.title || '').toLowerCase();
-        const cats = (e.categories || []).join(' ').toLowerCase();
-        return name.includes(q) || title.includes(q) || cats.includes(q);
+        const bio = (e.expert_bio || '').toLowerCase();
+        // Match both English keys AND Turkish names
+        const catKeys = (e.categories || []).join(' ').toLowerCase();
+        const catTr = (e.categories || []).map(c => CAT_NAMES[c] || c).join(' ').toLowerCase();
+        return name.includes(q) || title.includes(q) || bio.includes(q) || catKeys.includes(q) || catTr.includes(q);
       });
     }
 
     const grid = document.getElementById('experts-grid');
 
     if (!experts.length) {
+      const q = (document.getElementById('expert-search')?.value || '').trim();
       grid.innerHTML = `
         <div class="empty">
           <div class="empty-icon">🔍</div>
-          <div class="empty-title">Bu kategoride uzman yok</div>
-          <div class="empty-sub">Başka bir kategori deneyin.</div>
+          <div class="empty-title">${q ? `"${q}" için uzman bulunamadı` : 'Bu kategoride uzman yok'}</div>
+          <div class="empty-sub">${q ? 'Farklı bir arama deneyin.' : 'Başka bir kategori deneyin.'}</div>
         </div>`;
       return;
     }
