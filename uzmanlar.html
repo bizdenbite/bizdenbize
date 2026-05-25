@@ -121,11 +121,11 @@
   <button class="filter-pill" onclick="setFilter('tax',this)">💶 Vergi</button>
   <button class="filter-pill" onclick="setFilter('housing',this)">🏠 Konut</button>
   <button class="filter-pill" onclick="setFilter('employment',this)">💼 İş</button>
-  <div style="display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--sand);border-radius:20px;padding:6px 14px;min-width:180px;transition:border-color .2s;"
-       onfocusin="this.style.borderColor='var(--ink)'" onfocusout="this.style.borderColor='var(--sand)'">
-    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input id="expert-search" type="text" placeholder="Uzman ara..." oninput="renderExperts()"
-      style="border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--ink);width:100%;">
+  <div style="display:flex;align-items:center;gap:8px;background:var(--white);border:2px solid var(--ink);border-radius:20px;padding:7px 16px;min-width:200px;transition:box-shadow .2s;"
+       onfocusin="this.style.boxShadow='0 0 0 3px rgba(26,18,8,.1)'" onfocusout="this.style.boxShadow='none'">
+    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input id="expert-search" type="text" placeholder="Uzman ara..." oninput="window._renderExperts()"
+      style="border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink);width:100%;">
   </div>
 </div>
 
@@ -158,6 +158,8 @@
 
   let allExperts = [];
   let activeFilter = 'all';
+
+  window._renderExperts = renderExperts;
 
   window.setFilter = function(cat, btn) {
     activeFilter = cat;
