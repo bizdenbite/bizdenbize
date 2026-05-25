@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Uzman Ekibimiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .nav-link{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-link:hover{background:var(--warm);color:var(--ink);}
+    .btn-primary{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-primary:hover{background:var(--red2);}
+
+    /* HERO BANNER */
+    .hero-banner{background:var(--ink);padding:56px 24px 48px;text-align:center;margin-top:58px;}
+    .hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+    .hero-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:12px;}
+    .hero-title em{color:var(--red);font-style:normal;}
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:480px;margin:0 auto 28px;line-height:1.65;}
+    .hero-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--red);color:var(--white);border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .hero-cta:hover{background:var(--red2);}
+    .hero-stats{display:flex;gap:32px;justify-content:center;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
+    .hs-item{text-align:center;}
+    .hs-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--white);}
+    .hs-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+    /* FILTER BAR */
+    .filter-bar{padding:16px 24px;background:var(--white);border-bottom:1px solid rgba(212,197,169,.3);display:flex;gap:6px;flex-wrap:wrap;align-items:center;position:sticky;top:58px;z-index:50;}
+    .filter-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-right:4px;flex-shrink:0;}
+    .filter-pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--cream);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .filter-pill:hover{border-color:var(--ink);color:var(--ink);}
+    .filter-pill.active{background:var(--ink);border-color:var(--ink);color:var(--white);}
+
+    /* EXPERTS GRID */
+    .page{padding:28px 24px 60px;max-width:1000px;margin:0 auto;}
+    .experts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+
+    /* EXPERT CARD */
+    .expert-card{background:var(--white);border:1px solid var(--sand);border-radius:18px;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+    .expert-card:hover{box-shadow:0 8px 32px rgba(26,18,8,.1);transform:translateY(-2px);}
+    .ec-top{padding:24px 22px 18px;border-bottom:1px solid var(--warm);}
+    .ec-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+    .ec-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);flex-shrink:0;}
+    .ec-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:3px;}
+    .ec-title{font-size:12px;color:var(--muted);}
+    .ec-badges{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;}
+    .badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);}
+    .badge-cat{background:rgba(27,58,140,.08);color:var(--navy);}
+    .ec-bio{font-size:12px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .ec-bottom{padding:14px 22px;display:flex;flex-direction:column;gap:10px;}
+    .ec-stats{display:flex;gap:16px;}
+    .ec-stat{text-align:center;flex:1;}
+    .ec-stat-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);line-height:1;}
+    .ec-stat-label{font-size:10px;color:var(--muted);margin-top:2px;}
+    .ec-rating{display:flex;align-items:center;gap:6px;}
+    .ec-stars{font-size:14px;}
+    .ec-rating-val{font-size:13px;font-weight:700;color:var(--gold);}
+    .ec-rating-count{font-size:11px;color:var(--muted);}
+    .ec-actions{display:flex;gap:6px;}
+    .btn-profile{flex:1;padding:9px 14px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;text-align:center;}
+    .btn-profile:hover{background:var(--red);}
+    .btn-ask{flex:1;padding:9px 14px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;text-align:center;}
+    .btn-ask:hover{background:var(--red2);}
+
+    /* EMPTY/LOADING */
+    .loading{text-align:center;padding:80px 20px;color:var(--muted);grid-column:1/-1;}
+    .empty{text-align:center;padding:80px 20px;grid-column:1/-1;}
+    .empty-icon{font-size:40px;margin-bottom:14px;}
+    .empty-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+    .empty-sub{font-size:13px;color:var(--muted);}
+
+    @media(max-width:640px){
+      .hero-title{font-size:28px;}
+      .hero-stats{gap:20px;}
+      .filter-bar{top:58px;}
+      .experts-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
+  <div class="nav-right">
+    <a href="abibot.html" class="nav-link">AbiBOT</a>
+    <a href="abibot.html" class="btn-primary">🤖 Soru Sor</a>
+  </div>
+</nav>
+
+<!-- Hero Banner -->
+<div class="hero-banner">
+  <div class="hero-eyebrow">BizdenBize Uzman Ekibi</div>
+  <h1 class="hero-title">Türkçe Konuşan<br><em>Gerçek Uzmanlar</em></h1>
+  <p class="hero-sub">Hukuki, tıbbi, finansal ve vize sorularınız için Avrupa'da yaşayan, sizi anlayan uzmanlar.</p>
+  <a href="abibot.html" class="hero-cta">🤖 AbiBOT ile Başla →</a>
+  <div class="hero-stats" id="hero-stats">
+    <div class="hs-item"><div class="hs-val" id="hs-experts">—</div><div class="hs-label">Aktif Uzman</div></div>
+    <div class="hs-item"><div class="hs-val" id="hs-answered">—</div><div class="hs-label">Yanıtlanan Soru</div></div>
+    <div class="hs-item"><div class="hs-val" id="hs-rating">—</div><div class="hs-label">Ortalama Puan</div></div>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <span class="filter-label">Kategori:</span>
+  <button class="filter-pill active" onclick="setFilter('all',this)">Tümü</button>
+  <button class="filter-pill" onclick="setFilter('legal',this)">⚖️ Hukuki</button>
+  <button class="filter-pill" onclick="setFilter('visa',this)">🛂 Vize</button>
+  <button class="filter-pill" onclick="setFilter('medical',this)">🏥 Tıbbi</button>
+  <button class="filter-pill" onclick="setFilter('tax',this)">💶 Vergi</button>
+  <button class="filter-pill" onclick="setFilter('housing',this)">🏠 Konut</button>
+  <button class="filter-pill" onclick="setFilter('employment',this)">💼 İş</button>
+</div>
+
+<!-- Experts Grid -->
+<div class="page">
+  <div class="experts-grid" id="experts-grid">
+    <div class="loading">⏳ Uzmanlar yükleniyor...</div>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const CAT_ICONS = {
+    legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
+    housing:'🏠', employment:'💼', school:'🎓',
+    insurance:'🚗', migration:'✈️'
+  };
+  const CAT_NAMES = {
+    legal:'Hukuki', visa:'Vize', medical:'Tıbbi',
+    tax:'Vergi', housing:'Konut', employment:'İş',
+    school:'Okul', insurance:'Sigorta', migration:'Göç'
+  };
+  const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
+  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
+
+  let allExperts = [];
+  let activeFilter = 'all';
+
+  window.setFilter = function(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    renderExperts();
+  };
+
+  async function loadExperts() {
+    const { data, error } = await supabase
+      .from('expert_rating_summary')
+      .select('*')
+      .eq('is_active', true);
+
+    if (error || !data) {
+      document.getElementById('experts-grid').innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">⚠️</div>
+          <div class="empty-title">Yüklenemedi</div>
+          <div class="empty-sub">Lütfen sayfayı yenileyin.</div>
+        </div>`;
+      return;
+    }
+
+    allExperts = data;
+
+    // Hero stats
+    const totalAnswered = data.reduce((s, e) => s + (e.total_responses || 0), 0);
+    const ratedExperts = data.filter(e => e.avg_rating != null);
+    const globalAvg = ratedExperts.length
+      ? (ratedExperts.reduce((s, e) => s + parseFloat(e.avg_rating), 0) / ratedExperts.length).toFixed(1)
+      : '—';
+
+    document.getElementById('hs-experts').textContent = data.length;
+    document.getElementById('hs-answered').textContent = totalAnswered;
+    document.getElementById('hs-rating').textContent = globalAvg !== '—' ? globalAvg + ' ★' : '—';
+
+    renderExperts();
+  }
+
+  function renderExperts() {
+    let experts = allExperts;
+    if (activeFilter !== 'all') {
+      experts = experts.filter(e => (e.categories || []).includes(activeFilter));
+    }
+
+    const grid = document.getElementById('experts-grid');
+
+    if (!experts.length) {
+      grid.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Bu kategoride uzman yok</div>
+          <div class="empty-sub">Başka bir kategori deneyin.</div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = experts.map(e => {
+      const name = `${e.first_name || ''} ${e.last_name || ''}`.trim() || 'Uzman';
+      const initials = ((e.first_name?.[0] || '') + (e.last_name?.[0] || '')).toUpperCase() || 'U';
+      const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
+      const avatarColor = AVATAR_COLORS[colorIdx];
+
+      const avgRating = e.avg_rating ? parseFloat(e.avg_rating) : null;
+      const starCount = avgRating ? Math.round(avgRating) : 0;
+      const starDisplay = '⭐'.repeat(starCount) + '☆'.repeat(5 - starCount);
+
+      const categories = (e.categories || []).slice(0, 3).map(c =>
+        `<span class="badge badge-cat">${CAT_ICONS[c] || ''} ${CAT_NAMES[c] || c}</span>`
+      ).join('');
+
+      const verifiedBadge = e.is_verified
+        ? `<span class="badge badge-verified">✓ Doğrulandı</span>` : '';
+
+      const avgResponseText = e.avg_response_hours
+        ? `${e.avg_response_hours}s` : '24-48s';
+
+      return `
+        <div class="expert-card">
+          <div class="ec-top">
+            <div class="ec-head">
+              <div class="ec-avatar" style="background:${avatarColor};">${initials}</div>
+              <div>
+                <div class="ec-name">${name}</div>
+                <div class="ec-title">${e.title || 'Uzman'}</div>
+              </div>
+            </div>
+            <div class="ec-badges">
+              ${verifiedBadge}
+              ${categories}
+            </div>
+            ${e.expert_bio ? `<div class="ec-bio">${e.expert_bio}</div>` : ''}
+          </div>
+          <div class="ec-bottom">
+            <div class="ec-stats">
+              <div class="ec-stat">
+                <div class="ec-rating">
+                  <span class="ec-stars">${starDisplay}</span>
+                </div>
+                <div class="ec-rating-val">${avgRating ? avgRating.toFixed(1) : '—'} / 5</div>
+                <div class="ec-stat-label">${e.total_rated || 0} değerlendirme</div>
+              </div>
+              <div class="ec-stat">
+                <div class="ec-stat-val">${e.total_responses || 0}</div>
+                <div class="ec-stat-label">yanıt</div>
+              </div>
+              <div class="ec-stat">
+                <div class="ec-stat-val" style="font-size:14px;">${avgResponseText}</div>
+                <div class="ec-stat-label">ort. süre</div>
+              </div>
+            </div>
+            <div class="ec-actions">
+              <a href="expert-profile.html?id=${e.expert_id}" class="btn-profile">👤 Profili Gör</a>
+              <a href="abibot.html" class="btn-ask">🤖 Soru Sor →</a>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  loadExperts();
+</script>
+</body>
+</html>

@@ -30,6 +30,7 @@
     .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
     .stat.urgent{border-color:var(--red);background:rgba(212,43,43,.04);}
     .stat.urgent .stat-val{color:var(--red);}
+    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)!important;}}
 
     /* Sidebar */
     .sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:76px;}
@@ -98,6 +99,13 @@
     .ec-btn:hover{border-color:var(--navy);color:var(--navy);}
     .ec-btn.danger:hover{border-color:var(--red);color:var(--red);}
 
+    /* Rating display */
+    .rc-rating-display{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:9px;flex-wrap:wrap;}
+    .rc-rating-stars{font-size:16px;line-height:1;}
+    .rc-rating-score{font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;}
+    .rc-rating-comment{font-size:12px;color:var(--muted);font-style:italic;border-left:1px solid var(--sand);padding-left:8px;}
+    .rc-no-rating{font-size:11px;color:var(--sand);margin-top:8px;font-style:italic;}
+
     /* Pro-bono */
     .review-card.probono{border-color:#1E7B4B;}
     .probono-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,123,75,.12);color:#1E7B4B;border:1px solid rgba(30,123,75,.2);flex-shrink:0;}
@@ -150,6 +158,14 @@
     <div class="stat" style="border-color:rgba(30,123,75,.3);background:rgba(30,123,75,.03);">
       <div class="stat-val" id="stat-probono" style="color:#1E7B4B;">0</div>
       <div class="stat-label">🤝 Pro-Bono Bekleyen</div>
+    </div>
+    <div class="stat" style="border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);">
+      <div class="stat-val" id="stat-avg-rating" style="color:var(--gold);font-size:24px;">—</div>
+      <div class="stat-label">⭐ Ortalama Puan</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="stat-rated">0</div>
+      <div class="stat-label">📊 Değerlendirilen</div>
     </div>
   </div>
 
@@ -248,20 +264,39 @@
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  // Auth check — only admins and experts
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { window.location.replace('login.html'); }
+  // Auth check — uses session from login.html
+  let currentUser = null;
+  let profile = null;
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-  if (!profile?.is_admin) {
-    // Check if they're an expert
-    const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', user.id).single();
-    if (!expert) { window.location.replace('mahallem.html'); }
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      // No session → redirect to login
+      window.location.replace('login.html');
+    } else {
+      currentUser = session.user;
+      const { data: p } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      profile = p;
+
+      // Check if user is admin or expert
+      if (!profile?.is_admin) {
+        const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
+        if (!expert) {
+          alert('Bu sayfaya erişim yetkiniz yok.');
+          window.location.replace('mahallem.html');
+        }
+      }
+    }
+  } catch(e) {
+    console.error('Auth error:', e);
+    window.location.replace('login.html');
   }
 
-  // Update avatar
+  // Update avatar with real initials
+  const firstName = profile?.first_name || currentUser?.email?.split('@')[0] || 'U';
+  const lastName = profile?.last_name || '';
   document.querySelector('.nav-avatar').textContent =
-    ((profile?.first_name?.[0] || '') + (profile?.last_name?.[0] || '')).toUpperCase() || 'U';
+    ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || 'AY';
 
   let allReviews = [];
   let allExperts = [];
@@ -314,6 +349,13 @@
     document.getElementById('count-assigned').textContent = inreview;
     document.getElementById('count-answered').textContent = answered;
     document.getElementById('count-probono').textContent  = probono;
+
+    const rated = allReviews.filter(r => r.rating != null);
+    const avgRating = rated.length
+      ? (rated.reduce((s, r) => s + (r.rating || 0), 0) / rated.length).toFixed(1)
+      : null;
+    document.getElementById('stat-avg-rating').textContent = avgRating ? avgRating + ' ★' : '—';
+    document.getElementById('stat-rated').textContent = rated.length;
   }
 
   function renderExpertSidebar() {
@@ -334,6 +376,11 @@
           </div>
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
         </div>
+        <a href="expert-profile.html?id=${e.id}" target="_blank"
+           style="display:block;margin-top:6px;text-align:center;font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;background:rgba(27,58,140,.04);transition:all .15s;"
+           onmouseover="this.style.background='rgba(27,58,140,.1)'" onmouseout="this.style.background='rgba(27,58,140,.04)'">
+          👤 Profili Gör →
+        </a>
         <div class="probono-toggle">
           <div>
             <div class="pt-label">🤝 Pro-Bono</div>
@@ -409,7 +456,14 @@
 
             ${isAnswered ? `
               <div class="rc-answered-label">Uzman Yanıtı</div>
-              <div class="rc-answered">${r.expert_response || ''}</div>
+              <div class="rc-answered">${mdToHtml(r.expert_response || '')}</div>
+              ${r.rating != null ? `
+                <div class="rc-rating-display">
+                  <span class="rc-rating-stars">${'⭐'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                  <span class="rc-rating-score">${r.rating}/5</span>
+                  ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
+                </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
+              }
             ` : `
               <div class="rc-response-area">
                 <div class="rc-section-label">Uzman Yanıtı</div>

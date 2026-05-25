@@ -2034,13 +2034,19 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       document.getElementById('esc-expert-list').innerHTML = categoryExperts.map((e, i) => {
         const initials = ((e.profiles?.first_name?.[0]||'') + (e.profiles?.last_name?.[0]||'')).toUpperCase() || 'U';
         const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim();
+        const avgRating = e.rating ? parseFloat(e.rating).toFixed(1) : null;
+        const ratingHtml = avgRating
+          ? `<span style="font-size:11px;color:var(--gold);font-weight:600;">⭐ ${avgRating}</span>`
+          : '';
         return `<div class="expert-option" style="cursor:default;pointer-events:none;">
           <div class="exp-avatar" style="background:${expertColors[i % expertColors.length]}">${initials}</div>
-          <div>
+          <div style="flex:1;">
             <div class="exp-name">${name}</div>
             <div class="exp-cred">${e.title || 'Uzman'}</div>
+            ${ratingHtml}
           </div>
-          <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:#1E7B4B;">Müsait</div>
+          <a href="expert-profile.html?id=${e.id}" target="_blank" style="font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;flex-shrink:0;pointer-events:all;" onclick="event.stopPropagation()">👤 Profil</a>
+          <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:#1E7B4B;flex-shrink:0;">Müsait</div>
         </div>`;
       }).join('');
     }

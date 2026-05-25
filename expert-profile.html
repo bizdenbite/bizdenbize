@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Uzman Profili</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-back:hover{background:var(--warm);color:var(--ink);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+
+    /* LAYOUT */
+    .page{padding:78px 24px 60px;max-width:860px;margin:0 auto;}
+
+    /* HERO */
+    .hero{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:32px;display:flex;gap:28px;align-items:flex-start;margin-bottom:20px;}
+    .hero-avatar{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Playfair Display',serif;}
+    .hero-info{flex:1;min-width:0;}
+    .hero-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+    .hero-title{font-size:15px;color:var(--muted);margin-bottom:12px;}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .badge-cat{background:rgba(27,58,140,.08);color:var(--navy);border:1px solid rgba(27,58,140,.15);}
+    .badge-lang{background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+    .hero-bio{font-size:14px;color:var(--muted);line-height:1.7;}
+    .hero-cta{margin-top:18px;}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:var(--red);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-primary:hover{background:var(--red2);}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:20px 16px;text-align:center;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;line-height:1;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);}
+    .stat-stars{font-size:20px;line-height:1;margin-bottom:4px;}
+
+    /* REVIEWS SECTION */
+    .section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+    .review-list{display:flex;flex-direction:column;gap:10px;}
+    .review-item{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:16px 18px;}
+    .review-stars{font-size:16px;margin-bottom:6px;}
+    .review-comment{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic;}
+    .review-meta{font-size:11px;color:var(--sand);margin-top:8px;}
+    .review-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--warm);color:var(--muted);display:inline-block;margin-bottom:6px;}
+
+    /* EMPTY / LOADING */
+    .loading{text-align:center;padding:60px 20px;color:var(--muted);}
+    .no-reviews{text-align:center;padding:32px;background:var(--white);border:1px solid var(--sand);border-radius:12px;}
+    .no-reviews-icon{font-size:32px;margin-bottom:8px;}
+    .no-reviews-text{font-size:13px;color:var(--muted);}
+
+    /* ERROR */
+    .error-state{text-align:center;padding:80px 20px;}
+    .error-icon{font-size:48px;margin-bottom:16px;}
+    .error-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+    .error-sub{font-size:14px;color:var(--muted);}
+
+    @media(max-width:640px){
+      .hero{flex-direction:column;gap:20px;padding:20px;}
+      .stats-row{grid-template-columns:1fr 1fr;}
+      .stats-row .stat-card:last-child{grid-column:1/-1;}
+      .hero-name{font-size:22px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
+  <div class="nav-right">
+    <a href="uzmanlar.html" class="nav-back">← Tüm Uzmanlar</a>
+    <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
+  </div>
+</nav>
+
+<div class="page" id="page-content">
+  <div class="loading">
+    <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+    <div>Uzman profili yükleniyor...</div>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const CAT_ICONS = {
+    legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
+    housing:'🏠', employment:'💼', school:'🎓',
+    insurance:'🚗', migration:'✈️'
+  };
+  const CAT_NAMES = {
+    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
+    tax:'Vergi & Finans', housing:'Konut & Kira',
+    employment:'İş & Çalışma', school:'Okul & Yardımlar',
+    insurance:'Sigorta & Araç', migration:"Avrupa'ya Göç"
+  };
+  const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
+  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
+
+  // Get expert_id from URL
+  const params = new URLSearchParams(window.location.search);
+  const expertId = params.get('id');
+
+  if (!expertId) {
+    showError('Uzman bulunamadı', 'Geçerli bir uzman ID\'si belirtilmedi.');
+  } else {
+    loadProfile(expertId);
+  }
+
+  async function loadProfile(id) {
+    try {
+      // Fetch expert summary from view + recent rated reviews
+      const [summaryRes, reviewsRes] = await Promise.all([
+        supabase.from('expert_rating_summary').select('*').eq('expert_id', id).single(),
+        supabase.from('expert_reviews')
+          .select('category, rating, rating_comment, rated_at')
+          .eq('expert_id', id)
+          .eq('status', 'answered')
+          .not('rating', 'is', null)
+          .order('rated_at', { ascending: false })
+          .limit(10)
+      ]);
+
+      if (summaryRes.error || !summaryRes.data) {
+        showError('Uzman bulunamadı', 'Bu profile ait bir uzman bulunamadı.');
+        return;
+      }
+
+      renderProfile(summaryRes.data, reviewsRes.data || []);
+    } catch(e) {
+      console.error(e);
+      showError('Bir hata oluştu', 'Profil yüklenirken sorun oluştu. Lütfen tekrar deneyin.');
+    }
+  }
+
+  function renderProfile(expert, reviews) {
+    const name = `${expert.first_name || ''} ${expert.last_name || ''}`.trim() || 'Uzman';
+    const initials = ((expert.first_name?.[0] || '') + (expert.last_name?.[0] || '')).toUpperCase() || 'U';
+    const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
+    const avatarColor = AVATAR_COLORS[colorIdx];
+
+    const avgRating = expert.avg_rating ? parseFloat(expert.avg_rating) : null;
+    const starDisplay = avgRating
+      ? '⭐'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating))
+      : '☆☆☆☆☆';
+
+    const categories = (expert.categories || []).map(c =>
+      `<span class="badge badge-cat">${CAT_ICONS[c] || ''} ${CAT_NAMES[c] || c}</span>`
+    ).join('');
+
+    const languages = (expert.languages || []).map(l =>
+      `<span class="badge badge-lang">${LANG_FLAGS[l] || ''} ${l.toUpperCase()}</span>`
+    ).join('');
+
+    const verifiedBadge = expert.is_verified
+      ? `<span class="badge badge-verified">✓ Doğrulandı</span>` : '';
+
+    const avgResponseText = expert.avg_response_hours
+      ? `${expert.avg_response_hours} saat`
+      : '24-48 saat';
+
+    const reviewsHtml = reviews.length ? reviews.map(r => {
+      const ratedDate = r.rated_at
+        ? new Date(r.rated_at).toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' })
+        : '';
+      const filled = '⭐'.repeat(r.rating);
+      const empty = '☆'.repeat(5 - r.rating);
+      return `
+        <div class="review-item">
+          <div class="review-cat">${CAT_ICONS[r.category] || ''} ${CAT_NAMES[r.category] || r.category}</div>
+          <div class="review-stars">${filled}${empty}</div>
+          ${r.rating_comment
+            ? `<div class="review-comment">"${r.rating_comment}"</div>`
+            : `<div class="review-comment" style="color:var(--sand);">Yorum yapılmadı.</div>`}
+          <div class="review-meta">${ratedDate}</div>
+        </div>`;
+    }).join('') : `
+      <div class="no-reviews">
+        <div class="no-reviews-icon">⭐</div>
+        <div class="no-reviews-text">Henüz değerlendirme yok. İlk değerlendirmeyi siz yapın!</div>
+      </div>`;
+
+    document.getElementById('page-content').innerHTML = `
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-avatar" style="background:${avatarColor};">${initials}</div>
+        <div class="hero-info">
+          <div class="hero-name">${name}</div>
+          <div class="hero-title">${expert.title || 'Uzman'}</div>
+          <div class="hero-badges">
+            ${verifiedBadge}
+            ${categories}
+            ${languages}
+          </div>
+          ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
+          <div class="hero-cta">
+            <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-stars">${starDisplay}</div>
+          <div class="stat-val" style="color:var(--gold);font-size:24px;">${avgRating ? avgRating.toFixed(1) + ' / 5' : '—'}</div>
+          <div class="stat-label">Ortalama Puan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">${expert.total_responses || 0}</div>
+          <div class="stat-label">✅ Yanıtlanan Soru</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:20px;">${avgResponseText}</div>
+          <div class="stat-label">⚡ Ortalama Yanıt Süresi</div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="section-title">
+        ⭐ Kullanıcı Değerlendirmeleri
+        <span style="font-size:13px;font-weight:400;color:var(--muted);font-family:'Instrument Sans',sans-serif;">${expert.total_rated || 0} değerlendirme</span>
+      </div>
+      <div class="review-list">${reviewsHtml}</div>
+    `;
+
+    // Update page title
+    document.title = `BizdenBize — ${name}`;
+  }
+
+  function showError(title, sub) {
+    document.getElementById('page-content').innerHTML = `
+      <div class="error-state">
+        <div class="error-icon">🔍</div>
+        <div class="error-title">${title}</div>
+        <div class="error-sub">${sub}</div>
+        <a href="uzmanlar.html" class="btn-primary" style="display:inline-flex;margin-top:20px;">← Tüm Uzmanlara Dön</a>
+      </div>`;
+  }
+</script>
+</body>
+</html>
