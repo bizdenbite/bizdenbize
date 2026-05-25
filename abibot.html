@@ -1398,33 +1398,33 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     } catch(e) {}
 
     try {
-      // ── 2. CATEGORY RELEVANCE CHECK (AI-based) ──
-      const checkRes = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (sessionToken || SUPABASE_ANON),
-          'apikey': SUPABASE_ANON,
-        },
-        body: JSON.stringify({
-          category: selectedCat,
-          language: 'en',
-          messages: [{
-            role: 'user',
-            content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
-          }],
-        }),
-      });
+      // ── Anthropic API via Supabase Edge Function (key stays hidden) ──
+      async function callClaude(messages, systemPrompt) {
+        const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON,
+            'Authorization': 'Bearer ' + SUPABASE_ANON,
+          },
+          body: JSON.stringify({ messages, systemPrompt }),
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Edge Function error');
+        return d.answer || '';
+      }
 
-      const checkData = await checkRes.json();
-      const verdict = (checkData.answer || '').trim().toUpperCase().slice(0, 3);
+      // ── 2. CATEGORY RELEVANCE CHECK ──
+      const verdict = await callClaude([{
+        role: 'user',
+        content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
+      }], 'You are a topic classifier. Reply only YES or NO.');
 
-      if (verdict === 'NO') {
+      if (verdict.trim().toUpperCase().startsWith('NO')) {
         removeTyping();
         messageHistory.pop();
-        const cat = catData[selectedCat];
         addMessage('assistant',
-          `Bu soru bizim kapsama alanımız dışındadır.\n\nAbiBOT yalnızca platform kategorilerimiz dahilindeki konularda yardımcı olabilir. Lütfen soldaki menüden uygun bir kategori seçin.\n\n⚠️ Dikkat: Tüm sorular mevcut kredinizden kesilecektir.`,
+          `Bu soru bizim kapsama alanımız dışındadır.\n\nAbiBOT yalnızca platform kategorilerimiz dahilindeki konularda yardımcı olabilir. Lütfen soldaki menüden uygun bir kategori seçin.`,
           false);
 
         // Increment counter even for off-topic
@@ -1453,22 +1453,8 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       }
 
       // ── 3. MAIN ANSWER ──
-      const response = await fetch(SUPABASE_URL + '/functions/v1/swift-worker', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (sessionToken || SUPABASE_ANON),
-          'apikey': SUPABASE_ANON,
-        },
-        body: JSON.stringify({
-          category: selectedCat,
-          language: selectedLang,
-          messages: messageHistory,
-        }),
-      });
-
-      const data = await response.json();
-      const reply = data.answer || data.error || 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.';
+      const systemPrompt = systemPrompts[selectedCat] || systemPrompts['legal'];
+      const reply = await callClaude(messageHistory, systemPrompt);
       lastAnswer = reply;
       lastQuestion = text;
 
