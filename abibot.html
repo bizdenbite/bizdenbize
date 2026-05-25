@@ -1841,10 +1841,15 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     const sb = window.supabase || supabase;
     if (!sb) return;
 
+    // Check session
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) { alert('Giriş yapmanız gerekiyor.'); window.location = 'login.html'; return; }
+    if (!session) {
+      const go = confirm('Uzmana göndermek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
+      if (go) window.location.href = 'login.html';
+      return;
+    }
 
-    // Show modal immediately with loading state
+    // Show modal immediately
     document.getElementById('escalate-modal').classList.add('open');
     document.getElementById('esc-question-preview').textContent = lastQuestion;
     document.getElementById('esc-expert-list').innerHTML =
@@ -1852,15 +1857,14 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     document.getElementById('esc-buy-bar').style.display = 'none';
     document.getElementById('esc-probono-bar').style.display = 'none';
     document.getElementById('esc-main-btn').style.display = 'block';
-    document.getElementById('esc-main-btn').disabled = true;
-    document.getElementById('esc-main-btn').textContent = 'Yükleniyor...';
+    document.getElementById('esc-main-btn').disabled = false;
+    document.getElementById('esc-main-btn').textContent = 'Uzmana Gönder →';
+    window._escType = 'free';
 
-    // Load experts and profile in parallel
+    // Load profile and experts
     const [{ data: profile }, { data: experts }] = await Promise.all([
       sb.from('profiles').select('*').eq('id', session.user.id).single(),
-      sb.from('experts')
-        .select('*, profiles:profile_id(first_name, last_name)')
-        .eq('is_active', true)
+      sb.from('experts').select('*, profiles:profile_id(first_name, last_name)').eq('is_active', true)
     ]);
 
     const credits = profile?.expert_credits || 0;
@@ -1962,19 +1966,31 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
     try {
       const sb = window.supabase || supabase;
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
 
-      const { error } = await sb.from('expert_reviews').insert({
-        user_id: session.user.id,
+      // Require login for escalation
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) {
+        if (mainBtn) { mainBtn.disabled = false; mainBtn.textContent = 'Uzmana Gönder →'; }
+        const go = confirm('Uzmana göndermek için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
+        if (go) window.location.href = 'login.html';
+        return;
+      }
+
+      const userId = session.user.id;
+      const userEmail = session.user.email;
+
+      const review = {
+        user_id: userId,
+        user_email: userEmail,
+        user_name: userEmail.split('@')[0],
         category: selectedCat || 'legal',
-        language: selectedLang || 'tr',
         question: lastQuestion || '',
         abibot_answer: lastAnswer || '',
         status: 'pending',
-        credits_charged: (type === 'free' || type === 'probono') ? 0 : 5,
         is_probono: type === 'probono',
-      });
+      };
+
+      const { error } = await sb.from('expert_reviews').insert(review);
       if (error) throw error;
 
       if (type === 'free') {
