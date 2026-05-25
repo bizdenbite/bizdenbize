@@ -2006,15 +2006,17 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
         if (avail) await sb.from('experts').update({ probono_slots_used: (avail.probono_slots_used||0) + 1 }).eq('id', avail.id);
       }
 
-      sb.from('notifications').insert({
-        user_id: session.user.id,
-        type: 'expert_assigned',
-        title: 'Uzman inceleme talebiniz alındı ✅',
-        body: type === 'probono'
-          ? 'Gönüllü uzman talebiniz alındı. Bir uzman müsait olduğunda yanıtlanacak.'
-          : 'Talebiniz uzman ekibimize iletildi. 24-48 saat içinde yanıt alacaksınız.',
-        link: '/abibot.html'
-      }).catch(() => {});
+      try {
+        await sb.from('notifications').insert({
+          user_id: session.user.id,
+          type: 'expert_assigned',
+          title: 'Uzman inceleme talebiniz alındı ✅',
+          body: type === 'probono'
+            ? 'Gönüllü uzman talebiniz alındı. Bir uzman müsait olduğunda yanıtlanacak.'
+            : 'Talebiniz uzman ekibimize iletildi. 24-48 saat içinde yanıt alacaksınız.',
+          link: '/abibot.html'
+        });
+      } catch(e) { /* notification failure is non-critical */ }
 
       closeEscalate();
       addMessage('assistant', type === 'probono'
