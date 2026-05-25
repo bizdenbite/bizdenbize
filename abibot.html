@@ -587,7 +587,42 @@
   }
   .cm-accept-all:hover { background: #E8393A; }
     @media (max-width: 900px) { }
-  
+
+    /* ── RATING WIDGET ── */
+    .rating-widget {
+      margin-top: 10px; padding: 14px 16px;
+      background: var(--white); border: 1px solid var(--sand);
+      border-radius: 10px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .rating-widget.rated {
+      background: rgba(30,123,75,.04); border-color: rgba(30,123,75,.2);
+    }
+    .rating-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .star-row { display: flex; gap: 4px; }
+    .star-btn {
+      font-size: 24px; background: none; border: none; cursor: pointer;
+      line-height: 1; padding: 0 2px; transition: transform .1s, opacity .1s;
+      opacity: 0.35;
+    }
+    .star-btn.active { opacity: 1; }
+    .star-btn:hover { transform: scale(1.25); opacity: 1; }
+    .rating-comment {
+      width: 100%; border: 1px solid var(--sand); border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; font-family: 'Instrument Sans', sans-serif;
+      color: var(--ink); resize: none; outline: none; background: var(--cream);
+      min-height: 58px; line-height: 1.5;
+    }
+    .rating-comment:focus { border-color: var(--green); }
+    .rating-submit {
+      padding: 8px 20px; background: var(--green); color: #fff;
+      border: none; border-radius: 7px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: 'Instrument Sans', sans-serif;
+      align-self: flex-start; transition: background .15s;
+    }
+    .rating-submit:hover { background: #176040; }
+    .rating-submit:disabled { background: var(--sand); cursor: not-allowed; }
+    .rating-thanks { font-size: 13px; color: var(--green); font-weight: 600; }
+
     /* ── DROPDOWN NAV ── */
     .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
     .nav-menu { display:flex;gap:2px;flex:1;align-items:center; }
@@ -1049,6 +1084,88 @@
     await loadExpertResponses();
   })();
 
+  // ── RATING WIDGET HELPERS ──
+  function buildRatingWidget(review) {
+    if (review.rating) {
+      // Already rated — show static filled stars
+      const filled = '⭐'.repeat(review.rating);
+      const empty = '☆'.repeat(5 - review.rating);
+      const commentHtml = review.rating_comment
+        ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic;">"${review.rating_comment}"</div>`
+        : '';
+      return `
+        <div class="rating-widget rated" id="rw-${review.id}">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;line-height:1;">${filled}${empty}</span>
+            <span class="rating-thanks">✅ Değerlendirdiniz</span>
+          </div>
+          ${commentHtml}
+        </div>`;
+    }
+    // Not yet rated — interactive widget
+    const stars = [1,2,3,4,5].map(n =>
+      `<button class="star-btn" data-val="${n}" onclick="hoverStar('${review.id}',${n})">☆</button>`
+    ).join('');
+    return `
+      <div class="rating-widget" id="rw-${review.id}">
+        <div class="rating-label">Bu uzman yanıtını değerlendirin</div>
+        <div class="star-row" id="stars-${review.id}">${stars}</div>
+        <textarea class="rating-comment" id="rc-${review.id}" placeholder="Yorum ekleyin (isteğe bağlı)..." rows="2"></textarea>
+        <button class="rating-submit" id="rsub-${review.id}" onclick="submitRating('${review.id}')" disabled>
+          Değerlendir →
+        </button>
+      </div>`;
+  }
+
+  function hoverStar(reviewId, val) {
+    const row = document.getElementById('stars-' + reviewId);
+    if (!row) return;
+    row.querySelectorAll('.star-btn').forEach((s, i) => {
+      s.textContent = i < val ? '⭐' : '☆';
+      s.classList.toggle('active', i < val);
+    });
+    row.dataset.selected = val;
+    const btn = document.getElementById('rsub-' + reviewId);
+    if (btn) btn.disabled = false;
+  }
+
+  async function submitRating(reviewId) {
+    const row = document.getElementById('stars-' + reviewId);
+    const rating = parseInt(row?.dataset.selected || '0');
+    if (!rating) return;
+    const comment = (document.getElementById('rc-' + reviewId)?.value || '').trim() || null;
+    const submitBtn = document.getElementById('rsub-' + reviewId);
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Gönderiliyor...'; }
+    try {
+      const sb = window.supabase;
+      const { error } = await sb.from('expert_reviews').update({
+        rating,
+        rating_comment: comment,
+        rated_at: new Date().toISOString()
+      }).eq('id', reviewId);
+      if (error) throw error;
+      // Replace widget with static thanks state
+      const widget = document.getElementById('rw-' + reviewId);
+      if (widget) {
+        const filled = '⭐'.repeat(rating);
+        const empty = '☆'.repeat(5 - rating);
+        const commentHtml = comment
+          ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic;">"${comment}"</div>`
+          : '';
+        widget.classList.add('rated');
+        widget.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;line-height:1;">${filled}${empty}</span>
+            <span class="rating-thanks">✅ Teşekkürler! Değerlendirmeniz kaydedildi.</span>
+          </div>
+          ${commentHtml}`;
+      }
+    } catch(e) {
+      console.error('Rating submit error:', e);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Tekrar Dene'; }
+    }
+  }
+
   // ── LOAD EXPERT RESPONSES ON STARTUP ──
   async function loadExpertResponses() {
     try {
@@ -1097,6 +1214,7 @@
               </div>
               ${formattedResponse}
             </div>
+            ${buildRatingWidget(review)}
             <div class="msg-time">${date}</div>
           </div>`;
         msgs.appendChild(div);
