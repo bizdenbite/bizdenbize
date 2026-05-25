@@ -3,624 +3,496 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BizdenBize — Uzman Paneli</title>
+  <title>BizdenBize — Uzman Profili</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
+    /* NAV */
     nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
-    .nav-left{display:flex;align-items:center;gap:14px;}
-    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
-    .nav-logo-link img{height:44px;width:auto;}
-    .nav-divider{width:1px;height:18px;background:var(--sand);}
-    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
-    .nav-title span{color:var(--navy);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-back:hover{background:var(--warm);color:var(--ink);}
     .nav-right{display:flex;align-items:center;gap:10px;}
-    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
 
-    .page{padding:78px 32px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
+    /* LAYOUT */
+    .page{padding:78px 24px 60px;max-width:860px;margin:0 auto;}
 
-    /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;grid-column:1/-1;}
-    .stat{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px 20px;}
-    .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
-    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
-    .stat.urgent{border-color:var(--red);background:rgba(212,43,43,.04);}
-    .stat.urgent .stat-val{color:var(--red);}
-    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)!important;}}
+    /* HERO */
+    .hero{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:32px;display:flex;gap:28px;align-items:flex-start;margin-bottom:20px;}
+    .hero-avatar{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Playfair Display',serif;}
+    .hero-info{flex:1;min-width:0;}
+    .hero-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+    .hero-title{font-size:15px;color:var(--muted);margin-bottom:12px;}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .badge-cat{background:rgba(27,58,140,.08);color:var(--navy);border:1px solid rgba(27,58,140,.15);}
+    .badge-lang{background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+    .hero-bio{font-size:14px;color:var(--muted);line-height:1.7;}
+    .hero-cta{margin-top:18px;}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:var(--red);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-primary:hover{background:var(--red2);}
 
-    /* Sidebar */
-    .sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:76px;}
-    .filter-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;}
-    .fc-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-    .filter-btn{width:100%;padding:9px 12px;border-radius:8px;border:none;background:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
-    .filter-btn:hover{background:var(--warm);color:var(--ink);}
-    .filter-btn.active{background:var(--navy);color:var(--white);}
-    .filter-count{font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;background:rgba(255,255,255,.2);}
-    .filter-btn:not(.active) .filter-count{background:var(--warm);color:var(--muted);}
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:20px 16px;text-align:center;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;line-height:1;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);}
+    .stat-stars{font-size:20px;line-height:1;margin-bottom:4px;}
 
-    /* Main */
-    .main{display:flex;flex-direction:column;gap:12px;}
-    .review-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;transition:box-shadow .2s;}
-    .review-card:hover{box-shadow:0 4px 20px rgba(26,18,8,.08);}
-    .review-card.urgent{border-color:var(--red);}
-    .rc-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--warm);cursor:pointer;}
-    .rc-cat{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-    .rc-info{flex:1;}
-    .rc-user{font-size:13px;font-weight:600;color:var(--ink);}
-    .rc-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;}
-    .rc-status{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;}
-    .status-pending{background:rgba(201,168,76,.15);color:#854F0B;}
-    .status-assigned{background:rgba(27,58,140,.1);color:var(--navy);}
-    .status-answered{background:rgba(30,123,75,.1);color:var(--green);}
-    .rc-time{font-size:11px;color:var(--muted);flex-shrink:0;}
+    /* REVIEWS SECTION */
+    .section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+    .review-list{display:flex;flex-direction:column;gap:10px;}
+    .review-item{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:16px 18px;}
+    .review-stars{font-size:16px;margin-bottom:6px;}
+    .review-comment{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic;}
+    .review-meta{font-size:11px;color:var(--sand);margin-top:8px;}
+    .review-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--warm);color:var(--muted);display:inline-block;margin-bottom:6px;}
 
-    .rc-body{padding:20px;}
-    .rc-section-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-    .rc-question{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:16px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
-    .rc-abibot{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;padding:12px;background:rgba(27,58,140,.04);border-radius:8px;border-left:3px solid rgba(27,58,140,.2);max-height:120px;overflow-y:auto;}
-    .rc-response-area{margin-top:4px;}
-    .response-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:10px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;transition:border-color .2s;line-height:1.6;}
-    .response-textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,58,140,.08);}
-    .rc-actions{display:flex;gap:8px;margin-top:10px;align-items:center;}
-    .submit-btn{padding:10px 24px;background:var(--green);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
-    .submit-btn:hover{opacity:.9;}
-    .submit-btn:disabled{background:var(--sand);cursor:not-allowed;}
-    .assign-btn{padding:10px 16px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
-    .assign-btn:hover{opacity:.9;}
-    .close-btn{padding:10px 16px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;margin-left:auto;}
-    .close-btn:hover{border-color:var(--red);color:var(--red);}
+    /* EMPTY / LOADING */
+    /* Direct ask modal */
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:20px;max-width:500px;width:92%;animation:popIn .3s ease;display:flex;flex-direction:column;max-height:92vh;}
+    @keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-head{padding:24px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;}
+    .modal-body{padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;}
+    .modal-foot{padding:16px 24px 24px;border-top:1px solid var(--warm);flex-shrink:0;}
+    .field-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+    .cat-select{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .cat-select:focus{border-color:var(--ink);}
+    .question-ta{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;line-height:1.6;transition:border-color .2s;}
+    .question-ta:focus{border-color:var(--ink);}
+    .price-pill{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--warm);border:1px solid var(--sand);border-radius:9px;}
+    .price-pill.insufficient{background:rgba(212,43,43,.05);border-color:rgba(212,43,43,.2);}
+    .btn-confirm{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-confirm:hover{background:#176040;}
+    .btn-confirm:disabled{background:var(--sand);cursor:not-allowed;}
+    .btn-cancel{width:100%;padding:11px;background:none;color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-top:8px;transition:all .15s;}
+    .btn-cancel:hover{border-color:var(--red);color:var(--red);}
 
-    /* Answered */
-    .rc-answered{padding:12px;background:rgba(30,123,75,.05);border-radius:8px;border-left:3px solid var(--green);font-size:13px;color:var(--ink);line-height:1.6;}
-    .rc-answered-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
+    .loading{text-align:center;padding:60px 20px;color:var(--muted);}
+    .no-reviews{text-align:center;padding:32px;background:var(--white);border:1px solid var(--sand);border-radius:12px;}
+    .no-reviews-icon{font-size:32px;margin-bottom:8px;}
+    .no-reviews-text{font-size:13px;color:var(--muted);}
 
-    /* Expert assign dropdown */
-    .assign-select{padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;}
+    /* ERROR */
+    .error-state{text-align:center;padding:80px 20px;}
+    .error-icon{font-size:48px;margin-bottom:16px;}
+    .error-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+    .error-sub{font-size:14px;color:var(--muted);}
 
-    /* Empty state */
-    .empty{text-align:center;padding:60px 20px;}
-    .empty-icon{font-size:48px;margin-bottom:16px;}
-    .empty-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;}
-    .empty-sub{font-size:14px;color:var(--muted);}
-
-    /* Expert management */
-    .expert-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;}
-    .ec-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
-    .ec-name{font-size:14px;font-weight:600;color:var(--ink);}
-    .ec-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-    .ec-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-    .ec-cat{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(27,58,140,.08);color:var(--navy);font-weight:500;}
-    .ec-actions{margin-left:auto;display:flex;gap:6px;}
-    .ec-btn{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;border:1.5px solid var(--sand);background:var(--warm);color:var(--muted);transition:all .15s;}
-    .ec-btn:hover{border-color:var(--navy);color:var(--navy);}
-    .ec-btn.danger:hover{border-color:var(--red);color:var(--red);}
-
-    /* Rating display */
-    .rc-rating-display{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:9px;flex-wrap:wrap;}
-    .rc-rating-stars{font-size:16px;line-height:1;}
-    .rc-rating-score{font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;}
-    .rc-rating-comment{font-size:12px;color:var(--muted);font-style:italic;border-left:1px solid var(--sand);padding-left:8px;}
-    .rc-no-rating{font-size:11px;color:var(--sand);margin-top:8px;font-style:italic;}
-
-    /* Pro-bono */
-    .review-card.probono{border-color:#1E7B4B;}
-    .probono-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,123,75,.12);color:#1E7B4B;border:1px solid rgba(30,123,75,.2);flex-shrink:0;}
-    .probono-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--warm);margin-top:8px;}
-    .pt-label{font-size:12px;font-weight:600;color:var(--ink);}
-    .pt-sub{font-size:10px;color:var(--muted);margin-top:1px;}
-    .pt-switch{width:36px;height:20px;border-radius:10px;background:var(--sand);position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0;}
-    .pt-switch.on{background:var(--green);}
-    .pt-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;}
-    .pt-switch.on::after{transform:translateX(16px);}
-    .pt-slots{font-size:11px;color:var(--muted);margin-top:6px;}
-    @media(max-width:900px){.page{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.sidebar{position:static;}}
-    @media (max-width: 900px) { }
+    @media(max-width:640px){
+      .hero{flex-direction:column;gap:20px;padding:20px;}
+      .stats-row{grid-template-columns:1fr 1fr;}
+      .stats-row .stat-card:last-child{grid-column:1/-1;}
+      .hero-name{font-size:22px;}
+    }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-left">
-    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
-    <div class="nav-divider"></div>
-    <span class="nav-title">👨‍⚖️ <span>Uzman Paneli</span></span>
-  </div>
+  <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
   <div class="nav-right">
-    <a href="admin.html" style="font-size:12px;color:var(--muted);text-decoration:none;margin-right:8px;">Admin →</a>
-    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+    <a href="uzmanlar.html" class="nav-back">← Tüm Uzmanlar</a>
+    <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
   </div>
 </nav>
 
-<div class="page">
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat urgent">
-      <div class="stat-val" id="stat-pending">0</div>
-      <div class="stat-label">⏳ Bekleyen İstek</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-inreview">0</div>
-      <div class="stat-label">🔍 İncelemede</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-answered">0</div>
-      <div class="stat-label">✅ Yanıtlanan</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-experts">0</div>
-      <div class="stat-label">👨‍⚖️ Aktif Uzman</div>
-    </div>
-    <div class="stat" style="border-color:rgba(30,123,75,.3);background:rgba(30,123,75,.03);">
-      <div class="stat-val" id="stat-probono" style="color:#1E7B4B;">0</div>
-      <div class="stat-label">🤝 Pro-Bono Bekleyen</div>
-    </div>
-    <div class="stat" style="border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);">
-      <div class="stat-val" id="stat-avg-rating" style="color:var(--gold);font-size:24px;">—</div>
-      <div class="stat-label">⭐ Ortalama Puan</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-rated">0</div>
-      <div class="stat-label">📊 Değerlendirilen</div>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="filter-card">
-      <div class="fc-title">Filtre</div>
-      <button class="filter-btn active" onclick="setFilter('all',this)">
-        Tüm İstekler <span class="filter-count" id="count-all">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('pending',this)">
-        ⏳ Bekleyen <span class="filter-count" id="count-pending">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('assigned',this)">
-        🔍 Atandı <span class="filter-count" id="count-assigned">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('answered',this)">
-        ✅ Yanıtlandı <span class="filter-count" id="count-answered">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('probono',this)">
-        🤝 Pro-Bono <span class="filter-count" id="count-probono">0</span>
-      </button>
-    </div>
-
-    <div class="filter-card">
-      <div class="fc-title">Kategoriler</div>
-      <button class="filter-btn" onclick="setCatFilter('legal',this)">⚖️ Hukuki</button>
-      <button class="filter-btn" onclick="setCatFilter('visa',this)">🛂 Vize</button>
-      <button class="filter-btn" onclick="setCatFilter('medical',this)">🏥 Tıbbi</button>
-      <button class="filter-btn" onclick="setCatFilter('tax',this)">💶 Vergi</button>
-      <button class="filter-btn" onclick="setCatFilter('housing',this)">🏠 Konut</button>
-      <button class="filter-btn" onclick="setCatFilter('employment',this)">💼 İş</button>
-    </div>
-
-    <div class="filter-card">
-      <div class="fc-title">Uzmanlar</div>
-      <div id="expert-list-sidebar" style="display:flex;flex-direction:column;gap:6px;">
-        <div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Yükleniyor...</div>
-      </div>
-      <button onclick="showAddExpert()" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;border:1.5px dashed var(--sand);background:none;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">+ Uzman Ekle</button>
-    </div>
-  </div>
-
-  <!-- Main -->
-  <div class="main" id="reviews-main">
-    <div class="empty">
-      <div class="empty-icon">⏳</div>
-      <div class="empty-title">Yükleniyor...</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Add Expert Modal -->
-<div id="add-expert-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-  <div style="background:var(--white);border-radius:20px;padding:32px;max-width:480px;width:90%;animation:popIn .3s ease;">
-    <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:20px;">Uzman Ekle</h3>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kullanıcı E-postası</label>
-        <input id="expert-email" type="email" placeholder="uzman@email.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Unvan</label>
-        <input id="expert-title" type="text" placeholder="Rechtsanwalt / Steuerberater / Doktor..." style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kategoriler</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="cat-checkboxes">
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="legal"> Hukuki</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="visa"> Vize</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="medical"> Tıbbi</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="tax"> Vergi</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="housing"> Konut</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="employment"> İş</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="school"> Okul</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="insurance"> Sigorta</label>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;">
-      <button onclick="addExpert()" style="flex:1;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Uzman Ekle</button>
-      <button onclick="document.getElementById('add-expert-modal').style.display='none'" style="padding:12px 20px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
-    </div>
+<div class="page" id="page-content">
+  <div class="loading">
+    <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+    <div>Uzman profili yükleniyor...</div>
   </div>
 </div>
-
-<style>
-@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-</style>
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-  // Auth check — uses session from login.html
-  let currentUser = null;
-  let profile = null;
-
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      // No session → redirect to login
-      window.location.replace('login.html');
-    } else {
-      currentUser = session.user;
-      const { data: p } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-      profile = p;
-
-      // Check if user is admin or expert
-      if (!profile?.is_admin) {
-        const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
-        if (!expert) {
-          alert('Bu sayfaya erişim yetkiniz yok.');
-          window.location.replace('mahallem.html');
-        }
-      }
-    }
-  } catch(e) {
-    console.error('Auth error:', e);
-    window.location.replace('login.html');
-  }
-
-  // Update avatar with real initials
-  const firstName = profile?.first_name || currentUser?.email?.split('@')[0] || 'U';
-  const lastName = profile?.last_name || '';
-  document.querySelector('.nav-avatar').textContent =
-    ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || 'AY';
-
-  let allReviews = [];
-  let allExperts = [];
-  let currentFilter = 'all';
-  let currentCatFilter = null;
 
   const CAT_ICONS = {
     legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
-    housing:'🏠', employment:'💼', school:'🎓', insurance:'🚗'
+    housing:'🏠', employment:'💼', school:'🎓',
+    insurance:'🚗', migration:'✈️'
   };
-  const CAT_COLORS = {
-    legal:'#EEF2FF', visa:'#FFF7ED', medical:'#F0FDF4',
-    tax:'#FFFBEB', housing:'#FDF4FF', employment:'#EFF6FF',
-    school:'#FEF9C3', insurance:'#FFF1F2'
+  const CAT_NAMES = {
+    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
+    tax:'Vergi & Finans', housing:'Konut & Kira',
+    employment:'İş & Çalışma', school:'Okul & Yardımlar',
+    insurance:'Sigorta & Araç', migration:"Avrupa'ya Göç"
   };
-  const STATUS_LABELS = {
-    pending:'Bekliyor', assigned:'Atandı', in_review:'İncelemede',
-    answered:'Yanıtlandı', closed:'Kapatıldı'
-  };
+  const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
+  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
 
-  // Load everything
-  async function loadAll() {
-    const [reviewsRes, expertsRes] = await Promise.all([
-      supabase.from('expert_reviews').select('*, profiles:user_id(first_name, last_name, city, country)').order('created_at', { ascending: false }),
-      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url)').eq('is_active', true)
-    ]);
+  // Get expert_id from URL
+  const params = new URLSearchParams(window.location.search);
+  const expertId = params.get('id');
 
-    allReviews = reviewsRes.data || [];
-    allExperts = expertsRes.data || [];
-
-    updateStats();
-    renderExpertSidebar();
-    renderReviews();
+  if (!expertId) {
+    showError('Uzman bulunamadı', 'Geçerli bir uzman ID\'si belirtilmedi.');
+  } else {
+    loadProfile(expertId);
   }
 
-  function updateStats() {
-    const pending  = allReviews.filter(r => r.status === 'pending' && !r.is_probono).length;
-    const inreview = allReviews.filter(r => r.status === 'assigned' || r.status === 'in_review').length;
-    const answered = allReviews.filter(r => r.status === 'answered').length;
-    const probono  = allReviews.filter(r => r.is_probono && r.status === 'pending').length;
+  async function loadProfile(id) {
+    try {
+      // Fetch expert summary from view + recent rated reviews
+      const [summaryRes, reviewsRes] = await Promise.all([
+        supabase.from('expert_rating_summary').select('*').eq('expert_id', id).single(),
+        supabase.from('expert_reviews')
+          .select('category, rating, rating_comment, rated_at')
+          .eq('expert_id', id)
+          .eq('status', 'answered')
+          .not('rating', 'is', null)
+          .order('rated_at', { ascending: false })
+          .limit(10)
+      ]);
 
-    document.getElementById('stat-pending').textContent   = pending;
-    document.getElementById('stat-inreview').textContent  = inreview;
-    document.getElementById('stat-answered').textContent  = answered;
-    document.getElementById('stat-experts').textContent   = allExperts.length;
-    document.getElementById('stat-probono').textContent   = probono;
+      if (summaryRes.error || !summaryRes.data) {
+        showError('Uzman bulunamadı', 'Bu profile ait bir uzman bulunamadı.');
+        return;
+      }
 
-    document.getElementById('count-all').textContent      = allReviews.length;
-    document.getElementById('count-pending').textContent  = pending;
-    document.getElementById('count-assigned').textContent = inreview;
-    document.getElementById('count-answered').textContent = answered;
-    document.getElementById('count-probono').textContent  = probono;
-
-    const rated = allReviews.filter(r => r.rating != null);
-    const avgRating = rated.length
-      ? (rated.reduce((s, r) => s + (r.rating || 0), 0) / rated.length).toFixed(1)
-      : null;
-    document.getElementById('stat-avg-rating').textContent = avgRating ? avgRating + ' ★' : '—';
-    document.getElementById('stat-rated').textContent = rated.length;
-  }
-
-  function renderExpertSidebar() {
-    const container = document.getElementById('expert-list-sidebar');
-    if (!allExperts.length) {
-      container.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Henüz uzman yok</div>';
-      return;
+      renderProfile(summaryRes.data, reviewsRes.data || []);
+    } catch(e) {
+      console.error(e);
+      showError('Bir hata oluştu', 'Profil yüklenirken sorun oluştu. Lütfen tekrar deneyin.');
     }
-    container.innerHTML = allExperts.map(e => `
-      <div style="padding:8px 0;border-bottom:1px solid var(--warm);">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
-            ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
+  }
+
+  function renderProfile(expert, reviews) {
+    const name = `${expert.first_name || ''} ${expert.last_name || ''}`.trim() || 'Uzman';
+    const initials = ((expert.first_name?.[0] || '') + (expert.last_name?.[0] || '')).toUpperCase() || 'U';
+    const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
+    const avatarColor = AVATAR_COLORS[colorIdx];
+
+    const avgRating = expert.avg_rating ? parseFloat(expert.avg_rating) : null;
+    const starDisplay = avgRating
+      ? '⭐'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating))
+      : '☆☆☆☆☆';
+
+    const categories = (expert.categories || []).map(c =>
+      `<span class="badge badge-cat">${CAT_ICONS[c] || ''} ${CAT_NAMES[c] || c}</span>`
+    ).join('');
+
+    const languages = (expert.languages || []).map(l =>
+      `<span class="badge badge-lang">${LANG_FLAGS[l] || ''} ${l.toUpperCase()}</span>`
+    ).join('');
+
+    const verifiedBadge = expert.is_verified
+      ? `<span class="badge badge-verified">✓ Doğrulandı</span>` : '';
+
+    const avgResponseText = expert.avg_response_hours
+      ? `${expert.avg_response_hours} saat`
+      : '24-48 saat';
+
+    const reviewsHtml = reviews.length ? reviews.map(r => {
+      const ratedDate = r.rated_at
+        ? new Date(r.rated_at).toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' })
+        : '';
+      const filled = '⭐'.repeat(r.rating);
+      const empty = '☆'.repeat(5 - r.rating);
+      return `
+        <div class="review-item">
+          <div class="review-cat">${CAT_ICONS[r.category] || ''} ${CAT_NAMES[r.category] || r.category}</div>
+          <div class="review-stars">${filled}${empty}</div>
+          ${r.rating_comment
+            ? `<div class="review-comment">"${r.rating_comment}"</div>`
+            : `<div class="review-comment" style="color:var(--sand);">Yorum yapılmadı.</div>`}
+          <div class="review-meta">${ratedDate}</div>
+        </div>`;
+    }).join('') : `
+      <div class="no-reviews">
+        <div class="no-reviews-icon">⭐</div>
+        <div class="no-reviews-text">Henüz değerlendirme yok. İlk değerlendirmeyi siz yapın!</div>
+      </div>`;
+
+    document.getElementById('page-content').innerHTML = `
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-avatar" style="background:${avatarColor};">${initials}</div>
+        <div class="hero-info">
+          <div class="hero-name">${name}</div>
+          <div class="hero-title">${expert.title || 'Uzman'}</div>
+          <div class="hero-badges">
+            ${verifiedBadge}
+            ${categories}
+            ${languages}
           </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
-            <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
+          ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
+          <div class="hero-cta" style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
+            <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
+              ✉️ Doğrudan Soru Sor
+            </button>
           </div>
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
-        </div>
-        <a href="expert-profile.html?id=${e.id}" target="_blank"
-           style="display:block;margin-top:6px;text-align:center;font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;background:rgba(27,58,140,.04);transition:all .15s;"
-           onmouseover="this.style.background='rgba(27,58,140,.1)'" onmouseout="this.style.background='rgba(27,58,140,.04)'">
-          👤 Profili Gör →
-        </a>
-        <div class="probono-toggle">
-          <div>
-            <div class="pt-label">🤝 Pro-Bono</div>
-            <div class="pt-sub">${e.probono_slots_used||0}/${e.probono_slots_total||5} yuva kullanıldı</div>
-          </div>
-          <button class="pt-switch ${e.offers_probono ? 'on' : ''}" onclick="toggleProbono('${e.id}', this)"></button>
         </div>
       </div>
-    `).join('');
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-stars">${starDisplay}</div>
+          <div class="stat-val" style="color:var(--gold);font-size:24px;">${avgRating ? avgRating.toFixed(1) + ' / 5' : '—'}</div>
+          <div class="stat-label">Ortalama Puan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">${expert.total_responses || 0}</div>
+          <div class="stat-label">✅ Yanıtlanan Soru</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:20px;">${avgResponseText}</div>
+          <div class="stat-label">⚡ Ortalama Yanıt Süresi</div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="section-title">
+        ⭐ Kullanıcı Değerlendirmeleri
+        <span style="font-size:13px;font-weight:400;color:var(--muted);font-family:'Instrument Sans',sans-serif;">${expert.total_rated || 0} değerlendirme</span>
+      </div>
+      <div class="review-list">${reviewsHtml}</div>
+    `;
+
+    // Update page title and modal expert name
+    document.title = `BizdenBize — ${name}`;
+    window._expertName = name;
+    const modalName = document.getElementById('modal-expert-name');
+    if (modalName) modalName.textContent = `${name} · ${expert.title || 'Uzman'}`;
   }
 
-
-  function mdToHtml(text) {
-    if (!text) return '';
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/##\s*(.*?)\n/g, '<strong style="display:block;margin:8px 0 4px">$1</strong>')
-      .replace(/\n/g, '<br>');
+  function showError(title, sub) {
+    document.getElementById('page-content').innerHTML = `
+      <div class="error-state">
+        <div class="error-icon">🔍</div>
+        <div class="error-title">${title}</div>
+        <div class="error-sub">${sub}</div>
+        <a href="uzmanlar.html" class="btn-primary" style="display:inline-flex;margin-top:20px;">← Tüm Uzmanlara Dön</a>
+      </div>`;
   }
+</script>
+<!-- DIRECT ASK MODAL -->
+<div class="modal-overlay" id="ask-modal" onclick="if(event.target===this)closeAskModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);">Doğrudan Soru Sor</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="modal-expert-name">Uzmana soru gönder</div>
+        </div>
+        <button onclick="closeAskModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0;line-height:1;">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <!-- Category -->
+      <div>
+        <label class="field-label">Kategori</label>
+        <select class="cat-select" id="ask-category" onchange="updatePrice()">
+          <option value="">Kategori seçin...</option>
+          <option value="legal">⚖️ Hukuki</option>
+          <option value="visa">🛂 Vize & Oturma</option>
+          <option value="medical">🏥 Tıbbi</option>
+          <option value="tax">💶 Vergi & Finans</option>
+          <option value="employment">💼 İş & Çalışma</option>
+          <option value="migration">✈️ Avrupa'ya Göç</option>
+          <option value="housing">🏠 Konut & Kira</option>
+          <option value="insurance">🚗 Sigorta & Araç</option>
+          <option value="school">👶 Okul & Yardımlar</option>
+        </select>
+      </div>
+      <!-- Question -->
+      <div>
+        <label class="field-label">Sorunuz</label>
+        <textarea class="question-ta" id="ask-question" placeholder="Sorunuzu detaylı yazın. Uzman en kısa sürede yanıtlayacak..." oninput="updateSubmitBtn()"></textarea>
+      </div>
+      <!-- Price display -->
+      <div class="price-pill" id="price-pill">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);" id="price-label">Kategori seçin</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="balance-label">Bakiyeniz yükleniyor...</div>
+        </div>
+        <div style="font-size:20px;font-weight:900;font-family:'Playfair Display',serif;color:var(--ink);" id="price-val">—</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-confirm" id="ask-confirm-btn" onclick="submitDirectQuestion()" disabled>
+        Soruyu Gönder →
+      </button>
+      <button class="btn-cancel" onclick="closeAskModal()">İptal</button>
+    </div>
+  </div>
+</div>
 
-  function renderReviews() {
-    let reviews = allReviews;
-    if (currentFilter === 'probono') {
-      reviews = reviews.filter(r => r.is_probono && r.status === 'pending');
-    } else if (currentFilter !== 'all') {
-      reviews = reviews.filter(r => {
-        if (currentFilter === 'assigned') return r.status === 'assigned' || r.status === 'in_review';
-        return r.status === currentFilter;
-      });
-    }
-    if (currentCatFilter) {
-      reviews = reviews.filter(r => r.category === currentCatFilter);
-    }
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const container = document.getElementById('reviews-main');
-    if (!reviews.length) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Bu filtrede istek yok</div><div class="empty-sub">Harika! Tüm istekler yanıtlanmış.</div></div>`;
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const DIRECT_PRICES = {
+    legal:10, visa:10, medical:10,
+    tax:8, employment:8, migration:8,
+    housing:5, insurance:5, school:5
+  };
+
+  const CAT_NAMES = {
+    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
+    tax:'Vergi & Finans', employment:'İş & Çalışma', migration:"Avrupa'ya Göç",
+    housing:'Konut & Kira', insurance:'Sigorta & Araç', school:'Okul & Yardımlar'
+  };
+
+  // Read expert_id and ?ask=1 from URL
+  const params = new URLSearchParams(window.location.search);
+  window._expertId = params.get('id');
+  window._expertName = '';
+  window._userCredits = 0;
+  window._session = null;
+
+  // Load session + credits
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    window._session = session;
+    if (session) {
+      const { data: p } = await supabase.from('profiles')
+        .select('expert_credits, first_name, last_name')
+        .eq('id', session.user.id).single();
+      window._userCredits = p?.expert_credits || 0;
+    }
+    // Auto-open modal if ?ask=1
+    if (params.get('ask') === '1') {
+      openAskModal();
+    }
+    updateBalanceLabel();
+  })();
+
+  window.openAskModal = function() {
+    if (!window._session) {
+      const go = confirm('Soru sormak için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
+      if (go) window.location.href = 'login.html';
       return;
     }
+    document.getElementById('ask-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    updateBalanceLabel();
+  };
 
-    container.innerHTML = reviews.map(r => {
-      const user = r.profiles;
-      const userName = user ? `${user.first_name} ${user.last_name}` : 'Kullanıcı';
-      const timeAgo = getTimeAgo(r.created_at);
-      const statusClass = `status-${r.status === 'in_review' ? 'assigned' : r.status}`;
-      const isAnswered = r.status === 'answered' || r.status === 'closed';
+  window.closeAskModal = function() {
+    document.getElementById('ask-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
 
-      return `
-        <div class="review-card ${r.status === 'pending' ? 'urgent' : ''} ${r.is_probono ? 'probono' : ''}" id="card-${r.id}">
-          <div class="rc-header" onclick="toggleCard('${r.id}')">
-            <div class="rc-cat" style="background:${CAT_COLORS[r.category] || '#f5f5f5'}">${CAT_ICONS[r.category] || '❓'}</div>
-            <div class="rc-info">
-              <div class="rc-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${user?.city || ''}</span></div>
-              <div class="rc-meta">
-                <span>${r.category}</span>
-                <span>·</span>
-                <span>${r.language?.toUpperCase()}</span>
-              </div>
-            </div>
-            ${r.is_probono ? '<span class="probono-badge">🤝 Pro-Bono</span>' : ''}
-            <span class="rc-status ${statusClass}">${STATUS_LABELS[r.status] || r.status}</span>
-            <span class="rc-time">${timeAgo}</span>
-          </div>
-          <div class="rc-body" id="body-${r.id}" style="display:none;">
-            <div class="rc-section-label">Kullanıcının Sorusu</div>
-            <div class="rc-question">${mdToHtml(r.question)}</div>
+  window.updatePrice = function() {
+    const cat = document.getElementById('ask-category').value;
+    const price = DIRECT_PRICES[cat] || null;
+    const priceVal = document.getElementById('price-val');
+    const priceLabel = document.getElementById('price-label');
+    const pill = document.getElementById('price-pill');
 
-            ${r.abibot_answer ? `
-              <div class="rc-section-label">AbiBOT Yanıtı</div>
-              <div class="rc-abibot">${mdToHtml(r.abibot_answer)}</div>
-            ` : ''}
+    if (!price) {
+      priceVal.textContent = '—';
+      priceLabel.textContent = 'Kategori seçin';
+      pill.classList.remove('insufficient');
+    } else {
+      priceVal.textContent = price + ' Kredi';
+      priceLabel.textContent = CAT_NAMES[cat] + ' sorusu';
+      const insufficient = window._userCredits < price;
+      pill.classList.toggle('insufficient', insufficient);
+      priceLabel.style.color = insufficient ? 'var(--red)' : 'var(--ink)';
+    }
+    updateSubmitBtn();
+  };
 
-            ${isAnswered ? `
-              <div class="rc-answered-label">Uzman Yanıtı</div>
-              <div class="rc-answered">${mdToHtml(r.expert_response || '')}</div>
-              ${r.rating != null ? `
-                <div class="rc-rating-display">
-                  <span class="rc-rating-stars">${'⭐'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-                  <span class="rc-rating-score">${r.rating}/5</span>
-                  ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
-                </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
-              }
-            ` : `
-              <div class="rc-response-area">
-                <div class="rc-section-label">Uzman Yanıtı</div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;">
-                  <select class="assign-select" id="assign-${r.id}">
-                    <option value="">Uzmana Ata...</option>
-                    ${allExperts.filter(e => !e.categories?.length || e.categories.includes(r.category)).map(e =>
-                      `<option value="${e.id}">${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
-                    ).join('')}
-                  </select>
-                  <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
-                </div>
-                <textarea class="response-textarea" id="resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
-                <div class="rc-actions">
-                  <button class="submit-btn" onclick="submitResponse('${r.id}')">✓ Yanıtı Gönder</button>
-                  <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
-                </div>
-              </div>
-            `}
-          </div>
-        </div>`;
-    }).join('');
+  function updateBalanceLabel() {
+    document.getElementById('balance-label').textContent =
+      window._session
+        ? `Bakiyeniz: ${window._userCredits} kredi`
+        : 'Giriş yapılmamış';
   }
 
-  window.toggleCard = function(id) {
-    const body = document.getElementById('body-' + id);
-    body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  window.updateSubmitBtn = function() {
+    const cat = document.getElementById('ask-category').value;
+    const q = document.getElementById('ask-question').value.trim();
+    const price = DIRECT_PRICES[cat] || 0;
+    const btn = document.getElementById('ask-confirm-btn');
+    const canAfford = window._userCredits >= price;
+    btn.disabled = !cat || !q || !canAfford || q.length < 20;
+    btn.textContent = !canAfford && cat
+      ? `Yetersiz kredi (${price} gerekli, ${window._userCredits} mevcut)`
+      : 'Soruyu Gönder →';
   };
 
-  window.setFilter = function(filter, btn) {
-    currentFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderReviews();
-  };
+  window.submitDirectQuestion = async function() {
+    const cat = document.getElementById('ask-category').value;
+    const question = document.getElementById('ask-question').value.trim();
+    const price = DIRECT_PRICES[cat];
+    if (!cat || !question || !price) return;
 
-  window.setCatFilter = function(cat, btn) {
-    if (currentCatFilter === cat) {
-      currentCatFilter = null;
-      btn.classList.remove('active');
-    } else {
-      currentCatFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-    renderReviews();
-  };
+    const btn = document.getElementById('ask-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Gönderiliyor...';
 
-  window.assignExpert = async function(reviewId) {
-    const expertId = document.getElementById('assign-' + reviewId).value;
-    if (!expertId) return;
-    await supabase.from('expert_reviews').update({
-      expert_id: expertId, status: 'assigned', assigned_at: new Date().toISOString()
-    }).eq('id', reviewId);
-    await loadAll();
-  };
+    try {
+      // Insert expert_review with source='direct'
+      const { error: insertErr } = await supabase.from('expert_reviews').insert({
+        user_id: window._session.user.id,
+        expert_id: window._expertId,
+        category: cat,
+        language: 'tr',
+        question: question,
+        status: 'pending',
+        source: 'direct',
+        direct_price: price,
+        credits_charged: price
+      });
+      if (insertErr) throw insertErr;
 
-  window.submitResponse = async function(reviewId) {
-    const response = document.getElementById('resp-' + reviewId).value.trim();
-    if (!response) return;
+      // Deduct credits
+      const { error: deductErr } = await supabase.from('profiles')
+        .update({ expert_credits: window._userCredits - price })
+        .eq('id', window._session.user.id);
+      if (deductErr) throw deductErr;
 
-    const btn = document.querySelector(`#card-${reviewId} .submit-btn`);
-    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
-
-    // Update review
-    await supabase.from('expert_reviews').update({
-      expert_response: response,
-      status: 'answered',
-      answered_at: new Date().toISOString()
-    }).eq('id', reviewId);
-
-    // Get user_id to notify
-    const review = allReviews.find(r => r.id === reviewId);
-    if (review) {
-      // Create in-app notification for user
+      // In-app notification
       await supabase.from('notifications').insert({
-        user_id: review.user_id,
-        type: 'expert_answered',
-        title: 'Uzman yanıtınız hazır! ✅',
-        body: 'AbiBOT sorunuz bir uzman tarafından incelendi ve yanıtlandı.',
+        user_id: window._session.user.id,
+        type: 'expert_assigned',
+        title: 'Sorunuz uzman ekibimize iletildi ✅',
+        body: '24-48 saat içinde yanıt alacaksınız.',
         link: '/abibot.html'
       });
 
-      // If pro-bono, increment the expert's used slot count
-      if (review.is_probono && review.expert_id) {
-        const expert = allExperts.find(e => e.id === review.expert_id);
-        if (expert) {
-          const newUsed = (expert.probono_slots_used || 0) + 1;
-          await supabase.from('experts')
-            .update({ probono_slots_used: newUsed })
-            .eq('id', expert.id);
-        }
-      }
+      // Success state
+      document.querySelector('.modal-body').innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">✅</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px;">Sorunuz gönderildi!</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;">24-48 saat içinde uzman yanıtınız <strong>abibot.html</strong> sayfasında görünecek.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--muted);padding:10px 14px;background:var(--warm);border-radius:8px;">
+            ${price} kredi kullanıldı · Kalan: ${window._userCredits - price} kredi
+          </div>
+        </div>`;
+      document.querySelector('.modal-foot').innerHTML = `
+        <button onclick="closeAskModal();window.location.href='abibot.html'" class="btn-confirm">AbiBOT'ta Görüntüle →</button>
+        <button class="btn-cancel" onclick="closeAskModal()">Kapat</button>`;
 
-      // Send email notification via edge function
-      try {
-        await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON}`,
-          },
-          body: JSON.stringify({
-            review_id: review.id,
-            user_id: review.user_id,
-            category: review.category,
-            question: review.question,
-            expert_response: response,
-          })
-        });
-      } catch (emailErr) {
-        console.warn('Email notification failed (non-critical):', emailErr);
-      }
+      window._userCredits -= price;
+
+    } catch(err) {
+      console.error('Direct question error:', err);
+      btn.disabled = false;
+      btn.textContent = 'Tekrar Dene';
     }
-
-    await loadAll();
   };
-
-  window.showAddExpert = function() {
-    document.getElementById('add-expert-modal').style.display = 'flex';
-  };
-
-  window.addExpert = async function() {
-    const email = document.getElementById('expert-email').value.trim();
-    const title = document.getElementById('expert-title').value.trim();
-    const cats = [...document.querySelectorAll('#cat-checkboxes input:checked')].map(c => c.value);
-
-    if (!email) return;
-
-    // Find user by email
-    const { data: users } = await supabase.from('profiles').select('id').eq('id',
-      (await supabase.auth.admin?.listUsers())?.data?.users?.find(u => u.email === email)?.id
-    );
-
-    alert(`Uzman daveti gönderildi: ${email}\n\nKategoriler: ${cats.join(', ')}\nUnvan: ${title}\n\nNot: Kullanıcı platforma kaydolduktan sonra Supabase SQL Editor'dan manuel olarak experts tablosuna ekleyebilirsiniz.`);
-    document.getElementById('add-expert-modal').style.display = 'none';
-  };
-
-  function getTimeAgo(date) {
-    const diff = Date.now() - new Date(date).getTime();
-    const h = Math.floor(diff / 3600000);
-    const d = Math.floor(diff / 86400000);
-    if (h < 1) return 'Az önce';
-    if (h < 24) return `${h} saat önce`;
-    return `${d} gün önce`;
-  }
-
-  window.toggleProbono = async function(expertId, btn) {
-    const isOn = btn.classList.contains('on');
-    btn.classList.toggle('on');
-    await supabase.from('experts').update({ offers_probono: !isOn }).eq('id', expertId);
-    await loadAll();
-  };
-
-  loadAll();
-  // Auto-refresh every 30 seconds
-  setInterval(loadAll, 30000);
 </script>
 </body>
 </html>

@@ -113,6 +113,12 @@
 
 <!-- Filter Bar -->
 <div class="filter-bar">
+  <div style="display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:6px 12px;flex-shrink:0;min-width:220px;transition:border-color .2s;"
+       onfocusin="this.style.borderColor='var(--ink)'" onfocusout="this.style.borderColor='var(--sand)'">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input id="expert-search" type="text" placeholder="Uzman ara..." oninput="renderExperts()"
+      style="border:none;background:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);width:100%;">
+  </div>
   <span class="filter-label">Kategori:</span>
   <button class="filter-pill active" onclick="setFilter('all',this)">Tümü</button>
   <button class="filter-pill" onclick="setFilter('legal',this)">⚖️ Hukuki</button>
@@ -197,6 +203,16 @@
     if (activeFilter !== 'all') {
       experts = experts.filter(e => (e.categories || []).includes(activeFilter));
     }
+    // Search filter
+    const q = (document.getElementById('expert-search')?.value || '').toLowerCase().trim();
+    if (q) {
+      experts = experts.filter(e => {
+        const name = `${e.first_name||''} ${e.last_name||''}`.toLowerCase();
+        const title = (e.title || '').toLowerCase();
+        const cats = (e.categories || []).join(' ').toLowerCase();
+        return name.includes(q) || title.includes(q) || cats.includes(q);
+      });
+    }
 
     const grid = document.getElementById('experts-grid');
 
@@ -266,7 +282,7 @@
             </div>
             <div class="ec-actions">
               <a href="expert-profile.html?id=${e.expert_id}" class="btn-profile">👤 Profili Gör</a>
-              <a href="abibot.html" class="btn-ask">🤖 Soru Sor →</a>
+              <a href="expert-profile.html?id=${e.expert_id}&ask=1" class="btn-ask">✉️ Soru Sor →</a>
             </div>
           </div>
         </div>`;
