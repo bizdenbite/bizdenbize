@@ -55,6 +55,27 @@
     .review-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--warm);color:var(--muted);display:inline-block;margin-bottom:6px;}
 
     /* EMPTY / LOADING */
+    /* Direct ask modal */
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:20px;max-width:500px;width:92%;animation:popIn .3s ease;display:flex;flex-direction:column;max-height:92vh;}
+    @keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-head{padding:24px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;}
+    .modal-body{padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;}
+    .modal-foot{padding:16px 24px 24px;border-top:1px solid var(--warm);flex-shrink:0;}
+    .field-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+    .cat-select{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .cat-select:focus{border-color:var(--ink);}
+    .question-ta{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;line-height:1.6;transition:border-color .2s;}
+    .question-ta:focus{border-color:var(--ink);}
+    .price-pill{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--warm);border:1px solid var(--sand);border-radius:9px;}
+    .price-pill.insufficient{background:rgba(212,43,43,.05);border-color:rgba(212,43,43,.2);}
+    .btn-confirm{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-confirm:hover{background:#176040;}
+    .btn-confirm:disabled{background:var(--sand);cursor:not-allowed;}
+    .btn-cancel{width:100%;padding:11px;background:none;color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-top:8px;transition:all .15s;}
+    .btn-cancel:hover{border-color:var(--red);color:var(--red);}
+
     .loading{text-align:center;padding:60px 20px;color:var(--muted);}
     .no-reviews{text-align:center;padding:32px;background:var(--white);border:1px solid var(--sand);border-radius:12px;}
     .no-reviews-icon{font-size:32px;margin-bottom:8px;}
@@ -208,8 +229,11 @@
             ${languages}
           </div>
           ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
-          <div class="hero-cta">
+          <div class="hero-cta" style="display:flex;gap:10px;flex-wrap:wrap;">
             <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
+            <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
+              ✉️ Doğrudan Soru Sor
+            </button>
           </div>
         </div>
       </div>
@@ -239,8 +263,11 @@
       <div class="review-list">${reviewsHtml}</div>
     `;
 
-    // Update page title
+    // Update page title and modal expert name
     document.title = `BizdenBize — ${name}`;
+    window._expertName = name;
+    const modalName = document.getElementById('modal-expert-name');
+    if (modalName) modalName.textContent = `${name} · ${expert.title || 'Uzman'}`;
   }
 
   function showError(title, sub) {
@@ -252,6 +279,220 @@
         <a href="uzmanlar.html" class="btn-primary" style="display:inline-flex;margin-top:20px;">← Tüm Uzmanlara Dön</a>
       </div>`;
   }
+</script>
+<!-- DIRECT ASK MODAL -->
+<div class="modal-overlay" id="ask-modal" onclick="if(event.target===this)closeAskModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);">Doğrudan Soru Sor</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="modal-expert-name">Uzmana soru gönder</div>
+        </div>
+        <button onclick="closeAskModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0;line-height:1;">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <!-- Category -->
+      <div>
+        <label class="field-label">Kategori</label>
+        <select class="cat-select" id="ask-category" onchange="updatePrice()">
+          <option value="">Kategori seçin...</option>
+          <option value="legal">⚖️ Hukuki</option>
+          <option value="visa">🛂 Vize & Oturma</option>
+          <option value="medical">🏥 Tıbbi</option>
+          <option value="tax">💶 Vergi & Finans</option>
+          <option value="employment">💼 İş & Çalışma</option>
+          <option value="migration">✈️ Avrupa'ya Göç</option>
+          <option value="housing">🏠 Konut & Kira</option>
+          <option value="insurance">🚗 Sigorta & Araç</option>
+          <option value="school">👶 Okul & Yardımlar</option>
+        </select>
+      </div>
+      <!-- Question -->
+      <div>
+        <label class="field-label">Sorunuz</label>
+        <textarea class="question-ta" id="ask-question" placeholder="Sorunuzu detaylı yazın. Uzman en kısa sürede yanıtlayacak..." oninput="updateSubmitBtn()"></textarea>
+      </div>
+      <!-- Price display -->
+      <div class="price-pill" id="price-pill">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);" id="price-label">Kategori seçin</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="balance-label">Bakiyeniz yükleniyor...</div>
+        </div>
+        <div style="font-size:20px;font-weight:900;font-family:'Playfair Display',serif;color:var(--ink);" id="price-val">—</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-confirm" id="ask-confirm-btn" onclick="submitDirectQuestion()" disabled>
+        Soruyu Gönder →
+      </button>
+      <button class="btn-cancel" onclick="closeAskModal()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const DIRECT_PRICES = {
+    legal:10, visa:10, medical:10,
+    tax:8, employment:8, migration:8,
+    housing:5, insurance:5, school:5
+  };
+
+  const CAT_NAMES = {
+    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
+    tax:'Vergi & Finans', employment:'İş & Çalışma', migration:"Avrupa'ya Göç",
+    housing:'Konut & Kira', insurance:'Sigorta & Araç', school:'Okul & Yardımlar'
+  };
+
+  // Read expert_id and ?ask=1 from URL
+  const params = new URLSearchParams(window.location.search);
+  window._expertId = params.get('id');
+  window._expertName = '';
+  window._userCredits = 0;
+  window._session = null;
+
+  // Load session + credits
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    window._session = session;
+    if (session) {
+      const { data: p } = await supabase.from('profiles')
+        .select('expert_credits, first_name, last_name')
+        .eq('id', session.user.id).single();
+      window._userCredits = p?.expert_credits || 0;
+    }
+    // Auto-open modal if ?ask=1
+    if (params.get('ask') === '1') {
+      openAskModal();
+    }
+    updateBalanceLabel();
+  })();
+
+  window.openAskModal = function() {
+    if (!window._session) {
+      const go = confirm('Soru sormak için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
+      if (go) window.location.href = 'login.html';
+      return;
+    }
+    document.getElementById('ask-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    updateBalanceLabel();
+  };
+
+  window.closeAskModal = function() {
+    document.getElementById('ask-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.updatePrice = function() {
+    const cat = document.getElementById('ask-category').value;
+    const price = DIRECT_PRICES[cat] || null;
+    const priceVal = document.getElementById('price-val');
+    const priceLabel = document.getElementById('price-label');
+    const pill = document.getElementById('price-pill');
+
+    if (!price) {
+      priceVal.textContent = '—';
+      priceLabel.textContent = 'Kategori seçin';
+      pill.classList.remove('insufficient');
+    } else {
+      priceVal.textContent = price + ' Kredi';
+      priceLabel.textContent = CAT_NAMES[cat] + ' sorusu';
+      const insufficient = window._userCredits < price;
+      pill.classList.toggle('insufficient', insufficient);
+      priceLabel.style.color = insufficient ? 'var(--red)' : 'var(--ink)';
+    }
+    updateSubmitBtn();
+  };
+
+  function updateBalanceLabel() {
+    document.getElementById('balance-label').textContent =
+      window._session
+        ? `Bakiyeniz: ${window._userCredits} kredi`
+        : 'Giriş yapılmamış';
+  }
+
+  window.updateSubmitBtn = function() {
+    const cat = document.getElementById('ask-category').value;
+    const q = document.getElementById('ask-question').value.trim();
+    const price = DIRECT_PRICES[cat] || 0;
+    const btn = document.getElementById('ask-confirm-btn');
+    const canAfford = window._userCredits >= price;
+    btn.disabled = !cat || !q || !canAfford || q.length < 20;
+    btn.textContent = !canAfford && cat
+      ? `Yetersiz kredi (${price} gerekli, ${window._userCredits} mevcut)`
+      : 'Soruyu Gönder →';
+  };
+
+  window.submitDirectQuestion = async function() {
+    const cat = document.getElementById('ask-category').value;
+    const question = document.getElementById('ask-question').value.trim();
+    const price = DIRECT_PRICES[cat];
+    if (!cat || !question || !price) return;
+
+    const btn = document.getElementById('ask-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Gönderiliyor...';
+
+    try {
+      // Insert expert_review with source='direct'
+      const { error: insertErr } = await supabase.from('expert_reviews').insert({
+        user_id: window._session.user.id,
+        expert_id: window._expertId,
+        category: cat,
+        language: 'tr',
+        question: question,
+        status: 'pending',
+        source: 'direct',
+        direct_price: price,
+        credits_charged: price
+      });
+      if (insertErr) throw insertErr;
+
+      // Deduct credits
+      const { error: deductErr } = await supabase.from('profiles')
+        .update({ expert_credits: window._userCredits - price })
+        .eq('id', window._session.user.id);
+      if (deductErr) throw deductErr;
+
+      // In-app notification
+      await supabase.from('notifications').insert({
+        user_id: window._session.user.id,
+        type: 'expert_assigned',
+        title: 'Sorunuz uzman ekibimize iletildi ✅',
+        body: '24-48 saat içinde yanıt alacaksınız.',
+        link: '/abibot.html'
+      });
+
+      // Success state
+      document.querySelector('.modal-body').innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">✅</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px;">Sorunuz gönderildi!</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;">24-48 saat içinde uzman yanıtınız <strong>abibot.html</strong> sayfasında görünecek.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--muted);padding:10px 14px;background:var(--warm);border-radius:8px;">
+            ${price} kredi kullanıldı · Kalan: ${window._userCredits - price} kredi
+          </div>
+        </div>`;
+      document.querySelector('.modal-foot').innerHTML = `
+        <button onclick="closeAskModal();window.location.href='abibot.html'" class="btn-confirm">AbiBOT'ta Görüntüle →</button>
+        <button class="btn-cancel" onclick="closeAskModal()">Kapat</button>`;
+
+      window._userCredits -= price;
+
+    } catch(err) {
+      console.error('Direct question error:', err);
+      btn.disabled = false;
+      btn.textContent = 'Tekrar Dene';
+    }
+  };
 </script>
 </body>
 </html>
