@@ -1686,8 +1686,59 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   }
 
   function downloadAnswer(btn) {
-    btn.textContent = '✓ İndiriliyor...';
-    setTimeout(() => btn.textContent = '⬇️ PDF indir', 2000);
+    // Find the message bubble content
+    const msgBody = btn.closest('.msg-body');
+    const bubble = msgBody ? msgBody.querySelector('.bubble') : null;
+    const content = bubble ? bubble.innerText : '';
+    if (!content) return;
+
+    btn.textContent = '⏳ Hazırlanıyor...';
+
+    // Build a clean printable HTML page
+    const category = document.querySelector('.cat-item.active')?.querySelector('.cat-name')?.textContent || 'AbiBOT';
+    const date = new Date().toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' });
+
+    const printHTML = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>AbiBOT — ${category}</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 24px; color: #1A1208; font-size: 14px; line-height: 1.7; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #D42B2B; padding-bottom: 12px; margin-bottom: 24px; }
+  .logo { font-size: 22px; font-weight: 900; color: #D42B2B; }
+  .logo span { color: #1A1208; }
+  .meta { font-size: 12px; color: #6B5E4E; text-align: right; }
+  .category { display: inline-block; background: #F0EAE0; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; color: #6B5E4E; }
+  h2, h3 { color: #1B3A8C; margin-top: 20px; }
+  strong { color: #1A1208; }
+  .disclaimer { margin-top: 32px; padding: 12px 16px; background: #FEF9EC; border-left: 3px solid #C9A84C; font-size: 12px; color: #6B5E4E; border-radius: 0 8px 8px 0; }
+  .footer { margin-top: 32px; border-top: 1px solid #D4C5A9; padding-top: 12px; font-size: 11px; color: #6B5E4E; text-align: center; }
+  @media print { body { margin: 20px; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">Bizden<span>Bize</span></div>
+  <div class="meta">AbiBOT — Dijital Abiniz<br>${date}</div>
+</div>
+<div class="category">📂 ${category}</div>
+${content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+<div class="disclaimer">⚠️ Bu yanıt bilgi amaçlıdır ve profesyonel hukuki, tıbbi veya finansal tavsiye yerine geçmez. Önemli kararlar için bir uzmana danışın.</div>
+<div class="footer">bizdenbize.com · Avrupa'daki Türk topluluğu için dijital mahalle</div>
+</body></html>`;
+
+    const printWin = window.open('', '_blank', 'width=800,height=700');
+    printWin.document.write(printHTML);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => {
+      printWin.print();
+      printWin.close();
+    }, 500);
+
+    btn.textContent = '✅ PDF indirildi';
+    setTimeout(() => btn.textContent = '⬇️ PDF indir', 3000);
   }
 </script>
 <script>
