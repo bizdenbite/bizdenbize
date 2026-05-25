@@ -130,6 +130,23 @@
     .abibot-info { flex: 1; }
     .abibot-name { font-size: 15px; font-weight: 600; color: var(--ink); }
     .abibot-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* How-to bar */
+    .howto-bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 16px; background: rgba(27,58,140,.04);
+      border-bottom: 1px solid rgba(27,58,140,.1);
+      flex-wrap: wrap;
+    }
+    .howto-step { display: flex; align-items: center; gap: 7px; }
+    .howto-num {
+      width: 20px; height: 20px; border-radius: 50%; background: var(--navy);
+      color: #fff; font-size: 11px; font-weight: 700; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .howto-text { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .howto-text strong { color: var(--ink); font-weight: 600; }
+    .howto-divider { color: var(--sand); font-size: 16px; font-weight: 300; }
     .active-cat-badge {
       font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px;
       background: rgba(192,57,43,.08); color: var(--red);
@@ -902,7 +919,24 @@
         <div class="abibot-sub" id="abibot-sub">Hukuki kategorisinde yanıtlıyor · TR / DE / EN / FR / NL</div>
       </div>
       <span class="active-cat-badge" id="active-cat-badge">⚖️ Hukuki</span>
+    </div>
 
+    <!-- How-to steps -->
+    <div class="howto-bar">
+      <div class="howto-step">
+        <span class="howto-num">1</span>
+        <span class="howto-text">Soldaki menüden <strong>kategori seç</strong></span>
+      </div>
+      <div class="howto-divider">›</div>
+      <div class="howto-step">
+        <span class="howto-num">2</span>
+        <span class="howto-text">Hazır sorudan seç veya <strong>kendi soruyu yaz</strong></span>
+      </div>
+      <div class="howto-divider">›</div>
+      <div class="howto-step">
+        <span class="howto-num">3</span>
+        <span class="howto-text">Yanıtı <strong>PDF indir</strong>, çevir veya uzmana gönder</span>
+      </div>
     </div>
 
     <div class="messages" id="messages">
