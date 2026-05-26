@@ -661,8 +661,13 @@
       // Use secure RPC function to get emails too
       const res = await fetch(`${SB_URL}/rest/v1/rpc/get_admin_user_list`, {
         method: 'POST',
-        headers: hdrs(token),
-        body: JSON.stringify({})
+        headers: {
+          'apikey': SB_ANON,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: '{}'
       });
       const users = await res.json();
       allUsers = Array.isArray(users) ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
