@@ -545,7 +545,7 @@
     document.getElementById('section-' + id).classList.add('active');
     btn.classList.add('active');
     document.getElementById('topbar-title').textContent = sectionTitles[id];
-    if (id === 'users' && !allUsers.length) loadUsers();
+    if (id === 'users') loadUsers();
     if (id === 'experts') loadExperts();
     if (id === 'content') loadContent();
     if (id === 'messages') loadMessages();
@@ -657,7 +657,7 @@
   // ── USERS ──
   async function loadUsers() {
     if (!allUsers.length) {
-      const users = await sb('profiles?select=*&order=created_at.desc');
+      const users = await sb(`profiles?select=*&order=created_at.desc&limit=100`);
       allUsers = users;
     }
     renderUsers(allUsers);
