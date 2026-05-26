@@ -656,21 +656,36 @@
   }
 
   // ── USERS ──
+  // allUsersLoaded flag prevents using stale dashboard data (which has no email)
+  let allUsersLoaded = false;
+
   async function loadUsers() {
-    if (!allUsers.length) {
-      // Use secure RPC function to get emails too
-      const res = await fetch(`${SB_URL}/rest/v1/rpc/get_admin_user_list`, {
-        method: 'POST',
-        headers: {
-          'apikey': SB_ANON,
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: '{}'
-      });
-      const users = await res.json();
-      allUsers = Array.isArray(users) ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
+    if (!allUsersLoaded) {
+      document.getElementById('users-tbody').innerHTML =
+        `<tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>`;
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/rpc/get_admin_user_list`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_ANON,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: '{}'
+        });
+        if (!res.ok) throw new Error(`RPC failed: ${res.status} ${await res.text()}`);
+        const users = await res.json();
+        allUsers = Array.isArray(users)
+          ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+          : [];
+        allUsersLoaded = true;
+      } catch(e) {
+        console.error('loadUsers error:', e);
+        document.getElementById('users-tbody').innerHTML =
+          `<tr class="loading-row"><td colspan="7">Kullanıcılar yüklenemedi: ${e.message}</td></tr>`;
+        return;
+      }
     }
     renderUsers(allUsers);
   }
@@ -712,7 +727,6 @@
         </td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(u.created_at)}</td>
         <td>
-        <td>
           <div class="actions">
             <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">
               ${u.is_premium ? 'Premium Kaldır' : '⭐ Premium Yap'}
@@ -735,7 +749,7 @@
       if (u) u.is_premium = !current;
       renderUsers(allUsers);
       toast(current ? 'Premium kaldırıldı.' : '⭐ Premium yapıldı!');
-    } catch(e) { toast('Hata oluştu.', false); }
+    } catch(e) { console.error('togglePremium error:', e); toast('Hata: ' + e.message, false); }
   }
 
   async function toggleAdmin(id, current) {
@@ -746,7 +760,7 @@
       if (u) u.is_admin = !current;
       renderUsers(allUsers);
       toast(current ? 'Admin yetkisi kaldırıldı.' : '🛡️ Admin yapıldı!');
-    } catch(e) { toast('Hata oluştu.', false); }
+    } catch(e) { console.error('toggleAdmin error:', e); toast('Hata: ' + e.message, false); }
   }
 
   async function toggleBan(id, currentStatus) {
@@ -762,7 +776,7 @@
       if (u) u.status = newStatus;
       renderUsers(allUsers);
       toast(isBanned ? '✅ Yasak kaldırıldı.' : '🚫 Kullanıcı yasaklandı.');
-    } catch(e) { toast('Hata oluştu.', false); }
+    } catch(e) { console.error('toggleBan error:', e); toast('Hata: ' + e.message, false); }
   }
 
   // ── EXPERTS ──
