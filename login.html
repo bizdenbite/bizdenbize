@@ -536,6 +536,21 @@
         });
       } catch(e) { console.warn('Waitlist call failed:', e); }
 
+      // Send welcome email (non-blocking)
+      if (data?.user?.id) {
+        try {
+          await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+            body: JSON.stringify({
+              type: 'welcome',
+              user_id: data.user.id,
+              data: { user_name: fname }
+            })
+          });
+        } catch(e) { console.warn('Welcome email failed:', e); }
+      }
+
       document.getElementById('register-form').style.display = 'none';
       document.querySelector('.tab-bar').style.display = 'none';
       document.getElementById('success-state').style.display = 'block';
