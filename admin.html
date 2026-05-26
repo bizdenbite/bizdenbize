@@ -783,16 +783,16 @@
       document.getElementById('listings-tbody').innerHTML = listings.length ? listings.map(l => `
         <tr>
           <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.title||'—'}</td>
-          <td><span class="badge badge-navy">${l.category||'—'}</span></td>
-          <td>${l.city||'—'}</td>
+          <td><span class="badge badge-navy">${l.category||l.type||'—'}</span></td>
+          <td>${l.location||'—'}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(l.created_at)}</td>
           <td><button class="btn btn-sm btn-red" onclick="deleteContent('listings','${l.id}')">🗑 Sil</button></td>
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`;
 
       document.getElementById('swaps-tbody').innerHTML = swaps.length ? swaps.map(s => `
         <tr>
-          <td style="font-weight:600;">${s.title||s.city_from+' ↔ '+s.city_to||'—'}</td>
-          <td>${s.city_from||'—'}</td>
+          <td style="font-weight:600;">${s.city||'—'} → ${s.destination||'—'}</td>
+          <td>${s.city||'—'}</td>
           <td>${s.rooms||'—'}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td>
           <td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td>
@@ -810,9 +810,9 @@
       document.getElementById('tutors-tbody').innerHTML = tutors.length ? tutors.map(t => `
         <tr>
           <td style="font-weight:600;">${t.name||'—'}</td>
-          <td style="font-size:12px;">${(t.subjects||[]).join(', ')||'—'}</td>
+          <td style="font-size:12px;">${t.subject||'—'}</td>
           <td>${t.city||'—'}</td>
-          <td>${t.hourly_rate ? '€'+t.hourly_rate+'/sa' : '—'}</td>
+          <td>${t.price_label||'—'}</td>
           <td><button class="btn btn-sm btn-red" onclick="deleteContent('tutors','${t.id}')">🗑 Sil</button></td>
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
