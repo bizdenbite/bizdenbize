@@ -1194,51 +1194,64 @@
     const grid = document.getElementById('city-grid');
     if (!grid) return;
 
-    let cities = [];
-    let userCity = '';
-
-    try {
-      const sb = window._sb;
-      if (sb) {
-        const { data: { user } } = await sb.auth.getUser();
-        if (user) {
-          const { data: profile } = await sb.from('profiles')
-            .select('city, country').eq('id', user.id).single();
-          userCity = profile?.city || '';
-        }
-        const { data } = await sb.from('profiles')
-          .select('city, country').not('city', 'is', null).neq('city', '');
-        if (data?.length) {
-          const counts = {};
-          data.forEach(p => {
-            if (!counts[p.city]) counts[p.city] = { city: p.city, country: p.country, count: 0 };
-            counts[p.city].count++;
-          });
-          cities = Object.values(counts).sort((a, b) => b.count - a.count);
-        }
+    // Always render fallbacks first so something shows immediately
+    function renderGrid(cities, userCity) {
+      const realNames = new Set(cities.map(c => c.city.toLowerCase()));
+      const fallbacks = FALLBACK_CITIES.filter(f => !realNames.has(f.city.toLowerCase()));
+      let combined = [...cities, ...fallbacks].slice(0, 8);
+      if (userCity && !combined.find(c => c.city.toLowerCase() === userCity.toLowerCase())) {
+        combined.unshift({ city: userCity, count: 0 });
+        combined = combined.slice(0, 8);
       }
-    } catch(e) { console.warn('City load error:', e); }
-
-    const realNames = new Set(cities.map(c => c.city.toLowerCase()));
-    const fallbacks = FALLBACK_CITIES.filter(f => !realNames.has(f.city.toLowerCase()));
-    let combined = [...cities, ...fallbacks].slice(0, 8);
-
-    // Always show user's city if not in list
-    if (userCity && !combined.find(c => c.city.toLowerCase() === userCity.toLowerCase())) {
-      combined.unshift({ city: userCity, count: 0 });
-      combined = combined.slice(0, 8);
+      grid.innerHTML = combined.map(c => {
+        const flag = COUNTRY_FLAGS[c.country] || '🌍';
+        const count = c.count ? `${c.count} üye` : 'Yeni';
+        const selected = userCity && c.city.toLowerCase() === userCity.toLowerCase();
+        return `<div class="city-card ${selected ? 'selected' : ''}" onclick="toggleCity(this)" data-city="${c.city}">
+          <div class="city-flag">${flag}</div>
+          <div class="city-name">${c.city}</div>
+          <div class="city-count">${count}</div>
+        </div>`;
+      }).join('');
     }
 
-    grid.innerHTML = combined.map(c => {
-      const flag = COUNTRY_FLAGS[c.country] || '🌍';
-      const count = c.count ? `${c.count} üye` : 'Yeni';
-      const selected = userCity && c.city.toLowerCase() === userCity.toLowerCase();
-      return `<div class="city-card ${selected ? 'selected' : ''}" onclick="toggleCity(this)" data-city="${c.city}">
-        <div class="city-flag">${flag}</div>
-        <div class="city-name">${c.city}</div>
-        <div class="city-count">${count}</div>
-      </div>`;
-    }).join('');
+    // Show fallbacks immediately
+    renderGrid([], '');
+
+    // Try to enhance with real Supabase data
+    try {
+      // Wait up to 3s for window._sb to be ready
+      let attempts = 0;
+      while (!window._sb && attempts < 15) {
+        await new Promise(r => setTimeout(r, 200));
+        attempts++;
+      }
+      const sb = window._sb;
+      if (!sb) return; // still not ready, fallbacks already showing
+
+      let userCity = '';
+      let cities = [];
+
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) {
+        const { data: profile } = await sb.from('profiles')
+          .select('city, country').eq('id', user.id).single();
+        userCity = profile?.city || '';
+      }
+
+      const { data } = await sb.from('profiles')
+        .select('city, country').not('city', 'is', null).neq('city', '');
+      if (data?.length) {
+        const counts = {};
+        data.forEach(p => {
+          if (!counts[p.city]) counts[p.city] = { city: p.city, country: p.country, count: 0 };
+          counts[p.city].count++;
+        });
+        cities = Object.values(counts).sort((a, b) => b.count - a.count);
+      }
+
+      renderGrid(cities, userCity);
+    } catch(e) { console.warn('City load error:', e); /* fallbacks already showing */ }
   }
 
   function checkSlot(idx, input) {
