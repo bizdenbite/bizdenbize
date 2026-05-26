@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Profil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .btn-edit{padding:7px 16px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;display:none;}
+    .btn-edit:hover{background:var(--red);}
+    .btn-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .btn-back:hover{background:var(--warm);color:var(--ink);}
+
+    /* HERO BANNER */
+    .hero{background:var(--ink);padding:78px 0 0;margin-top:58px;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%, rgba(212,43,43,.15) 0%, transparent 60%),radial-gradient(ellipse at 70% 20%, rgba(27,58,140,.1) 0%, transparent 50%);pointer-events:none;}
+    .hero-inner{max-width:860px;margin:0 auto;padding:40px 24px 0;position:relative;}
+    .hero-top{display:flex;align-items:flex-end;gap:24px;margin-bottom:0;}
+    .hero-avatar{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;flex-shrink:0;border:4px solid rgba(255,255,255,.15);overflow:hidden;}
+    .hero-avatar img{width:100%;height:100%;object-fit:cover;}
+    .hero-info{flex:1;padding-bottom:20px;}
+    .hero-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:4px;}
+    .hero-username{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:10px;}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+    .badge-premium{background:rgba(201,168,76,.2);color:var(--gold);}
+    .badge-verified{background:rgba(30,123,75,.2);color:#4ADE80;}
+    .badge-admin{background:rgba(212,43,43,.2);color:#FC8181;}
+    .hero-city{font-size:13px;color:rgba(255,255,255,.45);}
+
+    /* STATS BAR */
+    .stats-bar{background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08);margin-top:20px;}
+    .stats-bar-inner{max-width:860px;margin:0 auto;padding:0 24px;display:flex;}
+    .stat-tab{padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.06);}
+    .stat-tab:last-child{border-right:none;}
+    .stat-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--white);}
+    .stat-lab{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+    /* CONTENT */
+    .content{max-width:860px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+
+    /* BIO CARD */
+    .card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:22px;margin-bottom:16px;}
+    .card-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .bio-text{font-size:14px;color:var(--muted);line-height:1.75;}
+    .tag-list{display:flex;flex-wrap:wrap;gap:6px;}
+    .tag{font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+
+    /* LISTINGS */
+    .listing-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--warm);}
+    .listing-item:last-child{border-bottom:none;}
+    .listing-icon{width:36px;height:36px;border-radius:10px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .listing-title{font-size:13px;font-weight:600;color:var(--ink);}
+    .listing-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:28px;color:var(--muted);font-size:13px;}
+
+    /* CONNECT BTN */
+    .btn-connect{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-bottom:10px;}
+    .btn-connect:hover{background:#E8393A;}
+    .btn-msg{width:100%;padding:10px;background:var(--cream);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .btn-msg:hover{border-color:var(--ink);background:var(--warm);}
+
+    /* LOADING */
+    .loading{text-align:center;padding:80px 20px;color:var(--muted);}
+    .error-state{text-align:center;padding:80px 20px;}
+
+    @media(max-width:700px){
+      .content{grid-template-columns:1fr;}
+      .hero-top{flex-direction:column;align-items:center;text-align:center;}
+      .hero-badges{justify-content:center;}
+      .stats-bar-inner{justify-content:center;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="mahallem.html" class="nav-logo">Bizden<span>Bize</span></a>
+  <div class="nav-right">
+    <a href="mahallem.html" class="btn-back">← Mahallem</a>
+    <a href="profile.html" class="btn-edit" id="edit-btn">✏️ Profili Düzenle</a>
+  </div>
+</nav>
+
+<div id="page-content">
+  <div class="loading">⏳ Profil yükleniyor...</div>
+</div>
+
+<script>
+  const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+  const LANG_NAMES = {tr:'🇹🇷 Türkçe',de:'🇩🇪 Almanca',en:'🇬🇧 İngilizce',fr:'🇫🇷 Fransızca',nl:'🇳🇱 Hollandaca',ar:'🇸🇦 Arapça'};
+  const INT_NAMES  = {legal:'⚖️ Hukuki',housing:'🏠 Konut',employment:'💼 İş',tax:'💶 Vergi',education:'🎓 Eğitim',health:'🏥 Sağlık',business:'🏢 İşletme',family:'👨‍👩‍👧 Aile',culture:'🎭 Kültür',sport:'⚽ Spor',tech:'💻 Teknoloji',food:'🍽️ Yemek'};
+
+  const params   = new URLSearchParams(window.location.search);
+  const targetId = params.get('id');
+
+  async function sb(path) {
+    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}` } });
+    const t = await r.text(); return t ? JSON.parse(t) : [];
+  }
+
+  async function init() {
+    if (!targetId) { showError('Profil bulunamadı', 'Geçerli bir kullanıcı ID\'si belirtilmedi.'); return; }
+
+    // Check if viewing own profile
+    const token = localStorage.getItem('bb_auth_token');
+    let currentUserId = null;
+    if (token) {
+      try {
+        const r = await fetch(`${SB_URL}/auth/v1/user`, { headers:{'apikey':SB_ANON,'Authorization':`Bearer ${token}`} });
+        if (r.ok) { const u = await r.json(); currentUserId = u.id; }
+      } catch(e) {}
+    }
+
+    const isOwnProfile = currentUserId === targetId;
+    if (isOwnProfile) {
+      document.getElementById('edit-btn').style.display = 'flex';
+    }
+
+    // Load profile
+    const profiles = await sb(`profiles?id=eq.${targetId}&select=id,first_name,last_name,username,bio,city,country,avatar_url,languages,interests,is_verified,is_premium,is_admin,created_at`);
+    const profile = profiles?.[0];
+    if (!profile) { showError('Kullanıcı bulunamadı', 'Bu profil mevcut değil veya gizlenmiş.'); return; }
+
+    // Load listings
+    const listings = await sb(`listings?select=title,category,location,created_at&order=created_at.desc&limit=5`);
+
+    // Load expert reviews count
+    const reviews = await sb(`expert_reviews?select=id&user_id=eq.${targetId}&status=eq.answered`);
+
+    renderProfile(profile, listings, reviews.length, isOwnProfile);
+    document.title = `BizdenBize — ${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+  }
+
+  function renderProfile(p, listings, reviewCount, isOwn) {
+    const name  = `${p.first_name||''} ${p.last_name||''}`.trim() || p.username || 'Kullanıcı';
+    const ini   = ((p.first_name?.[0]||'')+(p.last_name?.[0]||'')).toUpperCase() || '?';
+    const color = COLORS[ini.charCodeAt(0) % COLORS.length];
+    const since = p.created_at ? new Date(p.created_at).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}) : '—';
+
+    const avatarHtml = p.avatar_url
+      ? `<img src="${p.avatar_url}" alt="${name}">`
+      : ini;
+
+    const badges = [
+      p.is_premium ? '<span class="badge badge-premium">⭐ Premium</span>' : '',
+      p.is_verified ? '<span class="badge badge-verified">✓ Doğrulandı</span>' : '',
+      p.is_admin ? '<span class="badge badge-admin">🛡️ Admin</span>' : ''
+    ].filter(Boolean).join('');
+
+    const langTags = (p.languages||[]).map(l => `<span class="tag">${LANG_NAMES[l]||l}</span>`).join('');
+    const intTags  = (p.interests ||[]).map(i => `<span class="tag">${INT_NAMES[i] ||i}</span>`).join('');
+
+    const listingHtml = listings.length ? listings.map(l => `
+      <div class="listing-item">
+        <div class="listing-icon">📋</div>
+        <div>
+          <div class="listing-title">${l.title||'—'}</div>
+          <div class="listing-meta">${l.category||''} ${l.location ? '· '+l.location : ''}</div>
+        </div>
+      </div>`).join('') : `<div class="empty">Henüz ilan yok.</div>`;
+
+    const connectSection = isOwn ? `
+      <div class="card">
+        <div class="card-title">⚙️ Profil Ayarları</div>
+        <a href="profile.html" style="display:block;width:100%;padding:11px;background:var(--ink);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-align:center;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--red)'" onmouseout="this.style.background='var(--ink)'">
+          ✏️ Profili Düzenle
+        </a>
+      </div>` : `
+      <div class="card">
+        <button class="btn-connect">🤝 Bağlantı Kur</button>
+        <button class="btn-msg">💬 Mesaj Gönder</button>
+      </div>`;
+
+    document.getElementById('page-content').innerHTML = `
+      <div class="hero">
+        <div class="hero-inner">
+          <div class="hero-top">
+            <div class="hero-avatar" style="background:${color};">${avatarHtml}</div>
+            <div class="hero-info">
+              <div class="hero-name">${name}</div>
+              <div class="hero-username">@${p.username||'—'}</div>
+              <div class="hero-badges">${badges || '<span style="font-size:12px;color:rgba(255,255,255,.3);">Rozet yok</span>'}</div>
+              <div class="hero-city">📍 ${p.city||''}${p.country ? ', '+p.country : ''}</div>
+            </div>
+          </div>
+        </div>
+        <div class="stats-bar">
+          <div class="stats-bar-inner">
+            <div class="stat-tab">
+              <div class="stat-num">${since.split(' ')[1]||'—'}</div>
+              <div class="stat-lab">Üye Tarihi</div>
+            </div>
+            <div class="stat-tab">
+              <div class="stat-num">${listings.length}</div>
+              <div class="stat-lab">İlan</div>
+            </div>
+            <div class="stat-tab">
+              <div class="stat-num">${reviewCount}</div>
+              <div class="stat-lab">Uzman Yanıtı</div>
+            </div>
+            <div class="stat-tab">
+              <div class="stat-num">${(p.languages||[]).length}</div>
+              <div class="stat-lab">Dil</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div>
+          ${p.bio ? `
+          <div class="card">
+            <div class="card-title">👤 Hakkında</div>
+            <div class="bio-text">${p.bio}</div>
+          </div>` : ''}
+
+          ${langTags ? `
+          <div class="card">
+            <div class="card-title">🌍 Diller</div>
+            <div class="tag-list">${langTags}</div>
+          </div>` : ''}
+
+          ${intTags ? `
+          <div class="card">
+            <div class="card-title">✨ İlgi Alanları</div>
+            <div class="tag-list">${intTags}</div>
+          </div>` : ''}
+
+          <div class="card">
+            <div class="card-title">📋 İlanlar</div>
+            ${listingHtml}
+          </div>
+        </div>
+
+        <div>
+          ${connectSection}
+          <div class="card">
+            <div class="card-title">📅 Üye Bilgisi</div>
+            <div style="font-size:13px;color:var(--muted);line-height:2;">
+              <div>📅 Katılım: <strong style="color:var(--ink);">${since}</strong></div>
+              <div>🌍 Konum: <strong style="color:var(--ink);">${p.city||'—'}</strong></div>
+              <div>💬 Dil: <strong style="color:var(--ink);">${(p.languages||[]).length} dil</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function showError(title, sub) {
+    document.getElementById('page-content').innerHTML = `
+      <div class="error-state">
+        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;">${title}</div>
+        <div style="font-size:14px;color:var(--muted);">${sub}</div>
+        <a href="mahallem.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--ink);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">← Mahallem'e Dön</a>
+      </div>`;
+  }
+
+  init();
+</script>
+</body>
+</html>

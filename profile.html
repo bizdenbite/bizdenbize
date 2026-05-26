@@ -4,1370 +4,459 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Profilim</title>
-  <meta name="description" content="Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --red:#D42B2B; --red2:#E8393A; --navy:#1B3A8C; --navy2:#2348A8;
-      --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
-      --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
-      --gold:#C9A84C; --green:#1E7B4B;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 58px; display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px;
-      background: rgba(250,247,242,.95); backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(212,197,169,.4);
-    }
-    .nav-left { display: flex; align-items: center; gap: 16px; }
-    .nav-logo-link { display: flex; align-items: center; text-decoration: none; }
-    .nav-logo-link img { height: 44px; width: auto; }
-    .nav-tabs { display: flex; gap: 2px; }
-    .nav-tab { padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; }
-    .nav-tab:hover { background: var(--warm); color: var(--ink); }
-    .nav-tab.active { background: var(--navy); color: var(--white); }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; border: 2px solid var(--red); }
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-link{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-link:hover{color:#fff;background:rgba(255,255,255,.08);}
+    .nav-public-btn{padding:7px 16px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .nav-public-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
 
-    /* ── LAYOUT ── */
-    .page { padding: 78px 0 48px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding-left: 24px; padding-right: 24px; }
+    /* LAYOUT */
+    .page{padding:78px 24px 60px;max-width:920px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
 
-    /* ── LEFT COLUMN ── */
-    .profile-card {
-      background: var(--white); border: 1px solid var(--sand);
-      border-radius: 18px; overflow: hidden;
-      position: sticky; top: 76px; height: fit-content;
-    }
+    /* LEFT COLUMN */
+    .profile-card{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:28px;text-align:center;position:sticky;top:78px;}
+    .avatar-wrap{position:relative;display:inline-block;margin-bottom:16px;}
+    .avatar{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;margin:0 auto;overflow:hidden;background:#D42B2B;}
+    .avatar img{width:100%;height:100%;object-fit:cover;}
+    .avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;background:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white);transition:background .15s;}
+    .avatar-edit:hover{background:var(--red);}
+    .avatar-edit svg{width:13px;height:13px;stroke:#fff;stroke-width:2;}
+    #avatar-input{display:none;}
+    .profile-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .profile-username{font-size:13px;color:var(--muted);margin-bottom:12px;}
+    .profile-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+    .badge-premium{background:rgba(201,168,76,.15);color:#8B6914;border:1px solid rgba(201,168,76,.3);}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .badge-admin{background:rgba(212,43,43,.1);color:var(--red);border:1px solid rgba(212,43,43,.2);}
+    .profile-city{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+    .ps-item{background:var(--cream);border-radius:10px;padding:12px 8px;text-align:center;}
+    .ps-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--ink);}
+    .ps-label{font-size:10px;color:var(--muted);margin-top:2px;}
+    .credit-box{background:var(--ink);border-radius:12px;padding:14px;margin-bottom:16px;}
+    .credit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+    .credit-row:last-child{margin-bottom:0;}
+    .credit-label{font-size:11px;color:rgba(255,255,255,.5);}
+    .credit-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);}
+    .credit-sub{font-size:10px;color:var(--gold);}
+    .btn-public{width:100%;padding:10px;background:var(--cream);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;text-decoration:none;display:block;text-align:center;transition:all .15s;}
+    .btn-public:hover{background:var(--warm);border-color:var(--ink);}
 
-    /* Cover */
-    .profile-cover {
-      height: 90px; background: var(--navy);
-      position: relative;
-    }
-    .profile-cover::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--red) 100%);
-      opacity: .7;
-    }
-    .cover-edit {
-      position: absolute; top: 10px; right: 10px; z-index: 2;
-      background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
-      border-radius: 6px; padding: 4px 10px; color: var(--white);
-      font-size: 11px; font-weight: 600; cursor: pointer;
-      font-family: 'Instrument Sans', sans-serif; transition: background .15s;
-    }
-    .cover-edit:hover { background: rgba(255,255,255,.35); }
+    /* RIGHT COLUMN */
+    .edit-section{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:28px;margin-bottom:20px;}
+    .section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--warm);display:flex;align-items:center;gap:8px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+    .form-input{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s;}
+    .form-input:focus{border-color:var(--ink);}
+    .form-textarea{resize:vertical;min-height:90px;line-height:1.6;}
+    .tag-group{display:flex;flex-wrap:wrap;gap:6px;}
+    .tag-pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--cream);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
+    .tag-pill:hover{border-color:var(--ink);color:var(--ink);}
+    .tag-pill.selected{background:var(--ink);border-color:var(--ink);color:var(--white);}
+    .btn-save{padding:11px 28px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-save:hover{background:#176040;}
+    .btn-save:disabled{background:var(--sand);cursor:not-allowed;}
 
-    /* Avatar */
-    .avatar-wrap {
-      position: relative; width: fit-content;
-      margin: -28px auto 0; z-index: 2;
-    }
-    .profile-avatar {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: var(--red); color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 26px; font-weight: 700;
-      border: 3px solid var(--white);
-      cursor: pointer; transition: opacity .15s;
-    }
-    .profile-avatar:hover { opacity: .9; }
-    .avatar-edit-badge {
-      position: absolute; bottom: 2px; right: 2px;
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--navy); color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; border: 2px solid var(--white); cursor: pointer;
-    }
+    /* ACTIVITY */
+    .activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--warm);}
+    .activity-item:last-child{border-bottom:none;}
+    .activity-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .activity-text{font-size:13px;color:var(--ink);line-height:1.5;}
+    .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
-    /* Profile info */
-    .profile-info { padding: 14px 20px 20px; text-align: center; }
-    .profile-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
-    .profile-handle { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .profile-city { font-size: 13px; color: var(--muted); margin-top: 6px; }
-    .verified-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 8px; padding: 4px 12px; border-radius: 20px;
-      background: rgba(30,123,75,.1); color: var(--green);
-      font-size: 11px; font-weight: 600;
-    }
-    .profile-bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 12px; text-align: left; }
+    /* TOAST */
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+    #toast.show{opacity:1;transform:translateY(0);}
+    #toast.error{background:var(--red);}
 
-    /* Stats */
-    .profile-stats {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      border-top: 1px solid var(--warm); margin-top: 16px;
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr;}
+      .profile-card{position:static;}
+      .form-row{grid-template-columns:1fr;}
     }
-    .ps-item { padding: 12px 6px; text-align: center; }
-    .ps-item + .ps-item { border-left: 1px solid var(--warm); }
-    .ps-val { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
-    .ps-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-    /* Languages */
-    .tag-section { padding: 0 20px 16px; }
-    .tag-section-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
-    .tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--warm); color: var(--muted); border: 1px solid var(--sand); }
-    .tag.navy { background: rgba(27,58,140,.08); color: var(--navy); border-color: rgba(27,58,140,.2); }
-    .tag.red  { background: rgba(212,43,43,.08); color: var(--red); border-color: rgba(212,43,43,.2); }
-
-    /* Invite codes */
-    .invite-section { padding: 0 20px 16px; }
-    .invite-code-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(201,168,76,.07); border: 1px dashed rgba(201,168,76,.4);
-      border-radius: 8px; padding: 8px 12px; margin-bottom: 6px;
-    }
-    .ic-code { font-size: 14px; font-weight: 700; letter-spacing: 2px; color: var(--ink); }
-    .ic-status { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
-    .ic-used { background: rgba(212,197,169,.3); color: var(--muted); }
-    .ic-free { background: rgba(30,123,75,.1); color: var(--green); }
-    .copy-ic { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 4px; }
-
-    /* Action buttons */
-    .profile-actions { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 8px; }
-    .action-btn {
-      width: 100%; padding: 10px; border-radius: 8px;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: 'Instrument Sans', sans-serif; transition: all .15s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .action-btn.primary { background: var(--navy); color: var(--white); border: none; }
-    .action-btn.primary:hover { background: var(--navy2); }
-    .action-btn.secondary { background: none; color: var(--muted); border: 1.5px solid var(--sand); }
-    .action-btn.secondary:hover { border-color: var(--red); color: var(--red); }
-    .action-btn.danger { background: none; color: var(--red); border: 1.5px solid rgba(212,43,43,.2); }
-    .action-btn.danger:hover { background: rgba(212,43,43,.05); }
-
-    /* ── RIGHT COLUMN ── */
-    .right-col { display: flex; flex-direction: column; gap: 20px; }
-
-    /* Section card */
-    .section-card {
-      background: var(--white); border: 1px solid var(--sand);
-      border-radius: 16px; overflow: hidden;
-    }
-    .sc-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px; border-bottom: 1px solid var(--warm);
-    }
-    .sc-title { font-size: 14px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; }
-    .sc-action { font-size: 12px; color: var(--navy); cursor: pointer; font-weight: 600; text-decoration: none; }
-    .sc-action:hover { text-decoration: underline; }
-
-    /* Edit form */
-    .edit-form { padding: 20px; display: none; }
-    .edit-form.open { display: block; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
-    input[type="text"], input[type="email"], select, textarea {
-      padding: 11px 14px; border: 1.5px solid var(--sand); border-radius: 8px;
-      font-family: 'Instrument Sans', sans-serif; font-size: 14px; color: var(--ink);
-      background: var(--cream); outline: none; transition: border-color .2s;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,140,.08); }
-    textarea { resize: vertical; min-height: 80px; }
-    .save-btn {
-      margin-top: 14px; padding: 11px 24px; background: var(--navy); color: var(--white);
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Instrument Sans', sans-serif; transition: background .2s;
-    }
-    .save-btn:hover { background: var(--navy2); }
-    .cancel-btn {
-      margin-top: 14px; margin-left: 8px; padding: 11px 20px;
-      background: none; color: var(--muted); border: 1.5px solid var(--sand);
-      border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    }
-
-    /* Profile view rows */
-    .info-grid { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .info-item {}
-    .info-label { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-    .info-val { font-size: 14px; color: var(--ink); }
-    .info-val.empty { color: var(--sand); font-style: italic; }
-
-    /* Activity feed */
-    .activity-list { padding: 8px 0; }
-    .activity-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 20px; border-bottom: 1px solid var(--warm);
-      transition: background .15s; cursor: pointer;
-    }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-item:hover { background: rgba(250,247,242,.7); }
-    .act-icon {
-      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
-    }
-    .act-body { flex: 1; }
-    .act-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
-    .act-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .act-time { font-size: 11px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
-
-    /* My listings */
-    .listings-grid { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .mini-listing {
-      border: 1px solid var(--sand); border-radius: 10px; overflow: hidden;
-      cursor: pointer; transition: all .15s;
-    }
-    .mini-listing:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26,18,8,.08); }
-    .ml-thumb { height: 80px; background: var(--warm); display: flex; align-items: center; justify-content: center; font-size: 28px; }
-    .ml-body { padding: 8px 10px; }
-    .ml-price { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); }
-    .ml-title { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ml-status { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; }
-    .ml-active { background: rgba(30,123,75,.1); color: var(--green); }
-    .ml-sold   { background: rgba(212,197,169,.3); color: var(--muted); }
-
-    /* AbiBOT history */
-    .abibot-list { padding: 8px 0; }
-    .abibot-item {
-      padding: 12px 20px; border-bottom: 1px solid var(--warm);
-      cursor: pointer; transition: background .15s;
-    }
-    .abibot-item:last-child { border-bottom: none; }
-    .abibot-item:hover { background: rgba(250,247,242,.7); }
-    .ab-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .ab-cat { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: rgba(27,58,140,.08); color: var(--navy); }
-    .ab-date { font-size: 11px; color: var(--muted); margin-left: auto; }
-    .ab-question { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
-    .ab-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ab-escalated { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: rgba(201,168,76,.12); color: #854F0B; margin-left: 4px; }
-
-    /* Premium card */
-    .premium-card {
-      background: var(--navy); border-radius: 16px;
-      padding: 24px; display: flex; gap: 20px; align-items: center;
-    }
-    .pc-icon { font-size: 36px; flex-shrink: 0; }
-    .pc-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-    .pc-sub { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.5; }
-    .pc-btn {
-      margin-left: auto; white-space: nowrap; flex-shrink: 0;
-      padding: 10px 20px; background: var(--gold); color: var(--ink);
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Instrument Sans', sans-serif; transition: opacity .2s;
-    }
-    .pc-btn:hover { opacity: .9; }
-
-    /* Settings toggles */
-    .settings-list { padding: 8px 0; }
-    .setting-row {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 20px; border-bottom: 1px solid var(--warm);
-    }
-    .setting-row:last-child { border-bottom: none; }
-    .setting-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
-    .setting-info { flex: 1; }
-    .setting-name { font-size: 13px; font-weight: 500; color: var(--ink); }
-    .setting-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .toggle {
-      width: 40px; height: 22px; border-radius: 11px;
-      background: var(--sand); position: relative; cursor: pointer;
-      flex-shrink: 0; transition: background .2s; border: none;
-    }
-    .toggle.on { background: var(--navy); }
-    .toggle::after {
-      content: ''; position: absolute; top: 3px; left: 3px;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--white); transition: transform .2s;
-    }
-    .toggle.on::after { transform: translateX(18px); }
-    .danger-zone { padding: 0 20px 16px; }
-    .dz-title { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; padding-top: 12px; border-top: 1px solid var(--warm); }
-
-    @media (max-width: 900px) {
-      .page { grid-template-columns: 1fr; padding: 74px 16px 40px; }
-      .profile-card { position: static; }
-      .form-grid { grid-template-columns: 1fr; }
-      .listings-grid { grid-template-columns: 1fr 1fr; }
-      .info-grid { grid-template-columns: 1fr; }
-    }
-  
-    /* ── MOBILE NAV ── */
-    .hamburger {
-      display: none; flex-direction: column; gap: 5px;
-      background: none; border: none; cursor: pointer;
-      padding: 6px; border-radius: 8px; transition: background .15s;
-      flex-shrink: 0;
-    }
-    .hamburger:hover { background: var(--warm, #F0EAE0); }
-    .hamburger span {
-      display: block; width: 22px; height: 2px;
-      background: var(--ink, #1A1208); border-radius: 2px;
-      transition: transform .3s, opacity .3s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-    .mobile-menu {
-      display: none; position: fixed;
-      top: 58px; left: 0; right: 0; bottom: 0;
-      background: var(--white, #fff); z-index: 99;
-      flex-direction: column; overflow-y: auto;
-      border-top: 1px solid rgba(212,197,169,.4);
-      animation: slideDown .2s ease;
-    }
-    .mobile-menu.open { display: flex; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .mm-user {
-      display: flex; align-items: center; gap: 14px;
-      padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
-    }
-    .mm-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: var(--red, #D42B2B); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: 700; flex-shrink: 0;
-    }
-    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
-    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
-    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
-    .mm-link {
-      display: flex; align-items: center; gap: 14px;
-      padding: 13px 12px; border-radius: 10px;
-      font-size: 15px; font-weight: 500;
-      color: var(--ink, #1A1208); text-decoration: none;
-      transition: background .15s; cursor: pointer;
-    }
-    .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
-    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
-    .mm-badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px;
-      background: var(--red, #D42B2B); color: #fff;
-    }
-    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
-    .mm-section-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .09em;
-      text-transform: uppercase; color: var(--muted, #6B5E4E);
-      padding: 8px 24px 4px;
-    }
-    .mm-footer {
-      padding: 16px 24px 32px;
-      border-top: 1px solid rgba(212,197,169,.25);
-    }
-    .mm-logout {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 14px; color: var(--red, #D42B2B);
-      background: none; border: none; cursor: pointer;
-      font-family: inherit; font-weight: 500; padding: 8px 0;
-    }
-
-    @media (max-width: 768px) {
-      .nav-tabs { display: none !important; }
-      .hamburger { display: flex !important; }
-      .nav-search { max-width: 160px !important; }
-    }
-    @media (max-width: 480px) {
-      .nav-search { display: none !important; }
-    }
-
-  
-  /* ── COOKIE CONSENT BANNER ── */
-  #cookie-banner {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: var(--ink, #1A1208);
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding: 20px 32px;
-    display: none;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
-    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
-  }
-  #cookie-banner.visible { display: flex; }
-  @keyframes slideUpBanner {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
-  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
-  .cb-text { flex: 1; min-width: 240px; }
-  .cb-title {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 14px; font-weight: 600;
-    color: #fff; margin-bottom: 4px;
-  }
-  .cb-desc {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 12px; color: rgba(255,255,255,.5);
-    line-height: 1.55;
-  }
-  .cb-desc a {
-    color: rgba(255,255,255,.7);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .cb-desc a:hover { color: #fff; }
-  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
-  .cb-btn {
-    padding: 10px 20px; border-radius: 8px;
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; border: none;
-    transition: all .15s; white-space: nowrap;
-  }
-  .cb-accept {
-    background: #D42B2B; color: #fff;
-  }
-  .cb-accept:hover { background: #E8393A; }
-  .cb-essential {
-    background: rgba(255,255,255,.1);
-    color: rgba(255,255,255,.8);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
-  .cb-manage {
-    background: none; color: rgba(255,255,255,.5);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
-
-  /* Cookie preferences modal */
-  #cookie-modal {
-    position: fixed; inset: 0; z-index: 10000;
-    background: rgba(26,18,8,.7);
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  #cookie-modal.open { display: flex; }
-  .cm-box {
-    background: #fff; border-radius: 20px;
-    padding: 0; max-width: 520px; width: 90%;
-    max-height: 85vh; overflow-y: auto;
-    animation: popIn .3s cubic-bezier(.16,1,.3,1);
-    font-family: 'Instrument Sans', sans-serif;
-  }
-  @keyframes popIn {
-    from { transform: scale(.95); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-  .cm-header {
-    padding: 24px 24px 0;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .cm-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; color: #1A1208;
-  }
-  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
-  .cm-close {
-    background: none; border: none; font-size: 22px;
-    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
-    margin: -4px -4px 0 12px; line-height: 1;
-  }
-  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
-  .cm-cat {
-    border: 1px solid #F0EAE0; border-radius: 12px;
-    overflow: hidden;
-  }
-  .cm-cat-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px; cursor: pointer;
-    background: #FAF7F2; transition: background .15s;
-    user-select: none;
-  }
-  .cm-cat-header:hover { background: #F0EAE0; }
-  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
-  .cm-cat-info { flex: 1; }
-  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
-  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
-  /* Toggle switch */
-  .cm-toggle {
-    width: 40px; height: 22px; border-radius: 11px;
-    background: #D4C5A9; position: relative; flex-shrink: 0;
-    cursor: pointer; transition: background .2s; border: none;
-  }
-  .cm-toggle.on { background: #1B3A8C; }
-  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
-  .cm-toggle::after {
-    content: ''; position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #fff; transition: transform .2s;
-  }
-  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
-  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
-  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
-  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
-  .cm-cat.open .cm-cat-body { display: block; }
-  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
-  .cm-cat-detail strong { color: #1A1208; }
-
-  .cm-footer {
-    padding: 20px 24px 24px; display: flex; gap: 8px;
-    border-top: 1px solid #F0EAE0; margin-top: 16px;
-  }
-  .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-save:hover { background: #2348A8; }
-  .cm-accept-all {
-    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-accept-all:hover { background: #E8393A; }
-    @media (max-width: 900px) { }
   </style>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="BizdenBize">
-  <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
-  <meta name="msapplication-TileImage" content="icons/icon-144.png">
-  <!-- Apple touch icons -->
-  <link rel="apple-touch-icon" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
-  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
-  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
-  <link rel="shortcut icon" href="icons/icon-96.png">
-  <script src="i18n.js"></script>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-left">
-    <a href="index.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize"></a>
-    <div class="nav-tabs">
-      <a class="nav-tab" href="mahallem.html" data-i18n="nav_community">🏘️ Mahallem</a>
-      <a class="nav-tab" href="classifieds.html" data-i18n="nav_classifieds">🛍️ İlanlar</a>
-      <a class="nav-tab" href="events.html" data-i18n="nav_events">🎉 Etkinlikler</a>
-      <a class="nav-tab" href="business.html" data-i18n="nav_businesses">🏢 İşletmeler</a>
-      <a class="nav-tab" href="abibot.html" data-i18n="nav_abibot">🤖 AbiBOT</a>
-    </div>
-  </div>
+  <a href="mahallem.html" class="nav-logo">Bizden<span>Bize</span></a>
   <div class="nav-right">
-    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+    <a href="mahallem.html" class="nav-link">← Mahallem</a>
+    <a href="#" class="nav-public-btn" id="public-link">👁 Profilimi Gör</a>
   </div>
 </nav>
 
-<div class="page">
-
-  <!-- ── LEFT COLUMN ── -->
-  <aside>
+<div class="page" id="page">
+  <!-- LEFT -->
+  <div>
     <div class="profile-card">
-
-      <div class="profile-cover">
-        <button class="cover-edit" onclick="alert('Kapak fotoğrafı değiştir')">✏️ Düzenle</button>
-      </div>
-
       <div class="avatar-wrap">
-        <div class="profile-avatar" id="main-avatar" onclick="alert('Fotoğraf yükle')">AY</div>
-        <div class="avatar-edit-badge">✏️</div>
+        <div class="avatar" id="avatar-display">?</div>
+        <label class="avatar-edit" for="avatar-input" title="Fotoğraf değiştir">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </label>
+        <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarUpload(this)">
       </div>
-
-      <div class="profile-info">
-        <div class="profile-name" id="display-name">Ayşe Yılmaz</div>
-        <div class="profile-handle">@ayse.yilmaz</div>
-        <div class="profile-city">📍 Frankfurt, Almanya</div>
-        <div class="verified-badge">✓ Onaylı Üye</div>
-        <p class="profile-bio" id="display-bio">Frankfurt'ta yaşayan ikinci nesil. Türk-Alman kültürünü bir arada yaşıyorum. 🇹🇷🇩🇪</p>
-      </div>
-
+      <div class="profile-name" id="disp-name">—</div>
+      <div class="profile-username" id="disp-username">@—</div>
+      <div class="profile-badges" id="disp-badges"></div>
+      <div class="profile-city" id="disp-city">📍 —</div>
       <div class="profile-stats">
-        <div class="ps-item"><div class="ps-val">47</div><div class="ps-label">Bağlantı</div></div>
-        <div class="ps-item"><div class="ps-val">3</div><div class="ps-label">İlan</div></div>
-        <div class="ps-item"><div class="ps-val">12</div><div class="ps-label">AbiBOT</div></div>
-      </div>
-
-      <div class="tag-section">
-        <div class="tag-section-label">Diller</div>
-        <div class="tags">
-          <span class="tag navy">🇹🇷 Türkçe</span>
-          <span class="tag navy">🇩🇪 Deutsch</span>
-          <span class="tag navy">🇬🇧 English</span>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-since">—</div>
+          <div class="ps-label">Üye Tarihi</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-listings">0</div>
+          <div class="ps-label">İlanım</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-questions">0</div>
+          <div class="ps-label">Sorum</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-reviews">0</div>
+          <div class="ps-label">Uzman Yanıtı</div>
         </div>
       </div>
-
-      <div class="tag-section">
-        <div class="tag-section-label">İlgi Alanları</div>
-        <div class="tags">
-          <span class="tag">🍽️ Yemek</span>
-          <span class="tag">🎉 Etkinlik</span>
-          <span class="tag">👶 Aile</span>
-          <span class="tag">💼 İş</span>
+      <div class="credit-box">
+        <div class="credit-row">
+          <div>
+            <div class="credit-label">AbiBOT Kredisi</div>
+            <div class="credit-sub">Soru sormak için</div>
+          </div>
+          <div class="credit-val" id="disp-abibot-credits">0</div>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,.08);margin:10px 0;"></div>
+        <div class="credit-row">
+          <div>
+            <div class="credit-label">Uzman Kredisi</div>
+            <div class="credit-sub">Doğrudan soru için</div>
+          </div>
+          <div class="credit-val" id="disp-expert-credits">0</div>
         </div>
       </div>
-
-      <div class="invite-section">
-        <div class="tag-section-label">Davetiyelerim</div>
-        <div class="invite-code-row">
-          <span class="ic-code">BZB·2847</span>
-          <span class="ic-status ic-used">Kullanıldı</span>
-          <button class="copy-ic" onclick="copyCode('BZB·2847')">📋</button>
-        </div>
-        <div class="invite-code-row">
-          <span class="ic-code">BZB·5931</span>
-          <span class="ic-status ic-free">Boş</span>
-          <button class="copy-ic" onclick="copyCode('BZB·5931')">📋</button>
-        </div>
-        <div class="invite-code-row">
-          <span class="ic-code">BZB·7204</span>
-          <span class="ic-status ic-free">Boş</span>
-          <button class="copy-ic" onclick="copyCode('BZB·7204')">📋</button>
-        </div>
-      </div>
-
-      <div class="profile-actions">
-        <button class="action-btn primary" onclick="toggleEdit()">✏️ Profili Düzenle</button>
-        <button class="action-btn secondary" onclick="window.location='abibot.html'">🤖 AbiBOT'a Sor</button>
-        <button class="action-btn danger" onclick="if(confirm('Çıkış yapmak istiyor musun?')) window.location='login.html'">⏻ Çıkış Yap</button>
-      </div>
-
+      <a href="#" class="btn-public" id="view-public-btn">👁 Herkese Açık Profilim →</a>
     </div>
-  </aside>
+  </div>
 
-  <!-- ── RIGHT COLUMN ── -->
-  <div class="right-col">
-
-    <!-- Premium banner -->
-    <div class="premium-card">
-      <div class="pc-icon">⭐</div>
-      <div>
-        <div class="pc-title">Premium'a Geç</div>
-        <div class="pc-sub">Sınırsız ilan, öne çıkan profil, AbiBOT kredisi ve çok daha fazlası.</div>
+  <!-- RIGHT -->
+  <div>
+    <!-- Personal Info -->
+    <div class="edit-section">
+      <div class="section-title">👤 Kişisel Bilgiler</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Ad</label>
+          <input class="form-input" type="text" id="inp-first-name" placeholder="Adınız">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Soyad</label>
+          <input class="form-input" type="text" id="inp-last-name" placeholder="Soyadınız">
+        </div>
       </div>
-      <button class="pc-btn" onclick="window.location='topup.html'">Kredi Yükle →</button>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Kullanıcı Adı</label>
+          <input class="form-input" type="text" id="inp-username" placeholder="@kullaniciadi">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Şehir</label>
+          <input class="form-input" type="text" id="inp-city" placeholder="Berlin">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ülke</label>
+        <input class="form-input" type="text" id="inp-country" placeholder="Deutschland">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hakkımda</label>
+        <textarea class="form-input form-textarea" id="inp-bio" placeholder="Kendinizden biraz bahsedin..."></textarea>
+      </div>
+      <button class="btn-save" onclick="saveProfile()">Değişiklikleri Kaydet</button>
     </div>
 
-    <!-- Edit profile form -->
-    <div class="section-card" id="edit-section" style="display:none">
-      <div class="sc-header">
-        <span class="sc-title">✏️ Profili Düzenle</span>
-        <a class="sc-action" onclick="toggleEdit()">İptal</a>
-      </div>
-      <div class="edit-form open">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Ad</label>
-            <input type="text" id="edit-fname" value="Ayşe">
-          </div>
-          <div class="form-group">
-            <label>Soyad</label>
-            <input type="text" id="edit-lname" value="Yılmaz">
-          </div>
-          <div class="form-group full">
-            <label>Konum</label>
-            <div style="display:flex;gap:8px;margin-bottom:6px;">
-              <div style="position:relative;flex:1;">
-                <input type="text" id="edit-location-input"
-                  placeholder="Şehrinizi yazın..."
-                  autocomplete="new-password"
-                  style="width:100%;padding-right:36px;"
-                  oninput="document.getElementById('edit-city').value='';document.getElementById('edit-country').value='';">
-                <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔍</span>
-              </div>
-              <button type="button" onclick="detectProfileGPS()" id="profile-gps-btn"
-                style="padding:0 12px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;">
-                📍 Bul
-              </button>
-            </div>
-            <div id="edit-location-status" style="font-size:11px;color:#1E7B4B;display:none;"></div>
-            <input type="hidden" id="edit-city">
-            <input type="hidden" id="edit-country">
-          </div>
-          <div class="form-group full">
-            <label>Hakkında</label>
-            <textarea id="edit-bio">Frankfurt'ta yaşayan ikinci nesil. Türk-Alman kültürünü bir arada yaşıyorum. 🇹🇷🇩🇪</textarea>
-          </div>
-          <div class="form-group">
-            <label>Telefon</label>
-            <input type="text" id="edit-phone" value="+49 176 1234567">
-          </div>
-          <div class="form-group">
-            <label>Website / LinkedIn</label>
-            <input type="text" id="edit-web" placeholder="https://">
-          </div>
-        </div>
-        <div>
-          <button class="save-btn" onclick="saveProfile()">Kaydet</button>
-          <button class="cancel-btn" onclick="toggleEdit()">İptal</button>
-        </div>
+    <!-- Languages -->
+    <div class="edit-section">
+      <div class="section-title">🌍 Konuştuğum Diller</div>
+      <div class="tag-group" id="lang-tags">
+        <span class="tag-pill" data-val="tr" onclick="toggleTag(this,'languages')">🇹🇷 Türkçe</span>
+        <span class="tag-pill" data-val="de" onclick="toggleTag(this,'languages')">🇩🇪 Almanca</span>
+        <span class="tag-pill" data-val="en" onclick="toggleTag(this,'languages')">🇬🇧 İngilizce</span>
+        <span class="tag-pill" data-val="fr" onclick="toggleTag(this,'languages')">🇫🇷 Fransızca</span>
+        <span class="tag-pill" data-val="nl" onclick="toggleTag(this,'languages')">🇳🇱 Hollandaca</span>
+        <span class="tag-pill" data-val="ar" onclick="toggleTag(this,'languages')">🇸🇦 Arapça</span>
       </div>
     </div>
 
-    <!-- Profile info view -->
-    <div class="section-card" id="info-section">
-      <div class="sc-header">
-        <span class="sc-title">👤 Kişisel Bilgiler</span>
-        <a class="sc-action" onclick="toggleEdit()">Düzenle</a>
+    <!-- Interests -->
+    <div class="edit-section">
+      <div class="section-title">✨ İlgi Alanlarım</div>
+      <div class="tag-group" id="interest-tags">
+        <span class="tag-pill" data-val="legal" onclick="toggleTag(this,'interests')">⚖️ Hukuki</span>
+        <span class="tag-pill" data-val="housing" onclick="toggleTag(this,'interests')">🏠 Konut</span>
+        <span class="tag-pill" data-val="employment" onclick="toggleTag(this,'interests')">💼 İş</span>
+        <span class="tag-pill" data-val="tax" onclick="toggleTag(this,'interests')">💶 Vergi</span>
+        <span class="tag-pill" data-val="education" onclick="toggleTag(this,'interests')">🎓 Eğitim</span>
+        <span class="tag-pill" data-val="health" onclick="toggleTag(this,'interests')">🏥 Sağlık</span>
+        <span class="tag-pill" data-val="business" onclick="toggleTag(this,'interests')">🏢 İşletme</span>
+        <span class="tag-pill" data-val="family" onclick="toggleTag(this,'interests')">👨‍👩‍👧 Aile</span>
+        <span class="tag-pill" data-val="culture" onclick="toggleTag(this,'interests')">🎭 Kültür</span>
+        <span class="tag-pill" data-val="sport" onclick="toggleTag(this,'interests')">⚽ Spor</span>
+        <span class="tag-pill" data-val="tech" onclick="toggleTag(this,'interests')">💻 Teknoloji</span>
+        <span class="tag-pill" data-val="food" onclick="toggleTag(this,'interests')">🍽️ Yemek</span>
       </div>
-      <div class="info-grid">
-        <div class="info-item"><div class="info-label">Ad Soyad</div><div class="info-val" id="info-name">Ayşe Yılmaz</div></div>
-        <div class="info-item"><div class="info-label">Şehir</div><div class="info-val">📍 Frankfurt, Almanya</div></div>
-        <div class="info-item"><div class="info-label">E-posta</div><div class="info-val">ayse@email.com</div></div>
-        <div class="info-item"><div class="info-label">Telefon</div><div class="info-val">+49 176 1234567</div></div>
-        <div class="info-item"><div class="info-label">Üyelik</div><div class="info-val">Ücretsiz · 2 gün önce katıldı</div></div>
-        <div class="info-item"><div class="info-label">Davetiye</div><div class="info-val">BZB·1234 tarafından davet edildi</div></div>
-      </div>
-    </div>
-
-    <!-- My listings -->
-    <div class="section-card">
-      <div class="sc-header">
-        <span class="sc-title">🛍️ İlanlarım</span>
-        <a class="sc-action" href="classifieds.html">+ Yeni İlan</a>
-      </div>
-      <div class="listings-grid">
-        <div class="mini-listing">
-          <div class="ml-thumb">🚗</div>
-          <div class="ml-body">
-            <div class="ml-price">€18.500</div>
-            <div class="ml-title">Audi A3 — 2019</div>
-            <span class="ml-status ml-active">Aktif</span>
-          </div>
-        </div>
-        <div class="mini-listing">
-          <div class="ml-thumb">🛋️</div>
-          <div class="ml-body">
-            <div class="ml-price">€180</div>
-            <div class="ml-title">IKEA Koltuk Takımı</div>
-            <span class="ml-status ml-active">Aktif</span>
-          </div>
-        </div>
-        <div class="mini-listing">
-          <div class="ml-thumb">📱</div>
-          <div class="ml-body">
-            <div class="ml-price">€320</div>
-            <div class="ml-title">iPhone 13 — 128GB</div>
-            <span class="ml-status ml-sold">Satıldı</span>
-          </div>
-        </div>
-        <div class="mini-listing" style="border:1.5px dashed var(--sand);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="window.location='classifieds.html'">
-          <div style="text-align:center;padding:20px">
-            <div style="font-size:24px;margin-bottom:6px">+</div>
-            <div style="font-size:12px;color:var(--muted)">Yeni İlan</div>
-          </div>
-        </div>
+      <div style="margin-top:16px;">
+        <button class="btn-save" onclick="saveTags()">Tercihleri Kaydet</button>
       </div>
     </div>
 
-    <!-- AbiBOT history -->
-    <div class="section-card">
-      <div class="sc-header">
-        <span class="sc-title">🤖 AbiBOT Geçmişi</span>
-        <a class="sc-action" href="abibot.html">Yeni Soru →</a>
-      </div>
-      <div class="abibot-list">
-        <div class="abibot-item" onclick="window.location='abibot.html'">
-          <div class="ab-header">
-            <span class="ab-cat">⚖️ Hukuki</span>
-            <span class="ab-escalated">👨‍⚖️ Uzman onayladı</span>
-            <span class="ab-date">2 gün önce</span>
-          </div>
-          <div class="ab-question">Almanya'da işten çıkarılırsam hangi haklarım var?</div>
-          <div class="ab-preview">Almanya'da işten çıkarılma durumunda işçilerin birçok yasal güvencesi bulunmaktadır...</div>
-        </div>
-        <div class="abibot-item" onclick="window.location='abibot.html'">
-          <div class="ab-header">
-            <span class="ab-cat">🛂 Vize</span>
-            <span class="ab-date">5 gün önce</span>
-          </div>
-          <div class="ab-question">Niederlassungserlaubnis için ne kadar süre gerekiyor?</div>
-          <div class="ab-preview">Niederlassungserlaubnis (kalıcı oturma izni) için genel kural olarak 5 yıl yasal ikamet...</div>
-        </div>
-        <div class="abibot-item" onclick="window.location='abibot.html'">
-          <div class="ab-header">
-            <span class="ab-cat">💶 Vergi</span>
-            <span class="ab-date">1 hafta önce</span>
-          </div>
-          <div class="ab-question">Kindergeld başvurusu nasıl yapılır?</div>
-          <div class="ab-preview">Kindergeld (çocuk parası) için Familienkasse'ye başvurmanız gerekmektedir...</div>
-        </div>
+    <!-- Recent Activity -->
+    <div class="edit-section">
+      <div class="section-title">📋 Son Aktivitelerim</div>
+      <div id="activity-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
       </div>
     </div>
-
-    <!-- Activity -->
-    <div class="section-card">
-      <div class="sc-header">
-        <span class="sc-title">📋 Son Aktiviteler</span>
-      </div>
-      <div class="activity-list">
-        <div class="activity-item">
-          <div class="act-icon" style="background:rgba(27,58,140,.08)">🏘️</div>
-          <div class="act-body">
-            <div class="act-text">Topluluk gönderisi paylaştın</div>
-            <div class="act-meta">Frankfurt mahallesi · "Vergi danışmanı arıyorum"</div>
-          </div>
-          <div class="act-time">2s önce</div>
-        </div>
-        <div class="activity-item">
-          <div class="act-icon" style="background:rgba(212,43,43,.08)">🛍️</div>
-          <div class="act-body">
-            <div class="act-text">Yeni ilan verdin</div>
-            <div class="act-meta">Audi A3 · €18.500</div>
-          </div>
-          <div class="act-time">3g önce</div>
-        </div>
-        <div class="activity-item">
-          <div class="act-icon" style="background:rgba(30,123,75,.08)">🎉</div>
-          <div class="act-body">
-            <div class="act-text">Etkinliğe katılacağını belirttin</div>
-            <div class="act-meta">Frankfurt Türk Festivali · 14 Haziran</div>
-          </div>
-          <div class="act-time">5g önce</div>
-        </div>
-        <div class="activity-item">
-          <div class="act-icon" style="background:rgba(201,168,76,.08)">🤖</div>
-          <div class="act-body">
-            <div class="act-text">AbiBOT'a soru sordun</div>
-            <div class="act-meta">Hukuki · Uzman onayı alındı</div>
-          </div>
-          <div class="act-time">1h önce</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div class="section-card">
-      <div class="sc-header">
-        <span class="sc-title">⚙️ Ayarlar & Bildirimler</span>
-      </div>
-      <div class="settings-list">
-        <div class="setting-row">
-          <div class="setting-icon">🔔</div>
-          <div class="setting-info">
-            <div class="setting-name">E-posta bildirimleri</div>
-            <div class="setting-desc">Yeni mesaj ve aktiviteler için</div>
-          </div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-icon">💬</div>
-          <div class="setting-info">
-            <div class="setting-name">Mesaj bildirimleri</div>
-            <div class="setting-desc">Yeni DM geldiğinde bildir</div>
-          </div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-icon">🛍️</div>
-          <div class="setting-info">
-            <div class="setting-name">İlan güncellemeleri</div>
-            <div class="setting-desc">İlanlarıma gelen teklifler</div>
-          </div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-icon">🌍</div>
-          <div class="setting-info">
-            <div class="setting-name">Profil görünürlüğü</div>
-            <div class="setting-desc">Diğer üyeler profilini görebilsin</div>
-          </div>
-          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-        </div>
-        <div class="setting-row">
-          <div class="setting-icon">🔒</div>
-          <div class="setting-info">
-            <div class="setting-name">İki faktörlü doğrulama</div>
-            <div class="setting-desc">Hesap güvenliğini artır</div>
-          </div>
-          <button class="toggle" onclick="this.classList.toggle('on')"></button>
-        </div>
-      </div>
-      <div class="danger-zone" style="padding:12px 20px 20px">
-        <div class="dz-title">Tehlikeli Bölge</div>
-        <button class="action-btn danger" style="width:auto;padding:8px 18px;font-size:12px" onclick="if(confirm('Hesabını silmek istediğinden emin misin?')) alert('Hesap silme talebiniz alındı.')">🗑️ Hesabı Sil</button>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<script>
-  let editOpen = false;
+<div id="toast"></div>
 
-  function toggleEdit() {
-    editOpen = !editOpen;
-    document.getElementById('edit-section').style.display = editOpen ? 'block' : 'none';
-    document.getElementById('info-section').style.display = editOpen ? 'none' : 'block';
-    if (editOpen) document.getElementById('edit-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+<script>
+  const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+
+  let token = localStorage.getItem('bb_auth_token');
+  let currentUser = null;
+  let profile = null;
+  let selectedLangs = [];
+  let selectedInterests = [];
+
+  function hdrs() {
+    return { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  }
+
+  async function sb(path, opts = {}) {
+    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
+    const t = await r.text();
+    return t ? JSON.parse(t) : [];
+  }
+
+  function toast(msg, ok = true) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = ok ? 'show' : 'show error';
+    setTimeout(() => t.className = '', 3000);
+  }
+
+  async function init() {
+    if (!token) { window.location.replace('login.html'); return; }
+
+    const r = await fetch(`${SB_URL}/auth/v1/user`, {
+      headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` }
+    });
+    if (!r.ok) { window.location.replace('login.html'); return; }
+    currentUser = await r.json();
+
+    const data = await sb(`profiles?id=eq.${currentUser.id}`);
+    profile = data?.[0];
+    if (!profile) { window.location.replace('login.html'); return; }
+
+    renderProfile();
+    loadStats();
+    loadActivity();
+  }
+
+  function renderProfile() {
+    const first = profile.first_name || '';
+    const last  = profile.last_name  || '';
+    const name  = `${first} ${last}`.trim() || currentUser.email.split('@')[0];
+    const ini   = ((first[0]||'')+(last[0]||'')).toUpperCase() || '?';
+    const color = COLORS[ini.charCodeAt(0) % COLORS.length];
+
+    // Avatar
+    const av = document.getElementById('avatar-display');
+    if (profile.avatar_url) {
+      av.innerHTML = `<img src="${profile.avatar_url}" alt="${name}">`;
+    } else {
+      av.textContent = ini;
+      av.style.background = color;
+    }
+
+    document.getElementById('disp-name').textContent = name;
+    document.getElementById('disp-username').textContent = `@${profile.username || '—'}`;
+    document.getElementById('disp-city').textContent = profile.city
+      ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
+
+    // Badges
+    const badges = [];
+    if (profile.is_premium) badges.push('<span class="badge badge-premium">⭐ Premium</span>');
+    if (profile.is_verified) badges.push('<span class="badge badge-verified">✓ Doğrulandı</span>');
+    if (profile.is_admin) badges.push('<span class="badge badge-admin">🛡️ Admin</span>');
+    document.getElementById('disp-badges').innerHTML = badges.join('');
+
+    // Credits
+    document.getElementById('disp-abibot-credits').textContent = profile.abibot_credits || 0;
+    document.getElementById('disp-expert-credits').textContent = profile.expert_credits || 0;
+
+    // Member since
+    const since = profile.created_at ? new Date(profile.created_at).getFullYear() : '—';
+    document.getElementById('stat-since').textContent = since;
+
+    // Fill form
+    document.getElementById('inp-first-name').value = profile.first_name || '';
+    document.getElementById('inp-last-name').value  = profile.last_name  || '';
+    document.getElementById('inp-username').value   = profile.username   || '';
+    document.getElementById('inp-city').value       = profile.city       || '';
+    document.getElementById('inp-country').value    = profile.country    || '';
+    document.getElementById('inp-bio').value        = profile.bio        || '';
+
+    // Languages
+    selectedLangs = profile.languages || [];
+    document.querySelectorAll('#lang-tags .tag-pill').forEach(p => {
+      p.classList.toggle('selected', selectedLangs.includes(p.dataset.val));
+    });
+
+    // Interests
+    selectedInterests = profile.interests || [];
+    document.querySelectorAll('#interest-tags .tag-pill').forEach(p => {
+      p.classList.toggle('selected', selectedInterests.includes(p.dataset.val));
+    });
+
+    // Public profile link
+    const pubLink = `profil.html?id=${currentUser.id}`;
+    document.getElementById('public-link').href = pubLink;
+    document.getElementById('view-public-btn').href = pubLink;
+  }
+
+  async function loadStats() {
+    const [listings, questions, reviews] = await Promise.all([
+      sb(`listings?select=id&author=eq.${profile.username || currentUser.id}`),
+      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`),
+      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`)
+    ]);
+    document.getElementById('stat-listings').textContent = listings.length || 0;
+    document.getElementById('stat-questions').textContent = questions.length || 0;
+    document.getElementById('stat-reviews').textContent = reviews.length || 0;
+  }
+
+  async function loadActivity() {
+    const reviews = await sb(
+      `expert_reviews?select=category,status,created_at,rating&user_id=eq.${currentUser.id}&order=created_at.desc&limit=6`
+    );
+    const CAT_ICONS = {legal:'⚖️',visa:'🛂',medical:'🏥',tax:'💶',housing:'🏠',employment:'💼',school:'🎓',insurance:'🚗',migration:'✈️'};
+    const el = document.getElementById('activity-list');
+    if (!reviews.length) {
+      el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Henüz aktivite yok.</div>`;
+      return;
+    }
+    el.innerHTML = reviews.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('tr-TR', {day:'2-digit',month:'short',year:'numeric'});
+      const statusLabel = r.status === 'answered' ? '✅ Yanıtlandı' : r.status === 'pending' ? '⏳ Bekliyor' : '🔍 İnceleniyor';
+      const ratingStr = r.rating ? ` · ${'⭐'.repeat(r.rating)}` : '';
+      return `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:var(--warm);">${CAT_ICONS[r.category]||'❓'}</div>
+          <div>
+            <div class="activity-text">${statusLabel} — ${r.category} sorusu${ratingStr}</div>
+            <div class="activity-time">${date}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleTag(el, field) {
+    el.classList.toggle('selected');
+    if (field === 'languages') {
+      selectedLangs = [...document.querySelectorAll('#lang-tags .tag-pill.selected')].map(p => p.dataset.val);
+    } else {
+      selectedInterests = [...document.querySelectorAll('#interest-tags .tag-pill.selected')].map(p => p.dataset.val);
+    }
   }
 
   async function saveProfile() {
-    const fname   = document.getElementById('edit-fname').value.trim();
-    const lname   = document.getElementById('edit-lname').value.trim();
-    const bio     = document.getElementById('edit-bio').value.trim();
-    const city    = document.getElementById('edit-city').value.trim();
-    const country = document.getElementById('edit-country').value.trim();
-    const full    = (fname + ' ' + lname).trim();
-
-    // Validate location
-    if (!city || !country) {
-      const status = document.getElementById('edit-location-status');
-      status.style.display = 'block';
-      status.style.color = 'var(--red)';
-      status.textContent = '⚠️ Lütfen listeden bir şehir seçin.';
-      document.getElementById('edit-location-input').style.borderColor = 'var(--red)';
-      return;
-    }
-
-    // Update display
-    document.getElementById('display-name').textContent = full;
-    document.getElementById('info-name').textContent = full;
-    document.getElementById('display-bio').textContent = bio;
-    document.querySelector('.profile-city').textContent = `📍 ${city}, ${country}`;
-
-    // Update avatar initials
-    const initials = (fname[0] || '') + (lname[0] || '');
-    document.getElementById('main-avatar').textContent = initials.toUpperCase();
-    document.querySelector('.nav-avatar').textContent  = initials.toUpperCase();
-
-    // Save to Supabase
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
     try {
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) {
-        await sb.from('profiles').update({
-          first_name: fname,
-          last_name: lname,
-          bio,
-          city,
-          country,
-          updated_at: new Date().toISOString()
-        }).eq('id', user.id);
-      }
-    } catch(e) { console.warn('Profile save failed:', e); }
-
-    toggleEdit();
-
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 24px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;animation:fadeUp .3s ease';
-    toast.textContent = '✓ Profil güncellendi';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  }
-
-  function copyCode(code) {
-    navigator.clipboard.writeText(code).then(() => {
-      const toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:999';
-      toast.textContent = '📋 ' + code + ' kopyalandı!';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    });
-  }
-
-  // Fade-up toast animation
-  const style = document.createElement('style');
-  style.textContent = '@keyframes fadeUp { from { opacity:0; transform:translate(-50%,10px); } to { opacity:1; transform:translate(-50%,0); } }';
-  document.head.appendChild(style);
-</script>
-<script>
-  // Mobile menu
-  function toggleMenu() {
-    const hb = document.getElementById('hamburger');
-    const menu = document.getElementById('mobile-menu');
-    hb.classList.toggle('open');
-    menu.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-  }
-  // Close on outside click
-  document.addEventListener('click', function(e) {
-    const menu = document.getElementById('mobile-menu');
-    const hb = document.getElementById('hamburger');
-    if (menu && menu.classList.contains('open') &&
-        !menu.contains(e.target) && !hb.contains(e.target)) {
-      hb.classList.remove('open');
-      menu.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-  });
-  // Close on nav link click
-  document.querySelectorAll('.mm-link').forEach(link => {
-    link.addEventListener('click', () => {
-      document.getElementById('hamburger').classList.remove('open');
-      document.getElementById('mobile-menu').classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  });
-  // Mark active link
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.mm-link').forEach(link => {
-      const href = link.getAttribute('href');
-      if (href && (href === page || href.split('#')[0] === page)) {
-        link.classList.add('active');
-      }
-    });
-  })();
-
-</script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
-          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
-          .catch(err => console.warn('[BizdenBize] SW failed:', err));
-      });
-    }
-  </script>
-
-  <!-- PWA install banner -->
-  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
-    display:none;align-items:center;gap:14px;
-    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
-    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
-    <div style="flex:1;">
-      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
-      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
-    </div>
-    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
-      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
-      font-family:inherit;white-space:nowrap;">Yükle</button>
-    <button onclick="document.getElementById('pwa-banner').style.display='none'"
-      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
-      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
-  </div>
-  <script>
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'flex';
-    });
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        const banner = document.getElementById('pwa-banner');
-        if (banner) banner.style.display = 'none';
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('[BizdenBize] PWA install:', outcome);
-        deferredPrompt = null;
-      });
-    }
-    window.addEventListener('appinstalled', () => {
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'none';
-      deferredPrompt = null;
-    });
-  </script>
-<script>
-  // ══ COOKIE CONSENT LOGIC ══
-  (function() {
-    var STORAGE_KEY = 'bb_cookie_consent';
-    var consent = null;
-    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
-
-    // Show banner if no consent yet
-    if (!consent) {
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var b = document.getElementById('cookie-banner');
-          if (b) b.classList.add('visible');
-        }, 800);
-      });
-    } else {
-      applyConsent(consent);
-    }
-
-    window.acceptAll = function() {
-      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-    };
-
-    window.acceptEssential = function() {
-      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-    };
-
-    window.savePreferences = function() {
-      var c = {
-        essential: true,
-        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
-        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
-        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
-        ts: Date.now()
+      const payload = {
+        first_name: document.getElementById('inp-first-name').value.trim(),
+        last_name:  document.getElementById('inp-last-name').value.trim(),
+        username:   document.getElementById('inp-username').value.trim().replace('@',''),
+        city:       document.getElementById('inp-city').value.trim(),
+        country:    document.getElementById('inp-country').value.trim(),
+        bio:        document.getElementById('inp-bio').value.trim(),
+        updated_at: new Date().toISOString()
       };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-      showToast('✓ Çerez tercihleriniz kaydedildi.');
-    };
-
-    function saveConsent(c) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
-      applyConsent(c);
-    }
-
-    function applyConsent(c) {
-      // Analytics: load only if consented
-      if (c.analytics) {
-        // Plausible or similar would load here
-        // e.g. loadScript('https://plausible.io/js/plausible.js')
-        console.log('[BizdenBize] Analytics enabled');
-      }
-      // Marketing
-      if (c.marketing) {
-        console.log('[BizdenBize] Marketing enabled');
-      }
-    }
-
-    function hideBanner() {
-      var b = document.getElementById('cookie-banner');
-      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
-    }
-
-    window.openCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    };
-
-    window.closeCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.remove('open');
-      document.body.style.overflow = '';
-    };
-
-    // Close modal on backdrop click
-    document.addEventListener('click', function(e) {
-      var m = document.getElementById('cookie-modal');
-      if (m && e.target === m) closeCookieModal();
-    });
-
-    window.toggleCat = function(cat) {
-      var el = document.getElementById('cat-' + cat);
-      if (el) el.classList.toggle('open');
-    };
-
-    window.toggleCookie = function(e, cat) {
-      e.stopPropagation();
-      var btn = document.getElementById('toggle-' + cat);
-      if (btn) btn.classList.toggle('on');
-    };
-
-    function showToast(msg) {
-      var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(function(){ t.remove(); }, 2500);
-    }
-  })();
-
-  </script>
-<!-- Google Maps Places for profile edit -->
-<script>
-  function setProfileLocation(city, country) {
-    document.getElementById('edit-city').value = city;
-    document.getElementById('edit-country').value = country;
-    const input = document.getElementById('edit-location-input');
-    input.value = `${city}, ${country}`;
-    input.style.borderColor = '#1E7B4B';
-    const status = document.getElementById('edit-location-status');
-    status.style.display = 'block';
-    status.textContent = `✅ ${city}, ${country}`;
+      await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify(payload) });
+      Object.assign(profile, payload);
+      renderProfile();
+      toast('✅ Profil kaydedildi!');
+    } catch(e) { toast('Hata oluştu.', false); }
+    btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';
   }
 
-  function detectProfileGPS() {
-    const btn = document.getElementById('profile-gps-btn');
-    btn.textContent = '⏳';
-    btn.disabled = true;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const res = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.coords.latitude},${pos.coords.longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
-          );
-          const data = await res.json();
-          const components = data.results?.[0]?.address_components || [];
-          let city = '', country = '';
-          components.forEach(c => {
-            if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
-            if (c.types.includes('country')) country = c.long_name;
-          });
-          if (city && country) {
-            setProfileLocation(city, country);
-            btn.textContent = '✅';
-            btn.style.background = '#1E7B4B';
-          } else {
-            btn.textContent = '📍 Bul';
-            btn.disabled = false;
-          }
-        } catch(e) { btn.textContent = '📍 Bul'; btn.disabled = false; }
-      },
-      () => { btn.textContent = '❌'; setTimeout(() => { btn.textContent = '📍 Bul'; btn.disabled = false; btn.style.background = 'var(--navy)'; }, 2000); },
-      { timeout: 8000 }
-    );
-  }
-
-  function initProfilePlaces() {
-    const input = document.getElementById('edit-location-input');
-    if (!input || !window.google) return;
-    input.setAttribute('autocomplete', 'new-password');
-    input.setAttribute('readonly', true);
-    setTimeout(() => input.removeAttribute('readonly'), 500);
-
-    // Pre-fill with current value from profile
-    const currentCity = '{{ city }}';
-    const currentCountry = '{{ country }}';
-
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['(cities)'],
-      fields: ['address_components', 'name'],
-    });
-    autocomplete.addListener('place_changed', function() {
-      const place = autocomplete.getPlace();
-      if (!place.address_components) return;
-      let city = '', country = '';
-      place.address_components.forEach(c => {
-        if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
-        if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
-        if (c.types.includes('country')) country = c.long_name;
+  async function saveTags() {
+    try {
+      await sb(`profiles?id=eq.${currentUser.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ languages: selectedLangs, interests: selectedInterests, updated_at: new Date().toISOString() })
       });
-      setProfileLocation(city || place.name, country);
-    });
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+      profile.languages = selectedLangs;
+      profile.interests = selectedInterests;
+      toast('✅ Tercihler kaydedildi!');
+    } catch(e) { toast('Hata oluştu.', false); }
   }
+
+  async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast('Dosya 2MB\'dan küçük olmalı.', false); return; }
+
+    // Convert to base64 data URL for preview
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      document.getElementById('avatar-display').innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
+
+      // Upload to Supabase Storage
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `avatars/${currentUser.id}.${ext}`;
+        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${currentUser.id}.${ext}`, {
+          method: 'POST',
+          headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': file.type, 'x-upsert': 'true' },
+          body: file
+        });
+        if (uploadRes.ok) {
+          const publicUrl = `${SB_URL}/storage/v1/object/public/avatars/${currentUser.id}.${ext}`;
+          await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify({ avatar_url: publicUrl }) });
+          profile.avatar_url = publicUrl;
+          toast('✅ Fotoğraf güncellendi!');
+        } else {
+          toast('Fotoğraf yüklenemedi.', false);
+        }
+      } catch(e) { toast('Yükleme hatası.', false); }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  init();
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initProfilePlaces" async defer></script>
 </body>
-<script type="module">
-  (async () => {
-  await new Promise(r => document.readyState === 'complete' ? r() : window.addEventListener('load', r));
-  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-  const { data: { session } } = await sb.auth.getSession();
-  console.log('[Profile] Session:', session?.user?.email || 'NULL');
-  if (!session?.user) { window.location.replace('login.html'); return; }
-
-  const uid = session.user.id;
-  const tok = session.access_token;
-  console.log('[Profile] UID:', uid);
-
-  const res = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${uid}`, {
-    headers: {
-      'apikey': SUPABASE_ANON,
-      'Authorization': `Bearer ${tok}`,
-      'Accept': 'application/json',
-    }
-  });
-  console.log('[Profile] Fetch status:', res.status);
-  const profiles = await res.json();
-  console.log('[Profile] Data:', profiles);
-  const p = profiles?.[0];
-  if (!p) { console.warn('[Profile] No profile found'); return; }
-
-  const firstName = p.first_name || session.user.email.split('@')[0];
-  const lastName  = p.last_name  || '';
-  const fullName  = `${firstName} ${lastName}`.trim();
-  const username  = p.username || session.user.email.split('@')[0];
-  const city      = p.city    || '';
-  const country   = p.country || '';
-  const bio       = p.bio     || '';
-  const initials  = ((firstName[0]||'') + (lastName[0]||'')).toUpperCase();
-  const colors    = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
-  const color     = colors[initials.charCodeAt(0) % colors.length];
-
-  function setAvatar(el, url) {
-    if (!el) return;
-    if (url) {
-      el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-      el.textContent = initials;
-      el.style.background = color;
-    }
-  }
-  setAvatar(document.getElementById('main-avatar'), p.avatar_url);
-  const navAv = document.querySelector('.nav-avatar');
-  if (navAv) { setAvatar(navAv, p.avatar_url); if (!p.avatar_url) { navAv.textContent = initials; navAv.style.background = color; } }
-
-  document.getElementById('display-name').textContent = fullName;
-  document.getElementById('display-bio').textContent  = bio;
-  document.querySelector('.profile-handle').textContent = `@${username}`;
-  document.querySelector('.profile-city').textContent   = city ? `📍 ${city}, ${country}` : '';
-
-  const verBadge = document.querySelector('.verified-badge');
-  if (verBadge) verBadge.style.display = p.is_verified ? 'inline-flex' : 'none';
-
-  document.getElementById('info-name').textContent = fullName;
-  const infoVals = document.querySelectorAll('.info-item .info-val');
-  if (infoVals[1]) infoVals[1].textContent = city ? `📍 ${city}, ${country}` : '—';
-  if (infoVals[2]) infoVals[2].textContent = session.user.email;
-  if (infoVals[4]) infoVals[4].textContent = p.is_premium ? 'Premium' : `Ücretsiz · ${new Date(p.created_at).toLocaleDateString('tr-TR')} katıldı`;
-  if (infoVals[5]) infoVals[5].textContent = p.invited_by ? `${p.invited_by} tarafından davet edildi` : '—';
-
-  if (p.languages?.length) {
-    const langFlags = { 'Türkçe':'🇹🇷','Deutsch':'🇩🇪','English':'🇬🇧','Français':'🇫🇷','Nederlands':'🇳🇱' };
-    const langEl = document.querySelector('.tag-section .tags');
-    if (langEl) langEl.innerHTML = p.languages.map(l => `<span class="tag navy">${langFlags[l]||''} ${l}</span>`).join('');
-  }
-  if (p.interests?.length) {
-    const intIcons = { 'Yemek & Mutfak':'🍽️','İş & Girişim':'💼','Etkinlik & Buluşma':'🎉','Emlak & Kiralık':'🏠','Araç & Ulaşım':'🚗','Aile & Çocuklar':'👶' };
-    const intEl = document.querySelectorAll('.tag-section')[1]?.querySelector('.tags');
-    if (intEl) intEl.innerHTML = p.interests.map(i => `<span class="tag">${intIcons[i]||'⭐'} ${i}</span>`).join('');
-  }
-
-  if (p.invite_code) {
-    const formatted = p.invite_code.replace(/(.{3})(.*)/, '$1·$2');
-    const codeEl = document.querySelector('.invite-code-row .ic-code');
-    if (codeEl) codeEl.textContent = formatted;
-  }
-
-  const ef  = document.getElementById('edit-fname');
-  const el2 = document.getElementById('edit-lname');
-  const eb  = document.getElementById('edit-bio');
-  const eli = document.getElementById('edit-location-input');
-  if (ef)  ef.value  = firstName;
-  if (el2) el2.value = lastName;
-  if (eb)  eb.value  = bio;
-  if (eli && city) {
-    eli.value = `${city}, ${country}`;
-    const ec  = document.getElementById('edit-city');
-    const eco = document.getElementById('edit-country');
-    if (ec)  ec.value  = city;
-    if (eco) eco.value = country;
-    const status = document.getElementById('edit-location-status');
-    if (status) { status.style.display = 'block'; status.textContent = `✅ ${city}, ${country}`; eli.style.borderColor = '#1E7B4B'; }
-  }
-  })();
-</script>
 </html>
