@@ -262,6 +262,9 @@
     <button class="nav-item" onclick="showSection('reports', this)">
       🚩 Şikayetler <span class="nav-badge" id="badge-reports" style="background:var(--red);">—</span>
     </button>
+    <button class="nav-item" onclick="showSection('deletions', this)">
+      🗑️ Silme Talepleri <span class="nav-badge" id="badge-deletions" style="background:var(--red);">—</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -518,6 +521,31 @@
       </div>
     </div>
 
+    <!-- ── DELETIONS ── -->
+    <div class="section" id="section-deletions">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🗑️ Hesap Silme Talepleri</div>
+          <div style="font-size:12px;color:var(--muted);">Talepleri inceleyip onaylayın veya reddedin. Onay verdiğinizde hesap kalıcı olarak silinir.</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Kullanıcı</th>
+              <th>E-posta</th>
+              <th>Sebep</th>
+              <th>Talep Tarihi</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody id="deletions-tbody">
+            <tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -573,7 +601,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri'
   };
   function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -587,6 +615,7 @@
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
     if (id === 'reports') loadReports();
+    if (id === 'deletions') loadDeletions();
   }
 
   function showTab(id, btn) {
@@ -1071,6 +1100,88 @@
       document.getElementById('badge-reports').textContent = pending || '0';
       toast(status === 'actioned' ? '⚡ İşlem yapıldı.' : status === 'dismissed' ? '✗ Şikayet reddedildi.' : '✓ İncelendi olarak işaretlendi.');
     } catch(e) { toast('Hata: ' + e.message, false); }
+  }
+
+  // ── DELETION REQUESTS ──
+  let allDeletions = [];
+
+  async function loadDeletions() {
+    try {
+      const data = await sb('deletion_requests?select=*&order=created_at.desc');
+      allDeletions = data;
+      const pending = data.filter(d => d.status === 'pending').length;
+      document.getElementById('badge-deletions').textContent = pending || '0';
+      renderDeletions(data);
+    } catch(e) { console.error('loadDeletions error:', e); }
+  }
+
+  function renderDeletions(items) {
+    document.getElementById('deletions-tbody').innerHTML = items.length ? items.map(d => {
+      const user = allUsers.find(u => u.id === d.user_id);
+      const name = user ? `${user.first_name||''} ${user.last_name||''}`.trim() || user.username || '—' : d.user_id?.slice(0,8)+'…';
+      const email = user?.email || '—';
+      const statusBadge = d.status === 'pending'
+        ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
+        : d.status === 'approved'
+          ? '<span class="badge badge-red">✓ Onaylandı</span>'
+          : '<span class="badge badge-muted">✗ Reddedildi</span>';
+      return `<tr>
+        <td style="font-weight:600;">${name}</td>
+        <td style="font-size:12px;color:var(--muted);">${email}</td>
+        <td style="font-size:12px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.reason || '—'}</td>
+        <td style="font-size:11px;color:var(--muted);">${fmtDate(d.created_at)}</td>
+        <td>${statusBadge}</td>
+        <td>
+          <div class="actions">
+            ${d.status === 'pending' ? `
+              <button class="btn btn-sm btn-red" onclick="confirmDeleteUser('${d.id}','${d.user_id}','${name}')">🗑️ Sil</button>
+              <button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button>
+            ` : `<span style="font-size:11px;color:var(--muted);">İşlem tamamlandı</span>`}
+          </div>
+        </td>
+      </tr>`;
+    }).join('') : `<tr class="loading-row"><td colspan="6">Silme talebi bulunamadı.</td></tr>`;
+  }
+
+  async function rejectDeletion(id) {
+    try {
+      await sb(`deletion_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'rejected', reviewed_at: new Date().toISOString() }) });
+      const d = allDeletions.find(d => d.id === id);
+      if (d) d.status = 'rejected';
+      renderDeletions(allDeletions);
+      const pending = allDeletions.filter(d => d.status === 'pending').length;
+      document.getElementById('badge-deletions').textContent = pending || '0';
+      toast('✗ Silme talebi reddedildi.');
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  }
+
+  function confirmDeleteUser(requestId, userId, name) {
+    if (!confirm(`⚠️ DİKKAT: "${name}" kullanıcısını kalıcı olarak silmek üzeresiniz.\n\nBu işlem GERİ ALINAMAZ. Tüm verileri silinecek.\n\nDevam etmek istiyor musunuz?`)) return;
+    executeDeleteUser(requestId, userId);
+  }
+
+  async function executeDeleteUser(requestId, userId) {
+    try {
+      const res = await fetch(`${SB_URL}/functions/v1/delete-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+        body: JSON.stringify({ user_id: userId })
+      });
+      if (!res.ok) throw new Error(await res.text());
+
+      // Mark request as approved
+      await sb(`deletion_requests?id=eq.${requestId}`, { method: 'PATCH', body: JSON.stringify({ status: 'approved', reviewed_at: new Date().toISOString() }) });
+
+      // Remove from local lists
+      allUsers = allUsers.filter(u => u.id !== userId);
+      allUsersLoaded = false;
+      const d = allDeletions.find(d => d.id === requestId);
+      if (d) d.status = 'approved';
+      renderDeletions(allDeletions);
+      const pending = allDeletions.filter(d => d.status === 'pending').length;
+      document.getElementById('badge-deletions').textContent = pending || '0';
+      toast('🗑️ Kullanıcı kalıcı olarak silindi.');
+    } catch(e) { toast('Silme hatası: ' + e.message, false); }
   }
 
   // ── btn-navy style ──

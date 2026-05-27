@@ -233,6 +233,33 @@
         <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
       </div>
     </div>
+
+    <!-- Danger Zone -->
+    <div class="edit-section" style="border:1px solid rgba(212,43,43,.2);border-radius:14px;padding:20px;background:rgba(212,43,43,.02);">
+      <div class="section-title" style="color:var(--red);">⚠️ Tehlikeli Bölge</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Hesabınızı kalıcı olarak silmek istiyorsanız bir silme talebi oluşturabilirsiniz. Talebiniz ekibimiz tarafından incelendikten sonra hesabınız ve tüm verileriniz kalıcı olarak silinecektir.</p>
+      <button onclick="openDeleteRequestModal()" style="padding:10px 20px;background:none;border:1.5px solid rgba(212,43,43,.4);border-radius:9px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(212,43,43,.06)'" onmouseout="this.style.background='none'">
+        🗑️ Hesap Silme Talebi Oluştur
+      </button>
+      <div id="delete-request-status" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:8px;font-size:13px;color:var(--muted);">
+        ⏳ Silme talebiniz inceleniyor. Ekibimiz en kısa sürede sizinle iletişime geçecek.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE REQUEST MODAL -->
+<div id="delete-req-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.55);align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;padding:28px;animation:popIn .25s ease;">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;">🗑️ Hesap Silme Talebi</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Bu işlem hesabınızı hemen silmez. Ekibimiz talebinizi inceleyecek ve sizinle iletişime geçecektir. GDPR kapsamında 30 gün içinde sonuçlandırılır.</div>
+    <label style="display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Silme Sebebi (isteğe bağlı)</label>
+    <textarea id="delete-req-reason" placeholder="Hesabınızı neden silmek istediğinizi belirtebilirsiniz..." style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;resize:vertical;min-height:80px;line-height:1.6;margin-bottom:14px;"></textarea>
+    <div style="background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;">
+      ⚠️ Onaylanan talepler geri alınamaz. Tüm ilanlarınız, sorularınız ve verileriniz kalıcı olarak silinecektir.
+    </div>
+    <button onclick="submitDeleteRequest()" id="delete-req-submit" style="width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-bottom:8px;">Talebi Gönder</button>
+    <button onclick="closeDeleteRequestModal()" style="width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
   </div>
 </div>
 
@@ -295,6 +322,16 @@
     renderProfile();
     loadStats();
     loadActivity();
+
+    // Check if deletion request already pending
+    try {
+      const dr = await sb(`deletion_requests?user_id=eq.${currentUser.id}&status=eq.pending&select=id`);
+      if (dr?.length > 0) {
+        document.getElementById('delete-request-status').style.display = 'block';
+        const btn = document.querySelector('[onclick="openDeleteRequestModal()"]');
+        if (btn) btn.style.display = 'none';
+      }
+    } catch(e) { /* non-critical */ }
   }
 
   function renderProfile() {
@@ -468,6 +505,37 @@
       } catch(e) { toast('Yükleme hatası.', false); }
     };
     reader.readAsDataURL(file);
+  }
+
+  // ── DELETE REQUEST ──
+  function openDeleteRequestModal() {
+    document.getElementById('delete-req-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDeleteRequestModal() {
+    document.getElementById('delete-req-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  async function submitDeleteRequest() {
+    const reason = document.getElementById('delete-req-reason').value.trim();
+    const btn = document.getElementById('delete-req-submit');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/deletion_requests`, {
+        method: 'POST',
+        headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ user_id: currentUser.id, reason: reason || null, status: 'pending' })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      closeDeleteRequestModal();
+      document.getElementById('delete-request-status').style.display = 'block';
+      document.querySelector('[onclick="openDeleteRequestModal()"]').style.display = 'none';
+      toast('✅ Silme talebiniz alındı. En kısa sürede incelenecek.');
+    } catch(e) {
+      btn.disabled = false; btn.textContent = 'Talebi Gönder';
+      toast('Hata: ' + e.message, false);
+    }
   }
 
   init();
