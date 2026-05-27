@@ -723,7 +723,7 @@
           ${u.is_admin ? '<span class="badge badge-red">Admin</span> ' : ''}
           ${u.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-muted">Standart</span>'}
           ${u.is_verified ? ' <span class="badge badge-green">✓</span>' : ''}
-          ${u.status === 'banned' ? ' <span class="badge" style="background:rgba(212,43,43,.15);color:var(--red);border:1px solid rgba(212,43,43,.3);">🚫 Yasaklı</span>' : ''}
+          ${u.status === 'banned' ? ' <span class="badge" style="background:rgba(212,43,43,.15);color:var(--red);border:1px solid rgba(212,43,43,.3);">🚫 Engelli</span>' : ''}
         </td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(u.created_at)}</td>
         <td>
@@ -735,7 +735,7 @@
               ${u.is_admin ? 'Admin Kaldır' : '🛡️ Admin Yap'}
             </button>
             <button class="btn btn-sm ${u.status === 'banned' ? 'btn-green' : 'btn-red'}" onclick="toggleBan('${u.id}', '${u.status||'approved'}')">
-              ${u.status === 'banned' ? '✅ Yasağı Kaldır' : '🚫 Yasakla'}
+              ${u.status === 'banned' ? '✅ Engeli Kaldır' : '🚫 Engelle'}
             </button>
           </div>
         </td>
@@ -766,8 +766,8 @@
   async function toggleBan(id, currentStatus) {
     const isBanned = currentStatus === 'banned';
     const msg = isBanned
-      ? 'Bu kullanıcının yasağını kaldırmak istiyor musunuz?'
-      : 'Bu kullanıcıyı yasaklamak istediğinizden emin misiniz? Kullanıcı platforma erişemeyecek.';
+      ? 'Bu kullanıcının engelini kaldırmak istiyor musunuz?'
+      : 'Bu kullanıcıyı engellemek istediğinizden emin misiniz? Kullanıcı platforma erişemeyecek.';
     if (!confirm(msg)) return;
     try {
       const newStatus = isBanned ? 'approved' : 'banned';
@@ -775,7 +775,7 @@
       const u = allUsers.find(u => u.id === id);
       if (u) u.status = newStatus;
       renderUsers(allUsers);
-      toast(isBanned ? '✅ Yasak kaldırıldı.' : '🚫 Kullanıcı yasaklandı.');
+      toast(isBanned ? '✅ Engel kaldırıldı.' : '🚫 Kullanıcı engellendi.');
     } catch(e) { console.error('toggleBan error:', e); toast('Hata: ' + e.message, false); }
   }
 
