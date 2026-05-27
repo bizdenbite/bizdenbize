@@ -259,6 +259,9 @@
     <button class="nav-item" onclick="showSection('notifications', this)">
       🔔 Bildirimler
     </button>
+    <button class="nav-item" onclick="showSection('reports', this)">
+      🚩 Şikayetler <span class="nav-badge" id="badge-reports" style="background:var(--red);">—</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -484,6 +487,37 @@
       </div>
     </div>
 
+    <!-- ── REPORTS ── -->
+    <div class="section" id="section-reports">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🚩 Şikayet Yönetimi</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-muted" onclick="filterReports('pending')" id="filter-pending" style="border-color:var(--ink);">⏳ Bekleyen</button>
+            <button class="btn btn-sm btn-muted" onclick="filterReports('reviewed')">✅ İncelenen</button>
+            <button class="btn btn-sm btn-muted" onclick="filterReports('all')">Tümü</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Şikayetçi</th>
+              <th>Hedef</th>
+              <th>Tür</th>
+              <th>Sebep</th>
+              <th>Detay</th>
+              <th>Tarih</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody id="reports-tbody">
+            <tr class="loading-row"><td colspan="8">Yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -538,7 +572,8 @@
   const sectionTitles = {
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi',
-    messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder'
+    messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
+    reports: '🚩 Şikayet Yönetimi'
   };
   function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -551,6 +586,7 @@
     if (id === 'content') loadContent();
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
+    if (id === 'reports') loadReports();
   }
 
   function showTab(id, btn) {
@@ -964,6 +1000,77 @@
           <div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div>
         </div>`).join('');
     } catch(e) {}
+  }
+
+  // ── REPORTS ──
+  const REPORT_REASONS = { spam:'📢 Spam', harassment:'😡 Taciz', fake:'🎭 Sahte', inappropriate:'🚫 Uygunsuz', scam:'💸 Dolandırıcılık', other:'📝 Diğer' };
+  let allReports = [];
+  let _reportFilter = 'pending';
+
+  async function loadReports() {
+    try {
+      const data = await sb('reports?select=*&order=created_at.desc');
+      allReports = data;
+      const pending = data.filter(r => r.status === 'pending').length;
+      document.getElementById('badge-reports').textContent = pending || '0';
+      filterReports(_reportFilter);
+    } catch(e) { console.error('loadReports error:', e); }
+  }
+
+  function filterReports(filter) {
+    _reportFilter = filter;
+    document.querySelectorAll('[onclick^="filterReports"]').forEach(b => b.style.borderColor = '');
+    document.querySelector(`[onclick="filterReports('${filter}')"]`).style.borderColor = 'var(--ink)';
+    const filtered = filter === 'all' ? allReports : allReports.filter(r => r.status === filter);
+    renderReports(filtered);
+  }
+
+  function renderReports(reports) {
+    const REASON_BADGE = { spam:'badge-gold', harassment:'badge-red', fake:'badge-red', inappropriate:'badge-red', scam:'badge-red', other:'badge-muted' };
+    document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
+      const target = r.reported_user_id
+        ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
+        : r.reported_expert_id
+          ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
+          : '—';
+      const statusBadge = r.status === 'pending'
+        ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
+        : r.status === 'actioned'
+          ? '<span class="badge badge-red">⚡ İşlem Yapıldı</span>'
+          : r.status === 'dismissed'
+            ? '<span class="badge badge-muted">✗ Reddedildi</span>'
+            : '<span class="badge badge-green">✓ İncelendi</span>';
+      return `<tr>
+        <td style="font-size:11px;color:var(--muted);">${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td>
+        <td>${target}</td>
+        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : '👤 Kullanıcı'}</span></td>
+        <td><span class="badge ${REASON_BADGE[r.reason]||'badge-muted'}">${REPORT_REASONS[r.reason]||r.reason}</span></td>
+        <td style="font-size:12px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.details||'—'}</td>
+        <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>
+        <td>${statusBadge}</td>
+        <td>
+          <div class="actions">
+            ${r.status === 'pending' ? `
+              <button class="btn btn-sm btn-green" onclick="updateReport('${r.id}','reviewed')">✓ İncele</button>
+              <button class="btn btn-sm btn-red" onclick="updateReport('${r.id}','actioned')">⚡ İşlem Yap</button>
+              <button class="btn btn-sm btn-muted" onclick="updateReport('${r.id}','dismissed')">✗ Reddet</button>
+            ` : `<button class="btn btn-sm btn-muted" onclick="updateReport('${r.id}','pending')">↩ Geri Al</button>`}
+          </div>
+        </td>
+      </tr>`;
+    }).join('') : `<tr class="loading-row"><td colspan="8">Şikayet bulunamadı.</td></tr>`;
+  }
+
+  async function updateReport(id, status) {
+    try {
+      await sb(`reports?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status, reviewed_at: new Date().toISOString() }) });
+      const r = allReports.find(r => r.id === id);
+      if (r) r.status = status;
+      filterReports(_reportFilter);
+      const pending = allReports.filter(r => r.status === 'pending').length;
+      document.getElementById('badge-reports').textContent = pending || '0';
+      toast(status === 'actioned' ? '⚡ İşlem yapıldı.' : status === 'dismissed' ? '✗ Şikayet reddedildi.' : '✓ İncelendi olarak işaretlendi.');
+    } catch(e) { toast('Hata: ' + e.message, false); }
   }
 
   // ── btn-navy style ──

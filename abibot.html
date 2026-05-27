@@ -1777,6 +1777,25 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     const text = input.value.trim();
     if (!text || isLoading) return;
 
+    // ── COOLDOWN CHECK (3s between messages) ──
+    const now = Date.now();
+    const lastSent = window._lastMessageTime || 0;
+    const COOLDOWN_MS = 3000;
+    if (now - lastSent < COOLDOWN_MS) {
+      const remaining = Math.ceil((COOLDOWN_MS - (now - lastSent)) / 1000);
+      const sendBtn = document.getElementById('send-btn');
+      const orig = sendBtn.innerHTML;
+      sendBtn.disabled = true;
+      sendBtn.textContent = `⏱ ${remaining}s`;
+      const interval = setInterval(() => {
+        const left = Math.ceil((COOLDOWN_MS - (Date.now() - lastSent)) / 1000);
+        if (left <= 0) { clearInterval(interval); sendBtn.disabled = false; sendBtn.innerHTML = orig; }
+        else sendBtn.textContent = `⏱ ${left}s`;
+      }, 500);
+      return;
+    }
+    window._lastMessageTime = now;
+
     // Wait for supabase to be ready (max 3s)
     let sb = window.supabase;
     if (!sb) {
