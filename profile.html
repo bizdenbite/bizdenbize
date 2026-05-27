@@ -97,6 +97,7 @@
   <div class="nav-right">
     <a href="mahallem.html" class="nav-link">← Mahallem</a>
     <a href="#" class="nav-public-btn" id="public-link">👁 Profilimi Gör</a>
+    <button onclick="doLogout()" class="nav-public-btn" style="background:rgba(212,43,43,.15);border-color:rgba(212,43,43,.3);color:rgba(255,100,100,.9);">Çıkış Yap</button>
   </div>
 </nav>
 
@@ -247,6 +248,17 @@
   let profile = null;
   let selectedLangs = [];
   let selectedInterests = [];
+
+  async function doLogout() {
+    try {
+      await fetch(`${SB_URL}/auth/v1/logout`, {
+        method: 'POST', headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` }
+      });
+    } catch(e) {}
+    localStorage.removeItem('bb_auth_token');
+    localStorage.removeItem('bb_user');
+    window.location.href = 'login.html';
+  }
 
   function hdrs() {
     return { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
