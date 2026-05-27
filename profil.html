@@ -105,6 +105,7 @@
   <div class="nav-right">
     <a href="mahallem.html" class="btn-back">← Mahallem</a>
     <a href="profile.html" class="btn-edit" id="edit-btn">✏️ Profili Düzenle</a>
+    <button id="logout-btn" onclick="doLogout()" style="display:none;padding:7px 14px;background:none;border:1.5px solid rgba(212,43,43,.3);border-radius:8px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(212,43,43,.06)'" onmouseout="this.style.background='none'">Çıkış Yap</button>
   </div>
 </nav>
 
@@ -121,6 +122,18 @@
 
   const params   = new URLSearchParams(window.location.search);
   const targetId = params.get('id');
+
+  async function doLogout() {
+    try {
+      const token = localStorage.getItem('bb_auth_token');
+      await fetch(`${SB_URL}/auth/v1/logout`, {
+        method: 'POST', headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` }
+      });
+    } catch(e) {}
+    localStorage.removeItem('bb_auth_token');
+    localStorage.removeItem('bb_user');
+    window.location.href = 'login.html';
+  }
 
   async function sb(path) {
     const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}` } });
@@ -143,6 +156,7 @@
     const isOwnProfile = currentUserId === targetId;
     if (isOwnProfile) {
       document.getElementById('edit-btn').style.display = 'flex';
+      document.getElementById('logout-btn').style.display = 'block';
     }
 
     // Load profile — exclude admin flag (RLS restricted for anon)
