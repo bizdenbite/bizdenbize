@@ -558,6 +558,7 @@
 
   let token = null;
   let currentUser = null;
+  let currentUserId = null;
   let allUsers = [];
   const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
 
@@ -639,6 +640,7 @@
     });
     if (!sessRes.ok) { window.location.replace('login.html'); return; }
     currentUser = await sessRes.json();
+    currentUserId = currentUser.id;
     token = localStorage.getItem('bb_auth_token');
 
     // Check is_admin
@@ -802,6 +804,9 @@
             <button class="btn btn-sm ${u.status === 'banned' ? 'btn-green' : 'btn-red'}" onclick="toggleBan('${u.id}', '${u.status||'approved'}')">
               ${u.status === 'banned' ? '✅ Engeli Kaldır' : '🚫 Engelle'}
             </button>
+            <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}', '${(`${u.first_name||''} ${u.last_name||''}`.trim()||u.username||u.email||u.id).replace(/'/g, '')}')">
+              🗑️ Sil
+            </button>
           </div>
         </td>
       </tr>`).join('') : `<tr class="loading-row"><td colspan="7">Kullanıcı bulunamadı.</td></tr>`;
@@ -842,6 +847,27 @@
       renderUsers(allUsers);
       toast(isBanned ? '✅ Engel kaldırıldı.' : '🚫 Kullanıcı engellendi.');
     } catch(e) { console.error('toggleBan error:', e); toast('Hata: ' + e.message, false); }
+  }
+
+  function confirmDirectDelete(id, name) {
+    if (id === currentUserId) { toast('Kendi hesabınızı silemezsiniz.', false); return; }
+    if (!confirm(`⚠️ DİKKAT: "${name}" kullanıcısını kalıcı olarak silmek üzeresiniz.\n\nBu işlem GERİ ALINAMAZ. Tüm verileri silinecek.\n\nDevam etmek istiyor musunuz?`)) return;
+    if (!confirm(`Son onay: "${name}" hesabı kalıcı olarak silinecek. Emin misiniz?`)) return;
+    executeDirectDelete(id);
+  }
+
+  async function executeDirectDelete(userId) {
+    try {
+      const res = await fetch(`${SB_URL}/functions/v1/delete-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+        body: JSON.stringify({ user_id: userId })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      allUsers = allUsers.filter(u => u.id !== userId);
+      renderUsers(allUsers);
+      toast('🗑️ Kullanıcı kalıcı olarak silindi.');
+    } catch(e) { toast('Silme hatası: ' + e.message, false); }
   }
 
   // ── EXPERTS ──
