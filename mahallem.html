@@ -797,7 +797,7 @@
     </div>
   </div>
   <div class="nav-right">
-    <button class="nav-notif">🔔<div class="notif-dot"></div></button><div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">—</div>
+    <button class="nav-notif">🔔<div class="notif-dot"></div></button><div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;">—</div><div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;"><a href="profile.html" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;">👤 Profilim</a><hr style="border:none;border-top:1px solid #F0EAE0;margin:4px 0;"><button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">🚪 Çıkış Yap</button></div title="Profilim">—</div>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü"><span></span><span></span><span></span></button>
   </div>
 </nav>
