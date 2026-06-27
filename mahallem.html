@@ -1479,5 +1479,5 @@
     }
   </style>
 </footer>
-</body>
+<script> function toggleAvatarMenu() {   const menu = document.getElementById('avatar-menu');   menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; } document.addEventListener('click', function(e) {   if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) {     const menu = document.getElementById('avatar-menu');     if (menu) menu.style.display = 'none';   } }); async function doLogout() {   const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');   const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');   await sb.auth.signOut();   Object.keys(localStorage).forEach(k => localStorage.removeItem(k));   sessionStorage.clear();   window.location.replace('/login.html'); } </script> </body>
 </html>
