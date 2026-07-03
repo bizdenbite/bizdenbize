@@ -225,6 +225,17 @@
       .main { margin-left: 0; }
     }
   </style>
+  <script type="module">
+    import { supabase } from './bizdenbize-client.js';
+    window.__bbGetToken = async function () {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token || null;
+    };
+    window.__bbGetUser = async function () {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    };
+  </script>
 </head>
 <body>
 
@@ -626,28 +637,7 @@
     btn.classList.add('active');
   }
 
-  // ── DEBUG PANEL (temporary, remove after diagnosis) ──
-  function debugPanel() {
-    let el = document.getElementById('bb-debug-panel');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'bb-debug-panel';
-      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#1A1208;color:#0f0;font-family:monospace;font-size:12px;padding:16px;max-height:90vh;overflow:auto;white-space:pre-wrap;word-break:break-all;';
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-  function dlog(label, val) {
-    const el = debugPanel();
-    const line = document.createElement('div');
-    line.style.marginBottom = '8px';
-    line.style.borderBottom = '1px solid #444';
-    line.style.paddingBottom = '8px';
-    line.innerHTML = '<strong style="color:#C9A84C">' + label + '</strong><br>' + (typeof val === 'string' ? val : JSON.stringify(val, null, 2));
-    el.appendChild(line);
-  }
-
-  // ── AUTH GUARD (DEBUG MODE — does not redirect) ──
+  // ── AUTH GUARD ──
   async function init() {
     // Update clock
     setInterval(() => {
@@ -655,52 +645,31 @@
         new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
     }, 1000);
 
-    dlog('bb_auth_token (localStorage)', localStorage.getItem('bb_auth_token') || '(EMPTY / NULL)');
+    // Get live session from Supabase SDK (not localStorage — see profile.html fix)
+    token = await window.__bbGetToken();
+    if (!token) { window.location.replace('login.html'); return; }
 
-    try {
-      // Get session
-      const sessRes = await fetch(`${SB_URL}/auth/v1/user`, {
-        headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${localStorage.getItem('bb_auth_token') || ''}` }
-      });
-      dlog('Step 1: /auth/v1/user status', sessRes.status + ' ' + sessRes.statusText);
-      const sessBody = await sessRes.clone().json().catch(() => sessRes.text());
-      dlog('Step 1: /auth/v1/user response', sessBody);
+    currentUser = await window.__bbGetUser();
+    if (!currentUser) { window.location.replace('login.html'); return; }
+    currentUserId = currentUser.id;
 
-      if (!sessRes.ok) {
-        dlog('RESULT', 'Would redirect to login.html (session check failed). NOT redirecting — debug mode.');
-        return;
-      }
-      currentUser = await sessRes.json();
-      currentUserId = currentUser.id;
-      token = localStorage.getItem('bb_auth_token');
-
-      dlog('Step 2: currentUser.id', currentUserId);
-
-      // Check is_admin
-      const profRes = await fetch(`${SB_URL}/rest/v1/profiles?select=*&id=eq.${currentUser.id}`, { headers: hdrs(token) });
-      dlog('Step 3: profiles query status', profRes.status + ' ' + profRes.statusText);
-      const profiles = await profRes.json().catch(() => []);
-      dlog('Step 3: profiles query response', profiles);
-
-      const profile = profiles?.[0];
-      if (!profile?.is_admin) {
-        dlog('RESULT', 'Would redirect to mahallem.html (profile missing or is_admin not true). NOT redirecting — debug mode.\nprofile found: ' + (!!profile) + '\nis_admin value: ' + JSON.stringify(profile?.is_admin));
-        return;
-      }
-
-      dlog('RESULT', 'PASSED — is_admin confirmed true. Would load dashboard normally.');
-
-      // Set admin info in sidebar
-      const firstName = profile.first_name || 'Admin';
-      const lastName  = profile.last_name  || '';
-      document.getElementById('admin-name').textContent = `${firstName} ${lastName}`.trim();
-      document.getElementById('admin-avatar').textContent =
-        ((firstName[0]||'')+(lastName[0]||'')).toUpperCase();
-
-      loadDashboard();
-    } catch (err) {
-      dlog('CAUGHT ERROR', err.message + '\n' + (err.stack || ''));
+    // Check is_admin
+    const profiles = await sb(`profiles?select=*&id=eq.${currentUser.id}`);
+    const profile = profiles?.[0];
+    if (!profile?.is_admin) {
+      alert('Bu sayfaya erişim yetkiniz yok.');
+      window.location.replace('mahallem.html');
+      return;
     }
+
+    // Set admin info in sidebar
+    const firstName = profile.first_name || 'Admin';
+    const lastName  = profile.last_name  || '';
+    document.getElementById('admin-name').textContent = `${firstName} ${lastName}`.trim();
+    document.getElementById('admin-avatar').textContent =
+      ((firstName[0]||'')+(lastName[0]||'')).toUpperCase();
+
+    loadDashboard();
   }
 
   // ── DASHBOARD ──
