@@ -307,6 +307,10 @@
   }
 
   async function init() {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const _supabase = createClient(SB_URL, SB_ANON);
+    const { data: { session: _session } } = await _supabase.auth.getSession();
+    token = _session?.access_token || null;
     if (!token) { window.location.replace('login.html'); return; }
 
     const r = await fetch(`${SB_URL}/auth/v1/user`, {
