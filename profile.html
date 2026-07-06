@@ -79,7 +79,7 @@
     .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
     /* TOAST */
-    #toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+    #toast{position:fixed;bottom:24px;right:24px;left:24px;max-width:500px;margin-left:auto;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;word-break:break-word;}
     #toast.show{opacity:1;transform:translateY(0);}
     #toast.error{background:var(--red);}
 
@@ -270,7 +270,7 @@
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
   const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
 
-  let token = null;
+  let token = localStorage.getItem('bb_auth_token');
   let currentUser = null;
   let profile = null;
   let selectedLangs = [];
@@ -303,14 +303,10 @@
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.className = ok ? 'show' : 'show error';
-    setTimeout(() => t.className = '', 3000);
+    setTimeout(() => t.className = '', 15000);
   }
 
   async function init() {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    const _supabase = createClient(SB_URL, SB_ANON);
-    const { data: { session: _session } } = await _supabase.auth.getSession();
-    token = _session?.access_token || null;
     if (!token) { window.location.replace('login.html'); return; }
 
     const r = await fetch(`${SB_URL}/auth/v1/user`, {
@@ -504,9 +500,10 @@
           profile.avatar_url = publicUrl;
           toast('✅ Fotoğraf güncellendi!');
         } else {
-          toast('Fotoğraf yüklenemedi.', false);
+          const errText = await uploadRes.text().catch(() => '(could not read response)');
+          toast('DEBUG ' + uploadRes.status + ': ' + errText, false);
         }
-      } catch(e) { toast('Yükleme hatası.', false); }
+      } catch(e) { toast('Yükleme hatası (DEBUG): ' + e.message, false); }
     };
     reader.readAsDataURL(file);
   }
