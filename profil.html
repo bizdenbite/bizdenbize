@@ -125,10 +125,8 @@
 
   async function doLogout() {
     try {
-      const token = localStorage.getItem('bb_auth_token');
-      await fetch(`${SB_URL}/auth/v1/logout`, {
-        method: 'POST', headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` }
-      });
+      const { supabase } = await import('./bizdenbize-client.js');
+      await supabase.auth.signOut();
     } catch(e) {}
     localStorage.removeItem('bb_auth_token');
     localStorage.removeItem('bb_user');
@@ -146,14 +144,12 @@
     if (!targetId) { showError('Profil bulunamadı', 'Geçerli bir kullanıcı ID\'si belirtilmedi.'); return; }
 
     // Check if viewing own profile (graceful — user may not be logged in)
-    const token = localStorage.getItem('bb_auth_token');
     let currentUserId = null;
-    if (token) {
-      try {
-        const r = await fetch(`${SB_URL}/auth/v1/user`, { headers:{'apikey':SB_ANON,'Authorization':`Bearer ${token}`} });
-        if (r.ok) { const u = await r.json(); currentUserId = u.id; }
-      } catch(e) { /* not logged in — fine */ }
-    }
+    try {
+      const { supabase } = await import('./bizdenbize-client.js');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) currentUserId = user.id;
+    } catch(e) { /* not logged in — fine */ }
 
     const isOwnProfile = currentUserId === targetId;
     if (isOwnProfile) {
@@ -301,6 +297,8 @@
       </div>`;
   }
 
+</script>
+
 <!-- REPORT MODAL -->
 <div class="modal-overlay" id="report-modal" onclick="if(event.target===this)closeReportModal()">
   <div class="modal-box">
@@ -343,18 +341,15 @@
     const details = document.getElementById('report-details').value.trim();
     if (!reason) { document.getElementById('report-reason').style.borderColor = 'var(--red)'; return; }
 
-    const token = localStorage.getItem('bb_auth_token');
-    if (!token) { alert('Şikayet göndermek için giriş yapmalısınız.'); return; }
-
     const btn = document.getElementById('report-submit-btn');
     btn.disabled = true; btn.textContent = 'Gönderiliyor...';
 
     try {
-      const sessRes = await fetch(`${SB_URL_R}/auth/v1/user`, {
-        headers: { 'apikey': SB_ANON_R, 'Authorization': `Bearer ${token}` }
-      });
-      if (!sessRes.ok) throw new Error('Auth failed');
-      const user = await sessRes.json();
+      const { supabase } = await import('./bizdenbize-client.js');
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) { alert('Şikayet göndermek için giriş yapmalısınız.'); btn.disabled = false; btn.textContent = 'Şikayeti Gönder'; return; }
+      const { data: { user } } = await supabase.auth.getUser();
 
       const payload = {
         reporter_id: user.id,
