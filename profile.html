@@ -79,7 +79,7 @@
     .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
     /* TOAST */
-    #toast{position:fixed;bottom:24px;right:24px;left:24px;max-width:500px;margin-left:auto;word-break:break-word;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
     #toast.show{opacity:1;transform:translateY(0);}
     #toast.error{background:var(--red);}
 
@@ -302,7 +302,7 @@
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.className = ok ? 'show' : 'show error';
-    setTimeout(() => t.className = '', 15000);
+    setTimeout(() => t.className = '', 3000);
   }
 
   async function init() {
@@ -501,9 +501,9 @@
           profile.avatar_url = publicUrl;
           toast('✅ Fotoğraf güncellendi!');
         } else {
-          toast('DEBUG ' + uploadRes.status + ': ' + (await uploadRes.text().catch(() => '(no body)')), false);
+          toast('Fotoğraf yüklenemedi.', false);
         }
-      } catch(e) { toast('Yükleme hatası (DEBUG): ' + e.message, false); }
+      } catch(e) { toast('Yükleme hatası.', false); }
     };
     reader.readAsDataURL(file);
   }
