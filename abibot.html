@@ -2017,7 +2017,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     // Load profile and experts
     const [{ data: profile }, { data: experts }] = await Promise.all([
       sb.from('profiles').select('*').eq('id', session.user.id).single(),
-      sb.from('experts').select('*, profiles:profile_id(first_name, last_name)').eq('is_active', true)
+      sb.from('experts').select('*, profiles!profile_id(first_name, last_name)').eq('is_active', true)
     ]);
 
     const credits = profile?.expert_credits || 0;
