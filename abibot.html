@@ -1844,7 +1844,10 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
               }).eq('id', session.user.id);
             }
 
-            const limit = profile.is_premium ? 10 : 2;
+            // TEMP TESTING OVERRIDE (2026-07): limit raised to 10 for all users regardless of
+            // premium status, to allow QA testing of cooldown/limit behavior. Revert to
+            // `profile.is_premium ? 10 : 2` when testing is done.
+            const limit = 10;
             console.log(`[AbiBOT] Daily usage: ${usedToday}/${limit} | resetDate: ${resetDate} | today: ${today} | match: ${resetDate === today}`);
 
             if (usedToday >= limit) {
