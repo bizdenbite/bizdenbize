@@ -1792,12 +1792,14 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (!text || isLoading) return;
+    isLoading = true; // set immediately to block overlapping calls (was previously set much later, allowing rapid double-sends to race through)
 
     // ── COOLDOWN CHECK (3s between messages) ──
     const now = Date.now();
     const lastSent = window._lastMessageTime || 0;
     const COOLDOWN_MS = 3000;
     if (now - lastSent < COOLDOWN_MS) {
+      isLoading = false;
       const remaining = Math.ceil((COOLDOWN_MS - (now - lastSent)) / 1000);
       const sendBtn = document.getElementById('send-btn');
       const orig = sendBtn.innerHTML;
@@ -1866,6 +1868,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
                 </div>`;
               document.getElementById('messages').appendChild(limitDiv);
               scrollToBottom();
+              isLoading = false;
               return;
             }
           }
@@ -1873,7 +1876,6 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       } catch(e) { console.warn('Daily limit check failed:', e); }
     }
 
-    isLoading = true;
     document.getElementById('send-btn').disabled = true;
     input.value = '';
     input.style.height = 'auto';
