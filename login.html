@@ -536,8 +536,11 @@
         });
       } catch(e) { console.warn('Waitlist call failed:', e); }
 
-      // Send welcome email (non-blocking)
-      if (data?.user?.id) {
+      // Send welcome email (non-blocking) — only if the account is immediately
+      // active (no email confirmation pending). If confirmation is required,
+      // the welcome email is sent later, on first login after confirming
+      // (see doLogin below), so it doesn't arrive before the account is real.
+      if (data?.user?.id && data.session) {
         try {
           await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
             method: 'POST',
@@ -548,6 +551,7 @@
               data: { user_name: fname }
             })
           });
+          await supabase.from('profiles').update({ welcome_email_sent: true }).eq('id', data.user.id);
         } catch(e) { console.warn('Welcome email failed:', e); }
       }
 
@@ -612,7 +616,7 @@
 
       // Check if user is banned before granting access
       const { data: profile } = await supabase.from('profiles')
-        .select('status').eq('id', data.user.id).single();
+        .select('status, welcome_email_sent').eq('id', data.user.id).single();
 
       if (profile?.status === 'banned') {
         await supabase.auth.signOut();
@@ -621,6 +625,24 @@
         document.getElementById('login-email').classList.add('error');
         document.getElementById('login-password').classList.add('error');
         return;
+      }
+
+      // First login after email confirmation — send the welcome email now
+      // (it was skipped at signup time while confirmation was still pending).
+      if (profile?.welcome_email_sent === false) {
+        try {
+          const fullName = data.user.user_metadata?.full_name || '';
+          await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+            body: JSON.stringify({
+              type: 'welcome',
+              user_id: data.user.id,
+              data: { user_name: fullName.split(' ')[0] || '' }
+            })
+          });
+          await supabase.from('profiles').update({ welcome_email_sent: true }).eq('id', data.user.id);
+        } catch(e) { console.warn('Welcome email failed:', e); }
       }
 
       // Store token for smart routing
