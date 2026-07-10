@@ -1289,6 +1289,29 @@
   const profiles = await profRes.json();
   const profile = profiles?.[0];
 
+  // Send welcome email once, on first authenticated landing after email
+  // confirmation. This covers confirmation-link / magic-link logins that
+  // establish a session directly and never pass through doLogin().
+  if (profile && profile.welcome_email_sent === false) {
+    try {
+      const firstNameForEmail = profile?.first_name || user.email.split('@')[0];
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          type: 'welcome',
+          user_id: user.id,
+          data: { user_name: firstNameForEmail }
+        })
+      });
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${user.id}`, {
+        method: 'PATCH',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ welcome_email_sent: true })
+      });
+    } catch(e) { console.warn('Welcome email failed:', e); }
+  }
+
   const firstName = profile?.first_name || user.email.split('@')[0];
   const lastName  = profile?.last_name  || '';
   const fullName  = `${firstName} ${lastName}`.trim();

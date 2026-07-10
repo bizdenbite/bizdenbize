@@ -512,7 +512,10 @@
 
       const { data, error } = await supabase.auth.signUp({
         email, password: pass,
-        options: { data: { full_name: fname + ' ' + lname, invite_code: invite } }
+        options: {
+          data: { full_name: fname + ' ' + lname, invite_code: invite },
+          emailRedirectTo: 'https://bizdenbize.com/login.html'
+        }
       });
 
       if (error) {
