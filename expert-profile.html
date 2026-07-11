@@ -320,7 +320,8 @@
       <!-- Question -->
       <div>
         <label class="field-label">Sorunuz</label>
-        <textarea class="question-ta" id="ask-question" placeholder="Sorunuzu detaylı yazın. Uzman en kısa sürede yanıtlayacak..." oninput="updateSubmitBtn()"></textarea>
+        <textarea class="question-ta" id="ask-question" maxlength="1000" placeholder="Sorunuzu detaylı yazın. Uzman en kısa sürede yanıtlayacak..." oninput="updateSubmitBtn()"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;" id="question-char-count">0 / 1000</div>
       </div>
       <!-- Price display -->
       <div class="price-pill" id="price-pill">
@@ -429,11 +430,18 @@
 
   window.updateSubmitBtn = function() {
     const cat = document.getElementById('ask-category').value;
-    const q = document.getElementById('ask-question').value.trim();
+    const qRaw = document.getElementById('ask-question').value;
+    const q = qRaw.trim();
     const price = DIRECT_PRICES[cat] || 0;
     const btn = document.getElementById('ask-confirm-btn');
     const canAfford = window._userCredits >= price;
     const tooShort = q.length > 0 && q.length < 20;
+
+    const counter = document.getElementById('question-char-count');
+    if (counter) {
+      counter.textContent = `${qRaw.length} / 1000`;
+      counter.style.color = qRaw.length >= 1000 ? 'var(--red)' : 'var(--muted)';
+    }
 
     btn.disabled = !cat || !q || !canAfford || q.length < 20;
 
