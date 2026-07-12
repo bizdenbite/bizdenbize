@@ -576,8 +576,8 @@
     const details = document.getElementById('expert-report-details').value.trim();
     if (!reason) { document.getElementById('expert-report-reason').style.borderColor = 'var(--red)'; return; }
 
-    const token = localStorage.getItem('bb_auth_token');
-    if (!token) {
+    const session = window._session;
+    if (!session) {
       const go = confirm('Şikayet göndermek için giriş yapmalısınız. Giriş sayfasına gitmek ister misiniz?');
       if (go) window.location.href = 'login.html';
       return;
@@ -587,16 +587,10 @@
     btn.disabled = true; btn.textContent = 'Gönderiliyor...';
 
     try {
-      const sessRes = await fetch(`${_SB_URL}/auth/v1/user`, {
-        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${token}` }
-      });
-      if (!sessRes.ok) throw new Error('Auth failed');
-      const user = await sessRes.json();
-
       const res = await fetch(`${_SB_URL}/rest/v1/reports`, {
         method: 'POST',
-        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ reporter_id: user.id, reported_expert_id: _reportExpertId, type: 'expert', reason, details: details || null })
+        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ reporter_id: session.user.id, reported_expert_id: _reportExpertId, type: 'expert', reason, details: details || null })
       });
       if (!res.ok) throw new Error(await res.text());
 
