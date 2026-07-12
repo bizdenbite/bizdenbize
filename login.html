@@ -539,6 +539,27 @@
         });
       } catch(e) { console.warn('Waitlist call failed:', e); }
 
+      // Notify admin of the new registration (non-blocking). Fires regardless
+      // of whether email confirmation is pending, since the admin should know
+      // about the signup attempt either way.
+      if (data?.user?.id) {
+        try {
+          await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+            body: JSON.stringify({
+              type: 'admin_notification',
+              user_id: '3e96d976-5c3a-4270-af88-6172f1751f9a',
+              data: {
+                title: 'Yeni kullanıcı kaydı',
+                body: `${fname} ${lname} (${email}) BizdenBize'ye kaydoldu.`,
+                link: '/admin.html'
+              }
+            })
+          });
+        } catch(e) { console.warn('Admin notification failed:', e); }
+      }
+
       // Send welcome email (non-blocking) — only if the account is immediately
       // active (no email confirmation pending). If confirmation is required,
       // the welcome email is sent later, on first login after confirming
