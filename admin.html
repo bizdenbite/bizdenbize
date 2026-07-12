@@ -1118,11 +1118,34 @@
     }).join('') : `<tr class="loading-row"><td colspan="8">Şikayet bulunamadı.</td></tr>`;
   }
 
+  const REPORT_NOTIF = {
+    reviewed:  { title: 'Şikayetiniz incelendi', body: 'Gönderdiğiniz şikayet ekibimiz tarafından incelendi.' },
+    actioned:  { title: 'Şikayetiniz için işlem yapıldı', body: 'Gönderdiğiniz şikayet üzerine gerekli işlem yapılmıştır. Desteğiniz için teşekkür ederiz.' },
+    dismissed: { title: 'Şikayetiniz değerlendirildi', body: 'Gönderdiğiniz şikayet incelendi; bu aşamada ek bir işlem yapılmasına gerek görülmedi.' }
+  };
+
   async function updateReport(id, status) {
     try {
       await sb(`reports?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status, reviewed_at: new Date().toISOString() }) });
       const r = allReports.find(r => r.id === id);
       if (r) r.status = status;
+
+      // Notify the reporter in-app when their complaint is resolved (not on revert-to-pending)
+      if (r && r.reporter_id && REPORT_NOTIF[status]) {
+        try {
+          await sb('notifications', {
+            method: 'POST',
+            body: JSON.stringify({
+              user_id: r.reporter_id,
+              type: 'admin',
+              title: REPORT_NOTIF[status].title,
+              body: REPORT_NOTIF[status].body,
+              link: null
+            })
+          });
+        } catch(notifErr) { console.error('reporter notification failed:', notifErr); }
+      }
+
       filterReports(_reportFilter);
       const pending = allReports.filter(r => r.status === 'pending').length;
       document.getElementById('badge-reports').textContent = pending || '0';
