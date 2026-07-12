@@ -954,6 +954,10 @@
         <div class="abibot-name">AbiBOT — Dijital Abiniz</div>
         <div class="abibot-sub" id="abibot-sub">Hukuki kategorisinde yanıtlıyor · TR / DE / EN / FR / NL</div>
       </div>
+      <button class="active-cat-badge" id="expert-answers-btn" onclick="openExpertAnswersModal()"
+        style="display:none;background:rgba(30,123,75,.1);border:1px solid rgba(30,123,75,.3);color:#1E7B4B;cursor:pointer;margin-right:8px;">
+        ✅ Uzman Yanıtları <span id="expert-answers-count"></span>
+      </button>
       <span class="active-cat-badge" id="active-cat-badge">⚖️ Hukuki</span>
     </div>
 
@@ -1197,16 +1201,13 @@
 
       if (error || !reviews || !reviews.length) return;
 
-      hideWelcome();
-      const msgs = document.getElementById('messages');
+      const btn = document.getElementById('expert-answers-btn');
+      const countEl = document.getElementById('expert-answers-count');
+      btn.style.display = 'inline-flex';
+      countEl.textContent = `(${reviews.length})`;
 
-      // Section header
-      const header = document.createElement('div');
-      header.style.cssText = 'text-align:center;padding:8px 0 4px;';
-      header.innerHTML = `<span style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;background:rgba(30,123,75,.08);padding:4px 14px;border-radius:20px;">✅ Uzman Yanıtlarınız</span>`;
-      msgs.appendChild(header);
-
-      reviews.forEach(review => {
+      const list = document.getElementById('expert-answers-list');
+      list.innerHTML = reviews.map(review => {
         const cat = catData[review.category] || { icon: '❓', name: review.category };
         const date = new Date(review.answered_at || review.created_at).toLocaleDateString('tr-TR');
         const formattedResponse = (review.expert_response || '')
@@ -1216,31 +1217,34 @@
         const formattedQuestion = (review.question || '')
           .replace(/\n/g, '<br>');
 
-        const div = document.createElement('div');
-        div.className = 'msg';
-        div.innerHTML = `
-          <div class="msg-avatar ai" style="background:#1E7B4B;">✅</div>
-          <div class="msg-body" style="max-width:85%">
-            <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;margin-bottom:6px;">
-              ${cat.icon} ${cat.name} · Uzman Yanıtı · ${date}
-            </div>
-            <div style="background:rgba(30,123,75,.05);border:1px solid rgba(30,123,75,.25);border-left:3px solid #1E7B4B;border-radius:4px 14px 14px 14px;padding:14px 16px;font-size:14px;line-height:1.65;color:var(--ink);">
-              <div style="font-size:12px;color:var(--muted);border-bottom:1px solid rgba(30,123,75,.15);padding-bottom:10px;margin-bottom:12px;">
-                <strong style="color:var(--ink);">Sorunuz:</strong> ${formattedQuestion}
+        return `
+          <div class="msg" style="margin:0;">
+            <div class="msg-body" style="max-width:100%">
+              <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;margin-bottom:6px;">
+                ${cat.icon} ${cat.name} · Uzman Yanıtı · ${date}
               </div>
-              ${formattedResponse}
+              <div style="background:rgba(30,123,75,.05);border:1px solid rgba(30,123,75,.25);border-left:3px solid #1E7B4B;border-radius:4px 14px 14px 14px;padding:14px 16px;font-size:14px;line-height:1.65;color:var(--ink);">
+                <div style="font-size:12px;color:var(--muted);border-bottom:1px solid rgba(30,123,75,.15);padding-bottom:10px;margin-bottom:12px;">
+                  <strong style="color:var(--ink);">Sorunuz:</strong> ${formattedQuestion}
+                </div>
+                ${formattedResponse}
+              </div>
+              ${buildRatingWidget(review)}
             </div>
-            ${buildRatingWidget(review)}
-            <div class="msg-time">${date}</div>
           </div>`;
-        msgs.appendChild(div);
-      });
-
-      scrollToBottom();
+      }).join('<hr style="border:none;border-top:1px solid var(--warm);margin:0;">');
     } catch(e) {
       console.error('Expert responses load error:', e);
     }
   }
+
+  window.openExpertAnswersModal = function() {
+    document.getElementById('expert-answers-modal').classList.add('open');
+  };
+
+  window.closeExpertAnswersModal = function() {
+    document.getElementById('expert-answers-modal').classList.remove('open');
+  };
 
   // ── STATE ──
   let selectedLang = 'tr';
@@ -2372,6 +2376,18 @@ ${text.replace(/\n/g,'<br>')}
 </script>
 
 <!-- INFO MODAL -->
+<div class="modal-overlay" id="expert-answers-modal" onclick="if(event.target===this)closeExpertAnswersModal()">
+  <div class="modal modal-flex" style="max-width:560px;max-height:80vh;">
+    <div style="padding:24px 24px 16px;flex-shrink:0;border-bottom:1px solid var(--warm);">
+      <button class="modal-close" onclick="closeExpertAnswersModal()">×</button>
+      <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink);">✅ Uzman Yanıtlarınız</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Uzmanlara sorduğunuz sorular ve yanıtları burada</div>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:16px 24px 24px;display:flex;flex-direction:column;gap:16px;" id="expert-answers-list">
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="info-modal" onclick="if(event.target===this)closeInfoModal()">
   <div class="modal modal-flex" style="max-width:500px;">
     <div style="padding:24px 24px 0;flex-shrink:0;border-bottom:1px solid var(--warm);">
