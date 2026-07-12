@@ -1291,6 +1291,15 @@
   const profiles = await profRes.json();
   const profile = profiles?.[0];
 
+  // New/incomplete accounts (no city set) haven't finished onboarding yet —
+  // send them there instead of showing the empty mahallem feed. Covers every
+  // entry path (email confirmation link, Google OAuth, normal login), since
+  // none of those currently check onboarding status before landing here.
+  if (profile && !profile.city) {
+    window.location.replace('onboarding.html');
+    return;
+  }
+
   // Send welcome email once, on first authenticated landing after email
   // confirmation. This covers confirmation-link / magic-link logins that
   // establish a session directly and never pass through doLogin().
