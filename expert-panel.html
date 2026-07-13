@@ -475,6 +475,14 @@
       const statusClass = `status-${r.status === 'in_review' ? 'assigned' : r.status}`;
       const isAnswered = r.status === 'answered' || r.status === 'closed';
 
+      const assignedExpert = r.expert_id ? allExperts.find(e => e.id === r.expert_id) : null;
+      const expertName = assignedExpert
+        ? `${assignedExpert.profiles?.first_name || ''} ${assignedExpert.profiles?.last_name || ''}`.trim()
+        : null;
+      const expertLabel = expertName
+        ? `<span style="font-size:11px;font-weight:600;color:var(--navy);background:rgba(27,58,140,.08);padding:2px 9px;border-radius:20px;flex-shrink:0;">👨‍⚖️ ${expertName}</span>`
+        : '';
+
       return `
         <div class="review-card ${r.status === 'pending' ? 'urgent' : ''} ${r.is_probono ? 'probono' : ''}" id="card-${r.id}">
           <div class="rc-header" onclick="toggleCard('${r.id}')">
@@ -488,6 +496,7 @@
               </div>
             </div>
             ${r.is_probono ? '<span class="probono-badge">🤝 Pro-Bono</span>' : ''}
+            ${expertLabel}
             <span class="rc-status ${statusClass}">${STATUS_LABELS[r.status] || r.status}</span>
             <span class="rc-time">${timeAgo}</span>
           </div>
