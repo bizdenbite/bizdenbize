@@ -310,7 +310,10 @@
           <button class="owner-submit-btn" onclick="submitMyResponse('${r.id}')">✓ Yanıtı Gönder</button>
         `;
       } else {
-        actionHtml = `<div class="owner-unclaimed-note">🕓 Ekip havuzunda bekliyor — henüz size atanmadı.</div>`;
+        actionHtml = `
+          <div class="owner-unclaimed-note" style="margin-bottom:8px;">🕓 Ekip havuzunda bekliyor — henüz size atanmadı.</div>
+          <button class="owner-submit-btn" style="background:var(--navy);" onclick="claimReview('${r.id}')">🙋 Bu Soruyu Üstlen</button>
+        `;
       }
 
       return `
@@ -325,6 +328,30 @@
         </div>`;
     }).join('');
   }
+
+  window.claimReview = async function(reviewId) {
+    const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Üstleniliyor...'; }
+
+    // Guard against a race with another expert claiming the same question:
+    // only succeeds if expert_id is still null at the moment of update.
+    const { data, error } = await supabase.from('expert_reviews')
+      .update({ expert_id: myExpertId, status: 'assigned', assigned_at: new Date().toISOString() })
+      .eq('id', reviewId)
+      .is('expert_id', null)
+      .select();
+
+    if (error || !data || !data.length) {
+      alert('Bu soru az önce başka bir uzman tarafından üstlenildi.');
+    }
+
+    const { data: reviews } = await supabase.from('expert_reviews')
+      .select('*, profiles:user_id(first_name, last_name, city)')
+      .or(`expert_id.eq.${myExpertId},expert_id.is.null`)
+      .order('created_at', { ascending: false });
+    myReviews = reviews || [];
+    renderMyReviews();
+  };
 
   window.submitMyResponse = async function(reviewId) {
     const ta = document.getElementById(`owner-resp-${reviewId}`);
