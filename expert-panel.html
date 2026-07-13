@@ -267,11 +267,13 @@
   // Auth check — uses session from login.html
   let currentUser = null;
   let profile = null;
+  let authorized = true;
 
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       // No session → redirect to login
+      authorized = false;
       window.location.replace('login.html');
     } else {
       currentUser = session.user;
@@ -282,6 +284,7 @@
       if (!profile?.is_admin) {
         const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
         if (!expert) {
+          authorized = false;
           alert('Bu sayfaya erişim yetkiniz yok.');
           window.location.replace('mahallem.html');
         }
@@ -289,6 +292,7 @@
     }
   } catch(e) {
     console.error('Auth error:', e);
+    authorized = false;
     window.location.replace('login.html');
   }
 
@@ -621,7 +625,7 @@
     await loadAll();
   };
 
-  loadAll();
+  if (authorized) loadAll();
   // Auto-refresh every 30 seconds
   setInterval(loadAll, 30000);
 </script>
