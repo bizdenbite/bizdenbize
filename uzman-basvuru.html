@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Uzman Olarak Başvur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-back:hover{background:var(--warm);color:var(--ink);}
+
+    .page{padding:78px 24px 60px;max-width:640px;margin:0 auto;}
+
+    .head{margin-bottom:24px;}
+    .head-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+    .head-sub{font-size:14px;color:var(--muted);line-height:1.6;}
+
+    .card{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:28px;}
+
+    .field{margin-bottom:20px;}
+    .field-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block;}
+    .field-hint{font-size:12px;color:var(--muted);margin-top:6px;}
+    .text-input,.textarea-input{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .text-input:focus,.textarea-input:focus{border-color:var(--ink);}
+    .textarea-input{resize:vertical;min-height:110px;line-height:1.6;}
+
+    .chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+    .chip{padding:8px 14px;border:1.5px solid var(--sand);border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;background:var(--cream);}
+    .chip:hover{border-color:var(--ink);}
+    .chip.selected{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+    .btn-submit{width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-top:6px;}
+    .btn-submit:hover{background:var(--red2);}
+    .btn-submit:disabled{background:var(--sand);cursor:not-allowed;}
+
+    .status-box{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:40px 28px;text-align:center;}
+    .status-icon{font-size:40px;margin-bottom:14px;}
+    .status-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px;}
+    .status-text{font-size:14px;color:var(--muted);line-height:1.6;}
+    .status-text a{color:var(--navy);font-weight:600;}
+
+    .loading{text-align:center;padding:80px 20px;color:var(--muted);}
+
+    @media(max-width:640px){.card{padding:20px;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
+  <a href="profil.html" class="nav-back">← Profilime Dön</a>
+</nav>
+
+<div class="page" id="page-content">
+  <div class="loading">Yükleniyor...</div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const CATEGORIES = [
+    { id: 'legal', label: 'Hukuki' }, { id: 'visa', label: 'Vize & Oturma' },
+    { id: 'medical', label: 'Tıbbi' }, { id: 'tax', label: 'Vergi & Finans' },
+    { id: 'housing', label: 'Konut & Kira' }, { id: 'employment', label: 'İş & Çalışma' },
+    { id: 'school', label: 'Okul & Yardımlar' }, { id: 'insurance', label: 'Sigorta & Araç' },
+    { id: 'migration', label: "Avrupa'ya Göç" }
+  ];
+  const LANGUAGES = [
+    { id: 'tr', label: '🇹🇷 Türkçe' }, { id: 'de', label: '🇩🇪 Deutsch' },
+    { id: 'en', label: '🇬🇧 English' }, { id: 'fr', label: '🇫🇷 Français' },
+    { id: 'nl', label: '🇳🇱 Nederlands' }
+  ];
+
+  let selectedCats = [];
+  let selectedLangs = [];
+
+  function statusBox(icon, title, text) {
+    return `<div class="status-box">
+      <div class="status-icon">${icon}</div>
+      <div class="status-title">${title}</div>
+      <div class="status-text">${text}</div>
+    </div>`;
+  }
+
+  function renderForm() {
+    document.getElementById('page-content').innerHTML = `
+      <div class="head">
+        <div class="head-title">Uzman Olarak Başvur</div>
+        <div class="head-sub">BizdenBize topluluğuna hukuki, mali, tıbbi veya diğer alanlarda uzmanlığınızla destek olun. Başvurunuz ekibimiz tarafından incelenip onaylandıktan sonra profiliniz yayına alınır.</div>
+      </div>
+      <div class="card">
+        <div class="field">
+          <label class="field-label">Unvan</label>
+          <input type="text" class="text-input" id="app-title" placeholder="Örn: Rechtsanwalt, Steuerberater, Doktor">
+        </div>
+        <div class="field">
+          <label class="field-label">Hakkınızda</label>
+          <textarea class="textarea-input" id="app-bio" placeholder="Deneyiminizi, uzmanlık alanlarınızı ve topluluğa nasıl destek olabileceğinizi kısaca anlatın."></textarea>
+          <div class="field-hint">Bu bilgi, başvurunuz onaylandığında herkese açık uzman profilinizde görünecektir.</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Uzmanlık Alanları</label>
+          <div class="chip-grid" id="app-cats">
+            ${CATEGORIES.map(c => `<div class="chip" data-id="${c.id}" onclick="window._toggleCat('${c.id}')">${c.label}</div>`).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Konuştuğunuz Diller</label>
+          <div class="chip-grid" id="app-langs">
+            ${LANGUAGES.map(l => `<div class="chip" data-id="${l.id}" onclick="window._toggleLang('${l.id}')">${l.label}</div>`).join('')}
+          </div>
+        </div>
+        <button class="btn-submit" id="app-submit" onclick="window._submitApplication()">Başvuruyu Gönder →</button>
+      </div>
+    `;
+  }
+
+  window._toggleCat = function(id) {
+    selectedCats = selectedCats.includes(id) ? selectedCats.filter(c => c !== id) : [...selectedCats, id];
+    document.querySelector(`#app-cats .chip[data-id="${id}"]`).classList.toggle('selected');
+  };
+  window._toggleLang = function(id) {
+    selectedLangs = selectedLangs.includes(id) ? selectedLangs.filter(l => l !== id) : [...selectedLangs, id];
+    document.querySelector(`#app-langs .chip[data-id="${id}"]`).classList.toggle('selected');
+  };
+
+  window._submitApplication = async function() {
+    const btn = document.getElementById('app-submit');
+    const title = document.getElementById('app-title').value.trim();
+    const bio = document.getElementById('app-bio').value.trim();
+
+    if (!title || !bio) { alert('Lütfen unvan ve hakkınızda alanlarını doldurun.'); return; }
+    if (!selectedCats.length) { alert('Lütfen en az bir uzmanlık alanı seçin.'); return; }
+    if (!selectedLangs.length) { alert('Lütfen en az bir dil seçin.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+
+      const { error } = await supabase.from('experts').insert({
+        profile_id: session.user.id,
+        title, bio,
+        categories: selectedCats,
+        languages: selectedLangs,
+        is_active: false,
+        is_verified: false,
+        status: 'pending'
+      });
+      if (error) throw error;
+
+      // Notify admin (non-blocking)
+      try {
+        await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+          body: JSON.stringify({
+            type: 'admin_notification',
+            user_id: '3e96d976-5c3a-4270-af88-6172f1751f9a',
+            data: {
+              title: 'Yeni uzman başvurusu',
+              body: `${session.user.email} uzman olarak başvurdu (${title}).`,
+              link: '/admin.html'
+            }
+          })
+        });
+      } catch(e) { console.warn('Admin notification failed:', e); }
+
+      document.getElementById('page-content').innerHTML = statusBox('📨', 'Başvurunuz alındı!',
+        'Ekibimiz başvurunuzu inceleyip en kısa sürede size dönüş yapacak. Onaylandığında profiliniz yayına alınacak.');
+    } catch(err) {
+      console.error(err);
+      btn.disabled = false; btn.textContent = 'Başvuruyu Gönder →';
+      alert('Bir hata oluştu: ' + (err.message || 'Lütfen tekrar deneyin.'));
+    }
+  };
+
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    const { data: existing } = await supabase.from('experts')
+      .select('status').eq('profile_id', session.user.id).maybeSingle();
+
+    if (existing?.status === 'pending') {
+      document.getElementById('page-content').innerHTML = statusBox('⏳', 'Başvurunuz inceleniyor',
+        'Uzman başvurunuz ekibimiz tarafından değerlendiriliyor. Onaylandığında size bildirim göndereceğiz.');
+    } else if (existing?.status === 'approved') {
+      document.getElementById('page-content').innerHTML = statusBox('✅', 'Zaten onaylı bir uzmansınız',
+        'Profilinizi <a href="profil.html">profil sayfanızdan</a> düzenleyebilirsiniz.');
+    } else if (existing?.status === 'rejected') {
+      document.getElementById('page-content').innerHTML = statusBox('✗', 'Başvurunuz onaylanmadı',
+        'Sorularınız için <a href="iletisim.html">bizimle iletişime geçebilirsiniz</a>.');
+    } else {
+      renderForm();
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

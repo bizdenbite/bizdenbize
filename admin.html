@@ -248,7 +248,7 @@
       👥 Kullanıcılar <span class="nav-badge" id="badge-users">—</span>
     </button>
     <button class="nav-item" onclick="showSection('experts', this)">
-      🛡️ Uzmanlar <span class="nav-badge" id="badge-experts">—</span>
+      🛡️ Uzmanlar <span class="nav-badge" id="badge-experts">—</span> <span class="nav-badge" id="badge-expert-apps" style="background:var(--red);">—</span>
     </button>
     <button class="nav-item" onclick="showSection('content', this)">
       📋 İçerik
@@ -373,6 +373,26 @@
 
     <!-- ── EXPERTS ── -->
     <div class="section" id="section-experts">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div class="card-title">🆕 Bekleyen Uzman Başvuruları</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Aday</th>
+              <th>Unvan</th>
+              <th>Kategoriler</th>
+              <th>Hakkında</th>
+              <th>Tarih</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody id="expert-apps-tbody">
+            <tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
       <div class="card">
         <div class="card-head">
           <div class="card-title">🛡️ Uzman Yönetimi</div>
@@ -611,7 +631,7 @@
     btn.classList.add('active');
     document.getElementById('topbar-title').textContent = sectionTitles[id];
     if (id === 'users') loadUsers();
-    if (id === 'experts') loadExperts();
+    if (id === 'experts') { loadExperts(); loadExpertApplications(); }
     if (id === 'content') loadContent();
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
@@ -915,6 +935,62 @@
       await sb(`experts?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ [field]: !current }) });
       loadExperts();
       toast('Uzman güncellendi.');
+    } catch(e) { toast('Hata oluştu.', false); }
+  }
+
+  const CAT_LABELS = { legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi', tax:'Vergi & Finans', housing:'Konut & Kira', employment:'İş & Çalışma', school:'Okul & Yardımlar', insurance:'Sigorta & Araç', migration:"Avrupa'ya Göç" };
+
+  async function loadExpertApplications() {
+    try {
+      const apps = await sb('experts?select=id,profile_id,title,bio,categories,created_at,profiles!profile_id(first_name,last_name)&status=eq.pending&order=created_at.asc');
+      document.getElementById('badge-expert-apps').textContent = apps.length || '0';
+      document.getElementById('expert-apps-tbody').innerHTML = apps.length ? apps.map(a => {
+        const name = `${a.profiles?.first_name||''} ${a.profiles?.last_name||''}`.trim() || 'Kullanıcı';
+        const cats = (a.categories||[]).map(c => CAT_LABELS[c] || c).join(', ');
+        const bioShort = (a.bio||'').length > 80 ? a.bio.substring(0,80) + '…' : (a.bio||'—');
+        return `
+        <tr>
+          <td><div class="user-cell">${avatar(a.profiles?.first_name, a.profiles?.last_name)}<div style="font-weight:600;">${name}</div></div></td>
+          <td>${a.title||'—'}</td>
+          <td style="font-size:12px;color:var(--muted);max-width:160px;">${cats||'—'}</td>
+          <td style="font-size:12px;color:var(--muted);max-width:220px;">${bioShort}</td>
+          <td style="font-size:12px;color:var(--muted);">${fmtDate(a.created_at)}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-sm btn-green" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'approved')">✓ Onayla</button>
+              <button class="btn btn-sm btn-red" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'rejected')">✗ Reddet</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('') : `<tr class="loading-row"><td colspan="6">Bekleyen başvuru yok.</td></tr>`;
+    } catch(e) { console.error(e); }
+  }
+
+  async function reviewExpertApplication(id, profileId, decision) {
+    try {
+      await sb(`experts?id=eq.${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(decision === 'approved' ? { status: 'approved', is_active: true } : { status: 'rejected' })
+      });
+
+      try {
+        await sb('notifications', {
+          method: 'POST',
+          body: JSON.stringify({
+            user_id: profileId,
+            type: 'admin',
+            title: decision === 'approved' ? 'Uzman başvurunuz onaylandı! 🎉' : 'Uzman başvurunuz hakkında',
+            body: decision === 'approved'
+              ? 'Tebrikler! Uzman başvurunuz onaylandı. Profiliniz artık yayında.'
+              : 'Uzman başvurunuz bu aşamada onaylanmadı. Sorularınız için bizimle iletişime geçebilirsiniz.',
+            link: decision === 'approved' ? '/profil.html' : '/iletisim.html'
+          })
+        });
+      } catch(e) { console.error('applicant notification failed:', e); }
+
+      loadExpertApplications();
+      loadExperts();
+      toast(decision === 'approved' ? '✓ Başvuru onaylandı.' : '✗ Başvuru reddedildi.');
     } catch(e) { toast('Hata oluştu.', false); }
   }
 
