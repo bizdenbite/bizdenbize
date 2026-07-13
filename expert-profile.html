@@ -308,11 +308,15 @@
       let actionHtml;
       if (isAnswered) {
         actionHtml = `<div class="owner-answered-box">${myMdToHtml(r.expert_response || '')}</div>`;
-      } else if (isMine) {
+      } else if (isMine && r.claim_status === 'approved') {
         actionHtml = `
           <textarea class="owner-response-ta" id="owner-resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
           <button class="owner-submit-btn" onclick="submitMyResponse('${r.id}')">✓ Yanıtı Gönder</button>
         `;
+      } else if (isMine && r.claim_status === 'pending') {
+        actionHtml = `<div class="owner-unclaimed-note">⏳ Talebiniz admin onayı bekliyor — onaylandığında burada yanıt yazabileceksiniz.</div>`;
+      } else if (isMine && r.claim_status === 'rejected') {
+        actionHtml = `<div class="owner-unclaimed-note" style="border-left-color:var(--red);">❌ Bu talep reddedildi.</div>`;
       } else {
         actionHtml = `
           <div class="owner-unclaimed-note" style="margin-bottom:8px;">🕓 Ekip havuzunda bekliyor — henüz size atanmadı.</div>
@@ -344,7 +348,7 @@
     // Guard against a race with another expert claiming the same question:
     // only succeeds if expert_id is still null at the moment of update.
     const { data, error } = await supabase.from('expert_reviews')
-      .update({ expert_id: myExpertId, status: 'assigned', assigned_at: new Date().toISOString() })
+      .update({ expert_id: myExpertId, claim_status: 'pending' })
       .eq('id', reviewId)
       .is('expert_id', null)
       .select();
@@ -355,8 +359,8 @@
       await supabase.from('notifications').insert({
         user_id: ADMIN_PROFILE_ID,
         type: 'admin_notification',
-        title: '🙋 Soru üstlenildi',
-        body: `${myExpertName}, "${reviewBefore?.category || ''}" kategorisindeki bir soruyu üstlendi.`,
+        title: '🙋 Onay bekleyen talep',
+        body: `${myExpertName}, "${reviewBefore?.category || ''}" kategorisindeki bir soruyu üstlenmek istiyor. Onayınız bekleniyor.`,
         link: '/expert-panel.html'
       });
     }

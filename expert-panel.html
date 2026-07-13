@@ -169,6 +169,14 @@
     </div>
   </div>
 
+  <!-- Pending claim approvals -->
+  <div id="pending-claims-section" style="grid-column:1/-1;display:none;margin-bottom:24px;">
+    <div style="background:rgba(201,168,76,.06);border:1.5px solid rgba(201,168,76,.35);border-radius:16px;padding:18px 20px;">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;">🙋 Onay Bekleyen Talepler</div>
+      <div id="pending-claims-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="filter-card">
@@ -341,6 +349,33 @@
     updateStats();
     renderExpertSidebar();
     renderReviews();
+    renderPendingClaims();
+  }
+
+  function renderPendingClaims() {
+    const section = document.getElementById('pending-claims-section');
+    const list = document.getElementById('pending-claims-list');
+    const pending = allReviews.filter(r => r.claim_status === 'pending');
+
+    if (!pending.length) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+    list.innerHTML = pending.map(r => {
+      const expert = allExperts.find(e => e.id === r.expert_id);
+      const expertName = expert ? `${expert.profiles?.first_name || ''} ${expert.profiles?.last_name || ''}`.trim() : 'Bilinmeyen uzman';
+      const snippet = (r.question || '').slice(0, 90) + (r.question?.length > 90 ? '…' : '');
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--white);border:1px solid var(--sand);border-radius:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">${expertName} <span style="font-weight:400;color:var(--muted)">· ${CAT_ICONS[r.category] || ''} ${r.category}</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">${snippet}</div>
+          </div>
+          <button class="assign-btn" style="background:var(--green);" onclick="approveClaim('${r.id}')">✓ Onayla</button>
+          <button class="assign-btn" style="background:var(--red);" onclick="rejectClaim('${r.id}')">✕ Reddet</button>
+        </div>`;
+    }).join('');
   }
 
   function updateStats() {
@@ -527,8 +562,51 @@
     const expertId = document.getElementById('assign-' + reviewId).value;
     if (!expertId) return;
     await supabase.from('expert_reviews').update({
-      expert_id: expertId, status: 'assigned', assigned_at: new Date().toISOString()
+      expert_id: expertId, status: 'assigned', claim_status: 'approved', assigned_at: new Date().toISOString()
     }).eq('id', reviewId);
+    await loadAll();
+  };
+
+  window.approveClaim = async function(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    await supabase.from('expert_reviews').update({
+      claim_status: 'approved', status: 'assigned'
+    }).eq('id', reviewId);
+
+    if (review?.expert_id) {
+      const expert = allExperts.find(e => e.id === review.expert_id);
+      if (expert?.profile_id) {
+        await supabase.from('notifications').insert({
+          user_id: expert.profile_id,
+          type: 'claim_approved',
+          title: '✅ Talebiniz onaylandı',
+          body: `"${review.category}" kategorisindeki soruyu yanıtlayabilirsiniz.`,
+          link: '/expert-profile.html?id=' + review.expert_id
+        });
+      }
+    }
+    await loadAll();
+  };
+
+  window.rejectClaim = async function(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    const rejectedExpertId = review?.expert_id;
+    await supabase.from('expert_reviews').update({
+      expert_id: null, claim_status: null
+    }).eq('id', reviewId);
+
+    if (rejectedExpertId) {
+      const expert = allExperts.find(e => e.id === rejectedExpertId);
+      if (expert?.profile_id) {
+        await supabase.from('notifications').insert({
+          user_id: expert.profile_id,
+          type: 'claim_rejected',
+          title: '❌ Talebiniz reddedildi',
+          body: `"${review?.category || ''}" kategorisindeki soru talebi onaylanmadı ve ekip havuzuna geri döndü.`,
+          link: '/expert-profile.html?id=' + rejectedExpertId
+        });
+      }
+    }
     await loadAll();
   };
 
