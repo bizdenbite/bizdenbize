@@ -25,6 +25,11 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "has": [{ "type": "host", "value": "abibot.eu" }],
+      "dest": "/abibot.html"
+    },
+    {
       "src": "/dashboard",
       "dest": "/mahallem.html"
     },
