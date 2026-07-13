@@ -618,6 +618,8 @@
         ? `<a href="mailto:${e.profiles.email}" title="${e.profiles.email}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(27,58,140,.08);color:var(--navy);text-decoration:none;font-size:13px;">✉️</a>`
         : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;">✉️</span>`;
 
+      const messageHtml = `<a href="messages.html?with=${e.profile_id}" target="_blank" title="Uygulama içi mesaj gönder" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(201,168,76,.12);color:#854F0B;text-decoration:none;font-size:13px;">🗨️</a>`;
+
       const canWhatsapp = e.whatsapp_consent && e.phone;
       const waNumber = canWhatsapp ? e.phone.replace(/[^\d]/g, '') : null;
       const whatsappHtml = canWhatsapp
@@ -640,7 +642,7 @@
           <td>${city}</td>
           <td class="et-rating">${avgRating ? avgRating + ' ★' : '—'}</td>
           <td>${monthlyCount}</td>
-          <td><div style="display:flex;gap:6px;">${emailHtml}${whatsappHtml}</div></td>
+          <td><div style="display:flex;gap:6px;">${emailHtml}${messageHtml}${whatsappHtml}</div></td>
         </tr>`;
     }).join('');
   }

@@ -465,7 +465,7 @@
   </div>
   <div class="nav-right">
     <button class="nav-notif">🔔<div class="notif-dot"></div></button>
-    <div class="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+    <div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
   </div>
 </nav>
 
@@ -486,185 +486,44 @@
 
     <div class="filter-tabs">
       <button class="filter-tab active" onclick="filterTab(this,'all')">Tümü</button>
-      <button class="filter-tab" onclick="filterTab(this,'unread')">Okunmamış <span id="unread-count" style="background:var(--red);color:#fff;padding:1px 5px;border-radius:10px;font-size:10px;margin-left:2px">3</span></button>
+      <button class="filter-tab" onclick="filterTab(this,'unread')">Okunmamış <span id="unread-count" style="background:var(--red);color:#fff;padding:1px 5px;border-radius:10px;font-size:10px;margin-left:2px">0</span></button>
       <button class="filter-tab" onclick="filterTab(this,'listings')">İlanlar</button>
     </div>
 
     <div class="conv-items" id="conv-items">
-
-      <div class="conv-item active" data-id="1" data-type="all" onclick="openConv(1)">
-        <div class="ci-avatar" style="background:#1B3A8C">MK
-          <div class="ci-online"></div>
-        </div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Mustafa Kaya</span>
-            <span class="ci-time">14:32</span>
-          </div>
-          <div class="ci-preview">Araç hâlâ satılık mı? Fotoğraf...</div>
-          <span class="ci-context">🚗 Audi A3 hakkında</span>
-        </div>
-      </div>
-
-      <div class="conv-item unread" data-id="2" data-type="unread listings" onclick="openConv(2)">
-        <div class="ci-avatar" style="background:#D42B2B">ZD</div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Zeynep Demir</span>
-            <span class="ci-time">12:05</span>
-          </div>
-          <div class="ci-preview">Koltuk hâlâ mevcut mu? Ne zaman...</div>
-          <span class="ci-context">🛋️ IKEA Koltuk hakkında</span>
-        </div>
-        <div class="unread-dot"></div>
-      </div>
-
-      <div class="conv-item unread" data-id="3" data-type="unread" onclick="openConv(3)">
-        <div class="ci-avatar" style="background:#1E7B4B">AK</div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Ali Korkmaz</span>
-            <span class="ci-time">Dün</span>
-          </div>
-          <div class="ci-preview">BizdenBize'ye hoş geldin! 👋</div>
-        </div>
-        <div class="unread-dot"></div>
-      </div>
-
-      <div class="conv-item" data-id="4" data-type="all listings" onclick="openConv(4)">
-        <div class="ci-avatar" style="background:#C9A84C">SE</div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Selin Erdoğan</span>
-            <span class="ci-time">Pazartesi</span>
-          </div>
-          <div class="ci-preview">Tamam anlaştık, yarın teslim alırım</div>
-          <span class="ci-context">📱 iPhone 13 hakkında</span>
-        </div>
-      </div>
-
-      <div class="conv-item" data-id="5" data-type="all" onclick="openConv(5)">
-        <div class="ci-avatar" style="background:#534AB7">BT</div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Berk Taşkın</span>
-            <span class="ci-time">Pazar</span>
-          </div>
-          <div class="ci-preview">Frankfurt Festivali'nde görüşürüz!</div>
-        </div>
-      </div>
-
-      <div class="conv-item" data-id="6" data-type="all" onclick="openConv(6)">
-        <div class="ci-avatar" style="background:#854F0B">FY</div>
-        <div class="ci-body">
-          <div class="ci-top">
-            <span class="ci-name">Fatma Yıldırım</span>
-            <span class="ci-time">18.06</span>
-          </div>
-          <div class="ci-preview">Teşekkürler, çok yardımcı oldun!</div>
-        </div>
-      </div>
-
+      <div style="padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;">Yükleniyor...</div>
     </div>
   </aside>
 
   <!-- ── CHAT PANEL ── -->
   <div class="chat-panel" id="chat-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon">💬</div>
+      <div class="es-title">Bir konuşma seçin</div>
+      <div class="es-sub">Mesajlarınızı görüntülemek için soldaki listeden bir konuşma seçin veya yeni bir mesaj başlatın.</div>
+    </div>
 
-    <!-- Conversation 1: Mustafa about car -->
-    <div id="conv-1" class="conv-view" style="display:flex;flex-direction:column;height:100%">
+    <div id="active-conv" class="conv-view" style="display:none;flex-direction:column;height:100%">
       <div class="chat-header">
-        <div class="ch-avatar" style="background:#1B3A8C">MK
-          <div class="ch-online"></div>
-        </div>
+        <div class="ch-avatar" id="ch-avatar" style="background:#1B3A8C"></div>
         <div class="ch-info">
-          <div class="ch-name">Mustafa Kaya</div>
-          <div class="ch-status">🟢 Çevrimiçi · Frankfurt</div>
+          <div class="ch-name" id="ch-name"></div>
+          <div class="ch-status" id="ch-status"></div>
         </div>
         <div class="ch-actions">
-          <button class="ch-btn" title="Sesli arama">📞</button>
-          <button class="ch-btn" title="Profili gör" onclick="window.location='profile.html'">👤</button>
-          <button class="ch-btn" title="Daha fazla">⋯</button>
+          <button class="ch-btn" title="Profili gör" id="ch-profile-link">👤</button>
         </div>
       </div>
 
-      <div class="context-banner">
-        <div class="cb-icon">🚗</div>
-        <div class="cb-text"><strong>Audi A3 — €18.500</strong> hakkında konuşuyorsunuz</div>
+      <div class="context-banner" id="context-banner" style="display:none;">
+        <div class="cb-icon">🛍️</div>
+        <div class="cb-text" id="context-banner-text"></div>
         <a class="cb-link" href="classifieds.html">İlanı gör →</a>
       </div>
 
-      <div class="messages" id="msgs-1">
-        <div class="date-sep">Bugün</div>
-
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
-          <div>
-            <div class="bubble them">Merhaba! Araç ilanını gördüm, hâlâ satılık mı?</div>
-            <div class="msg-time">13:45</div>
-          </div>
-        </div>
-
-        <div class="msg-row mine">
-          <div>
-            <div class="bubble mine">Evet, hâlâ satılık! İlgileniyorsan gösterebilirim.</div>
-            <div class="msg-time">13:47 <span class="msg-status">✓✓</span></div>
-          </div>
-        </div>
-
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
-          <div>
-            <div class="bubble them">Harika! Biraz daha fotoğraf gönderebilir misin? Özellikle iç mekan ve motor.</div>
-            <div class="msg-time">13:52</div>
-          </div>
-        </div>
-
-        <div class="msg-row mine">
-          <div>
-            <div class="bubble-img" style="border-radius:14px 4px 14px 14px">📸</div>
-            <div class="msg-time" style="text-align:right">14:01 <span class="msg-status">✓✓</span></div>
-          </div>
-        </div>
-
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
-          <div>
-            <div class="bubble them">Çok temiz görünüyor! Fiyatta biraz esneklik var mı? €17.500 olur mu?</div>
-            <div class="msg-time">14:15</div>
-          </div>
-        </div>
-
-        <div class="msg-row mine">
-          <div>
-            <div class="bubble mine">€18.000'e razıyım, daha aşağısı olmuyor. Araç gerçekten çok bakımlı.</div>
-            <div class="msg-time">14:20 <span class="msg-status">✓✓</span></div>
-          </div>
-        </div>
-
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
-          <div>
-            <div class="bubble them">Araç hâlâ satılık mı? Fotoğraf attın ama ben de görmek istiyorum, ne zaman uygun olursun?</div>
-            <div class="msg-time">14:32</div>
-          </div>
-        </div>
-
-        <div class="typing-row" id="typing-1">
-          <div class="msg-avatar-sm" style="background:#1B3A8C">MK</div>
-          <div class="typing-bubble">
-            <div class="td"></div><div class="td"></div><div class="td"></div>
-          </div>
-        </div>
-      </div>
+      <div class="messages" id="active-messages"></div>
 
       <div class="input-bar">
-        <div class="input-actions-top">
-          <button class="ia-btn" onclick="insertQuick('Yarın müsaitim, Frankfurt\'ta buluşabiliriz.')">📅 Buluşma öner</button>
-          <button class="ia-btn" onclick="insertQuick('€18.000 son fiyatım.')">💶 Fiyat onayla</button>
-          <button class="ia-btn">📎 Dosya</button>
-          <button class="ia-btn">📷 Fotoğraf</button>
-        </div>
         <div class="input-wrap">
           <textarea id="msg-input" placeholder="Mesaj yaz..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
           <button class="send-btn" id="send-btn" onclick="sendMsg()">
@@ -673,139 +532,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Other convs (simplified) -->
-    <div id="conv-2" class="conv-view" style="display:none;flex-direction:column;height:100%">
-      <div class="chat-header">
-        <div class="ch-avatar" style="background:#D42B2B">ZD</div>
-        <div class="ch-info"><div class="ch-name">Zeynep Demir</div><div class="ch-status">🟡 Son görülme: 2 saat önce</div></div>
-        <div class="ch-actions">
-          <button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button>
-        </div>
-      </div>
-      <div class="context-banner">
-        <div class="cb-icon">🛋️</div>
-        <div class="cb-text"><strong>IKEA Koltuk Takımı — €180</strong> hakkında konuşuyorsunuz</div>
-        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
-      </div>
-      <div class="messages">
-        <div class="date-sep">Bugün</div>
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#D42B2B">ZD</div>
-          <div><div class="bubble them">Merhaba! Koltuk takımı hâlâ mevcut mu? Ne zaman teslim alınabilir?</div><div class="msg-time">12:05</div></div>
-        </div>
-      </div>
-      <div class="input-bar">
-        <div class="input-wrap">
-          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" onclick="sendGeneric(this)">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="conv-3" class="conv-view" style="display:none;flex-direction:column;height:100%">
-      <div class="chat-header">
-        <div class="ch-avatar" style="background:#1E7B4B">AK<div class="ch-online"></div></div>
-        <div class="ch-info"><div class="ch-name">Ali Korkmaz</div><div class="ch-status">🟢 Çevrimiçi · Frankfurt</div></div>
-        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button></div>
-      </div>
-      <div class="messages">
-        <div class="date-sep">Dün</div>
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1E7B4B">AK</div>
-          <div><div class="bubble them">Merhaba Ayşe Hanım, BizdenBize'ye hoş geldin! 👋 Ben Ali, seni topluluğa davet eden kişiyim.</div><div class="msg-time">18:30</div></div>
-        </div>
-        <div class="msg-row">
-          <div class="msg-avatar-sm" style="background:#1E7B4B">AK</div>
-          <div><div class="bubble them">Herhangi bir sorun olursa bana yazabilirsin, yardımcı olmaya çalışırım 😊</div><div class="msg-time">18:31</div></div>
-        </div>
-        <div class="msg-row mine">
-          <div><div class="bubble mine">Teşekkürler Ali Bey! Çok memnun oldum, platform gerçekten harika görünüyor 🙏</div><div class="msg-time">Dün 20:14 <span class="msg-status">✓✓</span></div></div>
-        </div>
-      </div>
-      <div class="input-bar">
-        <div class="input-wrap">
-          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" onclick="sendGeneric(this)">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="conv-4" class="conv-view" style="display:none;flex-direction:column;height:100%">
-      <div class="chat-header">
-        <div class="ch-avatar" style="background:#C9A84C">SE</div>
-        <div class="ch-info"><div class="ch-name">Selin Erdoğan</div><div class="ch-status">🟡 Son görülme: Pazartesi</div></div>
-        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn" onclick="window.location='profile.html'">👤</button><button class="ch-btn">⋯</button></div>
-      </div>
-      <div class="context-banner">
-        <div class="cb-icon">📱</div>
-        <div class="cb-text"><strong>iPhone 13 — €320</strong> · Satış tamamlandı ✓</div>
-        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
-      </div>
-      <div class="messages">
-        <div class="date-sep">Pazartesi</div>
-        <div class="msg-row"><div class="msg-avatar-sm" style="background:#C9A84C">SE</div><div><div class="bubble them">Merhaba, iPhone hâlâ satılık mı?</div><div class="msg-time">10:00</div></div></div>
-        <div class="msg-row mine"><div><div class="bubble mine">Evet! €320 sabit fiyat.</div><div class="msg-time">10:15 <span class="msg-status">✓✓</span></div></div></div>
-        <div class="msg-row"><div class="msg-avatar-sm" style="background:#C9A84C">SE</div><div><div class="bubble them">Tamam anlaştık, yarın teslim alırım.</div><div class="msg-time">10:30</div></div></div>
-        <div><div class="bubble system" style="margin:8px auto;max-width:300px">✓ Satış tamamlandı · €320</div></div>
-      </div>
-      <div class="input-bar">
-        <div class="input-wrap">
-          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" onclick="sendGeneric(this)">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="conv-5" class="conv-view" style="display:none;flex-direction:column;height:100%">
-      <div class="chat-header">
-        <div class="ch-avatar" style="background:#534AB7">BT</div>
-        <div class="ch-info"><div class="ch-name">Berk Taşkın</div><div class="ch-status">🟡 Son görülme: Pazar</div></div>
-        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn">👤</button><button class="ch-btn">⋯</button></div>
-      </div>
-      <div class="messages">
-        <div class="date-sep">Pazar</div>
-        <div class="msg-row"><div class="msg-avatar-sm" style="background:#534AB7">BT</div><div><div class="bubble them">Frankfurt Festivali'ne gidecek misin bu hafta?</div><div class="msg-time">15:00</div></div></div>
-        <div class="msg-row mine"><div><div class="bubble mine">Evet! Orada görüşürüz 🎉</div><div class="msg-time">15:10 <span class="msg-status">✓✓</span></div></div></div>
-        <div class="msg-row"><div class="msg-avatar-sm" style="background:#534AB7">BT</div><div><div class="bubble them">Frankfurt Festivali'nde görüşürüz!</div><div class="msg-time">15:12</div></div></div>
-      </div>
-      <div class="input-bar">
-        <div class="input-wrap">
-          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" onclick="sendGeneric(this)">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="conv-6" class="conv-view" style="display:none;flex-direction:column;height:100%">
-      <div class="chat-header">
-        <div class="ch-avatar" style="background:#854F0B">FY</div>
-        <div class="ch-info"><div class="ch-name">Fatma Yıldırım</div><div class="ch-status">🟡 Son görülme: 18 Haziran</div></div>
-        <div class="ch-actions"><button class="ch-btn">📞</button><button class="ch-btn">👤</button><button class="ch-btn">⋯</button></div>
-      </div>
-      <div class="messages">
-        <div class="date-sep">18 Haziran</div>
-        <div class="msg-row mine"><div><div class="bubble mine">Niederlassungserlaubnis konusunda yardımcı olabildiysem ne mutlu 😊</div><div class="msg-time">09:20 <span class="msg-status">✓✓</span></div></div></div>
-        <div class="msg-row"><div class="msg-avatar-sm" style="background:#854F0B">FY</div><div><div class="bubble them">Teşekkürler, çok yardımcı oldun! AbiBOT da çok işe yaradı aslında 👍</div><div class="msg-time">09:35</div></div></div>
-      </div>
-      <div class="input-bar">
-        <div class="input-wrap">
-          <textarea placeholder="Mesaj yaz..." rows="1" onkeydown="handleKeyGeneric(event, this)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" onclick="sendGeneric(this)">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
@@ -819,127 +545,283 @@
       <input placeholder="İsim veya şehir ara..." oninput="searchUsers(this.value)" id="user-search-input">
     </div>
     <div class="user-results" id="user-results">
-      <div class="user-result" onclick="startConv('Mustafa Kaya','#1B3A8C','MK')">
-        <div class="ur-avatar" style="background:#1B3A8C">MK</div>
-        <div><div class="ur-name">Mustafa Kaya</div><div class="ur-city">📍 Frankfurt · 2 ortak bağlantı</div></div>
-      </div>
-      <div class="user-result" onclick="startConv('Ali Korkmaz','#1E7B4B','AK')">
-        <div class="ur-avatar" style="background:#1E7B4B">AK</div>
-        <div><div class="ur-name">Ali Korkmaz</div><div class="ur-city">📍 Frankfurt · Davetiye ile katıldı</div></div>
-      </div>
-      <div class="user-result" onclick="startConv('Berk Taşkın','#534AB7','BT')">
-        <div class="ur-avatar" style="background:#534AB7">BT</div>
-        <div><div class="ur-name">Berk Taşkın</div><div class="ur-city">📍 Amsterdam · 1 ortak bağlantı</div></div>
-      </div>
-      <div class="user-result" onclick="startConv('Hasan Şahin','#854F0B','HŞ')">
-        <div class="ur-avatar" style="background:#854F0B">HŞ</div>
-        <div><div class="ur-name">Hasan Şahin</div><div class="ur-city">📍 Amsterdam · Yeni üye</div></div>
-      </div>
+      <div style="padding:16px;text-align:center;font-size:12px;color:var(--muted);">İsim yazmaya başlayın...</div>
     </div>
   </div>
 </div>
 
-<script>
-  let activeConv = 1;
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  function openConv(id) {
-    // Hide all
-    document.querySelectorAll('.conv-view').forEach(v => v.style.display = 'none');
-    // Show selected
-    const el = document.getElementById('conv-' + id);
-    if (el) el.style.display = 'flex';
-    // Update sidebar active
-    document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
-    const item = document.querySelector(`[data-id="${id}"]`);
-    if (item) {
-      item.classList.add('active');
-      item.classList.remove('unread');
-      const dot = item.querySelector('.unread-dot');
-      if (dot) dot.remove();
-    }
-    activeConv = id;
-    // Update unread count
-    const remaining = document.querySelectorAll('.conv-item.unread').length;
-    document.getElementById('unread-count').textContent = remaining;
-    if (remaining === 0) document.getElementById('unread-count').style.display = 'none';
-    // Scroll to bottom
-    const msgs = document.querySelector(`#conv-${id} .messages`);
-    if (msgs) setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#534AB7','#854F0B'];
+  function colorFor(id) {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  }
+  function initialsFor(first, last) {
+    return ((first?.[0] || '') + (last?.[0] || '')).toUpperCase() || '?';
   }
 
-  function sendMsg() {
+  let me = null;
+  let conversations = [];   // enriched with other-participant profile + unread count
+  let activeConvId = null;
+  let activeMessages = [];
+  let msgChannel = null;
+
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    me = session.user;
+
+    const { data: myProfile } = await supabase.from('profiles').select('first_name, last_name').eq('id', me.id).single();
+    const navAvatar = document.getElementById('nav-avatar');
+    if (navAvatar) navAvatar.textContent = initialsFor(myProfile?.first_name, myProfile?.last_name);
+
+    await loadConversations();
+
+    const params = new URLSearchParams(window.location.search);
+    const withId = params.get('with');
+    if (withId && withId !== me.id) {
+      const convId = await findOrCreateConversation(withId);
+      if (convId) { await loadConversations(); openConv(convId); }
+    }
+  }
+
+  async function loadConversations() {
+    const { data: rows } = await supabase.from('conversations')
+      .select('*')
+      .or(`participant_1.eq.${me.id},participant_2.eq.${me.id}`)
+      .order('last_message_at', { ascending: false, nullsFirst: false });
+
+    const convRows = rows || [];
+    const otherIds = [...new Set(convRows.map(c => c.participant_1 === me.id ? c.participant_2 : c.participant_1))];
+
+    let profileMap = {};
+    if (otherIds.length) {
+      const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, city').in('id', otherIds);
+      (profiles || []).forEach(p => profileMap[p.id] = p);
+    }
+
+    let unreadMap = {};
+    if (convRows.length) {
+      const { data: unreadRows } = await supabase.from('messages')
+        .select('conversation_id')
+        .in('conversation_id', convRows.map(c => c.id))
+        .eq('is_read', false)
+        .neq('sender_id', me.id);
+      (unreadRows || []).forEach(m => unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1);
+    }
+
+    conversations = convRows.map(c => {
+      const otherId = c.participant_1 === me.id ? c.participant_2 : c.participant_1;
+      return { ...c, otherId, otherProfile: profileMap[otherId] || null, unreadCount: unreadMap[c.id] || 0 };
+    });
+
+    renderConvList();
+  }
+
+  function timeLabel(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    if (sameDay) return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+    if (d.toDateString() === yesterday.toDateString()) return 'Dün';
+    const diffDays = Math.floor((now - d) / 86400000);
+    if (diffDays < 7) return d.toLocaleDateString('tr-TR', { weekday: 'long' });
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+  }
+
+  function dateSepLabel(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) return 'Bugün';
+    const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+    if (d.toDateString() === yesterday.toDateString()) return 'Dün';
+    const diffDays = Math.floor((now - d) / 86400000);
+    if (diffDays < 7) return d.toLocaleDateString('tr-TR', { weekday: 'long' });
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function renderConvList() {
+    const container = document.getElementById('conv-items');
+    if (!conversations.length) {
+      container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;">Henüz mesajınız yok. Yeni bir konuşma başlatın.</div>`;
+      updateUnreadBadge();
+      return;
+    }
+    container.innerHTML = conversations.map(c => {
+      const p = c.otherProfile;
+      const name = escapeHtml(p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : 'Kullanıcı');
+      const initials = initialsFor(p?.first_name, p?.last_name);
+      const color = colorFor(c.otherId);
+      const preview = escapeHtml(c.last_message || 'Henüz mesaj yok');
+      const type = c.unreadCount > 0 ? 'unread' : 'all';
+      const listingType = c.listing_id ? ' listings' : '';
+      return `
+        <div class="conv-item ${c.id === activeConvId ? 'active' : ''} ${c.unreadCount > 0 ? 'unread' : ''}" data-id="${c.id}" data-type="${type}${listingType}" onclick="openConv('${c.id}')">
+          <div class="ci-avatar" style="background:${color}">${initials}</div>
+          <div class="ci-body">
+            <div class="ci-top">
+              <span class="ci-name">${name}</span>
+              <span class="ci-time">${timeLabel(c.last_message_at || c.created_at)}</span>
+            </div>
+            <div class="ci-preview">${preview}</div>
+            ${c.listing_id ? `<span class="ci-context">🛍️ İlan hakkında</span>` : ''}
+          </div>
+          ${c.unreadCount > 0 ? `<div class="unread-dot"></div>` : ''}
+        </div>`;
+    }).join('');
+    updateUnreadBadge();
+  }
+
+  function updateUnreadBadge() {
+    const badge = document.getElementById('unread-count');
+    const count = conversations.filter(c => c.unreadCount > 0).length;
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+  }
+
+  window.openConv = async function(id) {
+    activeConvId = id;
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('active-conv').style.display = 'flex';
+
+    const conv = conversations.find(c => c.id === id);
+    if (!conv) return;
+
+    const p = conv.otherProfile;
+    const name = p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : 'Kullanıcı';
+    document.getElementById('ch-avatar').textContent = initialsFor(p?.first_name, p?.last_name);
+    document.getElementById('ch-avatar').style.background = colorFor(conv.otherId);
+    document.getElementById('ch-name').textContent = name;
+    document.getElementById('ch-status').textContent = p?.city ? `📍 ${p.city}` : '';
+    document.getElementById('ch-profile-link').onclick = () => window.location.href = `profil.html?id=${conv.otherId}`;
+
+    const banner = document.getElementById('context-banner');
+    if (conv.listing_id) {
+      banner.style.display = 'flex';
+      document.getElementById('context-banner-text').innerHTML = `Bu konuşma bir <strong>ilan</strong> hakkında`;
+    } else {
+      banner.style.display = 'none';
+    }
+
+    document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+    const item = document.querySelector(`.conv-item[data-id="${id}"]`);
+    if (item) { item.classList.add('active'); item.classList.remove('unread'); const dot = item.querySelector('.unread-dot'); if (dot) dot.remove(); }
+
+    await loadMessages(id);
+    await markRead(id);
+    subscribeToConversation(id);
+  };
+
+  async function loadMessages(convId) {
+    const { data } = await supabase.from('messages').select('*').eq('conversation_id', convId).order('created_at', { ascending: true });
+    activeMessages = data || [];
+    renderMessages();
+  }
+
+  function renderMessages() {
+    const container = document.getElementById('active-messages');
+    if (!activeMessages.length) {
+      container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:12px;padding:20px;">Henüz mesaj yok. İlk mesajı gönderin!</div>`;
+      return;
+    }
+    let lastDateStr = null;
+    const conv = conversations.find(c => c.id === activeConvId);
+    const p = conv?.otherProfile;
+    const color = colorFor(conv?.otherId || '');
+    const initials = initialsFor(p?.first_name, p?.last_name);
+
+    let html = '';
+    activeMessages.forEach(m => {
+      const d = new Date(m.created_at);
+      const dateStr = d.toDateString();
+      if (dateStr !== lastDateStr) {
+        html += `<div class="date-sep">${dateSepLabel(m.created_at)}</div>`;
+        lastDateStr = dateStr;
+      }
+      const mine = m.sender_id === me.id;
+      const time = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      if (mine) {
+        html += `<div class="msg-row mine"><div><div class="bubble mine">${escapeHtml(m.content)}</div><div class="msg-time">${time} <span class="msg-status">${m.is_read ? '✓✓' : '✓'}</span></div></div></div>`;
+      } else {
+        html += `<div class="msg-row"><div class="msg-avatar-sm" style="background:${color}">${initials}</div><div><div class="bubble them">${escapeHtml(m.content)}</div><div class="msg-time">${time}</div></div></div>`;
+      }
+    });
+    container.innerHTML = html;
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function escapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  async function markRead(convId) {
+    await supabase.from('messages').update({ is_read: true }).eq('conversation_id', convId).eq('is_read', false).neq('sender_id', me.id);
+    const conv = conversations.find(c => c.id === convId);
+    if (conv) conv.unreadCount = 0;
+    updateUnreadBadge();
+  }
+
+  function subscribeToConversation(convId) {
+    if (msgChannel) supabase.removeChannel(msgChannel);
+    msgChannel = supabase.channel('messages-' + convId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${convId}` }, payload => {
+        if (payload.new.sender_id === me.id) return; // already rendered optimistically
+        activeMessages.push(payload.new);
+        renderMessages();
+        markRead(convId);
+      })
+      .subscribe();
+  }
+
+  window.sendMsg = async function() {
     const input = document.getElementById('msg-input');
     const text = input.value.trim();
-    if (!text) return;
-    const msgs = document.getElementById('msgs-1');
-    // Remove typing indicator
-    const typing = document.getElementById('typing-1');
-    if (typing) typing.remove();
-    // Add message
-    const now = new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
-    const row = document.createElement('div');
-    row.className = 'msg-row mine';
-    row.innerHTML = `<div><div class="bubble mine">${text}</div><div class="msg-time">${now} <span class="msg-status">✓</span></div></div>`;
-    msgs.appendChild(row);
+    if (!text || !activeConvId) return;
+
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+
+    const { data, error } = await supabase.from('messages').insert({
+      conversation_id: activeConvId, sender_id: me.id, content: text
+    }).select().single();
+
+    btn.disabled = false;
+    if (error) { console.error('Send failed:', error); return; }
+
+    activeMessages.push(data);
+    renderMessages();
     input.value = '';
     input.style.height = 'auto';
-    msgs.scrollTop = msgs.scrollHeight;
-    // Update conv preview
-    const preview = document.querySelector('[data-id="1"] .ci-preview');
-    if (preview) preview.textContent = text;
-    // Simulate reply
-    setTimeout(() => {
-      const typingRow = document.createElement('div');
-      typingRow.className = 'typing-row';
-      typingRow.id = 'typing-1';
-      typingRow.innerHTML = `<div class="msg-avatar-sm" style="background:#1B3A8C">MK</div><div class="typing-bubble"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
-      msgs.appendChild(typingRow);
-      msgs.scrollTop = msgs.scrollHeight;
-      setTimeout(() => {
-        typingRow.remove();
-        const replies = ['Anladım, teşekkürler!', 'Peki, yarın müsait misin?', 'Harika, görüşürüz!', 'Tamam, düşüneyim.'];
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        const replyRow = document.createElement('div');
-        replyRow.className = 'msg-row';
-        replyRow.innerHTML = `<div class="msg-avatar-sm" style="background:#1B3A8C">MK</div><div><div class="bubble them">${reply}</div><div class="msg-time">${new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div></div>`;
-        msgs.appendChild(replyRow);
-        msgs.scrollTop = msgs.scrollHeight;
-      }, 1800);
-    }, 800);
-  }
 
-  function sendGeneric(btn) {
-    const inp = btn.closest('.input-bar').querySelector('textarea');
-    const text = inp.value.trim();
-    if (!text) return;
-    const msgs = btn.closest('.conv-view').querySelector('.messages');
-    const now = new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
-    const row = document.createElement('div');
-    row.className = 'msg-row mine';
-    row.innerHTML = `<div><div class="bubble mine">${text}</div><div class="msg-time">${now} <span class="msg-status">✓</span></div></div>`;
-    msgs.appendChild(row);
-    inp.value = ''; inp.style.height = 'auto';
-    msgs.scrollTop = msgs.scrollHeight;
-  }
+    const conv = conversations.find(c => c.id === activeConvId);
+    if (conv) { conv.last_message = text; conv.last_message_at = data.created_at; }
+    conversations.sort((a, b) => new Date(b.last_message_at || b.created_at) - new Date(a.last_message_at || a.created_at));
+    renderConvList();
+  };
 
   function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMsg(); }
   }
-  function handleKeyGeneric(e, inp) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); inp.closest('.input-bar').querySelector('.send-btn').click(); }
-  }
-  function autoResize(el) {
+  window.handleKey = handleKey;
+
+  window.autoResize = function(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-  }
-  function insertQuick(text) {
-    const input = document.getElementById('msg-input');
-    input.value = text;
-    input.focus();
-    autoResize(input);
-  }
+  };
 
-  function filterTab(btn, type) {
+  window.filterTab = function(btn, type) {
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('.conv-item').forEach(item => {
@@ -947,39 +829,81 @@
       const t = item.dataset.type || '';
       item.style.display = t.includes(type) ? 'flex' : 'none';
     });
-  }
+  };
 
-  function filterConvs(val) {
+  window.filterConvs = function(val) {
     const q = val.toLowerCase();
     document.querySelectorAll('.conv-item').forEach(item => {
-      const name = item.querySelector('.ci-name').textContent.toLowerCase();
-      const prev = item.querySelector('.ci-preview').textContent.toLowerCase();
+      const name = item.querySelector('.ci-name')?.textContent.toLowerCase() || '';
+      const prev = item.querySelector('.ci-preview')?.textContent.toLowerCase() || '';
       item.style.display = (name.includes(q) || prev.includes(q)) ? 'flex' : 'none';
     });
+  };
+
+  // ===== New conversation =====
+  async function findOrCreateConversation(otherId) {
+    const { data: existing } = await supabase.from('conversations')
+      .select('id')
+      .or(`and(participant_1.eq.${me.id},participant_2.eq.${otherId}),and(participant_1.eq.${otherId},participant_2.eq.${me.id})`)
+      .maybeSingle();
+    if (existing) return existing.id;
+
+    const { data: created, error } = await supabase.from('conversations')
+      .insert({ participant_1: me.id, participant_2: otherId })
+      .select().single();
+    if (error) { console.error('Could not start conversation:', error); return null; }
+    return created.id;
   }
 
-  function openNewMsg() { document.getElementById('new-msg-modal').classList.add('open'); }
-  function closeNewMsg() { document.getElementById('new-msg-modal').classList.remove('open'); }
-  document.getElementById('new-msg-modal').addEventListener('click', function(e) { if (e.target === this) closeNewMsg(); });
+  window.openNewMsg = function() {
+    document.getElementById('new-msg-modal').classList.add('open');
+    document.getElementById('user-search-input').value = '';
+    document.getElementById('user-results').innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted);">İsim yazmaya başlayın...</div>`;
+  };
+  window.closeNewMsg = function() { document.getElementById('new-msg-modal').classList.remove('open'); };
+  document.getElementById('new-msg-modal').addEventListener('click', function(e) { if (e.target === this) window.closeNewMsg(); });
 
-  function startConv(name, color, initials) {
-    closeNewMsg();
-    alert(`${name} ile yeni konuşma başlatılıyor...`);
-  }
+  let searchDebounce = null;
+  window.searchUsers = function(val) {
+    clearTimeout(searchDebounce);
+    const q = val.trim();
+    if (!q) {
+      document.getElementById('user-results').innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted);">İsim yazmaya başlayın...</div>`;
+      return;
+    }
+    searchDebounce = setTimeout(async () => {
+      const { data } = await supabase.from('profiles')
+        .select('id, first_name, last_name, city')
+        .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`)
+        .neq('id', me.id)
+        .limit(10);
 
-  function searchUsers(val) {
-    const q = val.toLowerCase();
-    document.querySelectorAll('.user-result').forEach(r => {
-      const name = r.querySelector('.ur-name').textContent.toLowerCase();
-      r.style.display = name.includes(q) ? 'flex' : 'none';
-    });
-  }
+      const results = data || [];
+      const container = document.getElementById('user-results');
+      if (!results.length) {
+        container.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted);">Sonuç bulunamadı.</div>`;
+        return;
+      }
+      container.innerHTML = results.map(u => {
+        const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+        return `
+          <div class="user-result" onclick="window.startConv('${u.id}')">
+            <div class="ur-avatar" style="background:${colorFor(u.id)}">${initialsFor(u.first_name, u.last_name)}</div>
+            <div><div class="ur-name">${name}</div><div class="ur-city">📍 ${u.city || 'Konum belirtilmedi'}</div></div>
+          </div>`;
+      }).join('');
+    }, 300);
+  };
 
-  // Init — scroll to bottom of first conv
-  setTimeout(() => {
-    const msgs = document.getElementById('msgs-1');
-    if (msgs) msgs.scrollTop = msgs.scrollHeight;
-  }, 100);
+  window.startConv = async function(otherId) {
+    window.closeNewMsg();
+    const convId = await findOrCreateConversation(otherId);
+    if (!convId) return;
+    await loadConversations();
+    window.openConv(convId);
+  };
+
+  init();
 </script>
 <script>
   // Mobile menu
