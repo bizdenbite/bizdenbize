@@ -131,6 +131,22 @@
     .abibot-name { font-size: 15px; font-weight: 600; color: var(--ink); }
     .abibot-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
 
+    /* AbiBOT-brand avatar treatment — split black/red echoing the "Abi"+"BOT" wordmark.
+       Scoped to body.abibot-brand so bizdenbize.com's version is untouched. */
+    body.abibot-brand .abibot-avatar,
+    body.abibot-brand .welcome-icon,
+    body.abibot-brand .msg-avatar.ai {
+      background: linear-gradient(135deg, var(--ink) 0%, var(--ink) 50%, var(--red) 50%, var(--red) 100%) !important;
+    }
+
+    /* Collapsed how-to bar (shown after first visit) */
+    .howto-collapsed {
+      display: none; align-items: center; gap: 8px; padding: 8px 20px;
+      background: #1A1208; cursor: pointer; flex-shrink: 0;
+    }
+    .howto-collapsed:hover { background: #2a1f10; }
+    .howto-collapsed span { font-size: 12px; color: rgba(255,255,255,.75); }
+
     /* How-to bar */
     .howto-bar {
       display: flex !important; align-items: center; gap: 8px;
@@ -875,7 +891,7 @@
   <!-- LEFT PANEL -->
   <aside class="left-panel">
 
-    <div class="panel-section">
+    <div class="panel-section" id="sidebar-cat-section">
       <div class="ps-label">Kategori seç</div>
       <div class="cat-list" id="cat-list"></div>
     </div>
@@ -929,7 +945,7 @@
     </div>
 
     <!-- How-to steps -->
-    <div class="howto-bar" style="background:#1A1208;display:flex;align-items:center;gap:8px;padding:11px 20px;flex-wrap:wrap;flex-shrink:0;">
+    <div class="howto-bar" id="howto-bar-full" style="background:#1A1208;display:flex;align-items:center;gap:8px;padding:11px 20px;flex-wrap:wrap;flex-shrink:0;">
       <div class="howto-step">
         <span class="howto-num" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
         <span class="howto-text" style="color:rgba(255,255,255,.85);font-size:12px;">Soldaki menüden <strong style="color:#fff;font-weight:700;">kategori seç</strong></span>
@@ -944,6 +960,11 @@
         <span class="howto-num" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">3</span>
         <span class="howto-text" style="color:rgba(255,255,255,.85);font-size:12px;">Yanıtı <strong style="color:#fff;font-weight:700;">PDF indir</strong>, çevir veya uzmana gönder</span>
       </div>
+      <button onclick="collapseHowto()" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;padding:2px 6px;flex-shrink:0;" title="Küçült">×</button>
+    </div>
+    <div class="howto-collapsed" id="howto-bar-collapsed" onclick="expandHowto()">
+      <span style="color:rgba(255,255,255,.6);">ℹ️</span>
+      <span>Nasıl kullanılır?</span>
     </div>
 
     <div class="messages" id="messages">
@@ -1237,6 +1258,24 @@
         <div class="cat-info"><div class="cat-name">${c.label}</div>${c.badge ? `<span class="cat-badge" style="${c.badgeStyle || ''}">${c.badge}</span>` : ''}</div>
       </div>`).join('');
   }
+  // ── HOWTO BAR: full version only on first visit, collapsed after that ──
+  const HOWTO_SEEN_KEY = 'bb_abibot_howto_seen';
+  window.collapseHowto = function() {
+    document.getElementById('howto-bar-full').style.display = 'none';
+    document.getElementById('howto-bar-collapsed').style.display = 'flex';
+    try { localStorage.setItem(HOWTO_SEEN_KEY, '1'); } catch(e) {}
+  };
+  window.expandHowto = function() {
+    document.getElementById('howto-bar-full').style.display = 'flex';
+    document.getElementById('howto-bar-collapsed').style.display = 'none';
+  };
+  try {
+    if (localStorage.getItem(HOWTO_SEEN_KEY) === '1') {
+      document.getElementById('howto-bar-full').style.display = 'none';
+      document.getElementById('howto-bar-collapsed').style.display = 'flex';
+    }
+  } catch(e) {}
+
   renderCatList();
 
   // Fix the same nav-dropdown drift bug found in mahallem.html (missing 'housing',
@@ -1249,6 +1288,8 @@
   // community nav or logo — this is meant to read as AbiBOT's own product now.
   const ABIBOT_HOSTS = ['abibot.eu', 'www.abibot.eu'];
   if (ABIBOT_HOSTS.includes(window.location.hostname)) {
+    document.body.classList.add('abibot-brand');
+
     const logoLink = document.getElementById('nav-logo-link');
     logoLink.href = '/';
     logoLink.innerHTML = `<span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;"><span style="color:var(--ink)">Abi</span><span style="color:var(--red)">BOT</span></span>`;
@@ -1268,6 +1309,12 @@
 
     const mmSections = document.getElementById('mm-bb-sections');
     if (mmSections) mmSections.style.display = 'none';
+
+    // Nav pills now own category-switching — the sidebar list is redundant clutter here.
+    // Hidden, not removed: #cat-list still holds the data-cat/price/icon attributes
+    // selectCatByName() depends on.
+    const sidebarCatSection = document.getElementById('sidebar-cat-section');
+    if (sidebarCatSection) sidebarCatSection.style.display = 'none';
   }
 
   const systemPrompts = {
@@ -1651,7 +1698,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   }
 
   function selectCatByName(cat) {
-    const el = document.querySelector(`[data-cat="${cat}"]`);
+    const el = document.querySelector(`#cat-list [data-cat="${cat}"]`);
     if (el) selectCat(el);
     document.getElementById('chat-input').focus();
   }
