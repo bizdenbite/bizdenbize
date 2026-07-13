@@ -696,6 +696,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
+  <script src="platform-config.js"></script>
   <script src="i18n.js"></script>
 <script>
   function toggleDropdown(id, btn) {
@@ -732,8 +733,8 @@
 <body>
 <!-- NAV -->
 <nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
-  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
-  <div class="nav-menu">
+  <a href="mahallem.html" class="nav-logo-link" id="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+  <div class="nav-menu" id="nav-menu">
     <div class="nav-item">
       <button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-mahallem">
@@ -800,18 +801,12 @@
         <a href="library.html">💼 Çalışma Hayatı</a>
       </div>
     </div>
-    <div class="nav-item">
+    <div class="nav-item" id="nav-item-abibot">
       <button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-abibot">
         <a href="abibot.html">🤖 AbiBOT'a Sor</a>
         <hr>
-        <a href="abibot.html">⚖️ Hukuk</a>
-        <a href="abibot.html">🏥 Tıbbi</a>
-        <a href="abibot.html">💼 Çalışma & Sigorta</a>
-        <a href="abibot.html">💶 Vergi & Finans</a>
-        <a href="abibot.html">🛂 Vize & Oturum</a>
-        <a href="abibot.html">👶 Okul & Yardımlar</a>
-        <a href="abibot.html">✈️ Avrupa'ya Göç</a>
+        <div id="abibot-nav-cat-links"></div>
       </div>
     </div>
   </div>
@@ -824,9 +819,10 @@
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mm-header">
-    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+    <div id="mm-logo" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div>
     <button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;line-height:1;">×</button>
   </div>
+  <div id="mm-bb-sections">
   <div class="mm-section"><div class="mm-section-title">Topluluk</div>
     <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Komşularım</a>
     <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
@@ -857,6 +853,7 @@
     <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
     <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
   </div>
+  </div>
   <div class="mm-footer">
     <a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;">
       <div id="mm-avatar" style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div>
@@ -872,45 +869,7 @@
 
     <div class="panel-section">
       <div class="ps-label">Kategori seç</div>
-      <div class="cat-list" id="cat-list">
-        <div class="cat-item active" data-cat="legal" data-price="5" data-icon="⚖️" onclick="selectCat(this)">
-          <span class="cat-icon">⚖️</span>
-          <div class="cat-info"><div class="cat-name">Hukuki</div></div>
-          <span class="cat-badge">Popüler</span>
-        </div>
-        <div class="cat-item" data-cat="medical" data-price="4" data-icon="🏥" onclick="selectCat(this)">
-          <span class="cat-icon">🏥</span>
-          <div class="cat-info"><div class="cat-name">Tıbbi</div></div>
-        </div>
-        <div class="cat-item" data-cat="tax" data-price="4" data-icon="💶" onclick="selectCat(this)">
-          <span class="cat-icon">💶</span>
-          <div class="cat-info"><div class="cat-name">Vergi & Finans</div></div>
-        </div>
-        <div class="cat-item" data-cat="visa" data-price="5" data-icon="🛂" onclick="selectCat(this)">
-          <span class="cat-icon">🛂</span>
-          <div class="cat-info"><div class="cat-name">Vize & Oturma</div></div>
-        </div>
-        <div class="cat-item" data-cat="housing" data-price="3" data-icon="🏠" onclick="selectCat(this)">
-          <span class="cat-icon">🏠</span>
-          <div class="cat-info"><div class="cat-name">Konut & Kira</div></div>
-        </div>
-        <div class="cat-item" data-cat="employment" data-price="3" data-icon="💼" onclick="selectCat(this)">
-          <span class="cat-icon">💼</span>
-          <div class="cat-info"><div class="cat-name">İş & Çalışma</div></div>
-        </div>
-        <div class="cat-item" data-cat="school" data-price="2" data-icon="👶" onclick="selectCat(this)">
-          <span class="cat-icon">👶</span>
-          <div class="cat-info"><div class="cat-name">Okul & Yardımlar</div></div>
-        </div>
-        <div class="cat-item" data-cat="insurance" data-price="2" data-icon="🚗" onclick="selectCat(this)">
-          <span class="cat-icon">🚗</span>
-          <div class="cat-info"><div class="cat-name">Sigorta & Araç</div></div>
-        </div>
-        <div class="cat-item" data-cat="migration" data-price="5" data-icon="✈️" onclick="selectCat(this)">
-          <span class="cat-icon">✈️</span>
-          <div class="cat-info"><div class="cat-name">Avrupa'ya Göç</div><span class="cat-badge" style="background:rgba(212,43,43,.1);color:var(--red);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700;">YENİ</span></div>
-        </div>
-      </div>
+      <div class="cat-list" id="cat-list"></div>
     </div>
 
     <div class="panel-section">
@@ -1258,20 +1217,43 @@
   let hasAnswered = false;
   let isLoading = false;
 
-  const catData = {
-    legal:      { name: 'Hukuki',       icon: '⚖️',  price: 5 },
-    medical:    { name: 'Tıbbi',        icon: '🏥',  price: 4 },
-    tax:        { name: 'Vergi & Finans', icon: '💶', price: 4 },
-    visa:       { name: 'Vize & Oturma', icon: '🛂', price: 5 },
-    housing:    { name: 'Konut & Kira', icon: '🏠',  price: 3 },
-    employment: { name: 'İş & Çalışma', icon: '💼',  price: 3 },
-    school:     { name: 'Okul & Yardımlar', icon: '👶', price: 2 },
-    insurance:  { name: 'Sigorta & Araç', icon: '🚗', price: 2 },
-    migration:  { name: "Avrupa'ya Göç", icon: '✈️', price: 5 },
-    employment: { name: 'İş & Çalışma', icon: '💼',  price: 3 },
-    school:     { name: 'Okul & Yardımlar', icon: '👶', price: 2 },
-    insurance:  { name: 'Sigorta & Araç', icon: '🚗', price: 2 },
-  };
+  const catData = Object.fromEntries(
+    window.BB_CONFIG.categories.map(c => [c.id, { name: c.label, icon: c.icon, price: c.price }])
+  );
+
+  function renderCatList() {
+    const container = document.getElementById('cat-list');
+    container.innerHTML = window.BB_CONFIG.categories.map((c, i) => `
+      <div class="cat-item ${i === 0 ? 'active' : ''}" data-cat="${c.id}" data-price="${c.price}" data-icon="${c.icon}" onclick="selectCat(this)">
+        <span class="cat-icon">${c.icon}</span>
+        <div class="cat-info"><div class="cat-name">${c.label}</div>${c.badge ? `<span class="cat-badge" style="${c.badgeStyle || ''}">${c.badge}</span>` : ''}</div>
+      </div>`).join('');
+  }
+  renderCatList();
+
+  // Fix the same nav-dropdown drift bug found in mahallem.html (missing 'housing',
+  // 'insurance' folded into 'employment') by sourcing from shared config here too.
+  document.getElementById('abibot-nav-cat-links').innerHTML =
+    window.BB_CONFIG.categories.map(c => `<a href="abibot.html">${c.icon} ${c.label}</a>`).join('');
+
+  // ── DOMAIN-BASED BRANDING ──
+  // abibot.eu aliases this same file (see vercel.json) but shouldn't show BizdenBize's
+  // community nav or logo — this is meant to read as AbiBOT's own product now.
+  const ABIBOT_HOSTS = ['abibot.eu', 'www.abibot.eu'];
+  if (ABIBOT_HOSTS.includes(window.location.hostname)) {
+    const logoLink = document.getElementById('nav-logo-link');
+    logoLink.href = '/';
+    logoLink.innerHTML = `<span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;"><span style="color:var(--ink)">Abi</span><span style="color:var(--red)">BOT</span></span>`;
+
+    const mmLogo = document.getElementById('mm-logo');
+    if (mmLogo) mmLogo.innerHTML = `<span style="color:#1A1208">Abi</span><span style="color:#D42B2B">BOT</span>`;
+
+    const navMenu = document.getElementById('nav-menu');
+    if (navMenu) navMenu.style.display = 'none';
+
+    const mmSections = document.getElementById('mm-bb-sections');
+    if (mmSections) mmSections.style.display = 'none';
+  }
 
   const systemPrompts = {
     legal:      `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in LEGAL matters — German, Dutch, Belgian, Austrian, and EU law as it applies to Turkish immigrants and diaspora. You understand the specific challenges of 1st, 2nd, and 3rd generation Turkish Europeans.`,
@@ -1783,16 +1765,9 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
   // ── SEND MESSAGE ──
   // ── CATEGORY TOPICS FOR AI CHECK ──
-  const catTopics = {
-    legal:      'legal matters, German/EU law, rights, contracts, courts, lawyers, Recht',
-    medical:    'medical topics, health, symptoms, doctors, Krankenkasse, medications',
-    tax:        'tax, finance, Steuer, Kindergeld, Wohngeld, income, social benefits',
-    visa:       'visa, residence permits, Aufenthaltstitel, immigration, citizenship',
-    housing:    'housing, rental, Mietrecht, tenancy, deposit, Nebenkosten, landlord',
-    employment: 'employment, work, Kündigung, Arbeitsvertrag, salary, unemployment',
-    school:     'school, children, Kita, Kindergeld, Elterngeld, education, Bafög',
-    insurance:  'insurance, Kfz-Versicherung, car, vehicle, accident, claims',
-  };
+  // Sourced from shared config — this also fixes a prior gap where 'migration' had no
+  // topic string here and silently fell back to the raw category id in the classifier prompt.
+  const catTopics = window.BB_CONFIG.categoryTopics;
 
   async function sendMessage() {
     const input = document.getElementById('chat-input');
