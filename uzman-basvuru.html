@@ -110,6 +110,20 @@
           <div class="field-hint">Bu bilgi, başvurunuz onaylandığında herkese açık uzman profilinizde görünecektir.</div>
         </div>
         <div class="field">
+          <label class="field-label">Telefon</label>
+          <input type="tel" class="text-input" id="app-phone" placeholder="+49 151 234 5678">
+          <div class="field-hint">Ekibimiz sizinle iletişim kurabilmek için bu bilgiyi kullanır. Herkese açık profilinizde gösterilmez.</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Adres</label>
+          <input type="text" class="text-input" id="app-address" placeholder="Sokak, Posta Kodu, Şehir">
+          <div class="field-hint">Herkese açık profilinizde gösterilmez.</div>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-start;gap:10px;background:var(--cream);border:1.5px solid var(--sand);border-radius:9px;padding:14px;margin-bottom:20px;">
+          <input type="checkbox" id="app-whatsapp-consent" style="margin-top:2px;width:16px;height:16px;flex-shrink:0;cursor:pointer;">
+          <label for="app-whatsapp-consent" style="font-size:13px;color:var(--ink);line-height:1.5;cursor:pointer;">WhatsApp üzerinden iletişime geçilmesine izin veriyorum. <span style="color:var(--muted);">(İsteğe bağlı — yalnızca ekibimiz ve onayladığınız kullanıcı iletişimleri için kullanılır.)</span></label>
+        </div>
+        <div class="field">
           <label class="field-label">Uzmanlık Alanları</label>
           <div class="chip-grid" id="app-cats">
             ${CATEGORIES.map(c => `<div class="chip" data-id="${c.id}" onclick="window._toggleCat('${c.id}')">${c.label}</div>`).join('')}
@@ -139,8 +153,13 @@
     const btn = document.getElementById('app-submit');
     const title = document.getElementById('app-title').value.trim();
     const bio = document.getElementById('app-bio').value.trim();
+    const phone = document.getElementById('app-phone').value.trim();
+    const address = document.getElementById('app-address').value.trim();
+    const whatsappConsent = document.getElementById('app-whatsapp-consent').checked;
 
     if (!title || !bio) { alert('Lütfen unvan ve hakkınızda alanlarını doldurun.'); return; }
+    if (!phone) { alert('Lütfen telefon numaranızı girin.'); return; }
+    if (!address) { alert('Lütfen adresinizi girin.'); return; }
     if (!selectedCats.length) { alert('Lütfen en az bir uzmanlık alanı seçin.'); return; }
     if (!selectedLangs.length) { alert('Lütfen en az bir dil seçin.'); return; }
 
@@ -153,6 +172,8 @@
       const { error } = await supabase.from('experts').insert({
         profile_id: session.user.id,
         title, bio,
+        phone, address,
+        whatsapp_consent: whatsappConsent,
         categories: selectedCats,
         languages: selectedLangs,
         is_active: false,

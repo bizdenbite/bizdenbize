@@ -207,10 +207,11 @@
             <th>Şehir</th>
             <th>Puan</th>
             <th>Bu Ay Yanıtlanan</th>
+            <th>İletişim</th>
           </tr>
         </thead>
         <tbody id="experts-table-body">
-          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Yükleniyor...</td></tr>
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Yükleniyor...</td></tr>
         </tbody>
       </table>
     </div>
@@ -380,7 +381,7 @@
   async function loadAll() {
     const [reviewsRes, expertsRes, ratingsRes] = await Promise.all([
       supabase.from('expert_reviews').select('*, profiles:user_id(first_name, last_name, city, country)').order('created_at', { ascending: false }),
-      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url, city)'),
+      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url, city, email)'),
       supabase.from('expert_rating_summary').select('*')
     ]);
 
@@ -590,7 +591,7 @@
   function renderExpertsTable() {
     const tbody = document.getElementById('experts-table-body');
     if (!allExperts.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Henüz uzman yok</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Henüz uzman yok</td></tr>';
       return;
     }
 
@@ -613,6 +614,16 @@
       const cats = (e.categories || []).map(c => `<span class="et-cat">${CAT_ICONS[c] || ''} ${c}</span>`).join('') || '<span style="font-size:11px;color:var(--sand);">—</span>';
       const city = e.profiles?.city || '—';
 
+      const emailHtml = e.profiles?.email
+        ? `<a href="mailto:${e.profiles.email}" title="${e.profiles.email}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(27,58,140,.08);color:var(--navy);text-decoration:none;font-size:13px;">✉️</a>`
+        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;">✉️</span>`;
+
+      const canWhatsapp = e.whatsapp_consent && e.phone;
+      const waNumber = canWhatsapp ? e.phone.replace(/[^\d]/g, '') : null;
+      const whatsappHtml = canWhatsapp
+        ? `<a href="https://wa.me/${waNumber}" target="_blank" title="WhatsApp: ${e.phone}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(30,123,75,.1);color:var(--green);text-decoration:none;font-size:13px;">💬</a>`
+        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;" title="${e.phone ? 'WhatsApp izni yok' : 'Telefon yok'}">💬</span>`;
+
       return `
         <tr>
           <td>
@@ -629,6 +640,7 @@
           <td>${city}</td>
           <td class="et-rating">${avgRating ? avgRating + ' ★' : '—'}</td>
           <td>${monthlyCount}</td>
+          <td><div style="display:flex;gap:6px;">${emailHtml}${whatsappHtml}</div></td>
         </tr>`;
     }).join('');
   }
