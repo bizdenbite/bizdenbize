@@ -100,6 +100,32 @@
       .stats-row .stat-card:last-child{grid-column:1/-1;}
       .hero-name{font-size:22px;}
     }
+
+    /* OWNER PANEL — private, visible only to the logged-in expert viewing their own profile */
+    .owner-panel{margin-top:32px;border:1.5px dashed var(--navy);border-radius:20px;padding:24px;background:rgba(27,58,140,.03);}
+    .owner-panel-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+    .owner-panel-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
+    .owner-panel-note{font-size:12px;color:var(--muted);margin-bottom:16px;}
+    .owner-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+    .owner-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--white);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .owner-tab.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+    .owner-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px 18px;margin-bottom:10px;}
+    .owner-card.urgent{border-color:var(--red);}
+    .owner-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .owner-card-user{font-size:13px;font-weight:600;color:var(--ink);flex:1;}
+    .owner-card-status{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;}
+    .owner-status-pending{background:rgba(201,168,76,.15);color:#854F0B;}
+    .owner-status-assigned{background:rgba(27,58,140,.1);color:var(--navy);}
+    .owner-status-answered{background:rgba(30,123,75,.1);color:var(--green);}
+    .owner-card-time{font-size:11px;color:var(--muted);flex-shrink:0;}
+    .owner-question{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
+    .owner-response-ta{width:100%;padding:11px 13px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:8px;}
+    .owner-response-ta:focus{border-color:var(--navy);}
+    .owner-submit-btn{padding:9px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+    .owner-submit-btn:disabled{background:var(--sand);cursor:not-allowed;}
+    .owner-answered-box{padding:12px;background:rgba(30,123,75,.05);border-radius:8px;border-left:3px solid var(--green);font-size:13px;color:var(--ink);line-height:1.6;}
+    .owner-unclaimed-note{padding:11px 13px;background:var(--warm);border-radius:8px;border-left:3px solid var(--sand);font-size:12px;color:var(--muted);}
+    .owner-empty{text-align:center;padding:24px;font-size:13px;color:var(--muted);}
   </style>
 </head>
 <body>
@@ -123,7 +149,7 @@
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const CAT_ICONS = {
@@ -170,11 +196,188 @@
       }
 
       renderProfile(summaryRes.data, reviewsRes.data || []);
+      renderOwnerPanelIfApplicable(summaryRes.data.expert_id);
     } catch(e) {
       console.error(e);
       showError('Bir hata oluştu', 'Profil yüklenirken sorun oluştu. Lütfen tekrar deneyin.');
     }
   }
+
+  // ===== OWNER PANEL (private — only the logged-in expert viewing their own profile) =====
+  let myExpertId = null;
+  let mySession = null;
+  let myReviews = [];
+  let myFilter = 'all';
+
+  const OWNER_CAT_ICONS = CAT_ICONS;
+  const OWNER_STATUS_LABELS = { pending:'Bekliyor', assigned:'Atandı', in_review:'İncelemede', answered:'Yanıtlandı', closed:'Kapatıldı' };
+
+  async function renderOwnerPanelIfApplicable(expertRowId) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: expertRow } = await supabase.from('experts').select('id, profile_id').eq('id', expertRowId).single();
+      if (!expertRow || expertRow.profile_id !== session.user.id) return; // not the owner — public view stays as-is
+
+      mySession = session;
+      myExpertId = expertRow.id;
+
+      const { data: reviews } = await supabase.from('expert_reviews')
+        .select('*, profiles:user_id(first_name, last_name, city)')
+        .or(`expert_id.eq.${expertRow.id},expert_id.is.null`)
+        .order('created_at', { ascending: false });
+
+      myReviews = reviews || [];
+      injectOwnerPanel();
+    } catch(e) {
+      console.error('Owner panel check failed:', e);
+    }
+  }
+
+  function myTimeAgo(date) {
+    const diff = Date.now() - new Date(date).getTime();
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if (h < 1) return 'Az önce';
+    if (h < 24) return `${h} saat önce`;
+    return `${d} gün önce`;
+  }
+
+  function myMdToHtml(text) {
+    if (!text) return '';
+    return text.replace(/\n/g, '<br>');
+  }
+
+  function injectOwnerPanel() {
+    if (document.getElementById('owner-panel')) return; // already injected
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'owner-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">🔒 Sorularım</div>
+      </div>
+      <div class="owner-panel-note">Bu bölümü yalnızca siz görebilirsiniz — size atanan sorular ve ekip havuzundaki atanmamış sorular burada listelenir.</div>
+      <div class="owner-tabs" id="owner-tabs">
+        <button class="owner-tab active" onclick="setMyFilter('all', this)">Tümü</button>
+        <button class="owner-tab" onclick="setMyFilter('assigned', this)">Bana Atanan</button>
+        <button class="owner-tab" onclick="setMyFilter('pool', this)">Ekip Havuzu</button>
+        <button class="owner-tab" onclick="setMyFilter('answered', this)">Yanıtladıklarım</button>
+      </div>
+      <div id="owner-reviews-list"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderMyReviews();
+  }
+
+  window.setMyFilter = function(filter, btn) {
+    myFilter = filter;
+    document.querySelectorAll('#owner-tabs .owner-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMyReviews();
+  };
+
+  function renderMyReviews() {
+    let list = myReviews;
+    if (myFilter === 'assigned') {
+      list = list.filter(r => r.expert_id === myExpertId && r.status !== 'answered' && r.status !== 'closed');
+    } else if (myFilter === 'pool') {
+      list = list.filter(r => r.expert_id === null && r.status !== 'answered' && r.status !== 'closed');
+    } else if (myFilter === 'answered') {
+      list = list.filter(r => r.status === 'answered' || r.status === 'closed');
+    }
+
+    const container = document.getElementById('owner-reviews-list');
+    if (!list.length) {
+      container.innerHTML = `<div class="owner-empty">Bu filtrede soru yok.</div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(r => {
+      const user = r.profiles;
+      const userName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Kullanıcı';
+      const isMine = r.expert_id === myExpertId;
+      const isAnswered = r.status === 'answered' || r.status === 'closed';
+      const statusClass = `owner-status-${r.status === 'in_review' ? 'assigned' : r.status}`;
+
+      let actionHtml;
+      if (isAnswered) {
+        actionHtml = `<div class="owner-answered-box">${myMdToHtml(r.expert_response || '')}</div>`;
+      } else if (isMine) {
+        actionHtml = `
+          <textarea class="owner-response-ta" id="owner-resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
+          <button class="owner-submit-btn" onclick="submitMyResponse('${r.id}')">✓ Yanıtı Gönder</button>
+        `;
+      } else {
+        actionHtml = `<div class="owner-unclaimed-note">🕓 Ekip havuzunda bekliyor — henüz size atanmadı.</div>`;
+      }
+
+      return `
+        <div class="owner-card ${r.status === 'pending' ? 'urgent' : ''}" id="owner-card-${r.id}">
+          <div class="owner-card-top">
+            <div class="owner-card-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${OWNER_CAT_ICONS[r.category] || ''} ${r.category}</span></div>
+            <span class="owner-card-status ${statusClass}">${OWNER_STATUS_LABELS[r.status] || r.status}</span>
+            <span class="owner-card-time">${myTimeAgo(r.created_at)}</span>
+          </div>
+          <div class="owner-question">${myMdToHtml(r.question)}</div>
+          ${actionHtml}
+        </div>`;
+    }).join('');
+  }
+
+  window.submitMyResponse = async function(reviewId) {
+    const ta = document.getElementById(`owner-resp-${reviewId}`);
+    const response = ta.value.trim();
+    if (!response) return;
+
+    const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+    await supabase.from('expert_reviews').update({
+      expert_response: response,
+      status: 'answered',
+      answered_at: new Date().toISOString()
+    }).eq('id', reviewId);
+
+    const review = myReviews.find(r => r.id === reviewId);
+    if (review) {
+      await supabase.from('notifications').insert({
+        user_id: review.user_id,
+        type: 'expert_answered',
+        title: 'Uzman yanıtınız hazır! ✅',
+        body: 'AbiBOT sorunuz bir uzman tarafından incelendi ve yanıtlandı.',
+        link: '/abibot.html'
+      });
+
+      try {
+        await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON}`,
+          },
+          body: JSON.stringify({
+            review_id: review.id,
+            user_id: review.user_id,
+            category: review.category,
+            question: review.question,
+            expert_response: response,
+          })
+        });
+      } catch(emailErr) {
+        console.warn('Email notification failed (non-critical):', emailErr);
+      }
+    }
+
+    // Refresh just this section rather than the whole page
+    const { data: reviews } = await supabase.from('expert_reviews')
+      .select('*, profiles:user_id(first_name, last_name, city)')
+      .or(`expert_id.eq.${myExpertId},expert_id.is.null`)
+      .order('created_at', { ascending: false });
+    myReviews = reviews || [];
+    renderMyReviews();
+  };
 
   function renderProfile(expert, reviews) {
     const name = `${expert.first_name || ''} ${expert.last_name || ''}`.trim() || 'Uzman';
@@ -345,7 +548,7 @@
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const DIRECT_PRICES = {
@@ -556,7 +759,7 @@
 
 <script>
   const _SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   let _reportExpertId = null;
 
   window.openExpertReportModal = function(expertId) {

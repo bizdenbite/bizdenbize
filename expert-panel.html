@@ -283,16 +283,18 @@
       profile = p;
       isAdmin = !!profile?.is_admin;
 
-      // Look up expert row regardless of admin status, so admins-who-are-also-experts
-      // and plain experts both get myExpertId set correctly for UI scoping below.
-      const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
-      if (expert) myExpertId = expert.id;
-
-      // Non-admins must have an expert row to be here at all
-      if (!isAdmin && !expert) {
+      // This page is admin-only. Experts now answer their own questions from
+      // their own expert-profile.html (private panel, visible only to themselves).
+      if (!isAdmin) {
         authorized = false;
-        alert('Bu sayfaya erişim yetkiniz yok.');
-        window.location.replace('mahallem.html');
+        const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
+        if (expert) {
+          myExpertId = expert.id;
+          window.location.replace('expert-profile.html?id=' + expert.id);
+        } else {
+          alert('Bu sayfaya erişim yetkiniz yok.');
+          window.location.replace('mahallem.html');
+        }
       }
     }
   } catch(e) {
@@ -473,10 +475,9 @@
                   ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
                 </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
               }
-            ` : (isAdmin || r.expert_id === myExpertId) ? `
+            ` : `
               <div class="rc-response-area">
                 <div class="rc-section-label">Uzman Yanıtı</div>
-                ${isAdmin ? `
                 <div style="display:flex;gap:8px;margin-bottom:8px;">
                   <select class="assign-select" id="assign-${r.id}">
                     <option value="">Uzmana Ata...</option>
@@ -485,20 +486,10 @@
                     ).join('')}
                   </select>
                   <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
-                </div>` : ''}
+                </div>
                 <textarea class="response-textarea" id="resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
                 <div class="rc-actions">
                   <button class="submit-btn" onclick="submitResponse('${r.id}')">✓ Yanıtı Gönder</button>
-                  <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
-                </div>
-              </div>
-            ` : `
-              <div class="rc-response-area">
-                <div class="rc-section-label">Uzman Yanıtı</div>
-                <div style="padding:12px 14px;background:var(--warm);border-radius:8px;border-left:3px solid var(--sand);font-size:13px;color:var(--muted);">
-                  🕓 Bu soru henüz bir uzmana atanmadı — ekip havuzunda bekliyor. Yanıtlayabilmek için önce size atanması gerekiyor.
-                </div>
-                <div class="rc-actions">
                   <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
                 </div>
               </div>
