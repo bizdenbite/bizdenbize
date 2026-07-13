@@ -119,6 +119,23 @@
     .pt-slots{font-size:11px;color:var(--muted);margin-top:6px;}
     @media(max-width:900px){.page{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.sidebar{position:static;}}
     @media (max-width: 900px) { }
+
+    /* Expert overview table */
+    .experts-table-wrap{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;overflow-x:auto;}
+    .experts-table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
+    .experts-table th{text-align:left;padding:12px 16px;background:var(--warm);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+    .experts-table td{padding:12px 16px;border-top:1px solid var(--warm);vertical-align:middle;}
+    .experts-table tr:hover td{background:rgba(27,58,140,.02);}
+    .et-name-cell{display:flex;align-items:center;gap:10px;}
+    .et-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+    .et-name{font-weight:600;color:var(--ink);white-space:nowrap;}
+    .et-title{font-size:11px;color:var(--muted);}
+    .et-avail{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .et-avail.on{background:rgba(30,123,75,.1);color:var(--green);}
+    .et-avail.off{background:rgba(212,43,43,.08);color:var(--red);}
+    .et-cats{display:flex;flex-wrap:wrap;gap:4px;max-width:220px;}
+    .et-cat{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(27,58,140,.08);color:var(--navy);font-weight:500;white-space:nowrap;}
+    .et-rating{font-weight:700;color:var(--gold);white-space:nowrap;}
   </style>
 </head>
 <body>
@@ -174,6 +191,28 @@
     <div style="background:rgba(201,168,76,.06);border:1.5px solid rgba(201,168,76,.35);border-radius:16px;padding:18px 20px;">
       <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;">🙋 Onay Bekleyen Talepler</div>
       <div id="pending-claims-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- Expert overview table -->
+  <div style="grid-column:1/-1;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;">👨‍⚖️ Uzman Genel Bakış</div>
+    <div class="experts-table-wrap">
+      <table class="experts-table">
+        <thead>
+          <tr>
+            <th>Uzman</th>
+            <th>Müsaitlik</th>
+            <th>Konu Alanları</th>
+            <th>Şehir</th>
+            <th>Puan</th>
+            <th>Bu Ay Yanıtlanan</th>
+          </tr>
+        </thead>
+        <tbody id="experts-table-body">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Yükleniyor...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -319,6 +358,7 @@
 
   let allReviews = [];
   let allExperts = [];
+  let allRatings = [];
   let currentFilter = 'all';
   let currentCatFilter = null;
 
@@ -338,18 +378,21 @@
 
   // Load everything
   async function loadAll() {
-    const [reviewsRes, expertsRes] = await Promise.all([
+    const [reviewsRes, expertsRes, ratingsRes] = await Promise.all([
       supabase.from('expert_reviews').select('*, profiles:user_id(first_name, last_name, city, country)').order('created_at', { ascending: false }),
-      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url)').eq('is_active', true)
+      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url, city)'),
+      supabase.from('expert_rating_summary').select('*')
     ]);
 
     allReviews = reviewsRes.data || [];
     allExperts = expertsRes.data || [];
+    allRatings = ratingsRes.data || [];
 
     updateStats();
     renderExpertSidebar();
     renderReviews();
     renderPendingClaims();
+    renderExpertsTable();
   }
 
   function renderPendingClaims() {
@@ -387,7 +430,7 @@
     document.getElementById('stat-pending').textContent   = pending;
     document.getElementById('stat-inreview').textContent  = inreview;
     document.getElementById('stat-answered').textContent  = answered;
-    document.getElementById('stat-experts').textContent   = allExperts.length;
+    document.getElementById('stat-experts').textContent   = allExperts.filter(e => e.is_active).length;
     document.getElementById('stat-probono').textContent   = probono;
 
     document.getElementById('count-all').textContent      = allReviews.length;
@@ -406,11 +449,12 @@
 
   function renderExpertSidebar() {
     const container = document.getElementById('expert-list-sidebar');
-    if (!allExperts.length) {
+    const active = allExperts.filter(e => e.is_active);
+    if (!active.length) {
       container.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Henüz uzman yok</div>';
       return;
     }
-    container.innerHTML = allExperts.map(e => `
+    container.innerHTML = active.map(e => `
       <div style="padding:8px 0;border-bottom:1px solid var(--warm);">
         <div style="display:flex;align-items:center;gap:8px;">
           <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
@@ -525,7 +569,7 @@
                 <div style="display:flex;gap:8px;margin-bottom:8px;">
                   <select class="assign-select" id="assign-${r.id}">
                     <option value="">Uzmana Ata...</option>
-                    ${allExperts.filter(e => !e.categories?.length || e.categories.includes(r.category)).map(e =>
+                    ${allExperts.filter(e => e.is_active && (!e.categories?.length || e.categories.includes(r.category))).map(e =>
                       `<option value="${e.id}" ${e.id === r.expert_id ? 'selected' : ''}>${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
                     ).join('')}
                   </select>
@@ -540,6 +584,52 @@
             `}
           </div>
         </div>`;
+    }).join('');
+  }
+
+  function renderExpertsTable() {
+    const tbody = document.getElementById('experts-table-body');
+    if (!allExperts.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Henüz uzman yok</td></tr>';
+      return;
+    }
+
+    const now = new Date();
+    const curMonth = now.getMonth();
+    const curYear = now.getFullYear();
+
+    tbody.innerHTML = allExperts.map(e => {
+      const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim() || 'İsimsiz';
+      const initials = ((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase();
+      const rating = allRatings.find(r => r.expert_id === e.id);
+      const avgRating = rating?.avg_rating ? parseFloat(rating.avg_rating).toFixed(1) : null;
+
+      const monthlyCount = allReviews.filter(r => {
+        if (r.expert_id !== e.id || r.status !== 'answered' || !r.answered_at) return false;
+        const d = new Date(r.answered_at);
+        return d.getMonth() === curMonth && d.getFullYear() === curYear;
+      }).length;
+
+      const cats = (e.categories || []).map(c => `<span class="et-cat">${CAT_ICONS[c] || ''} ${c}</span>`).join('') || '<span style="font-size:11px;color:var(--sand);">—</span>';
+      const city = e.profiles?.city || '—';
+
+      return `
+        <tr>
+          <td>
+            <div class="et-name-cell">
+              <div class="et-avatar">${initials}</div>
+              <div>
+                <div class="et-name">${name}</div>
+                <div class="et-title">${e.title || ''}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="et-avail ${e.is_active ? 'on' : 'off'}">${e.is_active ? '🟢 Müsait' : '⚪ Müsait Değil'}</span></td>
+          <td><div class="et-cats">${cats}</div></td>
+          <td>${city}</td>
+          <td class="et-rating">${avgRating ? avgRating + ' ★' : '—'}</td>
+          <td>${monthlyCount}</td>
+        </tr>`;
     }).join('');
   }
 
