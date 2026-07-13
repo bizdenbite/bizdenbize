@@ -627,6 +627,14 @@
     .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
     .nav-menu { display:flex;gap:2px;flex:1;align-items:center; }
     .nav-item { position:relative; }
+    .nav-cat-pill {
+      display:flex;align-items:center;gap:6px;flex-shrink:0;white-space:nowrap;
+      padding:8px 13px;border-radius:20px;border:1.5px solid var(--sand,#D4C5A9);
+      background:var(--white,#fff);font-size:12px;font-weight:600;color:var(--ink,#1A1208);
+      cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;
+    }
+    .nav-cat-pill:hover { border-color:var(--ink,#1A1208); }
+    .nav-cat-pill.active { background:var(--ink,#1A1208); border-color:var(--ink,#1A1208); color:#fff; }
     .nav-item-btn {
       display:flex;align-items:center;gap:5px;
       padding:8px 12px; border-radius:7px;
@@ -1249,7 +1257,14 @@
     if (mmLogo) mmLogo.innerHTML = `<span style="color:#1A1208">Abi</span><span style="color:#D42B2B">BOT</span>`;
 
     const navMenu = document.getElementById('nav-menu');
-    if (navMenu) navMenu.style.display = 'none';
+    if (navMenu) {
+      navMenu.style.cssText = 'display:flex;gap:6px;flex:1;align-items:center;overflow-x:auto;min-width:0;padding:2px 0;';
+      navMenu.innerHTML = window.BB_CONFIG.categories.map((c, i) =>
+        `<button type="button" class="nav-cat-pill ${i === 0 ? 'active' : ''}" data-cat="${c.id}" onclick="selectCatByName('${c.id}')">
+          <span>${c.icon}</span><span>${c.label}</span>
+        </button>`
+      ).join('');
+    }
 
     const mmSections = document.getElementById('mm-bb-sections');
     if (mmSections) mmSections.style.display = 'none';
@@ -1625,6 +1640,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   function selectCat(el) {
     document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
+    document.querySelectorAll('.nav-cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === el.dataset.cat));
     selectedCat = el.dataset.cat;
     selectedCatPrice = parseInt(el.dataset.price);
     selectedCatIcon = el.dataset.icon;
