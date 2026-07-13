@@ -205,6 +205,7 @@
 
   // ===== OWNER PANEL (private — only the logged-in expert viewing their own profile) =====
   let myExpertId = null;
+  let myExpertName = 'Bir uzman';
   let mySession = null;
   let myReviews = [];
   let myFilter = 'all';
@@ -222,6 +223,9 @@
 
       mySession = session;
       myExpertId = expertRow.id;
+
+      const { data: myProfile } = await supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).single();
+      myExpertName = myProfile ? `${myProfile.first_name || ''} ${myProfile.last_name || ''}`.trim() : 'Bir uzman';
 
       const { data: reviews } = await supabase.from('expert_reviews')
         .select('*, profiles:user_id(first_name, last_name, city)')
@@ -329,9 +333,13 @@
     }).join('');
   }
 
+  const ADMIN_PROFILE_ID = '3e96d976-5c3a-4270-af88-6172f1751f9a';
+
   window.claimReview = async function(reviewId) {
     const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
     if (btn) { btn.disabled = true; btn.textContent = 'Üstleniliyor...'; }
+
+    const reviewBefore = myReviews.find(r => r.id === reviewId);
 
     // Guard against a race with another expert claiming the same question:
     // only succeeds if expert_id is still null at the moment of update.
@@ -343,6 +351,14 @@
 
     if (error || !data || !data.length) {
       alert('Bu soru az önce başka bir uzman tarafından üstlenildi.');
+    } else {
+      await supabase.from('notifications').insert({
+        user_id: ADMIN_PROFILE_ID,
+        type: 'admin_notification',
+        title: '🙋 Soru üstlenildi',
+        body: `${myExpertName}, "${reviewBefore?.category || ''}" kategorisindeki bir soruyu üstlendi.`,
+        link: '/expert-panel.html'
+      });
     }
 
     const { data: reviews } = await supabase.from('expert_reviews')
@@ -375,6 +391,14 @@
         title: 'Uzman yanıtınız hazır! ✅',
         body: 'AbiBOT sorunuz bir uzman tarafından incelendi ve yanıtlandı.',
         link: '/abibot.html'
+      });
+
+      await supabase.from('notifications').insert({
+        user_id: ADMIN_PROFILE_ID,
+        type: 'admin_notification',
+        title: '✅ Soru yanıtlandı',
+        body: `${myExpertName}, "${review.category || ''}" kategorisindeki soruyu yanıtladı.`,
+        link: '/expert-panel.html'
       });
 
       try {
