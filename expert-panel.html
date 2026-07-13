@@ -268,6 +268,8 @@
   let currentUser = null;
   let profile = null;
   let authorized = true;
+  let isAdmin = false;
+  let myExpertId = null;
 
   try {
     const { data: { session } } = await supabase.auth.getSession();
@@ -279,15 +281,18 @@
       currentUser = session.user;
       const { data: p } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
       profile = p;
+      isAdmin = !!profile?.is_admin;
 
-      // Check if user is admin or expert
-      if (!profile?.is_admin) {
-        const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
-        if (!expert) {
-          authorized = false;
-          alert('Bu sayfaya erişim yetkiniz yok.');
-          window.location.replace('mahallem.html');
-        }
+      // Look up expert row regardless of admin status, so admins-who-are-also-experts
+      // and plain experts both get myExpertId set correctly for UI scoping below.
+      const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
+      if (expert) myExpertId = expert.id;
+
+      // Non-admins must have an expert row to be here at all
+      if (!isAdmin && !expert) {
+        authorized = false;
+        alert('Bu sayfaya erişim yetkiniz yok.');
+        window.location.replace('mahallem.html');
       }
     }
   } catch(e) {
@@ -468,21 +473,32 @@
                   ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
                 </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
               }
-            ` : `
+            ` : (isAdmin || r.expert_id === myExpertId) ? `
               <div class="rc-response-area">
                 <div class="rc-section-label">Uzman Yanıtı</div>
+                ${isAdmin ? `
                 <div style="display:flex;gap:8px;margin-bottom:8px;">
                   <select class="assign-select" id="assign-${r.id}">
                     <option value="">Uzmana Ata...</option>
                     ${allExperts.filter(e => !e.categories?.length || e.categories.includes(r.category)).map(e =>
-                      `<option value="${e.id}">${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
+                      `<option value="${e.id}" ${e.id === r.expert_id ? 'selected' : ''}>${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
                     ).join('')}
                   </select>
                   <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
-                </div>
+                </div>` : ''}
                 <textarea class="response-textarea" id="resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
                 <div class="rc-actions">
                   <button class="submit-btn" onclick="submitResponse('${r.id}')">✓ Yanıtı Gönder</button>
+                  <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
+                </div>
+              </div>
+            ` : `
+              <div class="rc-response-area">
+                <div class="rc-section-label">Uzman Yanıtı</div>
+                <div style="padding:12px 14px;background:var(--warm);border-radius:8px;border-left:3px solid var(--sand);font-size:13px;color:var(--muted);">
+                  🕓 Bu soru henüz bir uzmana atanmadı — ekip havuzunda bekliyor. Yanıtlayabilmek için önce size atanması gerekiyor.
+                </div>
+                <div class="rc-actions">
                   <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
                 </div>
               </div>
