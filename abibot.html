@@ -1251,6 +1251,8 @@
   let selectedCat = 'legal';
   let selectedCatPrice = 5;
   let selectedCatIcon = '⚖️';
+  let selectedExpertId = null;
+  let expertSelectionMade = false;
   let credits = 60; // €60 starting credits
   let messageHistory = [];
   let hasAnswered = false;
@@ -2012,6 +2014,8 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     }
 
     // Show modal immediately
+    selectedExpertId = null;
+    expertSelectionMade = false;
     document.getElementById('escalate-modal').classList.add('open');
     document.getElementById('esc-question-preview').textContent = lastQuestion;
     document.getElementById('esc-expert-list').innerHTML =
@@ -2075,25 +2079,13 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       document.getElementById('esc-expert-list').innerHTML =
         '<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted);">Bu kategori için henüz uzman atanmamış.</div>';
     } else {
-      document.getElementById('esc-expert-list').innerHTML = categoryExperts.map((e, i) => {
-        const initials = ((e.profiles?.first_name?.[0]||'') + (e.profiles?.last_name?.[0]||'')).toUpperCase() || 'U';
-        const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim();
-        const avgRating = e.rating ? parseFloat(e.rating).toFixed(1) : null;
-        const ratingHtml = avgRating
-          ? `<span style="font-size:11px;color:var(--gold);font-weight:600;">⭐ ${avgRating}</span>`
-          : '';
-        return `<div class="expert-option" style="cursor:default;pointer-events:none;">
-          <div class="exp-avatar" style="background:${expertColors[i % expertColors.length]}">${initials}</div>
-          <div style="flex:1;">
-            <div class="exp-name">${name}</div>
-            <div class="exp-cred">${e.title || 'Uzman'}</div>
-            ${ratingHtml}
-          </div>
-          <a href="expert-profile.html?id=${e.id}" target="_blank" style="font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;flex-shrink:0;pointer-events:all;" onclick="event.stopPropagation()">👤 Profil</a>
-          <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:#1E7B4B;flex-shrink:0;">Müsait</div>
-        </div>`;
-      }).join('');
+      window._escCategoryExperts = categoryExperts;
+      window._escExpertColors = expertColors;
+      if (selectedExpertId === undefined) selectedExpertId = null;
+      if (!expertSelectionMade) { selectedExpertId = null; expertSelectionMade = true; } // default: send to team
+      renderExpertCards();
     }
+
 
     // Pro-bono check
     const probono = checkProbonoEligibility(profile);
@@ -2104,6 +2096,49 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       const hasSlots = slots?.some(e => (e.probono_slots_used||0) < (e.probono_slots_total||5));
       if (hasSlots) document.getElementById('esc-probono-bar').style.display = 'block';
     }
+  }
+
+  function renderExpertCards() {
+    const categoryExperts = window._escCategoryExperts || [];
+    const expertColors = window._escExpertColors || ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+
+    const teamSelected = expertSelectionMade && selectedExpertId === null;
+    const teamCard = `<div class="expert-option" data-expert-id="" onclick="selectExpert(null)" style="cursor:pointer;${teamSelected ? 'border-color:var(--red);background:rgba(212,43,43,.05);' : ''}">
+      <div class="exp-avatar" style="background:var(--muted);">🧑‍🤝‍🧑</div>
+      <div style="flex:1;">
+        <div class="exp-name">Uzman Ekibimize Bırak</div>
+        <div class="exp-cred">İlk müsait uzman yanıtlasın</div>
+      </div>
+      <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;${teamSelected ? 'background:var(--red);color:#fff;' : 'background:rgba(30,123,75,.1);color:#1E7B4B;'}">${teamSelected ? '✓ Seçildi' : 'Öneri'}</div>
+    </div>`;
+
+    const expertCards = categoryExperts.map((e, i) => {
+      const initials = ((e.profiles?.first_name?.[0]||'') + (e.profiles?.last_name?.[0]||'')).toUpperCase() || 'U';
+      const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim();
+      const avgRating = e.rating ? parseFloat(e.rating).toFixed(1) : null;
+      const ratingHtml = avgRating
+        ? `<span style="font-size:11px;color:var(--gold);font-weight:600;">⭐ ${avgRating}</span>`
+        : '';
+      const isSelected = expertSelectionMade && selectedExpertId === e.id;
+      return `<div class="expert-option" data-expert-id="${e.id}" onclick="selectExpert('${e.id}')" style="cursor:pointer;${isSelected ? 'border-color:var(--red);background:rgba(212,43,43,.05);' : ''}">
+        <div class="exp-avatar" style="background:${expertColors[i % expertColors.length]}">${initials}</div>
+        <div style="flex:1;">
+          <div class="exp-name">${name}</div>
+          <div class="exp-cred">${e.title || 'Uzman'}</div>
+          ${ratingHtml}
+        </div>
+        <a href="expert-profile.html?id=${e.id}" target="_blank" style="font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;flex-shrink:0;" onclick="event.stopPropagation()">👤 Profil</a>
+        <div style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;${isSelected ? 'background:var(--red);color:#fff;' : 'background:rgba(30,123,75,.1);color:#1E7B4B;'}">${isSelected ? '✓ Seçildi' : 'Müsait'}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('esc-expert-list').innerHTML = teamCard + expertCards;
+  }
+
+  function selectExpert(id) {
+    selectedExpertId = id;
+    expertSelectionMade = true;
+    renderExpertCards();
   }
 
   function checkProbonoEligibility(profile) {
@@ -2147,8 +2182,16 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       const userId = session.user.id;
       const userEmail = session.user.email;
 
+      if (!expertSelectionMade) {
+        if (mainBtn) { mainBtn.disabled = false; mainBtn.textContent = 'Uzmana Gönder →'; }
+        alert('Lütfen bir uzman seçin veya ekibimize bırakın.');
+        return;
+      }
+
       const review = {
         user_id: userId,
+        expert_id: selectedExpertId,
+        ...(selectedExpertId ? { assigned_at: new Date().toISOString() } : {}),
         category: selectedCat || 'legal',
         language: selectedLang || 'tr',
         question: lastQuestion || '',
