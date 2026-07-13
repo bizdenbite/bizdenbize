@@ -1287,7 +1287,38 @@
   // abibot.eu aliases this same file (see vercel.json) but shouldn't show BizdenBize's
   // community nav or logo — this is meant to read as AbiBOT's own product now.
   const ABIBOT_HOSTS = ['abibot.eu', 'www.abibot.eu'];
+  const isAbibotDomain = ABIBOT_HOSTS.includes(window.location.hostname);
+
+  // On abibot.eu, AbiBOT shouldn't describe itself as "on the BizdenBize platform" —
+  // it's its own product now. Strips both phrasings used across the category prompts.
+  function stripBizdenBizeRef(prompt) {
+    if (!isAbibotDomain) return prompt;
+    return prompt
+      .replace(/ on the BizdenBize platform/g, '')
+      .replace(/ on BizdenBize helping/g, ' helping');
+  }
+
   if (ABIBOT_HOSTS.includes(window.location.hostname)) {
+    // Browser tab title + PWA "add to home screen" name
+    document.title = 'AbiBOT — Dijital Abiniz';
+    const appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appleTitle) appleTitle.content = 'AbiBOT';
+    const appName = document.querySelector('meta[name="application-name"]');
+    if (appName) appName.content = 'AbiBOT';
+
+    // PWA install banner text
+    const pwaLabel = document.querySelector('#pwa-banner div');
+    if (pwaLabel && pwaLabel.textContent.includes('BizdenBize')) pwaLabel.textContent = "AbiBOT'u yükle";
+    const pwaLogo = document.querySelector('#pwa-banner img');
+    if (pwaLogo) pwaLogo.style.display = 'none'; // no AbiBOT icon asset exists yet to swap in
+
+    // NOTE: og:site_name / og:title (used for link-preview cards on WhatsApp, etc.) are NOT
+    // fixed here — those are static <meta> tags scraped server-side by crawlers that don't
+    // execute JavaScript, so a client-side swap like this wouldn't actually change what
+    // someone sees when this link is shared. Fixing that needs either a build-time template
+    // per domain or Vercel Edge Middleware rewriting the meta tags per-host — a bigger change,
+    // flagged here rather than silently left broken.
+
     document.body.classList.add('abibot-brand');
 
     const logoLink = document.getElementById('nav-logo-link');
@@ -1994,7 +2025,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       }
 
       // ── 3. MAIN ANSWER ──
-      const systemPrompt = systemPrompts[selectedCat] || systemPrompts['legal'];
+      const systemPrompt = stripBizdenBizeRef(systemPrompts[selectedCat] || systemPrompts['legal']);
       const reply = await callClaude(messageHistory, systemPrompt);
       lastAnswer = reply;
       lastQuestion = text;
