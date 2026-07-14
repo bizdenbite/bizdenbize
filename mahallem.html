@@ -12,6 +12,8 @@
   <link rel="canonical" href="https://bizdenbize.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="platform-config.js"></script>
+  <script src="sso.js"></script>
   <style>
     :root {
       --red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;
@@ -785,14 +787,9 @@
       <button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-abibot">
         <a href="abibot.html">🤖 AbiBOT'a Sor</a>
+        <a href="#" id="abibot-eu-link">🌐 abibot.eu'da Aç →</a>
         <hr>
-        <a href="abibot.html">⚖️ Hukuk</a>
-        <a href="abibot.html">🏥 Tıbbi</a>
-        <a href="abibot.html">💼 Çalışma & Sigorta</a>
-        <a href="abibot.html">💶 Vergi & Finans</a>
-        <a href="abibot.html">🛂 Vize & Oturum</a>
-        <a href="abibot.html">👶 Okul & Yardımlar</a>
-        <a href="abibot.html">✈️ Avrupa'ya Göç</a>
+        <div id="abibot-cat-links"></div>
         <hr>
         <a href="uzmanlar.html">👨‍⚖️ Uzmanlar</a>
       </div>
@@ -803,6 +800,17 @@
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<script>
+  // Populate AbiBOT quick-nav from shared config — keeps this dropdown in sync
+  // with the actual category list instead of a hand-maintained copy that can drift.
+  document.getElementById('abibot-cat-links').innerHTML =
+    window.BB_CONFIG.categories.map(c => `<a href="abibot.html">${c.icon} ${c.label}</a>`).join('');
+
+  document.getElementById('abibot-eu-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.BB_SSO.crossTo('https://abibot.eu', '/');
+  });
+</script>
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
@@ -1273,6 +1281,12 @@
     sb = createClient(SUPABASE_URL, SUPABASE_ANON);
     window.supabase = sb;
   }
+
+  // Redeem an incoming cross-domain SSO handoff, if present, before checking
+  // whether we're logged in — otherwise someone arriving from AbiBOT via a
+  // valid handoff link would get bounced to login before ever getting the
+  // chance to actually become authenticated.
+  if (window.BB_SSO) await window.BB_SSO.consumeIfPresent();
 
   const { data: { session } } = await sb.auth.getSession();
   if (!session || !session.user) { window.location.replace('login.html'); return; }
