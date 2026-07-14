@@ -6,6 +6,7 @@
   <title>BizdenBize — Uzman Profili</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="platform-config.js"></script>
   <style>
     :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -119,6 +120,8 @@
     .owner-status-answered{background:rgba(30,123,75,.1);color:var(--green);}
     .owner-card-time{font-size:11px;color:var(--muted);flex-shrink:0;}
     .owner-question{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
+    .owner-abibot-answer{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:#F5F3EF;border-radius:8px;border-left:3px solid var(--sand);}
+    .owner-abibot-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
     .owner-response-ta{width:100%;padding:11px 13px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:8px;}
     .owner-response-ta:focus{border-color:var(--navy);}
     .owner-submit-btn{padding:9px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
@@ -152,17 +155,8 @@
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const CAT_ICONS = {
-    legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
-    housing:'🏠', employment:'💼', school:'🎓',
-    insurance:'🚗', migration:'✈️'
-  };
-  const CAT_NAMES = {
-    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
-    tax:'Vergi & Finans', housing:'Konut & Kira',
-    employment:'İş & Çalışma', school:'Okul & Yardımlar',
-    insurance:'Sigorta & Araç', migration:"Avrupa'ya Göç"
-  };
+  const CAT_ICONS = window.BB_CONFIG.categoryIcons;
+  const CAT_NAMES = window.BB_CONFIG.categoryLabels;
   const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
   const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
 
@@ -332,6 +326,11 @@
             <span class="owner-card-time">${myTimeAgo(r.created_at)}</span>
           </div>
           <div class="owner-question">${myMdToHtml(r.question)}</div>
+          ${r.abibot_answer ? `
+          <div class="owner-abibot-answer">
+            <div class="owner-abibot-label">🤖 AbiBOT'un Önceki Yanıtı — doğrulayın veya düzeltin</div>
+            ${myMdToHtml(r.abibot_answer)}
+          </div>` : ''}
           ${actionHtml}
         </div>`;
     }).join('');
@@ -612,11 +611,7 @@
     housing:5, insurance:5, school:5
   };
 
-  const CAT_NAMES = {
-    legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi',
-    tax:'Vergi & Finans', employment:'İş & Çalışma', migration:"Avrupa'ya Göç",
-    housing:'Konut & Kira', insurance:'Sigorta & Araç', school:'Okul & Yardımlar'
-  };
+  const CAT_NAMES = window.BB_CONFIG.categoryLabels;
 
   // Read expert_id and ?ask=1 from URL
   const params = new URLSearchParams(window.location.search);
