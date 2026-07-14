@@ -120,8 +120,10 @@
     .owner-status-answered{background:rgba(30,123,75,.1);color:var(--green);}
     .owner-card-time{font-size:11px;color:var(--muted);flex-shrink:0;}
     .owner-question{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
-    .owner-abibot-answer{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:#F5F3EF;border-radius:8px;border-left:3px solid var(--sand);}
-    .owner-abibot-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+    .owner-abibot-answer{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:14px 16px;background:#FFF9EC;border:1.5px solid #E8D9A8;border-left:4px solid var(--gold);border-radius:8px;}
+    .owner-abibot-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8A6D1F;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .owner-abibot-toggle{font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;margin-top:6px;display:inline-block;}
+    .owner-abibot-body.collapsed{max-height:90px;overflow:hidden;position:relative;mask-image:linear-gradient(to bottom, black 50%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 50%, transparent 100%);}
     .owner-response-ta{width:100%;padding:11px 13px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:8px;}
     .owner-response-ta:focus{border-color:var(--navy);}
     .owner-submit-btn{padding:9px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
@@ -247,6 +249,40 @@
     return text.replace(/\n/g, '<br>');
   }
 
+  // AbiBOT's stored answers contain real markdown (headers, bold, bullet lists) —
+  // this renders it properly instead of showing raw # / ** / - characters to the expert.
+  function renderAbibotMarkdown(text) {
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+
+      const inlineBold = (s) => s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      if (/^###\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:13px;font-weight:700;color:var(--ink);margin:12px 0 4px;">${inlineBold(line.replace(/^###\s+/, ''))}</div>`;
+      } else if (/^##\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:14px;font-weight:700;color:var(--ink);margin:14px 0 6px;">${inlineBold(line.replace(/^##\s+/, ''))}</div>`;
+      } else if (/^#\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:15px;font-weight:700;color:var(--ink);margin:14px 0 6px;">${inlineBold(line.replace(/^#\s+/, ''))}</div>`;
+      } else if (/^-\s+/.test(line)) {
+        if (!inList) { html += '<ul style="margin:4px 0 8px;padding-left:20px;">'; inList = true; }
+        html += `<li style="margin-bottom:3px;">${inlineBold(line.replace(/^-\s+/, ''))}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="margin-bottom:6px;">${inlineBold(line)}</div>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
   function injectOwnerPanel() {
     if (document.getElementById('owner-panel')) return; // already injected
     const wrap = document.createElement('div');
@@ -328,13 +364,20 @@
           <div class="owner-question">${myMdToHtml(r.question)}</div>
           ${r.abibot_answer ? `
           <div class="owner-abibot-answer">
-            <div class="owner-abibot-label">🤖 AbiBOT'un Önceki Yanıtı — doğrulayın veya düzeltin</div>
-            ${myMdToHtml(r.abibot_answer)}
+            <div class="owner-abibot-label">🤖 AbiBOT'un Önceki Yanıtı — Doğrulayın veya Düzeltin</div>
+            <div class="owner-abibot-body collapsed" id="abibot-body-${r.id}">${renderAbibotMarkdown(r.abibot_answer)}</div>
+            <span class="owner-abibot-toggle" onclick="toggleAbibotAnswer('${r.id}', this)">Tümünü Gör ↓</span>
           </div>` : ''}
           ${actionHtml}
         </div>`;
     }).join('');
   }
+
+  window.toggleAbibotAnswer = function(reviewId, toggleEl) {
+    const body = document.getElementById(`abibot-body-${reviewId}`);
+    const collapsed = body.classList.toggle('collapsed');
+    toggleEl.textContent = collapsed ? 'Tümünü Gör ↓' : 'Daralt ↑';
+  };
 
   const ADMIN_PROFILE_ID = '3e96d976-5c3a-4270-af88-6172f1751f9a';
 
