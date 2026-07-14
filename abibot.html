@@ -721,6 +721,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
   <script src="platform-config.js"></script>
+  <script src="sso.js"></script>
   <script src="i18n.js"></script>
 <script>
   function toggleDropdown(id, btn) {
@@ -1074,6 +1075,9 @@
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
     window.supabase = supabase;
 
+    // Redeem an incoming cross-domain SSO handoff, if we arrived via one
+    if (window.BB_SSO) await window.BB_SSO.consumeIfPresent();
+
     // Load current user's own profile to populate nav avatar (was hardcoded "AY" placeholder)
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -1090,6 +1094,21 @@
     } catch (e) { console.error('Could not load current user profile:', e); }
 
     await loadExpertResponses();
+
+    // Deep link from the "Uzman yanıtınız hazır" email — open straight to the answer
+    const deepLinkReviewId = new URLSearchParams(window.location.search).get('review');
+    if (deepLinkReviewId) {
+      openExpertAnswersModal();
+      setTimeout(() => {
+        const target = document.getElementById(`review-${deepLinkReviewId}`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.style.transition = 'background-color 0.3s';
+          target.style.backgroundColor = 'rgba(30,123,75,.08)';
+          setTimeout(() => { target.style.backgroundColor = ''; }, 2500);
+        }
+      }, 150); // brief delay so the modal's DOM is painted before scrolling
+    }
   })();
 
   // ── RATING WIDGET HELPERS ──
@@ -1206,7 +1225,7 @@
           .replace(/\n/g, '<br>');
 
         return `
-          <div class="msg" style="margin:0;">
+          <div class="msg" style="margin:0;" data-review-id="${review.id}" id="review-${review.id}">
             <div class="msg-body" style="max-width:100%">
               <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;margin-bottom:6px;">
                 ${cat.icon} ${cat.name} · Uzman Yanıtı · ${date}
@@ -1324,6 +1343,17 @@
     const logoLink = document.getElementById('nav-logo-link');
     logoLink.href = '/';
     logoLink.innerHTML = `<span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;"><span style="color:var(--ink)">Abi</span><span style="color:var(--red)">BOT</span></span>`;
+
+    // Cross-domain bridge back to BizdenBize — carries the session over via SSO
+    // if logged in, plain navigation if not (BB_SSO.crossTo handles both).
+    const navRight = document.querySelector('.nav-right');
+    if (navRight) {
+      const bbBtn = document.createElement('div');
+      bbBtn.innerHTML = `🏘️ BizdenBize`;
+      bbBtn.style.cssText = 'cursor:pointer;display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--sand);font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;';
+      bbBtn.onclick = () => window.BB_SSO.crossTo('https://bizdenbize.com', '/mahallem.html');
+      navRight.insertBefore(bbBtn, navRight.firstChild);
+    }
 
     const mmLogo = document.getElementById('mm-logo');
     if (mmLogo) mmLogo.innerHTML = `<span style="color:#1A1208">Abi</span><span style="color:#D42B2B">BOT</span>`;
