@@ -1572,7 +1572,7 @@ window.loadNotifications = async function() {
       list.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Henüz bildiriminiz yok.</div>';
     } else {
       list.innerHTML = notifs.map(n => `
-        <div onclick="openNotification('${n.id}', ${JSON.stringify(n.link || '')})" style="padding:12px 16px;border-bottom:1px solid #F0EAE0;cursor:pointer;${n.is_read ? '' : 'background:#FAF7F2;'}">
+        <div class="notif-item" data-id="${n.id}" data-link="${escapeHtmlNotif(n.link || '')}" style="padding:12px 16px;border-bottom:1px solid #F0EAE0;cursor:pointer;${n.is_read ? '' : 'background:#FAF7F2;'}">
           <div style="font-size:13px;font-weight:600;color:#1A1208;display:flex;align-items:center;gap:6px;">
             ${n.is_read ? '' : '<span style="width:7px;height:7px;border-radius:50%;background:var(--red,#D42B2B);flex-shrink:0;"></span>'}
             ${escapeHtmlNotif(n.title || '')}
@@ -1581,6 +1581,9 @@ window.loadNotifications = async function() {
           <div style="font-size:11px;color:#D4C5A9;margin-top:4px;">${timeAgoNotif(n.created_at)}</div>
         </div>
       `).join('');
+      list.querySelectorAll('.notif-item').forEach(el => {
+        el.addEventListener('click', () => window.openNotification(el.dataset.id, el.dataset.link));
+      });
     }
   }
 
