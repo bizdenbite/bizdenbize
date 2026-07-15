@@ -336,11 +336,11 @@
       if (!isAdmin) {
         authorized = false;
         const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
+        document.body.innerHTML = '<p style="padding:60px;text-align:center;font-family:sans-serif;color:#6B5E4E;">Yönlendiriliyor...</p>';
         if (expert) {
           myExpertId = expert.id;
           window.location.replace('expert-profile.html?id=' + expert.id);
         } else {
-          alert('Bu sayfaya erişim yetkiniz yok.');
           window.location.replace('mahallem.html');
         }
       }
@@ -348,7 +348,16 @@
   } catch(e) {
     console.error('Auth error:', e);
     authorized = false;
+    document.body.innerHTML = '<p style="padding:60px;text-align:center;font-family:sans-serif;color:#6B5E4E;">Yönlendiriliyor...</p>';
     window.location.replace('login.html');
+  }
+
+  // Hard stop: prevents ANY further script execution for unauthorized users —
+  // including the auto-refresh interval below. Without this, a redirect
+  // could be delayed (e.g. by a blocking alert or slow navigation) long
+  // enough for later code to still run and load/render real data.
+  if (!authorized) {
+    throw new Error('Unauthorized — halting expert-panel.html execution.');
   }
 
   // Update avatar with real initials
@@ -823,8 +832,9 @@
     await loadAll();
   };
 
-  if (authorized) loadAll();
-  // Auto-refresh every 30 seconds
+  // (Reaching this point means authorized === true; unauthorized sessions
+  // were already halted above via the thrown error.)
+  loadAll();
   setInterval(loadAll, 30000);
 </script>
 </body>
