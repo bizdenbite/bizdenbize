@@ -427,11 +427,18 @@
     const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
     btn.disabled = true; btn.textContent = 'Gönderiliyor...';
 
-    await supabase.from('expert_reviews').update({
+    const { error: updateErr } = await supabase.from('expert_reviews').update({
       expert_response: response,
       status: 'answered',
       answered_at: new Date().toISOString()
     }).eq('id', reviewId);
+
+    if (updateErr) {
+      console.error('Failed to save answer:', updateErr);
+      alert('Yanıt kaydedilemedi: ' + (updateErr.message || 'Bilinmeyen hata') + '\n\nLütfen tekrar deneyin veya destek ile iletişime geçin.');
+      btn.disabled = false; btn.textContent = '✓ Yanıtı Gönder';
+      return;
+    }
 
     const review = myReviews.find(r => r.id === reviewId);
     if (review) {

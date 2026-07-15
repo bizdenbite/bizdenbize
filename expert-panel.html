@@ -747,7 +747,14 @@
       answered_at: new Date().toISOString()
     };
     if (assignedExpertId) updatePayload.expert_id = assignedExpertId;
-    await supabase.from('expert_reviews').update(updatePayload).eq('id', reviewId);
+    const { error: updateErr } = await supabase.from('expert_reviews').update(updatePayload).eq('id', reviewId);
+
+    if (updateErr) {
+      console.error('Failed to save answer:', updateErr);
+      alert('Yanıt kaydedilemedi: ' + (updateErr.message || 'Bilinmeyen hata'));
+      btn.disabled = false; btn.textContent = '✓ Yanıtı Gönder';
+      return;
+    }
 
     // Get user_id to notify
     const review = allReviews.find(r => r.id === reviewId);
