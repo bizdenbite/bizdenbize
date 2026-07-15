@@ -338,7 +338,11 @@
       let actionHtml;
       if (isAnswered) {
         actionHtml = `<div class="owner-answered-box">${myMdToHtml(r.expert_response || '')}</div>`;
-      } else if (isMine && r.claim_status === 'approved') {
+      } else if (isMine && (r.claim_status === 'approved' || r.claim_status == null)) {
+        // claim_status is null for questions assigned directly (e.g. paid
+        // "Doğrudan Soru Sor" submissions) — these skip the claim/approval
+        // workflow entirely, so they're ready to answer immediately, same
+        // as an approved claim.
         actionHtml = `
           <textarea class="owner-response-ta" id="owner-resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
           <button class="owner-submit-btn" onclick="submitMyResponse('${r.id}')">✓ Yanıtı Gönder</button>
@@ -790,7 +794,11 @@
         link: '/abibot.html'
       });
 
-      // Email notification
+      // Email notification — confirms submission to the ASKER (this
+      // template's subject/body are written to the person who just asked,
+      // e.g. "Sorunuz uzmana iletildi"). No expert-facing notification
+      // currently exists for direct questions — see backlog: a new email
+      // type/template needs to be built for that (TC-036).
       try {
         await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
           method: 'POST',
