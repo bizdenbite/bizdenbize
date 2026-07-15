@@ -676,6 +676,7 @@
         .select('expert_credits, first_name, last_name')
         .eq('id', session.user.id).single();
       window._userCredits = p?.expert_credits || 0;
+      window._userName = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
     }
     // Auto-open modal if ?ask=1
     if (params.get('ask') === '1') {
@@ -796,9 +797,7 @@
 
       // Email notification — confirms submission to the ASKER (this
       // template's subject/body are written to the person who just asked,
-      // e.g. "Sorunuz uzmana iletildi"). No expert-facing notification
-      // currently exists for direct questions — see backlog: a new email
-      // type/template needs to be built for that (TC-036).
+      // e.g. "Sorunuz uzmana iletildi").
       try {
         await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
           method: 'POST',
@@ -813,7 +812,35 @@
             }
           })
         });
-      } catch(emailErr) { console.warn('Email notification failed:', emailErr); }
+      } catch(emailErr) { console.warn('Asker email notification failed:', emailErr); }
+
+      // Email notification — separately notifies the EXPERT that a new
+      // direct question is waiting for them. window._expertId is the
+      // experts.id from the URL, not a user id, so we look up profile_id
+      // to know who to actually email. See Backlog #22.
+      try {
+        const { data: expertRow } = await supabase.from('experts')
+          .select('profile_id').eq('id', window._expertId).single();
+
+        if (expertRow?.profile_id) {
+          await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON}` },
+            body: JSON.stringify({
+              type: 'direct_question_expert',
+              user_id: expertRow.profile_id,
+              data: {
+                asker_name: window._userName || 'Bir üye',
+                category: cat,
+                category_name: CAT_NAMES[cat] || cat,
+                expert_row_id: window._expertId
+              }
+            })
+          });
+        } else {
+          console.warn('Could not resolve expert profile_id — expert email not sent.');
+        }
+      } catch(emailErr) { console.warn('Expert email notification failed:', emailErr); }
 
       // Success state
       document.querySelector('.modal-body').innerHTML = `
