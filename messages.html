@@ -464,7 +464,7 @@
     </div>
   </div>
   <div class="nav-right">
-    <button class="nav-notif">🔔<div class="notif-dot"></div></button>
+    <button class="nav-notif" id="notif-bell-btn" onclick="toggleNotifPanel(event)">🔔<div class="notif-dot" id="notif-dot" style="display:none;"></div></button><div id="notif-panel" style="display:none;position:absolute;top:54px;right:64px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:0;width:320px;max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:300;"><div style="padding:14px 16px;border-bottom:1px solid #F0EAE0;font-size:14px;font-weight:700;color:#1A1208;">Bildirimler</div><div id="notif-list"><div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Yükleniyor...</div></div></div>
     <div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
   </div>
 </nav>
@@ -555,6 +555,7 @@
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+  window.supabase = supabase;
 
   const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#534AB7','#854F0B'];
   function colorFor(id) {
@@ -904,6 +905,7 @@
   };
 
   init();
+  if (window.loadNotifications) window.loadNotifications();
 </script>
 <script>
   // Mobile menu
@@ -914,6 +916,69 @@
     menu.classList.toggle('open');
     document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
   }
+
+// ── NOTIFICATIONS (same logic as mahallem.html) ──
+function escapeHtmlNotif(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function timeAgoNotif(iso) {
+  const diffMin = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (diffMin < 1) return 'Az önce';
+  if (diffMin < 60) return `${diffMin} dk önce`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} saat önce`;
+  return `${Math.round(diffHr / 24)} gün önce`;
+}
+window.loadNotifications = async function() {
+  const sb = window.supabase;
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const { data: notifs, error } = await sb.from('notifications')
+    .select('*').eq('user_id', session.user.id)
+    .order('created_at', { ascending: false }).limit(15);
+  const list = document.getElementById('notif-list');
+  if (list) {
+    if (error || !notifs || notifs.length === 0) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Henüz bildiriminiz yok.</div>';
+    } else {
+      list.innerHTML = notifs.map(n => `
+        <div onclick="openNotification('${n.id}', ${JSON.stringify(n.link || '')})" style="padding:12px 16px;border-bottom:1px solid #F0EAE0;cursor:pointer;${n.is_read ? '' : 'background:#FAF7F2;'}">
+          <div style="font-size:13px;font-weight:600;color:#1A1208;display:flex;align-items:center;gap:6px;">
+            ${n.is_read ? '' : '<span style="width:7px;height:7px;border-radius:50%;background:var(--red,#D42B2B);flex-shrink:0;"></span>'}
+            ${escapeHtmlNotif(n.title || '')}
+          </div>
+          ${n.body ? `<div style="font-size:12px;color:#6B5E4E;margin-top:3px;line-height:1.4;">${escapeHtmlNotif(n.body)}</div>` : ''}
+          <div style="font-size:11px;color:#D4C5A9;margin-top:4px;">${timeAgoNotif(n.created_at)}</div>
+        </div>
+      `).join('');
+    }
+  }
+  const unread = (notifs || []).filter(n => !n.is_read).length;
+  const dot = document.getElementById('notif-dot');
+  if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+};
+window.toggleNotifPanel = function(e) {
+  if (e) e.preventDefault();
+  const panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  const opening = panel.style.display === 'none' || !panel.style.display;
+  panel.style.display = opening ? 'block' : 'none';
+  if (opening) window.loadNotifications();
+};
+window.openNotification = async function(id, link) {
+  const sb = window.supabase;
+  if (sb) { try { await sb.from('notifications').update({ is_read: true }).eq('id', id); } catch(e) {} }
+  if (link) window.location.href = link;
+  else window.loadNotifications();
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#notif-bell-btn') && !e.target.closest('#notif-panel')) {
+    const panel = document.getElementById('notif-panel');
+    if (panel) panel.style.display = 'none';
+  }
+});
+
   // Close on outside click
   document.addEventListener('click', function(e) {
     const menu = document.getElementById('mobile-menu');
