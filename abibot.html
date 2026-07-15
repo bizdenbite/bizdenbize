@@ -836,7 +836,7 @@
     </div>
   </div>
   <div class="nav-right">
-    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">12 kredi</span></div><div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">— kredi</span></div><div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -1079,17 +1079,22 @@
     if (window.BB_SSO) await window.BB_SSO.consumeIfPresent();
 
     // Load current user's own profile to populate nav avatar (was hardcoded "AY" placeholder)
+    // and credit balance (was hardcoded "12 kredi" placeholder — see Backlog).
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('first_name, last_name')
+          .select('first_name, last_name, expert_credits')
           .eq('id', user.id)
           .single();
         const initials = ((profile?.first_name?.[0] || '') + (profile?.last_name?.[0] || '')).toUpperCase() || 'K';
         window.__bbUserInitials = initials;
         document.querySelectorAll('#nav-avatar, #mm-avatar').forEach(el => el.textContent = initials);
+
+        window.__bbUserCredits = profile?.expert_credits || 0;
+        const creditDisplay = document.getElementById('credit-display');
+        if (creditDisplay) creditDisplay.textContent = window.__bbUserCredits + ' kredi';
       }
     } catch (e) { console.error('Could not load current user profile:', e); }
 
