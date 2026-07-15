@@ -640,6 +640,9 @@
       <button class="btn-confirm" id="ask-confirm-btn" onclick="submitDirectQuestion()" disabled>
         Soruyu Gönder →
       </button>
+      <a href="premium.html" id="buy-credit-cta" style="display:none;text-align:center;padding:11px 16px;margin-top:8px;background:var(--gold);color:var(--ink);border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">
+        💳 Kredi Yükle →
+      </a>
       <button class="btn-cancel" onclick="closeAskModal()">İptal</button>
     </div>
   </div>
@@ -685,7 +688,7 @@
     updateBalanceLabel();
   })();
 
-  window.openAskModal = function() {
+  window.openAskModal = async function() {
     if (!window._session) {
       const go = confirm('Soru sormak için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
       if (go) window.location.href = 'login.html';
@@ -693,7 +696,18 @@
     }
     document.getElementById('ask-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+
+    // Re-fetch the real balance fresh on every open — the page-load fetch
+    // may not have resolved yet (race condition, was showing 0 or a stale
+    // value), and credits could also have changed since page load (e.g.
+    // another tab/session). Show a neutral state while this resolves.
+    document.getElementById('balance-label').textContent = 'Bakiyeniz kontrol ediliyor...';
+    const { data: p } = await supabase.from('profiles')
+      .select('expert_credits').eq('id', window._session.user.id).single();
+    window._userCredits = p?.expert_credits || 0;
+
     updateBalanceLabel();
+    updatePrice();
   };
 
   window.closeAskModal = function() {
@@ -745,6 +759,9 @@
     }
 
     btn.disabled = !cat || !q || !canAfford || q.length < 20;
+
+    const buyCta = document.getElementById('buy-credit-cta');
+    if (buyCta) buyCta.style.display = (cat && !canAfford) ? 'block' : 'none';
 
     if (cat && !canAfford) {
       btn.textContent = `Yetersiz kredi (${price} gerekli, ${window._userCredits} mevcut)`;
