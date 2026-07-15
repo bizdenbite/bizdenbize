@@ -880,7 +880,7 @@
       <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🔔</span>Bildirimler<span class="sidebar-badge">7</span></a>
       <a class="sidebar-link" href="#"><span class="sidebar-link-icon">🎟️</span>Davetiyelerim</a>
       <a class="sidebar-link" href="library.html"><span class="sidebar-link-icon">📚</span>Bilgiler</a>
-      <a class="sidebar-link" href="admin.html"><span class="sidebar-link-icon">⚙️</span>Admin Paneli</a>
+      <a class="sidebar-link" href="admin.html" id="admin-panel-link" style="display:none;"><span class="sidebar-link-icon">⚙️</span>Admin Paneli</a>
       <a class="sidebar-link" href="expert-panel.html" id="expert-panel-link" style="display:none;"><span class="sidebar-link-icon">🛡️</span>Uzman Paneli</a>
     </div>
 
@@ -1379,6 +1379,12 @@
   if (city) {
     document.getElementById('filter-city').textContent = `📍 ${city}`;
     document.getElementById('user-city-label').textContent = city;
+  }
+
+  // Show admin panel link only for actual admins
+  if (profile?.is_admin) {
+    const adminLink = document.getElementById('admin-panel-link');
+    if (adminLink) adminLink.style.display = 'flex';
   }
 
   // Show expert panel link if user is an expert
