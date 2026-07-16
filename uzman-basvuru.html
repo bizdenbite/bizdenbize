@@ -84,6 +84,8 @@
 
   let selectedCats = [];
   let selectedLangs = [];
+  let phoneVerified = false;
+  let verifiedPhoneValue = '';
 
   function statusBox(icon, title, text) {
     return `<div class="status-box">
@@ -111,8 +113,20 @@
         </div>
         <div class="field">
           <label class="field-label">Telefon</label>
-          <input type="tel" class="text-input" id="app-phone" placeholder="+49 151 234 5678">
-          <div class="field-hint">Ekibimiz sizinle iletişim kurabilmek için bu bilgiyi kullanır. Herkese açık profilinizde gösterilmez.</div>
+          <div style="display:flex;gap:8px;">
+            <input type="tel" class="text-input" id="app-phone" placeholder="+49 151 234 5678" style="flex:1;" oninput="window._onPhoneEdited()">
+            <button type="button" id="app-phone-verify-btn" onclick="window._sendPhoneOtp()" style="flex-shrink:0;padding:0 18px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;white-space:nowrap;">Doğrula</button>
+          </div>
+          <div class="field-hint">Ekibimiz sizinle iletişim kurabilmek için bu bilgiyi kullanır. Herkese açık profilinizde gösterilmez. Uzman başvuruları için telefon doğrulaması zorunludur.</div>
+          <div id="app-phone-otp-box" style="display:none;margin-top:10px;padding:14px;background:var(--warm);border:1.5px solid var(--sand);border-radius:9px;">
+            <label class="field-label">Doğrulama Kodu</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" class="text-input" id="app-phone-otp" placeholder="6 haneli kod" maxlength="6" style="flex:1;">
+              <button type="button" onclick="window._verifyPhoneOtp()" style="flex-shrink:0;padding:0 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Onayla</button>
+            </div>
+            <div id="app-phone-otp-msg" style="font-size:12px;margin-top:8px;"></div>
+          </div>
+          <div id="app-phone-verified-badge" style="display:none;margin-top:8px;font-size:12px;font-weight:600;color:var(--green);">✅ Telefon doğrulandı</div>
         </div>
         <div class="field">
           <label class="field-label">Adres</label>
@@ -140,6 +154,61 @@
     `;
   }
 
+  window._onPhoneEdited = function() {
+    // If they change the number after verifying, the verification no longer
+    // applies to whatever's currently in the box — require it again.
+    if (phoneVerified && document.getElementById('app-phone').value.trim() !== verifiedPhoneValue) {
+      phoneVerified = false;
+      document.getElementById('app-phone-verified-badge').style.display = 'none';
+      document.getElementById('app-phone-otp-box').style.display = 'none';
+    }
+  };
+
+  window._sendPhoneOtp = async function() {
+    const phone = document.getElementById('app-phone').value.trim();
+    if (!phone || phone.length < 8) { alert('Lütfen geçerli bir telefon numarası girin (örn: +49 151 234 5678).'); return; }
+
+    const btn = document.getElementById('app-phone-verify-btn');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+    try {
+      const { error } = await supabase.auth.updateUser({ phone });
+      if (error) throw error;
+      document.getElementById('app-phone-otp-box').style.display = 'block';
+      document.getElementById('app-phone-otp-msg').textContent = 'Kod gönderildi. Gelmediyse birkaç dakika bekleyip tekrar deneyin.';
+      document.getElementById('app-phone-otp-msg').style.color = 'var(--muted)';
+      btn.textContent = 'Tekrar Gönder';
+    } catch(e) {
+      console.error('Phone OTP send error:', e);
+      alert('Kod gönderilemedi: ' + (e.message || 'Lütfen tekrar deneyin.'));
+      btn.textContent = 'Doğrula';
+    }
+    btn.disabled = false;
+  };
+
+  window._verifyPhoneOtp = async function() {
+    const phone = document.getElementById('app-phone').value.trim();
+    const code = document.getElementById('app-phone-otp').value.trim();
+    const msg = document.getElementById('app-phone-otp-msg');
+    if (!code) { msg.textContent = 'Lütfen kodu girin.'; msg.style.color = 'var(--red)'; return; }
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({ phone, token: code, type: 'phone_change' });
+      if (error) throw error;
+
+      phoneVerified = true;
+      verifiedPhoneValue = phone;
+      document.getElementById('app-phone-otp-box').style.display = 'none';
+      document.getElementById('app-phone-verified-badge').style.display = 'block';
+      document.getElementById('app-phone').disabled = true;
+      document.getElementById('app-phone-verify-btn').style.display = 'none';
+    } catch(e) {
+      console.error('Phone OTP verify error:', e);
+      msg.textContent = 'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.';
+      msg.style.color = 'var(--red)';
+    }
+  };
+
   window._toggleCat = function(id) {
     selectedCats = selectedCats.includes(id) ? selectedCats.filter(c => c !== id) : [...selectedCats, id];
     document.querySelector(`#app-cats .chip[data-id="${id}"]`).classList.toggle('selected');
@@ -159,6 +228,7 @@
 
     if (!title || !bio) { alert('Lütfen unvan ve hakkınızda alanlarını doldurun.'); return; }
     if (!phone) { alert('Lütfen telefon numaranızı girin.'); return; }
+    if (!phoneVerified || phone !== verifiedPhoneValue) { alert('Lütfen telefon numaranızı doğrulayın.'); return; }
     if (!address) { alert('Lütfen adresinizi girin.'); return; }
     if (!selectedCats.length) { alert('Lütfen en az bir uzmanlık alanı seçin.'); return; }
     if (!selectedLangs.length) { alert('Lütfen en az bir dil seçin.'); return; }
@@ -173,6 +243,8 @@
         profile_id: session.user.id,
         title, bio,
         phone, address,
+        phone_verified: true,
+        phone_verified_at: new Date().toISOString(),
         whatsapp_consent: whatsappConsent,
         categories: selectedCats,
         languages: selectedLangs,

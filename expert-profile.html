@@ -202,6 +202,8 @@
   // ===== OWNER PANEL (private — only the logged-in expert viewing their own profile) =====
   let myExpertId = null;
   let myExpertName = 'Bir uzman';
+  let myExpertPhone = '';
+  let myPhoneVerified = false;
   let mySession = null;
   let myReviews = [];
   let myFilter = 'all';
@@ -214,11 +216,13 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: expertRow } = await supabase.from('experts').select('id, profile_id').eq('id', expertRowId).single();
+      const { data: expertRow } = await supabase.from('experts').select('id, profile_id, phone, phone_verified').eq('id', expertRowId).single();
       if (!expertRow || expertRow.profile_id !== session.user.id) return; // not the owner — public view stays as-is
 
       mySession = session;
       myExpertId = expertRow.id;
+      myExpertPhone = expertRow.phone || '';
+      myPhoneVerified = !!expertRow.phone_verified;
 
       const { data: myProfile } = await supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).single();
       myExpertName = myProfile ? `${myProfile.first_name || ''} ${myProfile.last_name || ''}`.trim() : 'Bir uzman';
@@ -285,6 +289,7 @@
 
   function injectOwnerPanel() {
     if (document.getElementById('owner-panel')) return; // already injected
+    injectPhonePanel();
     const wrap = document.createElement('div');
     wrap.className = 'owner-panel';
     wrap.id = 'owner-panel';
@@ -304,6 +309,97 @@
     document.getElementById('page-content').appendChild(wrap);
     renderMyReviews();
   }
+
+  function injectPhonePanel() {
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'phone-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">📱 Telefon Doğrulama</div>
+      </div>
+      <div class="owner-panel-note">Bu bilgi yalnızca siz ve ekibimiz tarafından görülür.</div>
+      <div id="phone-panel-body"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderPhonePanel();
+  }
+
+  function renderPhonePanel() {
+    const body = document.getElementById('phone-panel-body');
+    if (myPhoneVerified && myExpertPhone) {
+      body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:9px;">
+          <div style="font-size:13px;font-weight:600;color:var(--green);">✅ Doğrulandı: ${myExpertPhone}</div>
+          <button onclick="window._startPhoneChange()" style="padding:7px 14px;background:none;border:1.5px solid var(--sand);border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">Numarayı Değiştir</button>
+        </div>`;
+    } else {
+      body.innerHTML = `
+        <div style="padding:10px 14px;background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:12px;">
+          ⚠️ Telefon numaranız henüz doğrulanmadı. Kullanıcıların size WhatsApp üzerinden ulaşabilmesi için doğrulama gereklidir.
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="tel" class="cat-select" id="phone-panel-input" placeholder="+49 151 234 5678" style="flex:1;" value="${myExpertPhone || ''}">
+          <button onclick="window._sendExpertPhoneOtp()" id="phone-panel-send-btn" style="flex-shrink:0;padding:0 18px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Doğrula</button>
+        </div>
+        <div id="phone-panel-otp-box" style="display:none;margin-top:10px;padding:14px;background:var(--warm);border:1.5px solid var(--sand);border-radius:9px;">
+          <label class="field-label">Doğrulama Kodu</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="cat-select" id="phone-panel-otp" placeholder="6 haneli kod" maxlength="6" style="flex:1;">
+            <button onclick="window._verifyExpertPhoneOtp()" style="flex-shrink:0;padding:0 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Onayla</button>
+          </div>
+          <div id="phone-panel-otp-msg" style="font-size:12px;margin-top:8px;color:var(--muted);"></div>
+        </div>`;
+    }
+  }
+
+  window._startPhoneChange = function() {
+    myPhoneVerified = false;
+    renderPhonePanel();
+  };
+
+  window._sendExpertPhoneOtp = async function() {
+    const phone = document.getElementById('phone-panel-input').value.trim();
+    if (!phone || phone.length < 8) { alert('Lütfen geçerli bir telefon numarası girin.'); return; }
+    const btn = document.getElementById('phone-panel-send-btn');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+    try {
+      const { error } = await supabase.auth.updateUser({ phone });
+      if (error) throw error;
+      document.getElementById('phone-panel-otp-box').style.display = 'block';
+      document.getElementById('phone-panel-otp-msg').textContent = 'Kod gönderildi.';
+      btn.textContent = 'Tekrar Gönder';
+    } catch(e) {
+      console.error('Expert phone OTP send error:', e);
+      alert('Kod gönderilemedi: ' + (e.message || 'Lütfen tekrar deneyin.'));
+      btn.textContent = 'Doğrula';
+    }
+    btn.disabled = false;
+  };
+
+  window._verifyExpertPhoneOtp = async function() {
+    const phone = document.getElementById('phone-panel-input').value.trim();
+    const code = document.getElementById('phone-panel-otp').value.trim();
+    const msg = document.getElementById('phone-panel-otp-msg');
+    if (!code) { msg.textContent = 'Lütfen kodu girin.'; msg.style.color = 'var(--red)'; return; }
+    try {
+      const { error: otpErr } = await supabase.auth.verifyOtp({ phone, token: code, type: 'phone_change' });
+      if (otpErr) throw otpErr;
+
+      const { error: updateErr } = await supabase.from('experts')
+        .update({ phone, phone_verified: true, phone_verified_at: new Date().toISOString() })
+        .eq('id', myExpertId);
+      if (updateErr) throw updateErr;
+
+      myExpertPhone = phone;
+      myPhoneVerified = true;
+      renderPhonePanel();
+    } catch(e) {
+      console.error('Expert phone OTP verify error:', e);
+      msg.textContent = 'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.';
+      msg.style.color = 'var(--red)';
+    }
+  };
 
   window.setMyFilter = function(filter, btn) {
     myFilter = filter;
