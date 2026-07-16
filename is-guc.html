@@ -949,9 +949,10 @@
       <div style="background:var(--warm);border-radius:10px;padding:12px 14px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Diller</div><div style="font-size:13px;font-weight:600;color:var(--ink);">🌐 ${s.lang || '—'}</div></div>
       <div style="background:var(--warm);border-radius:10px;padding:12px 14px;grid-column:1/-1;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Beceriler</div><div style="display:flex;gap:5px;flex-wrap:wrap;">${(s.skills||[]).map(sk => `<span style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--sand);color:var(--muted);">${sk}</span>`).join("")}</div></div>`;
     const isEmail = (s.contact||'').includes("@");
-    document.getElementById('detail-contact-btn').href = isEmail ? `mailto:${s.contact}` : `tel:${s.contact}`;
+    const seekerMailSubject = encodeURIComponent(`BizdenBize'deki "${s.name}" profili hakkında`);
+    document.getElementById('detail-contact-btn').href = isEmail ? `mailto:${s.contact}?subject=${seekerMailSubject}` : `tel:${s.contact}`;
     document.getElementById('detail-contact-btn').innerHTML = isEmail ? "✉️ E-posta Gönder" : "📞 Ara";
-    document.getElementById('detail-whatsapp-btn').href = isEmail ? "#" : `https://wa.me/${(s.contact||'').replace(/\s|\+/g,"")}`;
+    document.getElementById('detail-whatsapp-btn').href = isEmail ? "#" : `https://wa.me/${(s.contact||'').replace(/\s|\+/g,"")}?text=${encodeURIComponent(`Merhaba ${s.name}, BizdenBize'deki profilinizi gördüm, iş fırsatı hakkında konuşmak isterim.`)}`;
     document.getElementById('detail-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1361,10 +1362,11 @@
     const isPhone = l.contact.startsWith('+');
     const phoneClean = l.contact.replace(/\s+/g, '').replace('+', '');
 
-    contactBtn.href = isEmail ? `mailto:${l.contact}` : isPhone ? `tel:${l.contact}` : '#';
+    const mailSubject = encodeURIComponent(`BizdenBize'deki "${l.title}" ilanı hakkında`);
+    contactBtn.href = isEmail ? `mailto:${l.contact}?subject=${mailSubject}` : isPhone ? `tel:${l.contact}` : '#';
     contactBtn.innerHTML = isEmail ? '✉️ E-posta Gönder' : '📞 Ara';
 
-    waBtn.href = isPhone ? `https://wa.me/${phoneClean}` : isEmail ? `https://wa.me/?text=Merhaba, BizdenBize'deki "${l.title}" ilanınızla ilgili bilgi almak istiyorum.` : '#';
+    waBtn.href = isPhone ? `https://wa.me/${phoneClean}?text=${encodeURIComponent(`Merhaba, BizdenBize'deki "${l.title}" ilanınızla ilgili bilgi almak istiyorum.`)}` : isEmail ? `https://wa.me/?text=Merhaba, BizdenBize'deki "${l.title}" ilanınızla ilgili bilgi almak istiyorum.` : '#';
     waBtn.target = '_blank';
 
     document.getElementById('detail-modal').classList.add('open');
