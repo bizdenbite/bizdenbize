@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Nachhilfe & Özel Ders</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="Nachhilfe & Özel Ders — BizdenBize">
+  <meta property="og:description" content="Çocuğunuz için güvenilir, Türkçe konuşan özel öğretmen bulun — ya da kendi derslerinizi listeleyin.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/nachhilfe.html">
+  <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
@@ -350,8 +356,8 @@
       <div class="field-row">
         <div><label class="field-label">Seviye *</label>
           <select class="field-input" id="tm-level">
-            <option>Grundschule (1-4)</option><option>Hauptschule</option>
-            <option>Realschule</option><option>Gymnasium</option><option>Abitur / Lise Son</option>
+            <option value="Grundschule">Grundschule (1-4)</option><option value="Hauptschule">Hauptschule</option>
+            <option value="Realschule">Realschule</option><option value="Gymnasium">Gymnasium</option><option value="Abitur">Abitur / Lise Son</option>
           </select>
         </div>
         <div><label class="field-label">Format</label>
@@ -420,7 +426,7 @@
 <script>
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
 
   async function sbGet(table, params) {
@@ -434,6 +440,7 @@
   }
 
 const avatarColors = ['#4338CA','#0891B2','#D42B2B','#1E7B4B','#C9A84C','#6B3FA0','#D97706'];
+const LEVEL_LABELS = { Grundschule:'Grundschule (1-4)', Hauptschule:'Hauptschule', Realschule:'Realschule', Gymnasium:'Gymnasium', Abitur:'Abitur / Lise Son' };
 
 let activePills = { online: false, inperson: false, free: false };
 
@@ -499,7 +506,7 @@ function filterAndRender() {
       </div>
       <div class="card-tags">
         ${t.turkish ? '<span class="ctag ctag-turkish">🇹🇷 Türkçe</span>' : ''}
-        ${t.levels.slice(0,2).map(l => `<span class="ctag ctag-level">${l}</span>`).join('')}
+        ${t.levels.slice(0,2).map(l => `<span class="ctag ctag-level">${LEVEL_LABELS[l] || l}</span>`).join('')}
         ${t.format === 'online' || t.format === 'both' ? '<span class="ctag ctag-online">🌍 Online</span>' : ''}
         ${t.format === 'inperson' || t.format === 'both' ? '<span class="ctag ctag-inperson">📍 Yüz yüze</span>' : ''}
       </div>
@@ -513,9 +520,10 @@ function filterAndRender() {
 }
 
 function openDetail(id) {
-  const t = (window._tutors || []).find(x => x.id === id);
+  const allTutors = window._tutors || [];
+  const t = allTutors.find(x => x.id === id);
   if (!t) return;
-  const i = tutors.indexOf(t);
+  const i = allTutors.indexOf(t);
   document.getElementById('dm-avatar').style.background = avatarColors[i % avatarColors.length];
   document.getElementById('dm-avatar').textContent = t.name.split(' ').map(n=>n[0]).join('').slice(0,2);
   document.getElementById('dm-name').textContent = t.name;
@@ -525,14 +533,21 @@ function openDetail(id) {
     <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.price_label}</div></div>
     <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : t.format === 'inperson' ? '📍 Yüz yüze' : t.format || '—'}</div></div>
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating || '—'} (${t.review_count || 0})</div></div>
-    <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${t.levels.join(', ')}</div></div>`;
+    <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${t.levels.map(l => LEVEL_LABELS[l] || l).join(', ')}</div></div>`;
   document.getElementById('dm-tags').innerHTML = `
     ${t.turkish ? '<span class="ctag ctag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe ders</span>' : ''}
     <span class="ctag ctag-level" style="font-size:11px;padding:3px 10px;">${t.subject}</span>`;
   const isEmail = t.contact.includes('@');
-  document.getElementById('dm-contact-btn').onclick = () => window.location.href = isEmail ? `mailto:${t.contact}` : `tel:${t.contact}`;
+  const tutorMailSubject = encodeURIComponent(`BizdenBize'deki "${t.name}" özel ders ilanı hakkında`);
+  document.getElementById('dm-contact-btn').onclick = () => window.location.href = isEmail ? `mailto:${t.contact}?subject=${tutorMailSubject}` : `tel:${t.contact}`;
   document.getElementById('dm-contact-btn').textContent = isEmail ? '✉️ E-posta' : '📞 Ara';
-  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${t.contact.replace(/\s|\+|-/g,'')}`, '_blank');
+  const dmWaBtn = document.getElementById('dm-wa-btn');
+  if (isEmail) {
+    dmWaBtn.style.display = 'none';
+  } else {
+    dmWaBtn.style.display = '';
+    dmWaBtn.onclick = () => window.open(`https://wa.me/${t.contact.replace(/\s|\+|-/g,'')}?text=${encodeURIComponent(`Merhaba, BizdenBize üzerinden ${t.name} ile özel ders hakkında görüşmek istiyorum.`)}`, '_blank');
+  }
   document.getElementById('detail-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -620,9 +635,19 @@ async function renderSeekers() {
       </div>
       <div class="seeker-footer">
         <span style="font-size:11px;color:var(--sand);">${new Date(r.created_at).toLocaleDateString('tr-TR')}</span>
-        <button class="contact-seeker-btn" onclick="window.location.href='mailto:${r.contact}'">İletişim →</button>
+        <button class="contact-seeker-btn" data-contact="${r.contact}" data-subject="${r.subject}" onclick="contactSeekerRequest(this)">İletişim →</button>
       </div>
     </div>`).join('');
+}
+
+function contactSeekerRequest(btn) {
+  const contact = btn.dataset.contact || '';
+  const subject = btn.dataset.subject || '';
+  if (contact.includes('@')) {
+    window.location.href = `mailto:${contact}?subject=${encodeURIComponent(`BizdenBize'deki ${subject} özel ders talebiniz hakkında`)}`;
+  } else {
+    window.location.href = `tel:${contact}`;
+  }
 }
 
 function openSeekModal() { document.getElementById('seek-modal').classList.add('open'); document.body.style.overflow='hidden'; }
@@ -755,21 +780,6 @@ renderTutors();
     @media (max-width: 480px) {
       footer > div > div:first-child { grid-template-columns: 1fr !important; }
     }
-
-    /* ── PAGE TABS ── */
-    .page-tabs{display:flex;gap:4px;background:var(--warm);border-radius:12px;padding:4px;margin-bottom:20px;width:fit-content;}
-    .page-tab{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);transition:all .2s;}
-    .page-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 2px 8px rgba(0,0,0,.08);}
-    /* Seeker cards */
-    .seeker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
-    .seeker-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all .2s;}
-    .seeker-card:hover{border-color:var(--indigo);box-shadow:0 4px 14px rgba(67,56,202,.08);}
-    .seeker-name{font-size:14px;font-weight:700;color:var(--ink);}
-    .seeker-subject{font-size:12px;color:var(--indigo);font-weight:600;}
-    .seeker-desc{font-size:12px;color:var(--muted);line-height:1.55;}
-    .seeker-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--warm);}
-    .contact-seeker-btn{padding:7px 14px;background:var(--indigo);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
-
   </style>
 </footer>
 </body>
