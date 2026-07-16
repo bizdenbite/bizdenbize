@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Sağlık</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="Sağlık — BizdenBize">
+  <meta property="og:description" content="Avrupa'da Türkçe konuşan doktorlar, sağlık rehberleri ve Krankenkasse bilgisi — tek bir yerde.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/saglik.html">
+  <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
@@ -213,13 +219,13 @@
         <a href="webinar.html">🎥 Webinarlar</a></div></div>
     <div class="nav-item"><button class="nav-item-btn active" onclick="toggleDropdown('dd-saglik',this)">🏥 Sağlık <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-saglik">
-        <a href="saglik.html" class="active">🏥 Doktor Bul</a>
-        <a href="saglik.html">📋 Krankenkasse Rehberi</a>
-        <a href="saglik.html">🧠 Ruh Sağlığı</a>
-        <a href="saglik.html">💊 İlaç & Reçete</a>
-        <a href="saglik.html">🤰 Aile & Hamilelik</a>
+        <a href="saglik.html?section=doctors" class="active">🏥 Doktor Bul</a>
+        <a href="saglik.html?section=kranken">📋 Krankenkasse Rehberi</a>
+        <a href="saglik.html?section=mental">🧠 Ruh Sağlığı</a>
+        <a href="saglik.html?section=ilac">💊 İlaç & Reçete</a>
+        <a href="saglik.html?section=aile">🤰 Aile & Hamilelik</a>
         <hr>
-        <a href="saglik.html">🚨 Acil Durumlar</a>
+        <a href="saglik.html#emergency-bar">🚨 Acil Durumlar</a>
       </div>
     </div>
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
@@ -240,10 +246,10 @@
 <div class="mobile-menu" id="mobile-menu">
   <div class="mm-header"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div><button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;">×</button></div>
   <div class="mm-section"><div class="mm-section-title">Sağlık</div>
-    <a class="mm-link active" href="saglik.html"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">💊</span>İlaç & Reçete</a>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
+    <a class="mm-link active" href="saglik.html?section=doctors"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
+    <a class="mm-link" href="saglik.html?section=mental"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
+    <a class="mm-link" href="saglik.html?section=ilac"><span class="mm-link-icon">💊</span>İlaç & Reçete</a>
+    <a class="mm-link" href="saglik.html#emergency-bar"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
   </div>
   <div class="mm-section"><div class="mm-section-title">Diğer</div>
     <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
@@ -253,13 +259,13 @@
 </div>
 
 <!-- EMERGENCY BAR -->
-<div class="emergency-bar">
+<div class="emergency-bar" id="emergency-bar">
   <span class="emergency-bar-text">🚨 Acil Durumda:</span>
   <div class="emergency-numbers">
     <a class="emergency-num" href="tel:112">112 — Ambulans</a>
     <a class="emergency-num" href="tel:110">110 — Polis</a>
     <a class="emergency-num" href="tel:116117">116 117 — Nöbetçi Doktor</a>
-    <a class="emergency-num" href="tel:0800111 0 111">0800 111 0 111 — Kriz Hattı</a>
+    <a class="emergency-num" href="tel:08001110111">0800 111 0 111 — Kriz Hattı</a>
   </div>
 </div>
 
@@ -350,7 +356,7 @@
 <script>
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
 
   async function sbGet(table, params) {
@@ -402,6 +408,15 @@ const guides = {
 let activeSection = 'doctors';
 let activeSpec = 'all';
 let activeCity = '';
+
+// Deep-link support: nav dropdown / mobile menu links pass ?section=kranken etc.
+// Without this, every sub-nav link silently landed back on the default 'doctors' tab.
+(function applySectionFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get('section');
+  const valid = ['doctors', 'kranken', 'mental', 'ilac', 'aile'];
+  if (requested && valid.includes(requested)) activeSection = requested;
+})();
 
 function setSection(s, btn) {
   activeSection = s;
@@ -498,7 +513,7 @@ async function renderDoctors() {
 
   if (!filtered.length) { grid.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;">Bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin veya doktor önerin.</p></div>`; return; }
   grid.innerHTML = filtered.map(d => `
-    <div class="doctor-card" onclick="openDoctor(${d.id})">
+    <div class="doctor-card" onclick="openDoctorById(${d.id})">
       <div class="doctor-top">
         <div class="doctor-avatar">👨‍⚕️</div>
         <div class="doctor-info">
@@ -538,43 +553,48 @@ function openDoctorById(id) {
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating || '—'} (${d.reviews||d.review_count||0})</div></div>`;
   document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
   document.getElementById('dm-phone-btn').onclick = () => window.location.href = `tel:${d.phone}`;
-  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${(d.phone||'').replace(/\s|\+|-/g,'')}`, '_blank');
+  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${(d.phone||'').replace(/\s|\+|-/g,'')}?text=${encodeURIComponent(`Merhaba, BizdenBize üzerinden ${d.name} ile randevu/bilgi almak istiyorum.`)}`, '_blank');
   document.getElementById('doctor-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function openDoctor(id) {
-  const d = doctors.find(x => x.id === id);
-  if (!d) return;
-  document.getElementById('dm-avatar').textContent = d.emoji;
-  document.getElementById('dm-name').textContent = d.name;
-  document.getElementById('dm-spec').textContent = d.spec;
-  document.getElementById('dm-desc').textContent = d.desc;
-  document.getElementById('dm-info').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Şehir</div><div class="info-box-val">📍 ${d.city}</div></div>
-    <div class="info-box"><div class="info-box-label">Sigorta</div><div class="info-box-val">${d.insurance}</div></div>
-    <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${d.lang}</div></div>
-    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating} (${d.reviews})</div></div>`;
-  document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span><span class="doctor-tag tag-insurance" style="font-size:11px;padding:3px 10px;">${d.insurance}</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
-  document.getElementById('dm-phone-btn').onclick = () => window.location.href = `tel:${d.phone}`;
-  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${d.phone.replace(/\s|\+|-/g,'')}`, '_blank');
-  document.getElementById('doctor-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+
 function closeDoctorModal() { document.getElementById('doctor-modal').classList.remove('open'); document.body.style.overflow = ''; }
 
 function openAddModal() { document.getElementById('add-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('add-success').style.display = 'none'; document.getElementById('add-body').style.display = 'flex'; document.getElementById('add-footer').style.display = 'flex'; document.getElementById('a-error').style.display = 'none'; }
-function submitAdd() {
+async function submitAdd() {
   const name = document.getElementById('a-name').value.trim();
   const city = document.getElementById('a-city').value.trim();
-  if (!name || !city) { document.getElementById('a-error').textContent = 'Lütfen doktor adı ve şehir girin.'; document.getElementById('a-error').style.display = 'block'; return; }
+  const errBox = document.getElementById('a-error');
+  if (!name || !city) { errBox.textContent = 'Lütfen doktor adı ve şehir girin.'; errBox.style.display = 'block'; return; }
+  errBox.style.display = 'none';
+
+  try {
+    await sbPost('doctors', {
+      name,
+      city,
+      spec:      document.getElementById('a-spec').value,
+      phone:     document.getElementById('a-phone').value.trim() || null,
+      address:   document.getElementById('a-address').value.trim() || null,
+      insurance: document.getElementById('a-insurance').value,
+      desc:      document.getElementById('a-desc').value.trim() || null,
+      verified:  false,
+    });
+  } catch (e) {
+    console.error('Doctor suggestion insert error:', e);
+    errBox.textContent = 'Öneriniz kaydedilemedi, lütfen tekrar deneyin.';
+    errBox.style.display = 'block';
+    return;
+  }
+
   document.getElementById('add-body').style.display = 'none';
   document.getElementById('add-footer').style.display = 'none';
   document.getElementById('add-success').style.display = 'block';
   setTimeout(() => closeAddModal(), 3000);
 }
 
+document.querySelectorAll('.section-tab').forEach(b => b.classList.toggle('active', b.dataset.section === activeSection));
 render();
 </script>
 <!-- SITE FOOTER -->
