@@ -485,9 +485,93 @@
     // Make available globally for onclick handlers
     window._supabase = supabase;
 
-    // Check if already logged in
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) window.location.replace('/mahallem.html');
+    // ── PASSWORD RECOVERY (arriving from the reset-password email link) ──
+    // A recovery link logs the user in (that's how Supabase recovery works),
+    // so it looks identical to a normal session to the "already logged in?"
+    // check below. Left unhandled, that check fires first and bounces the
+    // user straight to mahallem.html before they ever see a reset form. To
+    // avoid that race we (1) detect the recovery link synchronously from the
+    // URL itself, before doing anything else, and (2) also register the
+    // PASSWORD_RECOVERY listener immediately, before the first `await` in
+    // this script — Supabase can emit that event as soon as it finishes
+    // parsing the URL, and a listener added later would miss it.
+    window.showResetPassword = function() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('forgot-form').style.display = 'none';
+      document.getElementById('success-state').style.display = 'none';
+      document.querySelector('.tab-bar').style.display = 'none';
+      document.getElementById('reset-password-form').style.display = 'block';
+    };
+
+    window.doResetPassword = async function() {
+      const pass = document.getElementById('reset-password').value;
+      const confirm = document.getElementById('reset-password-confirm').value;
+      const passErr = document.getElementById('reset-pass-err');
+      const confirmErr = document.getElementById('reset-pass-confirm-err');
+      passErr.style.display = 'none';
+      confirmErr.style.display = 'none';
+      let valid = true;
+
+      if (pass.length < 8) {
+        passErr.style.display = 'block';
+        document.getElementById('reset-password').classList.add('error');
+        valid = false;
+      }
+      if (pass !== confirm) {
+        confirmErr.style.display = 'block';
+        document.getElementById('reset-password-confirm').classList.add('error');
+        valid = false;
+      }
+      if (!valid) return;
+
+      const btn = document.getElementById('reset-password-btn');
+      btn.classList.add('loading');
+      btn.textContent = 'Güncelleniyor...';
+
+      const { error } = await supabase.auth.updateUser({ password: pass });
+
+      if (error) {
+        btn.classList.remove('loading');
+        btn.textContent = 'Şifreyi Güncelle';
+        alert('Şifre güncellenemedi: ' + error.message);
+        return;
+      }
+
+      document.getElementById('reset-password-form').style.display = 'none';
+      document.getElementById('success-state').style.display = 'block';
+      document.querySelector('.success-icon').textContent = '✅';
+      document.querySelector('.success-title').textContent = 'Şifren güncellendi!';
+      document.querySelector('.success-sub').textContent = 'Yeni şifrenle giriş yapabilirsin.';
+      const goBtn = document.querySelector('.go-btn');
+      goBtn.textContent = 'Giriş sayfasına dön';
+      goBtn.removeAttribute('href');
+      goBtn.onclick = async () => { await supabase.auth.signOut(); location.href = 'login.html'; };
+    };
+
+    // Registered before any `await` below, so we can't miss an
+    // already-in-flight PASSWORD_RECOVERY event.
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        window.showResetPassword();
+      }
+    });
+
+    // Synchronous fallback check — Supabase recovery links carry
+    // `type=recovery` either as a URL hash fragment (#access_token=...&type=recovery)
+    // or, with PKCE-style links, a query param (?code=...&type=recovery).
+    const hashParams  = new URLSearchParams(window.location.hash.slice(1));
+    const queryParams = new URLSearchParams(window.location.search);
+    const isRecoveryLink = hashParams.get('type') === 'recovery' || queryParams.get('type') === 'recovery';
+    if (isRecoveryLink) window.showResetPassword();
+
+    // Check if already logged in — skipped for recovery links, since a
+    // recovery session is a valid session and would otherwise trigger this
+    // and redirect the user away before they can set a new password.
+    if (!isRecoveryLink) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) window.location.replace('/mahallem.html');
+    }
 
     // ── REGISTER ──
     window.doRegister = async function() {
@@ -700,70 +784,6 @@
       document.querySelector('.success-sub').textContent = email + ' adresine şifre sıfırlama bağlantısı gönderdik.';
     };
 
-    // ── PASSWORD RECOVERY (arriving from the reset-password email link) ──
-    // Supabase parses the recovery token out of the URL automatically and
-    // fires this event once the recovery session is established. Until now
-    // nothing on this page listened for it, so users landed on a plain
-    // login screen with no way to actually set a new password.
-    window.showResetPassword = function() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('register-form').style.display = 'none';
-      document.getElementById('forgot-form').style.display = 'none';
-      document.getElementById('success-state').style.display = 'none';
-      document.querySelector('.tab-bar').style.display = 'none';
-      document.getElementById('reset-password-form').style.display = 'block';
-    };
-
-    window.doResetPassword = async function() {
-      const pass = document.getElementById('reset-password').value;
-      const confirm = document.getElementById('reset-password-confirm').value;
-      const passErr = document.getElementById('reset-pass-err');
-      const confirmErr = document.getElementById('reset-pass-confirm-err');
-      passErr.style.display = 'none';
-      confirmErr.style.display = 'none';
-      let valid = true;
-
-      if (pass.length < 8) {
-        passErr.style.display = 'block';
-        document.getElementById('reset-password').classList.add('error');
-        valid = false;
-      }
-      if (pass !== confirm) {
-        confirmErr.style.display = 'block';
-        document.getElementById('reset-password-confirm').classList.add('error');
-        valid = false;
-      }
-      if (!valid) return;
-
-      const btn = document.getElementById('reset-password-btn');
-      btn.classList.add('loading');
-      btn.textContent = 'Güncelleniyor...';
-
-      const { error } = await supabase.auth.updateUser({ password: pass });
-
-      if (error) {
-        btn.classList.remove('loading');
-        btn.textContent = 'Şifreyi Güncelle';
-        alert('Şifre güncellenemedi: ' + error.message);
-        return;
-      }
-
-      document.getElementById('reset-password-form').style.display = 'none';
-      document.getElementById('success-state').style.display = 'block';
-      document.querySelector('.success-icon').textContent = '✅';
-      document.querySelector('.success-title').textContent = 'Şifren güncellendi!';
-      document.querySelector('.success-sub').textContent = 'Yeni şifrenle giriş yapabilirsin.';
-      const goBtn = document.querySelector('.go-btn');
-      goBtn.textContent = 'Giriş sayfasına dön';
-      goBtn.removeAttribute('href');
-      goBtn.onclick = async () => { await supabase.auth.signOut(); location.href = 'login.html'; };
-    };
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        window.showResetPassword();
-      }
-    });
   </script>
   <script src="i18n.js"></script>
 </head>
