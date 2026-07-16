@@ -1350,7 +1350,7 @@
       </div>
       <div style="background:var(--warm);border-radius:10px;padding:12px 14px;">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Yayın Tarihi</div>
-        <div style="font-size:13px;font-weight:600;color:var(--ink);">🕐 ${l.time}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">🕐 ${l.created_at ? timeAgo(l.created_at) : (l.time || '—')}</div>
       </div>
     `;
 
