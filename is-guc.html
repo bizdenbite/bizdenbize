@@ -1323,7 +1323,7 @@
 
 <script>
   function openDetail(id) {
-    const l = (window._dbListings||[]).find(x => x.id === id) || listings.find(x => String(x.id) === String(id));
+    const l = (window._dbListings||[]).find(x => String(x.id) === String(id)) || listings.find(x => String(x.id) === String(id));
     if (!l) return;
 
     const lcat = l.category || l.cat || 'other';
