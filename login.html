@@ -699,6 +699,71 @@
       document.querySelector('.success-title').textContent = 'E-posta gönderildi!';
       document.querySelector('.success-sub').textContent = email + ' adresine şifre sıfırlama bağlantısı gönderdik.';
     };
+
+    // ── PASSWORD RECOVERY (arriving from the reset-password email link) ──
+    // Supabase parses the recovery token out of the URL automatically and
+    // fires this event once the recovery session is established. Until now
+    // nothing on this page listened for it, so users landed on a plain
+    // login screen with no way to actually set a new password.
+    window.showResetPassword = function() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('forgot-form').style.display = 'none';
+      document.getElementById('success-state').style.display = 'none';
+      document.querySelector('.tab-bar').style.display = 'none';
+      document.getElementById('reset-password-form').style.display = 'block';
+    };
+
+    window.doResetPassword = async function() {
+      const pass = document.getElementById('reset-password').value;
+      const confirm = document.getElementById('reset-password-confirm').value;
+      const passErr = document.getElementById('reset-pass-err');
+      const confirmErr = document.getElementById('reset-pass-confirm-err');
+      passErr.style.display = 'none';
+      confirmErr.style.display = 'none';
+      let valid = true;
+
+      if (pass.length < 8) {
+        passErr.style.display = 'block';
+        document.getElementById('reset-password').classList.add('error');
+        valid = false;
+      }
+      if (pass !== confirm) {
+        confirmErr.style.display = 'block';
+        document.getElementById('reset-password-confirm').classList.add('error');
+        valid = false;
+      }
+      if (!valid) return;
+
+      const btn = document.getElementById('reset-password-btn');
+      btn.classList.add('loading');
+      btn.textContent = 'Güncelleniyor...';
+
+      const { error } = await supabase.auth.updateUser({ password: pass });
+
+      if (error) {
+        btn.classList.remove('loading');
+        btn.textContent = 'Şifreyi Güncelle';
+        alert('Şifre güncellenemedi: ' + error.message);
+        return;
+      }
+
+      document.getElementById('reset-password-form').style.display = 'none';
+      document.getElementById('success-state').style.display = 'block';
+      document.querySelector('.success-icon').textContent = '✅';
+      document.querySelector('.success-title').textContent = 'Şifren güncellendi!';
+      document.querySelector('.success-sub').textContent = 'Yeni şifrenle giriş yapabilirsin.';
+      const goBtn = document.querySelector('.go-btn');
+      goBtn.textContent = 'Giriş sayfasına dön';
+      goBtn.removeAttribute('href');
+      goBtn.onclick = async () => { await supabase.auth.signOut(); location.href = 'login.html'; };
+    };
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        window.showResetPassword();
+      }
+    });
   </script>
   <script src="i18n.js"></script>
 </head>
@@ -897,6 +962,38 @@
       </p>
     </div>
 
+    <!-- RESET PASSWORD (shown when arriving via a password-reset email link) -->
+    <div id="reset-password-form" style="display:none">
+      <h2 class="form-title">Yeni şifre belirle 🔒</h2>
+      <p class="form-sub">Hesabın için yeni bir şifre oluştur.</p>
+
+      <div class="form-group">
+        <label>Yeni Şifre</label>
+        <div class="input-wrap">
+          <input type="password" id="reset-password" placeholder="En az 8 karakter" oninput="checkStrength(this.value, 'rs')" autocomplete="new-password">
+          <button class="input-icon" onclick="togglePassword('reset-password', this)" tabindex="-1">👁</button>
+        </div>
+        <div class="strength-bar">
+          <div class="strength-seg" id="rs1"></div>
+          <div class="strength-seg" id="rs2"></div>
+          <div class="strength-seg" id="rs3"></div>
+          <div class="strength-seg" id="rs4"></div>
+        </div>
+        <div class="strength-label" id="reset-strength-label"></div>
+        <div class="field-error" id="reset-pass-err">Şifre en az 8 karakter olmalı.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Yeni Şifre (Tekrar)</label>
+        <input type="password" id="reset-password-confirm" placeholder="••••••••" autocomplete="new-password">
+        <div class="field-error" id="reset-pass-confirm-err">Şifreler eşleşmiyor.</div>
+      </div>
+
+      <button class="submit-btn" id="reset-password-btn" onclick="doResetPassword()">
+        Şifreyi Güncelle
+      </button>
+    </div>
+
     <!-- SUCCESS STATE -->
     <div id="success-state" class="success-state">
       <div class="success-icon">🎉</div>
@@ -932,9 +1029,10 @@
     btn.textContent = show ? '🙈' : '👁';
   }
 
-  function checkStrength(val) {
-    const segs = [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3'), document.getElementById('s4')];
-    const lbl = document.getElementById('strength-label');
+  function checkStrength(val, prefix) {
+    prefix = prefix || 's';
+    const segs = [1,2,3,4].map(n => document.getElementById(prefix + n)).filter(Boolean);
+    const lbl = document.getElementById(prefix === 'rs' ? 'reset-strength-label' : 'strength-label');
     let score = 0;
     if (val.length >= 8) score++;
     if (/[A-Z]/.test(val)) score++;
@@ -943,97 +1041,16 @@
     const colors = ['', '#E8393A', '#C9A84C', '#C9A84C', '#1E7B4B'];
     const labels = ['', 'Zayıf', 'Orta', 'İyi', 'Güçlü ✓'];
     segs.forEach((s, i) => s.style.background = i < score ? colors[score] : 'var(--sand)');
-    lbl.textContent = val.length > 0 ? labels[score] : '';
-    lbl.style.color = colors[score];
+    if (lbl) { lbl.textContent = val.length > 0 ? labels[score] : ''; lbl.style.color = colors[score]; }
   }
 
-  function doLogin() {
-    const email = document.getElementById('login-email').value.trim();
-    const pass  = document.getElementById('login-password').value;
-    let valid = true;
-
-    const emailErr = document.getElementById('login-email-err');
-    const passErr  = document.getElementById('login-pass-err');
-    emailErr.style.display = 'none';
-    passErr.style.display  = 'none';
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      emailErr.style.display = 'block';
-      document.getElementById('login-email').classList.add('error');
-      valid = false;
-    }
-    if (pass.length < 8) {
-      passErr.style.display = 'block';
-      document.getElementById('login-password').classList.add('error');
-      valid = false;
-    }
-    if (!valid) return;
-
-    const btn = document.getElementById('login-btn');
-    btn.classList.add('loading');
-    btn.textContent = 'Giriş yapılıyor...';
-
-    setTimeout(() => {
-      window.location.href = 'mahallem.html';
-    }, 1200);
-  }
-
-  function doRegister() {
-    const fname = document.getElementById('reg-fname').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    const pass  = document.getElementById('reg-password').value;
-    let valid = true;
-
-    document.getElementById('reg-email-err').style.display = 'none';
-
-    if (!fname) { document.getElementById('reg-fname').classList.add('error'); valid = false; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      document.getElementById('reg-email-err').style.display = 'block';
-      document.getElementById('reg-email').classList.add('error');
-      valid = false;
-    }
-    if (pass.length < 8) { document.getElementById('reg-password').classList.add('error'); valid = false; }
-    if (!valid) return;
-
-    const btn = document.getElementById('register-btn');
-    btn.classList.add('loading');
-    btn.textContent = 'Kayıt yapılıyor...';
-
-    const hasInvite = document.getElementById('reg-invite').value.trim().length > 0;
-
-    setTimeout(() => {
-      document.getElementById('register-form').style.display = 'none';
-      document.getElementById('tab-login').parentElement.style.display = 'none';
-      if (hasInvite) {
-        window.location.href = 'onboarding.html';
-      } else {
-        document.getElementById('success-state').style.display = 'block';
-        document.querySelector('.success-sub').textContent = 'Başvurun alındı! Topluluk onayından sonra e-posta ile bilgilendirileceğiz.';
-        document.querySelector('.go-btn').removeAttribute('href');
-        document.querySelector('.go-btn').textContent = 'Onay bekleniyor... ⏳';
-      }
-    }, 1400);
-  }
-
-  function doForgot() {
-    const email = document.getElementById('forgot-email').value.trim();
-    if (!email) return;
-    document.getElementById('forgot-form').style.display = 'none';
-    document.getElementById('tab-login').parentElement.style.display = 'none';
-    document.getElementById('success-state').style.display = 'block';
-    document.querySelector('.success-icon').textContent = '📧';
-    document.querySelector('.success-title').textContent = 'E-posta gönderildi!';
-    document.querySelector('.success-sub').textContent = email + ' adresine şifre sıfırlama bağlantısı gönderdik.';
-    document.querySelector('.go-btn').textContent = 'Giriş sayfasına dön';
-    document.querySelector('.go-btn').onclick = () => { location.reload(); };
-    document.querySelector('.go-btn').removeAttribute('href');
-  }
-
-  function socialLogin(provider) {
-    const btn = event.target.closest('.social-btn');
-    btn.textContent = 'Yönlendiriliyor...';
-    setTimeout(() => window.location.href = 'onboarding.html', 1000);
-  }
+  // NOTE: doLogin, doRegister, doForgot, and socialLogin are defined earlier
+  // (module script near the top of <head>) as the real Supabase-backed
+  // implementations via window.doLogin/window.doRegister/etc. They used to be
+  // redeclared here as static setTimeout() mockups left over from an early
+  // prototype, which silently overwrote the real functions since this script
+  // block runs later in the page. That redeclaration has been removed —
+  // do not re-add plain `function doLogin() {}` etc. here.
 
   // Clear error on input
   document.querySelectorAll('input').forEach(inp => {
