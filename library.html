@@ -785,6 +785,22 @@
   }
 
   // Init
+  // Deep-link support: other pages (e.g. saglik.html's guide cards) link here
+  // with ?cat=medical etc. Without this, the filter buttons existed but
+  // nothing ever read the URL, so every incoming link landed on the
+  // unfiltered "Tümü" view regardless of what it was supposed to show.
+  (function applyFiltersFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    ['cat', 'country', 'type'].forEach(key => {
+      const val = params.get(key);
+      if (!val) return;
+      const btn = document.querySelector(`[data-filter="${key}"][data-value="${val}"]`);
+      if (!btn) return;
+      activeFilters[key] = val;
+      document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  })();
   renderCards();
 
   function toggleMenu() {
