@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Uzman Ekibimiz</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="Uzman Ekibimiz — BizdenBize">
+  <meta property="og:description" content="Hukuki, tıbbi, finansal ve vize sorularınız için Avrupa'da yaşayan, Türkçe konuşan gerçek uzmanlar.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/uzmanlar.html">
+  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -121,6 +127,9 @@
   <button class="filter-pill" onclick="setFilter('tax',this)">💶 Vergi</button>
   <button class="filter-pill" onclick="setFilter('housing',this)">🏠 Konut</button>
   <button class="filter-pill" onclick="setFilter('employment',this)">💼 İş</button>
+  <button class="filter-pill" onclick="setFilter('school',this)">🎓 Okul & Yardımlar</button>
+  <button class="filter-pill" onclick="setFilter('insurance',this)">🚗 Sigorta</button>
+  <button class="filter-pill" onclick="setFilter('migration',this)">✈️ Göç</button>
   <div style="display:flex;align-items:center;gap:8px;background:var(--white);border:2px solid var(--ink);border-radius:20px;padding:7px 16px;min-width:200px;transition:box-shadow .2s;"
        onfocusin="this.style.boxShadow='0 0 0 3px rgba(26,18,8,.1)'" onfocusout="this.style.boxShadow='none'">
     <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -140,7 +149,7 @@
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const CAT_ICONS = {
