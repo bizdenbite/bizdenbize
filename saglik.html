@@ -500,7 +500,7 @@ async function renderDoctors() {
 
   let allDoctors = [];
   try {
-    let params = 'order=verified.desc,rating.desc';
+    let params = 'order=verified.desc,rating.desc&active=eq.true';
       if (cityQ) params += '&city=ilike.*' + encodeURIComponent(cityQ) + '*';
       if (insQ !== 'all') params += '&insurance=ilike.*' + encodeURIComponent(insQ) + '*';
       allDoctors = await sbGet('doctors', params);
@@ -574,12 +574,14 @@ async function submitAdd() {
     await sbPost('doctors', {
       name,
       city,
-      spec:      document.getElementById('a-spec').value,
-      phone:     document.getElementById('a-phone').value.trim() || null,
-      address:   document.getElementById('a-address').value.trim() || null,
-      insurance: document.getElementById('a-insurance').value,
-      desc:      document.getElementById('a-desc').value.trim() || null,
-      verified:  false,
+      country:     'Almanya',
+      specialty:   document.getElementById('a-spec').value,
+      phone:       document.getElementById('a-phone').value.trim() || null,
+      address:     document.getElementById('a-address').value.trim() || null,
+      insurance:   document.getElementById('a-insurance').value,
+      description: document.getElementById('a-desc').value.trim() || null,
+      verified:    false,
+      active:      false,
     });
   } catch (e) {
     console.error('Doctor suggestion insert error:', e);
