@@ -793,11 +793,21 @@ async function setRequestsTab(tab) {
 
 const STATUS_LABELS = { requested:'⏳ Bekliyor', accepted:'✅ Kabul edildi', declined:'✗ Reddedildi', completed:'🎉 Tamamlandı', cancelled:'İptal edildi' };
 
+function statusLabel(b) {
+  // Both sides confirmed, but the actual stay hasn't happened yet — puanlar henüz aktarılmadı.
+  if (b.status === 'accepted' && b.host_confirmed_at && b.guest_confirmed_at) return '📅 Planlandı';
+  return STATUS_LABELS[b.status] || b.status;
+}
+
 async function renderRequestsList() {
   const list = document.getElementById('requests-list');
   list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">⏳ Yükleniyor...</div>';
   const session = window._currentSession;
   const field = _requestsTab === 'guest' ? 'guest_user_id' : 'host_user_id';
+  // Best-effort: finalize any bookings that were confirmed by both sides before
+  // their stay date, and whose checkout date has since passed. Safe to call
+  // every time the modal opens — it's a no-op if nothing is due.
+  try { await sbRpcAuth('finalize_due_swap_bookings', {}); } catch(e) { console.error('Finalize sweep error:', e); }
   let bookings = [];
   try {
     bookings = await sbGetAuth('swap_bookings', `${field}=eq.${session.user.id}&order=created_at.desc`);
@@ -811,13 +821,16 @@ async function renderRequestsList() {
     return;
   }
   list.innerHTML = bookings.map(b => {
-    const canConfirm = b.status === 'accepted' && !(_requestsTab === 'guest' ? b.guest_confirmed_at : b.host_confirmed_at);
-    const alreadyConfirmed = b.status === 'accepted' && (_requestsTab === 'guest' ? b.guest_confirmed_at : b.host_confirmed_at);
+    const myConfirmed = _requestsTab === 'guest' ? b.guest_confirmed_at : b.host_confirmed_at;
+    const bothConfirmed = !!(b.host_confirmed_at && b.guest_confirmed_at);
+    const canConfirm = b.status === 'accepted' && !myConfirmed;
+    const waitingOnOther = b.status === 'accepted' && myConfirmed && !bothConfirmed;
+    const plannedNotDue = b.status === 'accepted' && bothConfirmed; // both confirmed, checkout date hasn't passed yet
     return `
     <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
         <div style="font-size:13px;font-weight:700;color:var(--ink);">${b.offer_city} → ${b.offer_destination}</div>
-        <div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;">${STATUS_LABELS[b.status] || b.status}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;">${statusLabel(b)}</div>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${formatDate(b.check_in)} – ${formatDate(b.check_out)} · 🪙 ${b.points_needed} puan</div>
       ${b.guest_message ? `<div style="font-size:12px;color:var(--ink);background:var(--warm);border-radius:8px;padding:8px 10px;margin-bottom:8px;">${b.guest_message}</div>` : ''}
@@ -826,7 +839,8 @@ async function renderRequestsList() {
           <button onclick="respondBooking('${b.id}','accepted')" style="padding:6px 14px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Kabul Et</button>
           <button onclick="respondBooking('${b.id}','declined')" style="padding:6px 14px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Reddet</button>` : ''}
         ${canConfirm ? `<button onclick="confirmCompletion('${b.id}')" style="padding:6px 14px;background:var(--gold);color:var(--ink);border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Konaklama Tamamlandı ✓</button>` : ''}
-        ${alreadyConfirmed ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Onayınız kaydedildi, diğer tarafın onayı bekleniyor.</span>` : ''}
+        ${waitingOnOther ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Onayınız kaydedildi, diğer tarafın onayı bekleniyor.</span>` : ''}
+        ${plannedNotDue ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Her iki taraf da onayladı. Takas tarihi (${formatDate(b.check_out)}) geçtiğinde puanlar otomatik aktarılacak.</span>` : ''}
       </div>
     </div>`;
   }).join('');
