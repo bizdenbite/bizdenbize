@@ -360,6 +360,13 @@
         <div><label class="field-label">Bitiş Tarihi *</label><input class="field-input" id="p-to" type="date"></div>
       </div>
       <div><label class="field-label">Aile Büyüklüğü</label><select class="field-input" id="p-family"><option>👤 1-2 kişi</option><option>👨‍👩‍👧 Aile (3-5)</option><option>👨‍👩‍👧‍👦 Büyük Aile (6+)</option></select></div>
+      <div><label class="field-label">Önerilen Konaklama Süresi</label><select class="field-input" id="p-duration">
+        <option value="">Esnek / Belirtilmedi</option>
+        <option value="weekend">Hafta sonu (2-3 gece)</option>
+        <option value="1week">~1 hafta</option>
+        <option value="2weeks">~2 hafta</option>
+        <option value="1month">~1 ay</option>
+      </select></div>
       <div><label class="field-label">Açıklama *</label><textarea class="field-input" id="p-desc" rows="3" placeholder="Evin hakkında, çevre, ulaşım, kurallar..."></textarea></div>
       <div id="p-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
@@ -404,6 +411,7 @@
     <div class="modal-body" id="request-body">
       <div class="trust-box"><div class="trust-icon">🪙</div><div><div class="trust-title">Puan sistemi nasıl işler?</div><div class="trust-text">1 gece = 1 puan. Konaklama tamamlandığında (her iki taraf da onayladığında) puanlar hesabınızdan düşer, ev sahibinin hesabına eklenir.</div></div></div>
       <div id="rq-host-info" style="font-size:13px;color:var(--muted);"></div>
+      <div id="rq-availability-note" style="font-size:11px;color:var(--gold);font-weight:600;"></div>
       <div class="field-row">
         <div><label class="field-label">Giriş Tarihi *</label><input class="field-input" id="rq-checkin" type="date" oninput="updateRequestPoints()"></div>
         <div><label class="field-label">Çıkış Tarihi *</label><input class="field-input" id="rq-checkout" type="date" oninput="updateRequestPoints()"></div>
@@ -481,6 +489,7 @@
 
 async function renderSwaps() {
   window.HOME_TYPE_LABELS = { 'Daire':'🏢 Daire', 'Müstakil Ev':'🏡 Müstakil Ev', 'Villa / Yazlık':'🌊 Villa / Yazlık' };
+  window.DURATION_LABELS = { weekend:'Hafta sonu (2-3 gece)', '1week':'~1 hafta', '2weeks':'~2 hafta', '1month':'~1 ay' };
   const grid = document.getElementById('swap-grid');
   if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
 
@@ -552,6 +561,7 @@ function filterAndRenderSwaps() {
           <span class="card-detail-tag">${s.rooms}</span>
           <span class="card-detail-tag">👨‍👩‍👧 ${s.family_size}</span>
           <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
+          ${s.suggested_duration ? `<span class="card-detail-tag">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</span>` : ''}
         </div>
         <div class="card-desc">${s.description||""}</div>
         <div class="card-footer">
@@ -587,6 +597,7 @@ function openDetail(id) {
   document.getElementById('d-info-grid').innerHTML = `
     <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${HOME_TYPE_LABELS[s.home_type] || s.home_type} · ${s.rooms}</div></div>
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
+    ${s.suggested_duration ? `<div class="info-box"><div class="info-box-label">Önerilen Süre</div><div class="info-box-val">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</div></div>` : ''}
     <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}</div></div>
     <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + s.destination : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
   const isPhone = (s.contact||'').startsWith('+');
@@ -668,6 +679,7 @@ async function submitPost() {
       home_type:      document.getElementById('p-type')?.value || null,
       rooms:          document.getElementById('p-rooms')?.value || null,
       family_size:    document.getElementById('p-family')?.value || null,
+      suggested_duration: document.getElementById('p-duration')?.value || null,
       country:        document.getElementById('p-country')?.value || 'de',
       featured:       false,
       verified:       false,
@@ -725,6 +737,11 @@ function openRequestModal(offer) {
   document.getElementById('rq-host-info').innerHTML = `<strong>${offer.user_name}</strong>'in ${offer.city} şehrindeki evi için talep gönderiyorsunuz.`;
   document.getElementById('rq-checkin').value = '';
   document.getElementById('rq-checkout').value = '';
+  document.getElementById('rq-checkin').min = offer.available_from;
+  document.getElementById('rq-checkin').max = offer.available_to;
+  document.getElementById('rq-checkout').min = offer.available_from;
+  document.getElementById('rq-checkout').max = offer.available_to;
+  document.getElementById('rq-availability-note').textContent = `Ev sahibi ${formatDate(offer.available_from)} – ${formatDate(offer.available_to)} arasında müsait.`;
   document.getElementById('rq-message').value = '';
   document.getElementById('rq-points-preview').style.display = 'none';
   document.getElementById('rq-error').style.display = 'none';
@@ -759,6 +776,11 @@ async function submitStayRequest() {
   if (!checkIn || !checkOut) { err.textContent = 'Lütfen giriş ve çıkış tarihlerini seçin.'; err.style.display = 'block'; return; }
   const nights = Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
   if (nights <= 0) { err.textContent = 'Çıkış tarihi giriş tarihinden sonra olmalı.'; err.style.display = 'block'; return; }
+  if (checkIn < offer.available_from || checkOut > offer.available_to) {
+    err.textContent = `Seçtiğiniz tarihler ev sahibinin müsaitlik aralığının (${formatDate(offer.available_from)} – ${formatDate(offer.available_to)}) dışında.`;
+    err.style.display = 'block';
+    return;
+  }
   err.style.display = 'none';
 
   try {
