@@ -7,6 +7,9 @@
   <meta property="og:site_name" content="BizdenBize">
   <meta property="og:title" content="BizdenBize — Topluluk Kütüphanesi">
   <meta property="og:description" content="Avrupa'daki Türkler için ücretsiz, doğrulanmış kaynaklar.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/library.html">
+  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -949,11 +952,11 @@
 
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
   async function sbPost(table, data) {
     const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
-    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
   }
 
   async function submitSuggestion() {
@@ -983,6 +986,9 @@
       await sbPost('suggestions', suggestion);
     } catch(e) {
       console.error('Suggestion insert error:', e);
+      err.innerHTML = 'Öneriniz kaydedilemedi, lütfen tekrar deneyin.<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
+      err.style.display = 'block';
+      return;
     }
     showSuggestSuccess();
   }
