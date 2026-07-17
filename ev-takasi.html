@@ -346,7 +346,11 @@
         <div><label class="field-label">Şehrim *</label><input class="field-input" id="p-city" type="text" placeholder="Frankfurt"></div>
         <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"><option value="de">🇩🇪 Almanya</option><option value="nl">🇳🇱 Hollanda</option><option value="be">🇧🇪 Belçika</option><option value="at">🇦🇹 Avusturya</option><option value="gb">🇬🇧 İngiltere</option><option value="fr">🇫🇷 Fransa</option><option value="tr">🇹🇷 Türkiye</option></select></div>
       </div>
-      <div><label class="field-label">Nereye gitmek istiyorum? *</label><input class="field-input" id="p-dest" type="text" placeholder="Paris, İstanbul veya Hollanda..."></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;background:var(--warm);border-radius:8px;padding:10px 12px;margin-bottom:4px;">
+        <input type="checkbox" id="p-no-dest" onchange="toggleDestField()" style="margin-top:2px;">
+        <label for="p-no-dest" style="font-size:12px;color:var(--ink);cursor:pointer;">🎯 Sadece ev sahipliği yapmak istiyorum (belirli bir yere gitmek istemiyorum, puan karşılığında ev sahipliği yapacağım)</label>
+      </div>
+      <div id="p-dest-wrap"><label class="field-label">Nereye gitmek istiyorum? *</label><input class="field-input" id="p-dest" type="text" placeholder="Paris, İstanbul veya Hollanda..."></div>
       <div class="field-row">
         <div><label class="field-label">Ev Tipi</label><select class="field-input" id="p-type"><option value="Daire">🏢 Daire</option><option value="Müstakil Ev">🏡 Müstakil Ev</option><option value="Villa / Yazlık">🌊 Villa / Yazlık</option></select></div>
         <div><label class="field-label">Oda Sayısı</label><select class="field-input" id="p-rooms"><option>1+1</option><option>2+1</option><option>3+1</option><option>4+1 ve üzeri</option></select></div>
@@ -539,9 +543,9 @@ function filterAndRenderSwaps() {
           <span class="card-city">${s.city}</span>
         </div>
         <div class="card-wants">
-          <span>Gitmek istiyor:</span>
-          <span class="card-wants-arrow">→</span>
-          <span class="card-wants-dest">${s.destination}</span>
+          <span>${s.destination ? 'Gitmek istiyor:' : ''}</span>
+          <span class="card-wants-arrow">${s.destination ? '→' : ''}</span>
+          <span class="card-wants-dest">${destText(s)}</span>
         </div>
         <div class="card-details">
           <span class="card-detail-tag">${HOME_TYPE_LABELS[s.home_type] || s.home_type}</span>
@@ -562,6 +566,10 @@ function filterAndRenderSwaps() {
     </div>`).join('');
 }
 
+function destText(s) {
+  return s.destination ? s.destination : '🪙 Puan karşılığında ev sahipliği';
+}
+
 function formatDate(d) {
   const [y,m,day] = d.split('-');
   const months = ['','Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
@@ -573,21 +581,24 @@ function openDetail(id) {
   if (!s) return;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
-  document.getElementById('d-dest').textContent = s.destination;
+  document.getElementById('d-dest').textContent = destText(s);
   document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
   document.getElementById('d-info-grid').innerHTML = `
     <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${HOME_TYPE_LABELS[s.home_type] || s.home_type} · ${s.rooms}</div></div>
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
     <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}</div></div>
-    <div class="info-box"><div class="info-box-label">Gitmek İstiyor</div><div class="info-box-val">→ ${s.destination}</div></div>`;
+    <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + s.destination : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
   const isPhone = (s.contact||'').startsWith('+');
   const msgBtn = document.getElementById('d-msg-btn');
   const waBtn = document.getElementById('d-wa-btn');
-  const waMessage = `Merhaba, BizdenBize üzerinden ${s.city} → ${s.destination} ev takası ilanınızla ilgili görüşmek istiyorum.`;
+  const waMessage = s.destination
+    ? `Merhaba, BizdenBize üzerinden ${s.city} → ${s.destination} ev takası ilanınızla ilgili görüşmek istiyorum.`
+    : `Merhaba, BizdenBize üzerinden ${s.city} şehrindeki ev sahipliği ilanınızla ilgili görüşmek istiyorum.`;
+  const subjectLabel = s.destination ? `"${s.city} → ${s.destination}"` : `"${s.city}"`;
   msgBtn.onclick = () => {
     if (isPhone) window.location.href = `tel:${s.contact}`;
-    else window.location.href = `mailto:${s.contact}?subject=${encodeURIComponent(`BizdenBize'deki "${s.city} → ${s.destination}" ev takası ilanınız hakkında`)}`;
+    else window.location.href = `mailto:${s.contact}?subject=${encodeURIComponent(`BizdenBize'deki ${subjectLabel} ev takası ilanınız hakkında`)}`;
   };
   if (isPhone) {
     waBtn.style.display = '';
@@ -621,18 +632,26 @@ function closePostModal() {
   document.getElementById('post-body').style.display='flex';
   document.getElementById('post-footer').style.display='block';
   document.getElementById('p-error').style.display='none';
+  document.getElementById('p-no-dest').checked = false;
+  toggleDestField();
+}
+function toggleDestField() {
+  const noDest = document.getElementById('p-no-dest').checked;
+  document.getElementById('p-dest-wrap').style.display = noDest ? 'none' : 'block';
+  if (noDest) document.getElementById('p-dest').value = '';
 }
 async function submitPost() {
   const session = window._currentSession;
   if (!session) { window.location.href = 'login.html?redirect=ev-takasi.html'; return; }
 
   const city = document.getElementById('p-city').value.trim();
-  const dest = document.getElementById('p-dest').value.trim();
+  const noDest = document.getElementById('p-no-dest').checked;
+  const dest = noDest ? '' : document.getElementById('p-dest').value.trim();
   const desc = document.getElementById('p-desc').value.trim();
   const from = document.getElementById('p-from').value;
   const to   = document.getElementById('p-to').value;
   const err  = document.getElementById('p-error');
-  if (!city||!dest||!desc||!from||!to) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
+  if (!city||(!noDest && !dest)||!desc||!from||!to) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
 
   const realName = session.user.user_metadata?.full_name || session.user.email || 'Anonim';
@@ -642,7 +661,7 @@ async function submitPost() {
       user_name:      realName,
       contact:        session.user.email,
       city,
-      destination:    dest,
+      destination:    dest || null,
       description:    desc,
       available_from: from,
       available_to:   to,
