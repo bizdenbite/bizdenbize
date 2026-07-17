@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Ev Takası</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="Ev Takası — BizdenBize">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğunun doğrulanmış üyeleriyle güvenli ev takası. Para yok, güven var.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/ev-takasi.html">
+  <meta property="og:type" content="website">
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient(
+      'https://wxjudojlwksivhzjnmim.supabase.co',
+      'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'
+    );
+    window._authSb = _authSb;
+    window._authReady = _authSb.auth.getSession().then(({ data: { session } }) => {
+      window._currentSession = session || null;
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
@@ -187,7 +204,7 @@
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-mahallem"><a href="mahallem.html">🏘️ Komşularım</a><a href="events.html">🎉 Etkinlikler</a><a href="mahallem.html">📝 Paylaşımlar</a></div></div>
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-is',this)">💼 İş & Göç <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-is"><a href="is-guc.html">💼 İş İlanları</a><a href="is-guc.html">⚡ Freelance & Gig</a><a href="is-guc.html">👤 İş Arayanlar</a><a href="is-guc.html">✈️ Avrupa'ya Göç</a><hr><a href="business.html">🏢 İşletmeler</a></div></div>
+      <div class="nav-dropdown" id="dd-is"><a href="is-guc.html">💼 İş İlanları</a><a href="is-guc.html">⚡ Freelance & Gig</a><a href="is-guc.html">👤 İş Arayanlar</a><a href="is-guc.html">✈️ Avrupa'ya Göç</a><hr><a href="business.html">🏢 İşletmeler</a><a href="uzmanlar.html">🎯 Uzmanlar</a></div></div>
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-ogrenim',this)">🎓 Öğrenim <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-ogrenim"><a href="ogrenim.html">🗣️ Dil Kursları</a><a href="ogrenim.html">🎓 Yüksek Öğrenim</a><a href="ogrenim.html">📜 Diploma Denkliği</a><a href="ogrenim.html">🏭 Ausbildung</a>
         <hr>
@@ -200,7 +217,7 @@
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-bilgiler',this)">📚 Bilgiler <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-bilgiler"><a href="library.html">📚 Tüm Kaynaklar</a><hr><a href="library.html">💶 Kindergeld</a><a href="library.html">🛂 Vize & Oturum</a><a href="library.html">💼 Çalışma Hayatı</a></div></div>
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-abibot"><a href="abibot.html">🤖 AbiBOT'a Sor</a><hr><a href="abibot.html">⚖️ Hukuk</a><a href="abibot.html">🏥 Tıbbi</a><a href="abibot.html">🛂 Vize & Oturum</a><a href="abibot.html">✈️ Avrupa'ya Göç</a></div></div>
+      <div class="nav-dropdown" id="dd-abibot"><a href="abibot.html">🤖 AbiBOT'a Sor</a><hr><a href="abibot.html">⚖️ Hukuk</a><a href="abibot.html">🏥 Tıbbi</a><a href="abibot.html">🛂 Vize & Oturum</a><a href="abibot.html">✈️ Avrupa'ya Göç</a><hr><a href="uzmanlar.html">🎯 Uzmanlar</a></div></div>
   </div>
   <div class="nav-right">
     <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
@@ -224,6 +241,7 @@
     <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
     <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">💼</span>İş & Göç</a>
     <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
+    <a class="mm-link" href="uzmanlar.html"><span class="mm-link-icon">🎯</span>Uzmanlar</a>
   </div>
   <div class="mm-footer"><a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;"><div style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div><div><div style="font-size:13px;font-weight:600;">Profilim</div></div></a></div>
 </div>
@@ -236,6 +254,7 @@
     <p class="hero-sub">Evini geçici olarak takas et — Avrupa'daki Türk topluluğunun doğrulanmış üyeleriyle. Para yok, güven var.</p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="openPostModal()">🏠 Takas İlanı Ver</button>
+      <button class="btn-ghost" onclick="openRequestsModal()">📋 Taleplerim</button>
       <button class="btn-ghost" onclick="document.querySelector('.page-body').scrollIntoView({behavior:'smooth'})">İlanları Gör →</button>
     </div>
     <div class="hero-stats">
@@ -244,6 +263,11 @@
       <div><div class="hstat-val">%100</div><div class="hstat-label">Doğrulanmış Üye</div></div>
       <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Para yok</div></div>
     </div>
+    <div id="my-points-box" style="display:none;margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:8px 18px;">
+      <span style="font-size:16px;">🪙</span>
+      <span style="font-size:13px;color:rgba(255,255,255,.7);">Puanınız:</span>
+      <span style="font-size:15px;font-weight:700;color:var(--gold);" id="my-points-val">—</span>
+    </div>
   </div>
 </div>
 
@@ -251,7 +275,10 @@
 <div class="how-section">
   <div class="how-inner">
     <div class="how-title">Nasıl çalışır?</div>
-    <div class="how-sub">Dört adımda güvenli ev takası</div>
+    <div class="how-sub">Dört adımda güvenli ev takası — karşılıklı takas veya puanla tek taraflı konaklama</div>
+    <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px;">
+      🪙 <strong style="color:var(--ink);">İki şekilde takas yapabilirsiniz:</strong> Birbirinizin evine aynı anda gitmek zorunda değilsiniz. Birini misafir ettiğinizde puan kazanırsınız; bu puanları daha sonra, dilediğiniz zaman, başka bir üyenin evinde kalmak için kullanabilirsiniz.
+    </div>
     <div class="how-steps">
       <div class="how-step"><div class="how-step-icon">🏠</div><div class="how-step-num">1</div><div class="how-step-title">İlanını Ver</div><div class="how-step-desc">Evini, tarihleri ve nereye gitmek istediğini paylaş.</div></div>
       <div class="how-step"><div class="how-step-icon">🔍</div><div class="how-step-num">2</div><div class="how-step-title">Eşleştir</div><div class="how-step-desc">Hedef şehrinde seni isteyen birine ulaş veya onlar sana ulaşsın.</div></div>
@@ -299,7 +326,7 @@
   <main>
     <div class="results-bar">
       <div class="results-count" id="results-count"><strong>—</strong> takas ilanı</div>
-      <select class="sort-select" onchange="filterAndRenderSwaps()">
+      <select class="sort-select" id="sort-select" onchange="filterAndRenderSwaps()">
         <option value="new">En yeni</option>
         <option value="soon">Yakında müsait</option>
       </select>
@@ -314,13 +341,14 @@
     <div class="modal-header"><h3>🔄 Takas İlanı Ver</h3><button class="modal-close" onclick="closePostModal()">×</button></div>
     <div class="modal-body" id="post-body">
       <div class="trust-box"><div class="trust-icon">ℹ️</div><div><div class="trust-title">Nasıl çalışır?</div><div class="trust-text">İlanın yayınlandıktan sonra ilgilenen üyeler sana mesaj atar. Para talep edemezsiniz — bu saf bir ev takasıdır.</div></div></div>
+      <div><label class="field-label">İlan Sahibi</label><div class="field-input" id="p-name-display" style="background:var(--warm);color:var(--muted);display:flex;align-items:center;"></div></div>
       <div class="field-row">
         <div><label class="field-label">Şehrim *</label><input class="field-input" id="p-city" type="text" placeholder="Frankfurt"></div>
-        <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"><option value="🇩🇪">🇩🇪 Almanya</option><option value="🇳🇱">🇳🇱 Hollanda</option><option value="🇧🇪">🇧🇪 Belçika</option><option value="🇦🇹">🇦🇹 Avusturya</option><option value="🇬🇧">🇬🇧 İngiltere</option><option value="🇫🇷">🇫🇷 Fransa</option><option value="🇹🇷">🇹🇷 Türkiye</option></select></div>
+        <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"><option value="de">🇩🇪 Almanya</option><option value="nl">🇳🇱 Hollanda</option><option value="be">🇧🇪 Belçika</option><option value="at">🇦🇹 Avusturya</option><option value="gb">🇬🇧 İngiltere</option><option value="fr">🇫🇷 Fransa</option><option value="tr">🇹🇷 Türkiye</option></select></div>
       </div>
       <div><label class="field-label">Nereye gitmek istiyorum? *</label><input class="field-input" id="p-dest" type="text" placeholder="Paris, İstanbul veya Hollanda..."></div>
       <div class="field-row">
-        <div><label class="field-label">Ev Tipi</label><select class="field-input" id="p-type"><option>🏢 Daire</option><option>🏡 Müstakil Ev</option><option>🌊 Villa / Yazlık</option></select></div>
+        <div><label class="field-label">Ev Tipi</label><select class="field-input" id="p-type"><option value="Daire">🏢 Daire</option><option value="Müstakil Ev">🏡 Müstakil Ev</option><option value="Villa / Yazlık">🌊 Villa / Yazlık</option></select></div>
         <div><label class="field-label">Oda Sayısı</label><select class="field-input" id="p-rooms"><option>1+1</option><option>2+1</option><option>3+1</option><option>4+1 ve üzeri</option></select></div>
       </div>
       <div class="field-row">
@@ -354,22 +382,57 @@
       <div class="info-grid" id="d-info-grid"></div>
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Açıklama</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="d-desc"></div></div>
       <div class="trust-box"><div class="trust-icon">🛡️</div><div><div class="trust-title">Güvenli Takas</div><div class="trust-text">Bu üye BizdenBize kimlik doğrulamasından geçmiştir. Para transferi talep etmesi yasaktır. Şüpheli durumları bildirin.</div></div></div>
+      <div class="trust-box" style="background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🪙</div><div><div class="trust-title" style="color:var(--gold);">Puanla Konaklama</div><div class="trust-text">Karşılıklı takas yapmak zorunda değilsiniz. "Konaklama Talep Et" ile puanınızı kullanarak tek taraflı kalabilirsiniz — ev sahibi daha sonra puanlarını başka bir yerde kullanır.</div></div></div>
       <div style="font-size:11px;color:var(--sand);padding:8px 0;border-top:1px dashed var(--warm);">⚠️ BizdenBize takas anlaşmalarından sorumlu değildir. Taşınmadan önce detayları yazılı olarak netleştirin.</div>
     </div>
-    <div class="detail-footer">
+    <div class="detail-footer" style="flex-wrap:wrap;">
+      <button class="btn-primary" id="d-request-btn" style="flex:1 1 100%;">📅 Konaklama Talep Et</button>
       <button class="btn-teal" id="d-msg-btn">✉️ Mesaj Gönder</button>
       <button class="btn-wa" id="d-wa-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>
     </div>
   </div>
 </div>
 
+<!-- STAY REQUEST MODAL -->
+<div class="modal-overlay" id="request-modal" onclick="if(event.target===this)closeRequestModal()">
+  <div class="modal">
+    <div class="modal-header"><h3>📅 Konaklama Talep Et</h3><button class="modal-close" onclick="closeRequestModal()">×</button></div>
+    <div class="modal-body" id="request-body">
+      <div class="trust-box"><div class="trust-icon">🪙</div><div><div class="trust-title">Puan sistemi nasıl işler?</div><div class="trust-text">1 gece = 1 puan. Konaklama tamamlandığında (her iki taraf da onayladığında) puanlar hesabınızdan düşer, ev sahibinin hesabına eklenir.</div></div></div>
+      <div id="rq-host-info" style="font-size:13px;color:var(--muted);"></div>
+      <div class="field-row">
+        <div><label class="field-label">Giriş Tarihi *</label><input class="field-input" id="rq-checkin" type="date" oninput="updateRequestPoints()"></div>
+        <div><label class="field-label">Çıkış Tarihi *</label><input class="field-input" id="rq-checkout" type="date" oninput="updateRequestPoints()"></div>
+      </div>
+      <div id="rq-points-preview" style="font-size:13px;font-weight:600;color:var(--gold);display:none;"></div>
+      <div><label class="field-label">Mesajınız</label><textarea class="field-input" id="rq-message" rows="3" placeholder="Kendinizi tanıtın, ziyaret amacınızı kısaca belirtin..."></textarea></div>
+      <div id="rq-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="request-footer"><button class="submit-btn" onclick="submitStayRequest()">Talep Gönder →</button></div>
+    <div class="post-success" id="request-success"><div style="font-size:48px;">📬</div><h3>Talebiniz gönderildi!</h3><p>Ev sahibi kabul ettiğinde bildirim alacaksınız.<br>Durumu "Taleplerim" bölümünden takip edebilirsiniz.</p></div>
+  </div>
+</div>
+
+<!-- MY REQUESTS MODAL -->
+<div class="modal-overlay" id="requests-modal" onclick="if(event.target===this)closeRequestsModal()">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><h3>📋 Taleplerim</h3><button class="modal-close" onclick="closeRequestsModal()">×</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:4px;background:var(--warm);border-radius:10px;padding:4px;margin-bottom:14px;">
+        <button class="req-tab active" id="req-tab-guest" onclick="setRequestsTab('guest')" style="flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;">Gönderdiklerim</button>
+        <button class="req-tab" id="req-tab-host" onclick="setRequestsTab('host')" style="flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;">Gelen Talepler</button>
+      </div>
+      <div id="requests-list"></div>
+    </div>
+  </div>
+</div>
 <script>
 
 
 
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
 
   async function sbGet(table, params) {
@@ -379,10 +442,41 @@
   }
   async function sbPost(table, data) {
     const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
-    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
+  }
+  async function sbPostAuth(table, data) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
+  }
+  async function sbGetAuth(table, params) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token };
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers });
+    if (!r.ok) throw new Error('DB error ' + r.status + ': ' + await r.text());
+    return r.json();
+  }
+  async function sbPatchAuth(table, params, data) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { method:'PATCH', headers, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB update error ' + r.status + ': ' + await r.text());
+  }
+  async function sbRpcAuth(fn, args) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' };
+    const r = await fetch(_SB_URL + '/rest/v1/rpc/' + fn, { method:'POST', headers, body: JSON.stringify(args) });
+    if (!r.ok) throw new Error('RPC error ' + r.status + ': ' + await r.text());
+    return r.json().catch(() => null);
   }
 
 async function renderSwaps() {
+  window.HOME_TYPE_LABELS = { 'Daire':'🏢 Daire', 'Müstakil Ev':'🏡 Müstakil Ev', 'Villa / Yazlık':'🌊 Villa / Yazlık' };
   const grid = document.getElementById('swap-grid');
   if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
 
@@ -418,6 +512,14 @@ function filterAndRenderSwaps() {
 
   document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> takas ilanı`;
 
+  // Sort — was previously decorative (selecting either option had no effect).
+  const sortBy = document.getElementById('sort-select')?.value || 'new';
+  if (sortBy === 'soon') {
+    filtered = [...filtered].sort((a, b) => new Date(a.available_from) - new Date(b.available_from));
+  } else {
+    filtered = [...filtered].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  }
+
   const grid = document.getElementById('swap-grid');
   if (!filtered.length) {
     grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler deneyin.</p></div>`;
@@ -442,7 +544,7 @@ function filterAndRenderSwaps() {
           <span class="card-wants-dest">${s.destination}</span>
         </div>
         <div class="card-details">
-          <span class="card-detail-tag">${s.home_type}</span>
+          <span class="card-detail-tag">${HOME_TYPE_LABELS[s.home_type] || s.home_type}</span>
           <span class="card-detail-tag">${s.rooms}</span>
           <span class="card-detail-tag">👨‍👩‍👧 ${s.family_size}</span>
           <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
@@ -467,7 +569,7 @@ function formatDate(d) {
 }
 
 function openDetail(id) {
-  const s = (window._swaps||[]).find(x => x.id===id);
+  const s = (window._swaps||[]).find(x => String(x.id)===String(id));
   if (!s) return;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
@@ -475,19 +577,43 @@ function openDetail(id) {
   document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
   document.getElementById('d-info-grid').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${s.home_type} · ${s.rooms}</div></div>
+    <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${HOME_TYPE_LABELS[s.home_type] || s.home_type} · ${s.rooms}</div></div>
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
     <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}</div></div>
     <div class="info-box"><div class="info-box-label">Gitmek İstiyor</div><div class="info-box-val">→ ${s.destination}</div></div>`;
   const isPhone = (s.contact||'').startsWith('+');
-  document.getElementById('d-msg-btn').onclick = () => { if(isPhone) window.location.href=`tel:${s.contact}`; else window.location.href=`mailto:${s.contact}`; };
-  document.getElementById('d-wa-btn').onclick = () => window.open(`https://wa.me/${(s.contact||'').replace(/\s|\+/g,'')}`, '_blank');
+  const msgBtn = document.getElementById('d-msg-btn');
+  const waBtn = document.getElementById('d-wa-btn');
+  const waMessage = `Merhaba, BizdenBize üzerinden ${s.city} → ${s.destination} ev takası ilanınızla ilgili görüşmek istiyorum.`;
+  msgBtn.onclick = () => {
+    if (isPhone) window.location.href = `tel:${s.contact}`;
+    else window.location.href = `mailto:${s.contact}?subject=${encodeURIComponent(`BizdenBize'deki "${s.city} → ${s.destination}" ev takası ilanınız hakkında`)}`;
+  };
+  if (isPhone) {
+    waBtn.style.display = '';
+    waBtn.onclick = () => window.open(`https://wa.me/${(s.contact||'').replace(/\s|\+/g,'')}?text=${encodeURIComponent(waMessage)}`, '_blank');
+  } else {
+    waBtn.style.display = 'none';
+  }
+  window._currentDetailOffer = s;
+  document.getElementById('d-request-btn').onclick = () => openRequestModal(s);
   document.getElementById('detail-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); document.body.style.overflow=''; }
 
-function openPostModal() { document.getElementById('post-modal').classList.add('open'); document.body.style.overflow='hidden'; }
+async function openPostModal() {
+  await window._authReady;
+  const session = window._currentSession;
+  if (!session) {
+    alert('İlan vermek için önce giriş yapmalısın.');
+    window.location.href = 'login.html?redirect=ev-takasi.html';
+    return;
+  }
+  document.getElementById('p-name-display').textContent = session.user.user_metadata?.full_name || session.user.email || '';
+  document.getElementById('post-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 function closePostModal() {
   document.getElementById('post-modal').classList.remove('open');
   document.body.style.overflow='';
@@ -497,6 +623,9 @@ function closePostModal() {
   document.getElementById('p-error').style.display='none';
 }
 async function submitPost() {
+  const session = window._currentSession;
+  if (!session) { window.location.href = 'login.html?redirect=ev-takasi.html'; return; }
+
   const city = document.getElementById('p-city').value.trim();
   const dest = document.getElementById('p-dest').value.trim();
   const desc = document.getElementById('p-desc').value.trim();
@@ -505,9 +634,13 @@ async function submitPost() {
   const err  = document.getElementById('p-error');
   if (!city||!dest||!desc||!from||!to) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
+
+  const realName = session.user.user_metadata?.full_name || session.user.email || 'Anonim';
   try {
-    await sbPost('swap_offers', {
-      user_name:      document.getElementById('p-name')?.value.trim() || 'Anonim',
+    await sbPostAuth('swap_offers', {
+      user_id:        session.user.id,
+      user_name:      realName,
+      contact:        session.user.email,
       city,
       destination:    dest,
       description:    desc,
@@ -516,20 +649,205 @@ async function submitPost() {
       home_type:      document.getElementById('p-type')?.value || null,
       rooms:          document.getElementById('p-rooms')?.value || null,
       family_size:    document.getElementById('p-family')?.value || null,
-      contact:        document.getElementById('p-contact')?.value.trim() || null,
-      country:        'de',
+      country:        document.getElementById('p-country')?.value || 'de',
       featured:       false,
       verified:       false,
       active:         true
     });
-  } catch(e) { console.error('Swap submit error:', e); }
+  } catch(e) {
+    console.error('Swap submit error:', e);
+    err.innerHTML = 'İlanınız kaydedilemedi, lütfen tekrar deneyin.<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
+    err.style.display = 'block';
+    return;
+  }
   document.getElementById('post-body').style.display='none';
   document.getElementById('post-footer').style.display='none';
   document.getElementById('post-success').style.display='block';
   setTimeout(() => { closePostModal(); renderSwaps(); }, 2500);
 }
 
-document.addEventListener("DOMContentLoaded", function() { renderSwaps(); });
+// ── Points & Stay Requests ──────────────────────────────────
+
+async function loadMyPoints() {
+  await window._authReady;
+  const session = window._currentSession;
+  const box = document.getElementById('my-points-box');
+  if (!session) { box.style.display = 'none'; return; }
+
+  let ledger = [];
+  try {
+    ledger = await sbGetAuth('swap_points_ledger', `user_id=eq.${session.user.id}&select=amount,type`);
+  } catch(e) { console.error('Points fetch error:', e); box.style.display = 'none'; return; }
+
+  // One-time welcome bonus for first-time visitors to the points system.
+  if (!ledger.some(l => l.type === 'welcome_bonus')) {
+    try {
+      await sbPostAuth('swap_points_ledger', { user_id: session.user.id, amount: 5, type: 'welcome_bonus', note: 'Hoş geldin bonusu' });
+      ledger.push({ amount: 5, type: 'welcome_bonus' });
+    } catch(e) { console.error('Welcome bonus grant error:', e); }
+  }
+
+  const total = ledger.reduce((sum, l) => sum + (l.amount || 0), 0);
+  document.getElementById('my-points-val').textContent = total;
+  box.style.display = 'inline-flex';
+  window._myPoints = total;
+}
+
+function openRequestModal(offer) {
+  if (!window._currentSession) {
+    alert('Konaklama talep etmek için önce giriş yapmalısın.');
+    window.location.href = 'login.html?redirect=ev-takasi.html';
+    return;
+  }
+  if (offer.user_id && offer.user_id === window._currentSession.user.id) {
+    alert('Kendi ilanınıza talep gönderemezsiniz.');
+    return;
+  }
+  document.getElementById('rq-host-info').innerHTML = `<strong>${offer.user_name}</strong>'in ${offer.city} şehrindeki evi için talep gönderiyorsunuz.`;
+  document.getElementById('rq-checkin').value = '';
+  document.getElementById('rq-checkout').value = '';
+  document.getElementById('rq-message').value = '';
+  document.getElementById('rq-points-preview').style.display = 'none';
+  document.getElementById('rq-error').style.display = 'none';
+  document.getElementById('request-body').style.display = 'flex';
+  document.getElementById('request-footer').style.display = 'block';
+  document.getElementById('request-success').style.display = 'none';
+  document.getElementById('request-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeRequestModal() { document.getElementById('request-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+function updateRequestPoints() {
+  const inEl = document.getElementById('rq-checkin'), outEl = document.getElementById('rq-checkout');
+  const preview = document.getElementById('rq-points-preview');
+  if (!inEl.value || !outEl.value) { preview.style.display = 'none'; return; }
+  const nights = Math.round((new Date(outEl.value) - new Date(inEl.value)) / 86400000);
+  if (nights <= 0) { preview.textContent = 'Çıkış tarihi giriş tarihinden sonra olmalı.'; preview.style.color = 'var(--red)'; preview.style.display = 'block'; return; }
+  const have = window._myPoints ?? 0;
+  preview.style.color = nights > have ? 'var(--red)' : 'var(--gold)';
+  preview.textContent = `🪙 ${nights} gece = ${nights} puan gerekiyor (mevcut puanınız: ${have})` + (nights > have ? ' — yetersiz, ama yine de talep gönderebilirsiniz.' : '');
+  preview.style.display = 'block';
+}
+
+async function submitStayRequest() {
+  const offer = window._currentDetailOffer;
+  const session = window._currentSession;
+  if (!offer || !session) return;
+  const checkIn = document.getElementById('rq-checkin').value;
+  const checkOut = document.getElementById('rq-checkout').value;
+  const message = document.getElementById('rq-message').value.trim();
+  const err = document.getElementById('rq-error');
+  if (!checkIn || !checkOut) { err.textContent = 'Lütfen giriş ve çıkış tarihlerini seçin.'; err.style.display = 'block'; return; }
+  const nights = Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
+  if (nights <= 0) { err.textContent = 'Çıkış tarihi giriş tarihinden sonra olmalı.'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  try {
+    await sbPostAuth('swap_bookings', {
+      offer_id: String(offer.id),
+      host_user_id: offer.user_id,
+      guest_user_id: session.user.id,
+      offer_city: offer.city,
+      offer_destination: offer.destination,
+      check_in: checkIn,
+      check_out: checkOut,
+      points_needed: nights,
+      guest_message: message || null,
+      status: 'requested'
+    });
+  } catch(e) {
+    console.error('Stay request error:', e);
+    err.innerHTML = 'Talep gönderilemedi.<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
+    err.style.display = 'block';
+    return;
+  }
+  document.getElementById('request-body').style.display = 'none';
+  document.getElementById('request-footer').style.display = 'none';
+  document.getElementById('request-success').style.display = 'block';
+  setTimeout(() => { closeRequestModal(); closeDetailModal(); }, 2500);
+}
+
+let _requestsTab = 'guest';
+async function openRequestsModal() {
+  if (!window._currentSession) {
+    alert('Taleplerinizi görmek için önce giriş yapmalısın.');
+    window.location.href = 'login.html?redirect=ev-takasi.html';
+    return;
+  }
+  document.getElementById('requests-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setRequestsTab('guest');
+}
+function closeRequestsModal() { document.getElementById('requests-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+async function setRequestsTab(tab) {
+  _requestsTab = tab;
+  document.getElementById('req-tab-guest').classList.toggle('active', tab === 'guest');
+  document.getElementById('req-tab-host').classList.toggle('active', tab === 'host');
+  document.getElementById('req-tab-guest').style.background = tab === 'guest' ? 'var(--white)' : 'none';
+  document.getElementById('req-tab-guest').style.color = tab === 'guest' ? 'var(--ink)' : 'var(--muted)';
+  document.getElementById('req-tab-host').style.background = tab === 'host' ? 'var(--white)' : 'none';
+  document.getElementById('req-tab-host').style.color = tab === 'host' ? 'var(--ink)' : 'var(--muted)';
+  await renderRequestsList();
+}
+
+const STATUS_LABELS = { requested:'⏳ Bekliyor', accepted:'✅ Kabul edildi', declined:'✗ Reddedildi', completed:'🎉 Tamamlandı', cancelled:'İptal edildi' };
+
+async function renderRequestsList() {
+  const list = document.getElementById('requests-list');
+  list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">⏳ Yükleniyor...</div>';
+  const session = window._currentSession;
+  const field = _requestsTab === 'guest' ? 'guest_user_id' : 'host_user_id';
+  let bookings = [];
+  try {
+    bookings = await sbGetAuth('swap_bookings', `${field}=eq.${session.user.id}&order=created_at.desc`);
+  } catch(e) {
+    console.error('Bookings fetch error:', e);
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">Yüklenemedi.</div>';
+    return;
+  }
+  if (!bookings.length) {
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);">${_requestsTab === 'guest' ? 'Henüz talep göndermediniz.' : 'Henüz gelen talebiniz yok.'}</div>`;
+    return;
+  }
+  list.innerHTML = bookings.map(b => {
+    const canConfirm = b.status === 'accepted' && !(_requestsTab === 'guest' ? b.guest_confirmed_at : b.host_confirmed_at);
+    const alreadyConfirmed = b.status === 'accepted' && (_requestsTab === 'guest' ? b.guest_confirmed_at : b.host_confirmed_at);
+    return `
+    <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);">${b.offer_city} → ${b.offer_destination}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;">${STATUS_LABELS[b.status] || b.status}</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${formatDate(b.check_in)} – ${formatDate(b.check_out)} · 🪙 ${b.points_needed} puan</div>
+      ${b.guest_message ? `<div style="font-size:12px;color:var(--ink);background:var(--warm);border-radius:8px;padding:8px 10px;margin-bottom:8px;">${b.guest_message}</div>` : ''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${_requestsTab === 'host' && b.status === 'requested' ? `
+          <button onclick="respondBooking('${b.id}','accepted')" style="padding:6px 14px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Kabul Et</button>
+          <button onclick="respondBooking('${b.id}','declined')" style="padding:6px 14px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Reddet</button>` : ''}
+        ${canConfirm ? `<button onclick="confirmCompletion('${b.id}')" style="padding:6px 14px;background:var(--gold);color:var(--ink);border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Konaklama Tamamlandı ✓</button>` : ''}
+        ${alreadyConfirmed ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Onayınız kaydedildi, diğer tarafın onayı bekleniyor.</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function respondBooking(id, status) {
+  try {
+    await sbPatchAuth('swap_bookings', `id=eq.${id}`, { status });
+  } catch(e) { console.error('Booking response error:', e); alert('İşlem başarısız oldu.'); return; }
+  renderRequestsList();
+}
+
+async function confirmCompletion(id) {
+  try {
+    await sbRpcAuth('confirm_swap_completion', { p_booking_id: id });
+  } catch(e) { console.error('Confirm completion error:', e); alert('Onay kaydedilemedi: ' + (e.message||'')); return; }
+  await renderRequestsList();
+  loadMyPoints();
+}
+
+document.addEventListener("DOMContentLoaded", function() { renderSwaps(); loadMyPoints(); });
 </script>
 </body>
 </html>
