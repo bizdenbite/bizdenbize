@@ -225,7 +225,7 @@
         <a href="saglik.html?section=ilac">💊 İlaç & Reçete</a>
         <a href="saglik.html?section=aile">🤰 Aile & Hamilelik</a>
         <hr>
-        <a href="saglik.html#emergency-bar">🚨 Acil Durumlar</a>
+        <a href="saglik.html?section=acil">🚨 Acil Durumlar</a>
       </div>
     </div>
     <div class="nav-item"><button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
@@ -249,7 +249,7 @@
     <a class="mm-link active" href="saglik.html?section=doctors"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
     <a class="mm-link" href="saglik.html?section=mental"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
     <a class="mm-link" href="saglik.html?section=ilac"><span class="mm-link-icon">💊</span>İlaç & Reçete</a>
-    <a class="mm-link" href="saglik.html#emergency-bar"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
+    <a class="mm-link" href="saglik.html?section=acil"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
   </div>
   <div class="mm-section"><div class="mm-section-title">Diğer</div>
     <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Mahallem</a>
@@ -281,6 +281,7 @@
       <button class="section-tab" data-section="mental" onclick="setSection('mental',this)">🧠 Ruh Sağlığı</button>
       <button class="section-tab" data-section="ilac" onclick="setSection('ilac',this)">💊 İlaç & Reçete</button>
       <button class="section-tab" data-section="aile" onclick="setSection('aile',this)">🤰 Aile & Hamilelik</button>
+      <button class="section-tab" data-section="acil" onclick="setSection('acil',this)">🚨 Acil Durumlar</button>
       <a href="abibot.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🤖 AbiBOT'a Sor</a>
     </div>
     <div class="hero-stats">
@@ -403,6 +404,12 @@ const guides = {
     { emoji:"👶", title:"Doğum Sonrası: İlk Adımlar", desc:"Bebek doktoruna kayıt, Kindergeld başvurusu, Kita için bekleme listesi ve aşı takvimi.", tag:"Bebek", url:"library.html?cat=medical" },
     { emoji:"📅", title:"Çocuk Aşı Takvimi Almanya", desc:"STIKO önerilen aşı takvimi, okul öncesi zorunlu aşılar ve Türkiye'de yapılan aşıların tanınması.", tag:"Aşı", url:"library.html?cat=medical" },
   ],
+  acil: [
+    { emoji:"🚑", title:"112 mi, Notdienst mi? Ne Zaman Nereye?", desc:"Hayati tehlike, aile hekimi kapalıyken ne yapılır, Bereitschaftsdienst (116117) ne zaman aranır — doğru kararı hızlı verin.", tag:"Temel Bilgi", url:"library.html?cat=medical" },
+    { emoji:"🦷", title:"Diş Acili: Gece ve Hafta Sonu", desc:"Zahnärztlicher Notdienst nasıl bulunur, hangi durumlar gerçekten acil sayılır, ücretlendirme nasıl işler.", tag:"Diş Acili", url:"library.html?cat=medical" },
+    { emoji:"👶", title:"Çocuklarda Acil Durumlar", desc:"Yüksek ateş, düşme, zehirlenme şüphesi — çocuk acil servisleri ve Giftnotruf (zehir danışma hattı) hakkında bilmeniz gerekenler.", tag:"Çocuk", url:"library.html?cat=medical" },
+    { emoji:"🏥", title:"Ambulans ve Hastane Süreci", desc:"Ambulans çağırıldığında ne olur, hangi hastaneye götürülür, maliyet ve sigorta kapsamı nasıl işler.", tag:"Hastane", url:"library.html?cat=medical" },
+  ],
 };
 
 let activeSection = 'doctors';
@@ -414,7 +421,7 @@ let activeCity = '';
 (function applySectionFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const requested = params.get('section');
-  const valid = ['doctors', 'kranken', 'mental', 'ilac', 'aile'];
+  const valid = ['doctors', 'kranken', 'mental', 'ilac', 'aile', 'acil'];
   if (requested && valid.includes(requested)) activeSection = requested;
 })();
 
@@ -461,13 +468,14 @@ function render() {
     renderDoctors();
   } else {
     const data = guides[activeSection];
-    const titles = { kranken:'📋 Krankenkasse Rehberi', mental:'🧠 Ruh Sağlığı', ilac:'💊 İlaç & Reçete', aile:'🤰 Aile & Hamilelik' };
-    const subs = { kranken:'Almanya sağlık sigortası sistemi hakkında bilmeniz gereken her şey', mental:'Göç stresinden profesyonel desteğe — ruh sağlığı kaynakları', ilac:'Türkiye\'den getirilen ilaçlar, reçete sistemi ve daha fazlası', aile:'Hamilelikten bebekliğe Almanya\'da aile sağlığı' };
+    const titles = { kranken:'📋 Krankenkasse Rehberi', mental:'🧠 Ruh Sağlığı', ilac:'💊 İlaç & Reçete', aile:'🤰 Aile & Hamilelik', acil:'🚨 Acil Durumlar' };
+    const subs = { kranken:'Almanya sağlık sigortası sistemi hakkında bilmeniz gereken her şey', mental:'Göç stresinden profesyonel desteğe — ruh sağlığı kaynakları', ilac:'Türkiye\'den getirilen ilaçlar, reçete sistemi ve daha fazlası', aile:'Hamilelikten bebekliğe Almanya\'da aile sağlığı', acil:'Almanya\'da tıbbi acil durumlarda ne yapmanız, kimi aramanız gerektiği hakkında bilmeniz gerekenler' };
     const tips = {
       kranken: { type:'gold', icon:'💡', title:'Krankenkasse seçimi önemli!', text:'Almanya\'da yasal sigorta şirketleri arasında kapsam farkı az olsa da hizmet kalitesi, ek yardımlar ve müşteri hizmetleri farklılık gösterir. Kayıt olmadan önce karşılaştırın.' },
       mental: { type:'red', icon:'🧠', title:'Yardım almak güçlü olmaktır', text:'Türk toplulukları arasında psikolojik destek almak hala tabu görülebilir. Ancak göç stresi, yalnızlık ve uyum zorluğu gerçek sağlık sorunlarıdır. Yardım istemekten çekinmeyin.' },
       ilac: { type:'gold', icon:'💊', title:'Türkiye\'den ilaç getirirken dikkat', text:'AB ülkelerine kişisel kullanım için sınırlı miktarda ilaç getirilebilir. Uyuşturucu içeren ilaçlar için özel izin gerekebilir. Gümrükte sorun yaşamamak için reçetenizi yanınızda bulundurun.' },
       aile: { type:'green', icon:'🤰', title:'Hamile çalışanlar için önemli', text:'Almanya\'da hamilelik boyunca işten çıkarılma yasağı var. Mutterschutz doğumdan 6 hafta önce başlar. Elterngeld başvurusunu doğumdan sonra en geç 3 ay içinde yapın.' },
+      acil: { type:'red', icon:'🚨', title:'Hayati tehlike varsa hemen 112\'yi arayın', text:'Bu sayfa yalnızca genel bilgilendirme amaçlıdır. Hayati tehlike arz eden bir durumda vakit kaybetmeden 112\'yi arayın veya en yakın Notaufnahme\'ye (acil servis) gidin.' },
     };
     const t = tips[activeSection];
     body.innerHTML = `
