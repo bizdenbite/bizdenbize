@@ -168,11 +168,18 @@
     // Load expert reviews count
     const reviews = await sb(`expert_reviews?select=id&user_id=eq.${targetId}&status=eq.answered`);
 
-    renderProfile(profile, listings, reviews.length, isOwnProfile);
+    // Load Ev Takası rating (aggregate, covers both hosting and staying as a guest)
+    let swapRating = null;
+    try {
+      const ratings = await sb(`swap_user_ratings?user_id=eq.${targetId}`);
+      swapRating = ratings?.[0] || null;
+    } catch(e) { console.error('Swap rating fetch error:', e); }
+
+    renderProfile(profile, listings, reviews.length, isOwnProfile, swapRating);
     document.title = `BizdenBize — ${profile.first_name || ''} ${profile.last_name || ''}`.trim();
   }
 
-  function renderProfile(p, listings, reviewCount, isOwn) {
+  function renderProfile(p, listings, reviewCount, isOwn, swapRating) {
     const name  = `${p.first_name||''} ${p.last_name||''}`.trim() || p.username || 'Kullanıcı';
     const ini   = ((p.first_name?.[0]||'')+(p.last_name?.[0]||'')).toUpperCase() || '?';
     const color = COLORS[ini.charCodeAt(0) % COLORS.length];
@@ -184,7 +191,8 @@
 
     const badges = [
       p.is_premium ? '<span class="badge badge-premium">⭐ Premium</span>' : '',
-      p.is_verified ? '<span class="badge badge-verified">✓ Doğrulandı</span>' : ''
+      p.is_verified ? '<span class="badge badge-verified">✓ Doğrulandı</span>' : '',
+      swapRating ? `<span class="badge badge-verified">🏠 ${swapRating.avg_rating} (${swapRating.review_count})</span>` : ''
     ].filter(Boolean).join('');
 
     const langTags = (p.languages||[]).map(l => `<span class="tag">${LANG_NAMES[l]||l}</span>`).join('');
@@ -243,6 +251,10 @@
               <div class="stat-num">${(p.languages||[]).length}</div>
               <div class="stat-lab">Dil</div>
             </div>
+            <div class="stat-tab">
+              <div class="stat-num">${swapRating ? '⭐ '+swapRating.avg_rating : '—'}</div>
+              <div class="stat-lab">Ev Takası Puanı</div>
+            </div>
           </div>
         </div>
       </div>
@@ -266,6 +278,14 @@
             <div class="card-title">✨ İlgi Alanları</div>
             <div class="tag-list">${intTags}</div>
           </div>` : ''}
+
+          <div class="card">
+            <div class="card-title">🏠 Ev Takası Değerlendirmesi</div>
+            ${swapRating
+              ? `<div style="font-size:22px;color:var(--gold);margin-bottom:4px;">${'★'.repeat(Math.round(swapRating.avg_rating))}${'☆'.repeat(5-Math.round(swapRating.avg_rating))} <span style="font-size:15px;color:var(--ink);font-weight:700;">${swapRating.avg_rating}</span></div>
+                 <div style="font-size:12px;color:var(--muted);">${swapRating.review_count} değerlendirme (ev sahibi ve misafir olarak birlikte)</div>`
+              : `<div class="empty">Henüz ev takası değerlendirmesi yok.</div>`}
+          </div>
 
           <div class="card">
             <div class="card-title">📋 İlanlar</div>
