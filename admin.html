@@ -420,6 +420,7 @@
       <div class="tab-bar">
         <button class="tab-btn active" onclick="showTab('listings', this)">📋 İlanlar</button>
         <button class="tab-btn" onclick="showTab('swaps', this)">🏠 Ev Takası</button>
+        <button class="tab-btn" onclick="showTab('reviews', this)">⭐ Değerlendirmeler</button>
         <button class="tab-btn" onclick="showTab('doctors', this)">🏥 Doktorlar</button>
         <button class="tab-btn" onclick="showTab('tutors', this)">📚 Öğretmenler</button>
       </div>
@@ -436,6 +437,14 @@
           <table>
             <thead><tr><th>Başlık</th><th>Şehir</th><th>Oda</th><th>Tarih</th><th>İşlem</th></tr></thead>
             <tbody id="swaps-tbody"><tr class="loading-row"><td colspan="5">Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-reviews">
+        <div class="card">
+          <table>
+            <thead><tr><th>Değerlendiren</th><th>Değerlendirilen</th><th>Puan</th><th>Yorum</th><th>Tarih</th><th>İşlem</th></tr></thead>
+            <tbody id="reviews-tbody"><tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -997,9 +1006,10 @@
   // ── CONTENT ──
   async function loadContent() {
     try {
-      const [listings, swaps, doctors, tutors] = await Promise.all([
+      const [listings, swaps, reviews, doctors, tutors] = await Promise.all([
         sb('listings?select=*&order=created_at.desc'),
         sb('swap_offers?select=*&order=created_at.desc'),
+        sb('swap_reviews?select=*&order=created_at.desc'),
         sb('doctors?select=*'),
         sb('tutors?select=*')
       ]);
@@ -1021,6 +1031,16 @@
           <td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td>
           <td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td>
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+
+      document.getElementById('reviews-tbody').innerHTML = reviews.length ? reviews.map(r => `
+        <tr>
+          <td style="font-size:11px;color:var(--muted);">${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td>
+          <td style="font-size:11px;color:var(--muted);">${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td>
+          <td style="color:var(--gold);white-space:nowrap;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
+          <td style="font-size:12px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.comment||'—'}</td>
+          <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>
+          <td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td>
+        </tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
 
       document.getElementById('doctors-tbody').innerHTML = doctors.length ? doctors.map(d => `
         <tr>
@@ -1136,7 +1156,7 @@
   }
 
   // ── REPORTS ──
-  const REPORT_REASONS = { spam:'📢 Spam', harassment:'😡 Taciz', fake:'🎭 Sahte', inappropriate:'🚫 Uygunsuz', scam:'💸 Dolandırıcılık', other:'📝 Diğer' };
+  const REPORT_REASONS = { spam:'📢 Spam', harassment:'😡 Taciz', fake:'🎭 Sahte', inappropriate:'🚫 Uygunsuz', scam:'💸 Dolandırıcılık', suspicious:'🕵️ Şüpheli Davranış', other:'📝 Diğer' };
   let allReports = [];
   let _reportFilter = 'pending';
 
@@ -1159,13 +1179,15 @@
   }
 
   function renderReports(reports) {
-    const REASON_BADGE = { spam:'badge-gold', harassment:'badge-red', fake:'badge-red', inappropriate:'badge-red', scam:'badge-red', other:'badge-muted' };
+    const REASON_BADGE = { spam:'badge-gold', harassment:'badge-red', fake:'badge-red', inappropriate:'badge-red', scam:'badge-red', suspicious:'badge-red', other:'badge-muted' };
     document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
-      const target = r.reported_user_id
-        ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
-        : r.reported_expert_id
-          ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
-          : '—';
+      const target = r.reported_listing_id
+        ? `<a href="ev-takasi.html?listing=${r.reported_listing_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🏠 İlan #${r.reported_listing_id}</a>`
+        : r.reported_user_id
+          ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
+          : r.reported_expert_id
+            ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
+            : '—';
       const statusBadge = r.status === 'pending'
         ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
         : r.status === 'actioned'
@@ -1176,7 +1198,7 @@
       return `<tr>
         <td style="font-size:11px;color:var(--muted);">${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td>
         <td>${target}</td>
-        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : '👤 Kullanıcı'}</span></td>
+        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : r.type === 'listing' ? '🏠 İlan' : '👤 Kullanıcı'}</span></td>
         <td><span class="badge ${REASON_BADGE[r.reason]||'badge-muted'}">${REPORT_REASONS[r.reason]||r.reason}</span></td>
         <td style="font-size:12px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.details||'—'}</td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>
