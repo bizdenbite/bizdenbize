@@ -1181,13 +1181,19 @@
   function renderReports(reports) {
     const REASON_BADGE = { spam:'badge-gold', harassment:'badge-red', fake:'badge-red', inappropriate:'badge-red', scam:'badge-red', suspicious:'badge-red', other:'badge-muted' };
     document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
-      const target = r.reported_listing_id
-        ? `<a href="ev-takasi.html?listing=${r.reported_listing_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🏠 İlan #${r.reported_listing_id}</a>`
-        : r.reported_user_id
-          ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
-          : r.reported_expert_id
-            ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
-            : '—';
+      const target = r.reported_comment_id
+        ? (r.reported_post_id
+            ? `<a href="mahallem.html?post=${r.reported_post_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">💬 Yorum (gönderiye git)</a>`
+            : `<span style="font-size:12px;color:var(--muted);">💬 Yorum</span>`)
+        : r.reported_post_id
+          ? `<a href="mahallem.html?post=${r.reported_post_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">📝 Gönderi</a>`
+          : r.reported_listing_id
+            ? `<a href="ev-takasi.html?listing=${r.reported_listing_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🏠 İlan #${r.reported_listing_id}</a>`
+            : r.reported_user_id
+              ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
+              : r.reported_expert_id
+                ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
+                : '—';
       const statusBadge = r.status === 'pending'
         ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
         : r.status === 'actioned'
@@ -1198,7 +1204,7 @@
       return `<tr>
         <td style="font-size:11px;color:var(--muted);">${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td>
         <td>${target}</td>
-        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : r.type === 'listing' ? '🏠 İlan' : '👤 Kullanıcı'}</span></td>
+        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : r.type === 'listing' ? '🏠 İlan' : r.type === 'post' ? '📝 Gönderi' : r.type === 'comment' ? '💬 Yorum' : '👤 Kullanıcı'}</span></td>
         <td><span class="badge ${REASON_BADGE[r.reason]||'badge-muted'}">${REPORT_REASONS[r.reason]||r.reason}</span></td>
         <td style="font-size:12px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.details||'—'}</td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>

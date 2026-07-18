@@ -939,9 +939,9 @@
         <div id="compose-error" style="display:none;font-size:11px;color:var(--red);"></div>
       </div>
       <div class="compose-actions">
-        <button class="compose-action" title="Yakında">📷 Fotoğraf</button>
-        <button class="compose-action" title="Yakında">🛍️ İlan</button>
-        <button class="compose-action" title="Yakında">🎉 Etkinlik</button>
+        <button class="compose-action" onclick="window.showComingSoon('📷 Fotoğraf ekleme')">📷 Fotoğraf</button>
+        <button class="compose-action" onclick="window.showComingSoon('🛍️ İlan olarak paylaşma')">🛍️ İlan</button>
+        <button class="compose-action" onclick="window.showComingSoon('🎉 Etkinlik olarak paylaşma')">🎉 Etkinlik</button>
         <button class="compose-submit" id="compose-submit-btn" onclick="window.submitNewPost()">Paylaş</button>
       </div>
     </div>
@@ -1485,6 +1485,8 @@
       <div class="post-actions">
         <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.likes_count||0}</span></button>
         <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yorum <span>${p.comments_count||0}</span></button>
+        ${p.author_id === user.id ? `<button class="post-action" onclick="window.startEditPost('${p.id}')" style="margin-left:auto;color:var(--muted);">✏️</button>` : ''}
+        <button class="post-action" onclick="window.openReportModal('post','${p.id}','${p.author_id}')" style="${p.author_id === user.id ? '' : 'margin-left:auto;'}color:var(--muted);">🚩</button>
       </div>
       <div class="post-comments" id="comments-${p.id}" style="display:none;margin-top:12px;border-top:1px solid var(--warm);padding-top:12px;"></div>
     </div>`;
@@ -1494,9 +1496,18 @@
     const list = comments.map(c => {
       const a = window._profileMap[c.author_id] || {};
       const an = `${a.first_name||''} ${a.last_name||''}`.trim() || 'Üye';
-      return `<div style="display:flex;gap:8px;margin-bottom:10px;">
+      return `<div data-comment-id="${c.id}" style="display:flex;gap:8px;margin-bottom:10px;">
         <div style="width:26px;height:26px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${(a.first_name?.[0]||'?').toUpperCase()}</div>
-        <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--ink);">${an}</div><div style="font-size:12px;color:var(--ink);">${escapeHtmlPost(c.content)}</div></div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="font-size:12px;font-weight:600;color:var(--ink);">${an}</div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              ${c.author_id === user.id ? `<button onclick="window.startEditComment('${postId}','${c.id}')" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:0;">✏️</button>` : ''}
+              <button onclick="window.openReportModal('comment','${c.id}','${c.author_id}','${postId}')" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:0;">🚩</button>
+            </div>
+          </div>
+          <div class="comment-content-text" style="font-size:12px;color:var(--ink);">${escapeHtmlPost(c.content)}</div>
+        </div>
       </div>`;
     }).join('') || '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Henüz yorum yok. İlk yorumu sen yaz!</div>';
     return `${list}
@@ -1637,6 +1648,14 @@
     input.disabled = false;
   };
 
+  window.showComingSoon = function(feature) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
+    toast.textContent = `${feature} yakında geliyor!`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  };
+
   window.submitNewPost = async function() {
     const input = document.getElementById('compose-input');
     const tagsInput = document.getElementById('compose-tags');
@@ -1668,9 +1687,140 @@
     btn.disabled=false; btn.textContent='Paylaş';
   };
 
+  window.startEditPost = function(postId) {
+    const post = window._allPosts.find(p => p.id === postId);
+    if (!post) return;
+    const card = document.querySelector(`[data-post-id="${postId}"]`);
+    const bodyEl = card.querySelector('.post-body');
+    bodyEl.outerHTML = `<div class="post-body">
+      <textarea id="edit-textarea-${postId}" style="width:100%;min-height:70px;border:1px solid var(--sand);border-radius:8px;padding:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;box-sizing:border-box;">${escapeHtmlPost(post.content)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="window.saveEditPost('${postId}')" style="padding:6px 14px;background:var(--red);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        <button onclick="renderFeedFromCache()" style="padding:6px 14px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Vazgeç</button>
+      </div>
+    </div>`;
+  };
+
+  window.saveEditPost = async function(postId) {
+    const textarea = document.getElementById(`edit-textarea-${postId}`);
+    const newContent = textarea.value.trim();
+    if (!newContent) return;
+    try {
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${postId}`, {
+        method: 'PATCH',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ content: newContent, updated_at: new Date().toISOString() })
+      });
+      const post = window._allPosts.find(p => p.id === postId);
+      if (post) post.content = newContent;
+      renderFeedFromCache();
+    } catch(e) {
+      console.error('Post edit error:', e);
+      alert('Düzenleme kaydedilemedi.');
+    }
+  };
+
+  window.startEditComment = function(postId, commentId) {
+    const row = document.querySelector(`#comments-${postId} [data-comment-id="${commentId}"]`);
+    if (!row) return;
+    const contentEl = row.querySelector('.comment-content-text');
+    const original = contentEl.textContent;
+    contentEl.outerHTML = `<div class="comment-content-text">
+      <textarea id="edit-comment-${commentId}" style="width:100%;min-height:50px;border:1px solid var(--sand);border-radius:6px;padding:6px;font-family:'Instrument Sans',sans-serif;font-size:12px;box-sizing:border-box;">${escapeHtmlPost(original)}</textarea>
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <button onclick="window.saveEditComment('${postId}','${commentId}')" style="padding:4px 10px;background:var(--red);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        <button onclick="window.cancelEditComment('${postId}')" style="padding:4px 10px;background:none;border:1px solid var(--sand);color:var(--muted);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Vazgeç</button>
+      </div>
+    </div>`;
+  };
+
+  window.cancelEditComment = async function(postId) {
+    try {
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
+      const comments = await r.json();
+      document.getElementById(`comments-${postId}`).innerHTML = renderCommentsBlock(postId, comments);
+    } catch(e) { console.error('Comment reload error:', e); }
+  };
+
+  window.saveEditComment = async function(postId, commentId) {
+    const textarea = document.getElementById(`edit-comment-${commentId}`);
+    const newContent = textarea.value.trim();
+    if (!newContent) return;
+    try {
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?id=eq.${commentId}`, {
+        method:'PATCH', headers:{...headers,'Prefer':'return=minimal'},
+        body: JSON.stringify({ content: newContent })
+      });
+      window.cancelEditComment(postId);
+    } catch(e) { console.error('Comment edit error:', e); alert('Düzenleme kaydedilemedi.'); }
+  };
+
+  window._reportTarget = null;
+  window.openReportModal = function(type, id, authorId, parentPostId) {
+    window._reportTarget = { type, id, authorId, parentPostId };
+    document.getElementById('rp-reason').value = '';
+    document.getElementById('rp-details').value = '';
+    document.getElementById('rp-error').style.display = 'none';
+    document.getElementById('rp-success').style.display = 'none';
+    document.getElementById('rp-form-fields').style.display = 'block';
+    document.getElementById('rp-actions').style.display = 'flex';
+    document.getElementById('report-modal-overlay').style.display = 'flex';
+  };
+  window.closeReportModal = function() {
+    document.getElementById('report-modal-overlay').style.display = 'none';
+  };
+  window.submitReport = async function() {
+    const reason = document.getElementById('rp-reason').value;
+    const details = document.getElementById('rp-details').value.trim();
+    const err = document.getElementById('rp-error');
+    if (!reason) { err.textContent = 'Lütfen bir sebep seçin.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    const t = window._reportTarget;
+    if (!t) return;
+    const body = { reporter_id: user.id, type: t.type, reason, details: details || null, status: 'pending' };
+    if (t.type === 'post') body.reported_post_id = t.id;
+    if (t.type === 'comment') { body.reported_comment_id = t.id; if (t.parentPostId) body.reported_post_id = t.parentPostId; }
+    if (t.authorId) body.reported_user_id = t.authorId;
+    const btn = document.getElementById('rp-submit-btn');
+    btn.disabled = true;
+    try {
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/reports`, {
+        method: 'POST',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error(await r.text());
+      document.getElementById('rp-form-fields').style.display = 'none';
+      document.getElementById('rp-actions').style.display = 'none';
+      document.getElementById('rp-success').style.display = 'block';
+      setTimeout(() => window.closeReportModal(), 2000);
+    } catch(e) {
+      console.error('Report submit error:', e);
+      err.textContent = 'Bildirim gönderilemedi.';
+      err.style.display = 'block';
+    }
+    btn.disabled = false;
+  };
+
   document.getElementById('compose-avatar').textContent = initials;
   document.getElementById('compose-avatar').style.background = color;
   await loadFeed();
+
+  // Deep link: ?post=<id> — used by the admin reports panel to jump
+  // straight to a reported post, bypassing the current tier/category filters.
+  const deepLinkPostId = new URLSearchParams(window.location.search).get('post');
+  if (deepLinkPostId && !window._allPosts.some(p => p.id === deepLinkPostId)) {
+    try {
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${deepLinkPostId}&select=*`, { headers });
+      const found = await r.json();
+      if (found?.[0]) {
+        const el = document.getElementById('posts-feed');
+        el.innerHTML = `<div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px;">🔍 Bildirilen gönderi</div>` + renderPostCard(found[0]) + el.innerHTML;
+      }
+    } catch(e) { console.error('Deep link post fetch error:', e); }
+  } else if (deepLinkPostId) {
+    document.querySelector(`[data-post-id="${deepLinkPostId}"]`)?.scrollIntoView({behavior:'smooth', block:'center'});
+  }
   })();
 </script>
 <!-- SITE FOOTER -->
@@ -1845,5 +1995,33 @@ document.addEventListener('click', function(e) {
     if (panel) panel.style.display = 'none';
   }
 });
-</script> </body>
+</script> <!-- REPORT MODAL -->
+<div id="report-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,18,8,.5);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)window.closeReportModal()">
+  <div style="background:#fff;border-radius:14px;padding:24px;max-width:380px;width:90%;">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin:0 0 16px;">🚩 Bildir</h3>
+    <div id="rp-form-fields">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Sebep *</label>
+      <select id="rp-reason" style="width:100%;padding:10px;border:1px solid var(--sand);border-radius:8px;font-size:13px;margin-bottom:12px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;">
+        <option value="">Seçin...</option>
+        <option value="fake">🎭 Sahte</option>
+        <option value="inappropriate">🚫 Uygunsuz</option>
+        <option value="suspicious">🕵️ Şüpheli Davranış</option>
+        <option value="scam">💸 Dolandırıcılık</option>
+        <option value="harassment">😡 Taciz</option>
+        <option value="spam">📢 Spam</option>
+        <option value="other">📝 Diğer</option>
+      </select>
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;">Detay</label>
+      <textarea id="rp-details" rows="3" placeholder="Kısaca açıklayın (opsiyonel)" style="width:100%;padding:10px;border:1px solid var(--sand);border-radius:8px;font-size:13px;margin-bottom:12px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;resize:vertical;"></textarea>
+    </div>
+    <div id="rp-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:12px;"></div>
+    <div id="rp-success" style="display:none;font-size:13px;color:#1E7B4B;margin-bottom:12px;text-align:center;">✅ Bildiriminiz alındı, teşekkürler.</div>
+    <div id="rp-actions" style="display:flex;gap:8px;">
+      <button onclick="window.closeReportModal()" style="flex:1;padding:11px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:9px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Vazgeç</button>
+      <button id="rp-submit-btn" onclick="window.submitReport()" style="flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Bildir</button>
+    </div>
+  </div>
+</div>
+
+</body>
 </html>
