@@ -938,10 +938,14 @@
         <input type="text" id="compose-tags" placeholder="Etiketler (virgülle ayırın, opsiyonel): örn. öğrenci, münih" style="width:100%;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--muted);background:var(--warm);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
         <div id="compose-error" style="display:none;font-size:11px;color:var(--red);"></div>
       </div>
+      <div style="padding-left:50px;">
+        <input type="file" id="compose-photo-input" accept="image/*" style="display:none" onchange="window.handlePhotoSelect(this)">
+        <div id="compose-photo-preview" style="display:none;margin-bottom:8px;"></div>
+      </div>
       <div class="compose-actions">
-        <button class="compose-action" onclick="window.showComingSoon('📷 Fotoğraf ekleme')">📷 Fotoğraf</button>
-        <button class="compose-action" onclick="window.showComingSoon('🛍️ İlan olarak paylaşma')">🛍️ İlan</button>
-        <button class="compose-action" onclick="window.showComingSoon('🎉 Etkinlik olarak paylaşma')">🎉 Etkinlik</button>
+        <button class="compose-action" onclick="document.getElementById('compose-photo-input').click()">📷 Fotoğraf</button>
+        <button class="compose-action" onclick="window.location='classifieds.html'">🛍️ İlan</button>
+        <button class="compose-action" onclick="window.location='events.html'">🎉 Etkinlik</button>
         <button class="compose-submit" id="compose-submit-btn" onclick="window.submitNewPost()">Paylaş</button>
       </div>
     </div>
@@ -1481,6 +1485,7 @@
         </div>
       </div>
       <div class="post-body">${escapeHtmlPost(p.content)}</div>
+      ${p.image_urls?.[0] ? `<div style="margin-bottom:12px;"><img src="${p.image_urls[0]}" style="max-width:100%;border-radius:10px;display:block;"></div>` : ''}
       ${tagsHtml ? `<div style="margin-bottom:12px;">${tagsHtml}</div>` : ''}
       <div class="post-actions">
         <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.likes_count||0}</span></button>
@@ -1648,6 +1653,42 @@
     input.disabled = false;
   };
 
+  window._pendingImageUrl = null;
+
+  window.handlePhotoSelect = async function(inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Lütfen bir resim dosyası seçin.'); return; }
+    if (file.size > 8 * 1024 * 1024) { alert('Resim en fazla 8MB olabilir.'); return; }
+    const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const preview = document.getElementById('compose-photo-preview');
+    preview.style.display = 'block';
+    preview.innerHTML = '<div style="font-size:11px;color:var(--muted);">Yükleniyor...</div>';
+    try {
+      const uploadRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/storage/v1/object/post-images/${path}`, {
+        method: 'POST',
+        headers: { 'apikey': headers.apikey, 'Authorization': headers.Authorization, 'Content-Type': file.type },
+        body: file
+      });
+      if (!uploadRes.ok) throw new Error(await uploadRes.text());
+      const publicUrl = `https://wxjudojlwksivhzjnmim.supabase.co/storage/v1/object/public/post-images/${path}`;
+      window._pendingImageUrl = publicUrl;
+      preview.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${publicUrl}" style="max-height:120px;border-radius:8px;display:block;"><button onclick="window.removePendingPhoto()" style="position:absolute;top:4px;right:4px;background:rgba(26,18,8,.7);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;">✕</button></div>`;
+    } catch(e) {
+      console.error('Photo upload error:', e);
+      preview.innerHTML = '<div style="font-size:11px;color:var(--red);">Yükleme başarısız. Tekrar deneyin.</div>';
+      window._pendingImageUrl = null;
+    }
+  };
+
+  window.removePendingPhoto = function() {
+    window._pendingImageUrl = null;
+    const preview = document.getElementById('compose-photo-preview');
+    preview.style.display = 'none';
+    preview.innerHTML = '';
+    document.getElementById('compose-photo-input').value = '';
+  };
+
   window.showComingSoon = function(feature) {
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
@@ -1676,12 +1717,13 @@
     try {
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts`, {
         method:'POST', headers:{...headers,'Prefer':'return=representation'},
-        body: JSON.stringify({ author_id:user.id, content, city, country, tags, category })
+        body: JSON.stringify({ author_id:user.id, content, city, country, tags, category, image_urls: window._pendingImageUrl ? [window._pendingImageUrl] : [] })
       });
       if (!r.ok) throw new Error(await r.text());
       const created = await r.json();
       if (created?.[0]) window._allPosts.unshift(created[0]);
       input.value=''; tagsInput.value=''; catSelect.value='';
+      window.removePendingPhoto();
       renderFeedFromCache();
     } catch(e) { console.error('Post submit error:', e); errBox.textContent = 'Paylaşım yapılamadı. Tekrar deneyin.'; errBox.style.display = 'block'; }
     btn.disabled=false; btn.textContent='Paylaş';
