@@ -897,51 +897,57 @@
   <!-- FEED -->
   <main class="feed">
     <!-- Location filter -->
-    <div class="loc-filter">
-      <button class="loc-btn active" id="filter-city">📍 —</button>
-      <button class="loc-btn">🇩🇪 Almanya</button>
-      <button class="loc-btn">🌍 Tüm Avrupa</button>
+    <div class="loc-filter" id="tier-filter">
+      <button class="loc-btn active" id="filter-city" data-tier="city">📍 —</button>
+      <button class="loc-btn" data-tier="germany">🇩🇪 Almanya</button>
+      <button class="loc-btn" data-tier="europe">🌍 Tüm Avrupa</button>
+    </div>
+
+    <div class="loc-filter" id="cat-filter" style="margin-top:8px;">
+      <button class="loc-btn active" data-cat="">Tümü</button>
+      <button class="loc-btn" data-cat="egitim">🎓 Eğitim</button>
+      <button class="loc-btn" data-cat="vize">🛂 Vize & Göç</button>
+      <button class="loc-btn" data-cat="is">💼 İş</button>
+      <button class="loc-btn" data-cat="konut">🏠 Konut</button>
+      <button class="loc-btn" data-cat="saglik">🏥 Sağlık</button>
+      <button class="loc-btn" data-cat="etkinlik">🎉 Etkinlik</button>
+      <button class="loc-btn" data-cat="genel">💬 Genel</button>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <input type="text" id="tag-search" placeholder="🔍 Ara... (başlık, etiket veya içerik)" oninput="window.handleTagSearch()" style="width:100%;padding:10px 14px;border:1px solid var(--sand);border-radius:9px;font-size:13px;font-family:'Instrument Sans',sans-serif;outline:none;box-sizing:border-box;">
     </div>
 
     <!-- Compose -->
     <div class="compose">
       <div class="compose-top">
         <div class="compose-avatar" id="compose-avatar">—</div>
-        <textarea class="compose-input" placeholder="Mahallenle bir şey paylaş..."></textarea>
+        <textarea class="compose-input" id="compose-input" placeholder="Mahallenle bir şey paylaş..."></textarea>
+      </div>
+      <div style="padding-left:50px;display:flex;flex-direction:column;gap:6px;">
+        <select id="compose-category" style="width:100%;border:1px solid var(--sand);outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
+          <option value="" disabled selected>Kategori seçin *</option>
+          <option value="egitim">🎓 Eğitim & Ders</option>
+          <option value="vize">🛂 Vize & Göç</option>
+          <option value="is">💼 İş & Kariyer</option>
+          <option value="konut">🏠 Konut & Ev Takası</option>
+          <option value="saglik">🏥 Sağlık</option>
+          <option value="etkinlik">🎉 Etkinlik & Sosyal</option>
+          <option value="genel">💬 Genel Sohbet</option>
+        </select>
+        <input type="text" id="compose-tags" placeholder="Etiketler (virgülle ayırın, opsiyonel): örn. öğrenci, münih" style="width:100%;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--muted);background:var(--warm);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
+        <div id="compose-error" style="display:none;font-size:11px;color:var(--red);"></div>
       </div>
       <div class="compose-actions">
-        <button class="compose-action">📷 Fotoğraf</button>
-        <button class="compose-action">🛍️ İlan</button>
-        <button class="compose-action">🎉 Etkinlik</button>
-        <button class="compose-submit">Paylaş</button>
+        <button class="compose-action" title="Yakında">📷 Fotoğraf</button>
+        <button class="compose-action" title="Yakında">🛍️ İlan</button>
+        <button class="compose-action" title="Yakında">🎉 Etkinlik</button>
+        <button class="compose-submit" id="compose-submit-btn" onclick="window.submitNewPost()">Paylaş</button>
       </div>
     </div>
 
-    <!-- Post 1 — Example Content -->
-    <div class="post-card" style="border:1.5px dashed var(--sand);">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-        <span style="background:var(--sand);color:var(--muted);padding:2px 8px;border-radius:20px;">📌 Örnek İçerik</span>
-        Topluluk böyle görünecek
-      </div>
-      <div class="post-header">
-        <div class="post-avatar" style="background:#185FA5">MK</div>
-        <div class="post-meta">
-          <div class="post-name">Mustafa Kaya</div>
-          <div class="post-info">
-            📍 Frankfurt
-            <div class="post-dot"></div>
-            2 saat önce
-            <div class="post-dot"></div>
-            <span class="post-type-badge" style="background:rgba(24,95,165,0.1);color:#185FA5">Mahallem</span>
-          </div>
-        </div>
-      </div>
-      <div class="post-body">Frankfurt'ta güvenilir Türkçe bilen bir vergi danışmanı arıyorum. Küçük işletme kurmak istiyorum, yardımcı olabilecek var mı? 🙏</div>
-      <div class="post-actions">
-        <button class="post-action" onclick="likePost(this)">👍 Beğen <span>12</span></button>
-        <button class="post-action">💬 Yorum <span>5</span></button>
-        <button class="post-action">↗️ Paylaş</button>
-      </div>
+    <div id="posts-feed">
+      <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
     </div>
 
     <!-- Section: Yakındaki ilanlar -->
@@ -992,32 +998,6 @@
       <button class="event-rsvp" onclick="rsvp(this)">Katıl</button>
     </div>
 
-    <!-- Post 2 — Example Content -->
-    <div class="post-card" style="border:1.5px dashed var(--sand);">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-        <span style="background:var(--sand);color:var(--muted);padding:2px 8px;border-radius:20px;">📌 Örnek İçerik</span>
-      </div>
-      <div class="post-header">
-        <div class="post-avatar" style="background:#1E7B4B">ZD</div>
-        <div class="post-meta">
-          <div class="post-name">Zeynep Demir</div>
-          <div class="post-info">
-            📍 Frankfurt
-            <div class="post-dot"></div>
-            5 saat önce
-            <div class="post-dot"></div>
-            <span class="post-type-badge" style="background:rgba(30,123,75,0.1);color:#1E7B4B">Tavsiye</span>
-          </div>
-        </div>
-      </div>
-      <div class="post-body">Sachsenhausen'daki Türk berberi Ahmet Usta'yı herkese tavsiye ederim! 3 yıldır gidiyorum, hem ucuz hem kaliteli. Adres: Darmstädter Landstr. 12 ✂️</div>
-      <div class="post-actions">
-        <button class="post-action liked">👍 Beğen <span>34</span></button>
-        <button class="post-action">💬 Yorum <span>8</span></button>
-        <button class="post-action">↗️ Paylaş</button>
-      </div>
-    </div>
-
   </main>
 
   <!-- RIGHT SIDEBAR -->
@@ -1039,13 +1019,8 @@
 
     <div class="widget">
       <div class="widget-title">🔥 Gündemdekiler</div>
-      <div>
-        <span class="trend-tag">#VergiDanışmanı</span>
-        <span class="trend-tag">#Frankfurt</span>
-        <span class="trend-tag">#TürkFestivali</span>
-        <span class="trend-tag">#Girişimci</span>
-        <span class="trend-tag">#Kiralık</span>
-        <span class="trend-tag">#Berber</span>
+      <div id="trending-tags">
+        <div style="font-size:12px;color:var(--muted);">Yükleniyor...</div>
       </div>
     </div>
 
@@ -1054,10 +1029,20 @@
 
 <script>
   // Location filter
-  document.querySelectorAll('.loc-btn').forEach(btn => {
+  document.querySelectorAll('#tier-filter .loc-btn').forEach(btn => {
     btn.addEventListener('click', function() {
-      document.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#tier-filter .loc-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
+      if (window.setFeedTier && this.dataset.tier) window.setFeedTier(this.dataset.tier);
+    });
+  });
+
+  // Category filter
+  document.querySelectorAll('#cat-filter .loc-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#cat-filter .loc-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      if (window.setFeedCategory) window.setFeedCategory(this.dataset.cat || '');
     });
   });
 
@@ -1445,6 +1430,248 @@
       list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Henüz başka üye yok.</div>';
     }
   }
+
+  window._profileMap = {};
+  allProfiles.forEach(p => { window._profileMap[p.id] = p; });
+
+  // ── Real Mahallem feed (posts / likes / comments / tags) ─────────
+
+  const CATEGORY_META = {
+    egitim:   { label: '🎓 Eğitim & Ders',      color: '#185FA5' },
+    vize:     { label: '🛂 Vize & Göç',         color: '#D42B2B' },
+    is:       { label: '💼 İş & Kariyer',       color: '#C9A84C' },
+    konut:    { label: '🏠 Konut & Ev Takası',  color: '#1E7B4B' },
+    saglik:   { label: '🏥 Sağlık',              color: '#534AB7' },
+    etkinlik: { label: '🎉 Etkinlik & Sosyal',  color: '#E85D75' },
+    genel:    { label: '💬 Genel Sohbet',        color: '#6B5E4E' }
+  };
+
+  function escapeHtmlPost(s) {
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+  function timeAgoPost(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'az önce';
+    if (diff < 3600) return `${Math.floor(diff/60)} dk önce`;
+    if (diff < 86400) return `${Math.floor(diff/3600)} saat önce`;
+    if (diff < 604800) return `${Math.floor(diff/86400)} gün önce`;
+    return new Date(iso).toLocaleDateString('tr-TR');
+  }
+
+  function renderPostCard(p) {
+    const author = window._profileMap[p.author_id] || {};
+    const an = `${author.first_name||''} ${author.last_name||''}`.trim() || 'Üye';
+    const ai = ((author.first_name?.[0]||'') + (author.last_name?.[0]||'')).toUpperCase() || '?';
+    const memberColors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+    const ac = memberColors[ai.charCodeAt(0) % memberColors.length];
+    const avatarHtml = author.avatar_url
+      ? `<img src="${author.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : ai;
+    const liked = window._myLikedPostIds.has(p.id);
+    const cat = CATEGORY_META[p.category] || CATEGORY_META.genel;
+    const tagsHtml = (p.tags||[]).map(t => `<span class="trend-tag" style="margin:0 4px 4px 0;padding:3px 10px;font-size:11px;" onclick="window.filterByTag('${t.replace(/'/g,"")}')">#${escapeHtmlPost(t)}</span>`).join('');
+    return `<div class="post-card" data-post-id="${p.id}">
+      <div class="post-header">
+        <div class="post-avatar" style="background:${ac}">${avatarHtml}</div>
+        <div class="post-meta">
+          <div class="post-name">${an}</div>
+          <div class="post-info">📍 ${p.city||'—'}<div class="post-dot"></div>${timeAgoPost(p.created_at)}<div class="post-dot"></div><span class="post-type-badge" style="background:${cat.color}22;color:${cat.color}">${cat.label}</span></div>
+        </div>
+      </div>
+      <div class="post-body">${escapeHtmlPost(p.content)}</div>
+      ${tagsHtml ? `<div style="margin-bottom:12px;">${tagsHtml}</div>` : ''}
+      <div class="post-actions">
+        <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.like_count||0}</span></button>
+        <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yorum <span>${p.comment_count||0}</span></button>
+      </div>
+      <div class="post-comments" id="comments-${p.id}" style="display:none;margin-top:12px;border-top:1px solid var(--warm);padding-top:12px;"></div>
+    </div>`;
+  }
+
+  function renderCommentsBlock(postId, comments) {
+    const list = comments.map(c => {
+      const a = window._profileMap[c.author_id] || {};
+      const an = `${a.first_name||''} ${a.last_name||''}`.trim() || 'Üye';
+      return `<div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${(a.first_name?.[0]||'?').toUpperCase()}</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--ink);">${an}</div><div style="font-size:12px;color:var(--ink);">${escapeHtmlPost(c.content)}</div></div>
+      </div>`;
+    }).join('') || '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Henüz yorum yok. İlk yorumu sen yaz!</div>';
+    return `${list}
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <input type="text" id="comment-input-${postId}" placeholder="Yorum yaz..." style="flex:1;border:1px solid var(--sand);border-radius:7px;padding:7px 10px;font-size:12px;font-family:'Instrument Sans',sans-serif;outline:none;" onkeypress="if(event.key==='Enter')window.submitComment('${postId}')">
+        <button onclick="window.submitComment('${postId}')" style="background:var(--red);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Gönder</button>
+      </div>`;
+  }
+
+  window._allPosts = [];
+  window._myLikedPostIds = new Set();
+  window._feedTier = 'city';
+  window._feedTagQuery = '';
+  window._feedCategory = '';
+
+  function renderFeedFromCache() {
+    const el = document.getElementById('posts-feed');
+    if (!el) return;
+    let list = window._allPosts;
+    if (window._feedTier === 'city') {
+      list = list.filter(p => (p.city||'').toLowerCase() === city.toLowerCase());
+    } else if (window._feedTier === 'germany') {
+      list = list.filter(p => {
+        const a = window._profileMap[p.author_id];
+        return a && ['almanya','germany','deutschland'].includes((a.country||'').toLowerCase());
+      });
+    } // europe tier = no filter, everyone
+    if (window._feedCategory) {
+      list = list.filter(p => p.category === window._feedCategory);
+    }
+    if (window._feedTagQuery) {
+      const q = window._feedTagQuery.toLowerCase().replace(/^#/,'');
+      list = list.filter(p =>
+        (p.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+        (p.content||'').toLowerCase().includes(q)
+      );
+    }
+    if (!list.length) {
+      el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz paylaşım yok. İlk paylaşımı sen yap! 👋</div>`;
+      return;
+    }
+    el.innerHTML = list.map(renderPostCard).join('');
+  }
+
+  async function loadFeed() {
+    try {
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?select=*&order=created_at.desc&limit=50`, { headers });
+      window._allPosts = await r.json();
+      if (!Array.isArray(window._allPosts)) window._allPosts = [];
+    } catch(e) { console.error('Feed load error:', e); window._allPosts = []; }
+    try {
+      const r2 = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?select=post_id&user_id=eq.${user.id}`, { headers });
+      const mine = await r2.json();
+      window._myLikedPostIds = new Set((mine||[]).map(x => x.post_id));
+    } catch(e) { console.error('Likes load error:', e); }
+    renderFeedFromCache();
+
+    // Trending tags — real, computed from the loaded feed
+    const tagCounts = {};
+    window._allPosts.forEach(p => (p.tags||[]).forEach(t => { tagCounts[t] = (tagCounts[t]||0) + 1; }));
+    const topTags = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0, 6).map(x => x[0]);
+    const trendEl = document.getElementById('trending-tags');
+    if (trendEl) {
+      trendEl.innerHTML = topTags.length
+        ? topTags.map(t => `<span class="trend-tag" onclick="window.filterByTag('${t.replace(/'/g,"")}')">#${escapeHtmlPost(t)}</span>`).join('')
+        : '<div style="font-size:12px;color:var(--muted);">Henüz etiket yok.</div>';
+    }
+  }
+
+  window.setFeedTier = function(tier) { window._feedTier = tier; renderFeedFromCache(); };
+  window.setFeedCategory = function(cat) { window._feedCategory = cat; renderFeedFromCache(); };
+  window.filterByTag = function(tag) {
+    const box = document.getElementById('tag-search');
+    if (box) box.value = tag;
+    window._feedTagQuery = tag;
+    renderFeedFromCache();
+    document.querySelector('.feed')?.scrollIntoView({behavior:'smooth'});
+  };
+  window.handleTagSearch = function() {
+    window._feedTagQuery = document.getElementById('tag-search').value.trim();
+    renderFeedFromCache();
+  };
+
+  window.togglePostLike = async function(postId, btnEl) {
+    const isLiked = btnEl.classList.contains('liked');
+    const countSpan = btnEl.querySelector('span');
+    let count = parseInt(countSpan.textContent) || 0;
+    btnEl.disabled = true;
+    try {
+      if (isLiked) {
+        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?post_id=eq.${postId}&user_id=eq.${user.id}`, { method:'DELETE', headers });
+        btnEl.classList.remove('liked'); count--;
+        window._myLikedPostIds.delete(postId);
+      } else {
+        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes`, { method:'POST', headers:{...headers,'Prefer':'return=minimal'}, body: JSON.stringify({post_id:postId,user_id:user.id}) });
+        btnEl.classList.add('liked'); count++;
+        window._myLikedPostIds.add(postId);
+      }
+      countSpan.textContent = count;
+    } catch(e) { console.error('Like toggle error:', e); }
+    btnEl.disabled = false;
+  };
+
+  window.toggleComments = async function(postId, btnEl) {
+    const box = document.getElementById(`comments-${postId}`);
+    if (box.style.display === 'none') {
+      box.style.display = 'block';
+      if (!box.dataset.loaded) {
+        box.innerHTML = '<div style="font-size:12px;color:var(--muted);">Yükleniyor...</div>';
+        try {
+          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
+          const comments = await r.json();
+          box.innerHTML = renderCommentsBlock(postId, comments);
+          box.dataset.loaded = '1';
+        } catch(e) { box.innerHTML = '<div style="font-size:12px;color:var(--red);">Yüklenemedi.</div>'; }
+      }
+    } else {
+      box.style.display = 'none';
+    }
+  };
+
+  window.submitComment = async function(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const content = input.value.trim();
+    if (!content) return;
+    input.disabled = true;
+    try {
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments`, {
+        method:'POST', headers:{...headers,'Prefer':'return=minimal'},
+        body: JSON.stringify({post_id:postId, author_id:user.id, content})
+      });
+      input.value = '';
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
+      const comments = await r.json();
+      document.getElementById(`comments-${postId}`).innerHTML = renderCommentsBlock(postId, comments);
+      const card = document.querySelector(`[data-post-id="${postId}"]`);
+      if (card) card.querySelectorAll('.post-action')[1].querySelector('span').textContent = comments.length;
+    } catch(e) { console.error('Comment submit error:', e); alert('Yorum gönderilemedi.'); }
+    input.disabled = false;
+  };
+
+  window.submitNewPost = async function() {
+    const input = document.getElementById('compose-input');
+    const tagsInput = document.getElementById('compose-tags');
+    const catSelect = document.getElementById('compose-category');
+    const errBox = document.getElementById('compose-error');
+    const content = input.value.trim();
+    const category = catSelect.value;
+    errBox.style.display = 'none';
+    if (!content) return;
+    if (!category) {
+      errBox.textContent = 'Lütfen bir kategori seçin.';
+      errBox.style.display = 'block';
+      return;
+    }
+    const tags = tagsInput.value.split(',').map(t => t.trim().toLowerCase().replace(/^#/,'')).filter(Boolean);
+    const btn = document.getElementById('compose-submit-btn');
+    btn.disabled = true; btn.textContent = 'Paylaşılıyor...';
+    try {
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts`, {
+        method:'POST', headers:{...headers,'Prefer':'return=representation'},
+        body: JSON.stringify({ author_id:user.id, content, city, tags, category })
+      });
+      if (!r.ok) throw new Error(await r.text());
+      const created = await r.json();
+      if (created?.[0]) window._allPosts.unshift(created[0]);
+      input.value=''; tagsInput.value=''; catSelect.value='';
+      renderFeedFromCache();
+    } catch(e) { console.error('Post submit error:', e); errBox.textContent = 'Paylaşım yapılamadı. Tekrar deneyin.'; errBox.style.display = 'block'; }
+    btn.disabled=false; btn.textContent='Paylaş';
+  };
+
+  document.getElementById('compose-avatar').textContent = initials;
+  document.getElementById('compose-avatar').style.background = color;
+  await loadFeed();
   })();
 </script>
 <!-- SITE FOOTER -->
