@@ -386,13 +386,14 @@
       <div class="detail-header">
         <div>
           <div class="detail-title" id="d-city"></div>
-          <div class="detail-wants"><span style="font-size:13px;color:var(--muted);">Gitmek istiyor:</span><span class="card-wants-arrow">→</span><span class="card-wants-dest" id="d-dest"></span></div>
+          <div class="detail-wants"><span id="d-dest-label" style="font-size:13px;color:var(--muted);">Gitmek istiyor:</span><span class="card-wants-arrow" id="d-dest-arrow">→</span><span class="card-wants-dest" id="d-dest"></span></div>
         </div>
         <div style="text-align:right;flex-shrink:0;"><div style="font-size:10px;color:var(--muted);">Tarih</div><div style="font-size:13px;font-weight:700;color:var(--teal);" id="d-dates"></div></div>
       </div>
       <div class="info-grid" id="d-info-grid"></div>
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Açıklama</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="d-desc"></div></div>
       <div class="trust-box"><div class="trust-icon">🛡️</div><div><div class="trust-title">Güvenli Takas</div><div class="trust-text">Bu üye BizdenBize kimlik doğrulamasından geçmiştir. Para transferi talep etmesi yasaktır. Şüpheli durumları bildirin.</div></div></div>
+      <div style="text-align:right;"><button onclick="openReportModal()" style="background:none;border:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;padding:2px 0;">🚩 Bu ilanı bildir</button></div>
       <div class="trust-box" style="background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🪙</div><div><div class="trust-title" style="color:var(--gold);">Puanla Konaklama</div><div class="trust-text">Karşılıklı takas yapmak zorunda değilsiniz. "Konaklama Talep Et" ile puanınızı kullanarak tek taraflı kalabilirsiniz — ev sahibi daha sonra puanlarını başka bir yerde kullanır.</div></div></div>
       <div style="font-size:11px;color:var(--sand);padding:8px 0;border-top:1px dashed var(--warm);">⚠️ BizdenBize takas anlaşmalarından sorumlu değildir. Taşınmadan önce detayları yazılı olarak netleştirin.</div>
     </div>
@@ -436,6 +437,44 @@
       </div>
       <div id="requests-list"></div>
     </div>
+  </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="report-modal" onclick="if(event.target===this)closeReportModal()">
+  <div class="modal">
+    <div class="modal-header"><h3>🚩 İlanı Bildir</h3><button class="modal-close" onclick="closeReportModal()">×</button></div>
+    <div class="modal-body" id="report-body">
+      <div><label class="field-label">Sebep *</label>
+        <select class="field-input" id="rp-reason">
+          <option value="">Seçin...</option>
+          <option value="fake_listing">Sahte ilan</option>
+          <option value="inappropriate">Uygunsuz içerik</option>
+          <option value="suspicious">Şüpheli davranış</option>
+          <option value="money_request">Para talep edildi</option>
+          <option value="other">Diğer</option>
+        </select>
+      </div>
+      <div><label class="field-label">Detay</label><textarea class="field-input" id="rp-details" rows="3" placeholder="Kısaca açıklayın (opsiyonel)"></textarea></div>
+      <div id="rp-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="report-footer"><button class="submit-btn" onclick="submitReport()">Bildir →</button></div>
+    <div class="post-success" id="report-success" style="display:none;"><div style="font-size:48px;">✅</div><h3>Bildiriminiz alındı</h3><p>Ekibimiz en kısa sürede inceleyecek.</p></div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="review-modal" onclick="if(event.target===this)closeReviewModal()">
+  <div class="modal">
+    <div class="modal-header"><h3>⭐ Deneyiminizi Değerlendirin</h3><button class="modal-close" onclick="closeReviewModal()">×</button></div>
+    <div class="modal-body" id="review-body">
+      <div id="rv-target-name" style="font-size:13px;color:var(--muted);"></div>
+      <div style="display:flex;gap:6px;justify-content:center;padding:8px 0;" id="rv-stars"></div>
+      <div><label class="field-label">Yorumunuz</label><textarea class="field-input" id="rv-comment" rows="3" placeholder="Deneyiminizi kısaca anlatın (opsiyonel)"></textarea></div>
+      <div id="rv-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="review-footer"><button class="submit-btn" onclick="submitReview()">Gönder →</button></div>
+    <div class="post-success" id="review-success" style="display:none;"><div style="font-size:48px;">🙏</div><h3>Teşekkürler!</h3><p>Değerlendirmeniz kaydedildi.</p></div>
   </div>
 </div>
 <script>
@@ -497,6 +536,12 @@ async function renderSwaps() {
   try {
     allSwaps = await sbGet('swap_offers', 'active=eq.true&order=featured.desc,created_at.desc');
   } catch(e) { console.error('Swap fetch error:', e); }
+
+  window._ratings = {};
+  try {
+    const ratings = await sbGet('swap_user_ratings', 'select=*');
+    ratings.forEach(r => { window._ratings[r.user_id] = r; });
+  } catch(e) { console.error('Ratings fetch error:', e); }
 
   window._swaps = allSwaps;
   document.getElementById('stat-total').textContent = allSwaps.length;
@@ -568,6 +613,7 @@ function filterAndRenderSwaps() {
           <div class="card-user">
             <div class="card-avatar">${s.user_name ? s.user_name.split(" ").map(n=>n[0]).join("").slice(0,2) : "??"}</div>
             <span class="card-username">${s.user_name}</span>
+            ${window._ratings[s.user_id] ? `<span style="font-size:11px;color:var(--gold);margin-left:4px;">⭐ ${window._ratings[s.user_id].avg_rating} (${window._ratings[s.user_id].review_count})</span>` : ''}
           </div>
           <span class="card-date">→</span>
         </div>
@@ -589,8 +635,11 @@ function formatDate(d) {
 function openDetail(id) {
   const s = (window._swaps||[]).find(x => String(x.id)===String(id));
   if (!s) return;
+  const rating = window._ratings ? window._ratings[s.user_id] : null;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
+  document.getElementById('d-dest-label').style.display = s.destination ? 'inline' : 'none';
+  document.getElementById('d-dest-arrow').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest').textContent = destText(s);
   document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
@@ -598,7 +647,7 @@ function openDetail(id) {
     <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${HOME_TYPE_LABELS[s.home_type] || s.home_type} · ${s.rooms}</div></div>
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
     ${s.suggested_duration ? `<div class="info-box"><div class="info-box-label">Önerilen Süre</div><div class="info-box-val">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</div></div>` : ''}
-    <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}</div></div>
+    <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}${rating ? ` · ⭐ ${rating.avg_rating} (${rating.review_count})` : ''}</div></div>
     <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + s.destination : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
   const isPhone = (s.contact||'').startsWith('+');
   const msgBtn = document.getElementById('d-msg-btn');
@@ -623,6 +672,50 @@ function openDetail(id) {
   document.body.style.overflow = 'hidden';
 }
 function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+function openReportModal() {
+  if (!window._currentSession) {
+    alert('Bildirim yapmak için önce giriş yapmalısın.');
+    window.location.href = 'login.html?redirect=ev-takasi.html';
+    return;
+  }
+  document.getElementById('rp-reason').value = '';
+  document.getElementById('rp-details').value = '';
+  document.getElementById('rp-error').style.display = 'none';
+  document.getElementById('report-body').style.display = 'flex';
+  document.getElementById('report-footer').style.display = 'block';
+  document.getElementById('report-success').style.display = 'none';
+  document.getElementById('report-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+async function submitReport() {
+  const s = window._currentDetailOffer;
+  const reason = document.getElementById('rp-reason').value;
+  const details = document.getElementById('rp-details').value.trim();
+  const err = document.getElementById('rp-error');
+  if (!reason) { err.textContent = 'Lütfen bir sebep seçin.'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  try {
+    await sbPostAuth('swap_reports', {
+      reporter_id: window._currentSession.user.id,
+      reported_user_id: s ? (s.user_id || null) : null,
+      reported_listing_id: s ? s.id : null,
+      reason,
+      details: details || null
+    });
+  } catch(e) {
+    console.error('Report submit error:', e);
+    err.innerHTML = 'Bildirim gönderilemedi.<br><span style="font-size:11px;opacity:.75;">' + (e.message||'') + '</span>';
+    err.style.display = 'block';
+    return;
+  }
+  document.getElementById('report-body').style.display = 'none';
+  document.getElementById('report-footer').style.display = 'none';
+  document.getElementById('report-success').style.display = 'block';
+  setTimeout(() => closeReportModal(), 2200);
+}
 
 async function openPostModal() {
   await window._authReady;
@@ -857,6 +950,12 @@ async function renderRequestsList() {
     list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">Yüklenemedi.</div>';
     return;
   }
+  window._currentBookingsList = bookings;
+  let reviewedIds = new Set();
+  try {
+    const myReviews = await sbGetAuth('swap_reviews', `reviewer_id=eq.${session.user.id}&select=booking_id`);
+    reviewedIds = new Set(myReviews.map(r => r.booking_id));
+  } catch(e) { console.error('Reviews fetch error:', e); }
   if (!bookings.length) {
     list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);">${_requestsTab === 'guest' ? 'Henüz talep göndermediniz.' : 'Henüz gelen talebiniz yok.'}</div>`;
     return;
@@ -867,6 +966,8 @@ async function renderRequestsList() {
     const canConfirm = b.status === 'accepted' && !myConfirmed;
     const waitingOnOther = b.status === 'accepted' && myConfirmed && !bothConfirmed;
     const plannedNotDue = b.status === 'accepted' && bothConfirmed; // both confirmed, checkout date hasn't passed yet
+    const canReview = b.status === 'completed' && !reviewedIds.has(b.id);
+    const alreadyReviewed = b.status === 'completed' && reviewedIds.has(b.id);
     return `
     <div style="background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
@@ -882,6 +983,8 @@ async function renderRequestsList() {
         ${canConfirm ? `<button onclick="confirmCompletion('${b.id}')" style="padding:6px 14px;background:var(--gold);color:var(--ink);border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Konaklama Tamamlandı ✓</button>` : ''}
         ${waitingOnOther ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Onayınız kaydedildi, diğer tarafın onayı bekleniyor.</span>` : ''}
         ${plannedNotDue ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Her iki taraf da onayladı. Takas tarihi (${formatDate(b.check_out)}) geçtiğinde puanlar otomatik aktarılacak.</span>` : ''}
+        ${canReview ? `<button onclick="openReviewModalById('${b.id}')" style="padding:6px 14px;background:none;border:1.5px solid var(--gold);color:var(--gold);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">⭐ Değerlendir</button>` : ''}
+        ${alreadyReviewed ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">✓ Değerlendirildi</span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -892,6 +995,60 @@ async function respondBooking(id, status) {
     await sbPatchAuth('swap_bookings', `id=eq.${id}`, { status });
   } catch(e) { console.error('Booking response error:', e); alert('İşlem başarısız oldu.'); return; }
   renderRequestsList();
+}
+
+let _reviewBooking = null;
+let _reviewRating = 0;
+function openReviewModalById(id) {
+  const b = (window._currentBookingsList||[]).find(x => String(x.id) === String(id));
+  if (b) openReviewModal(b);
+}
+function openReviewModal(booking) {
+  if (!window._currentSession) return;
+  _reviewBooking = booking;
+  _reviewRating = 0;
+  const isGuest = booking.guest_user_id === window._currentSession.user.id;
+  document.getElementById('rv-target-name').textContent = isGuest ? 'Ev sahibiyle deneyiminiz nasıldı?' : 'Misafirinizle deneyiminiz nasıldı?';
+  document.getElementById('rv-comment').value = '';
+  document.getElementById('rv-error').style.display = 'none';
+  renderStars();
+  document.getElementById('review-body').style.display = 'flex';
+  document.getElementById('review-footer').style.display = 'block';
+  document.getElementById('review-success').style.display = 'none';
+  document.getElementById('review-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReviewModal() { document.getElementById('review-modal').classList.remove('open'); document.body.style.overflow=''; }
+function setRating(n) { _reviewRating = n; renderStars(); }
+function renderStars() {
+  const el = document.getElementById('rv-stars');
+  el.innerHTML = [1,2,3,4,5].map(n => `<span onclick="setRating(${n})" style="font-size:28px;cursor:pointer;color:${n<=_reviewRating?'var(--gold)':'var(--sand)'};">★</span>`).join('');
+}
+async function submitReview() {
+  const err = document.getElementById('rv-error');
+  if (!_reviewRating) { err.textContent = 'Lütfen bir puan seçin.'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  const session = window._currentSession;
+  const b = _reviewBooking;
+  const revieweeId = b.host_user_id === session.user.id ? b.guest_user_id : b.host_user_id;
+  try {
+    await sbPostAuth('swap_reviews', {
+      booking_id: b.id,
+      reviewer_id: session.user.id,
+      reviewee_id: revieweeId,
+      rating: _reviewRating,
+      comment: document.getElementById('rv-comment').value.trim() || null
+    });
+  } catch(e) {
+    console.error('Review submit error:', e);
+    err.innerHTML = 'Değerlendirme kaydedilemedi.<br><span style="font-size:11px;opacity:.75;">' + (e.message||'') + '</span>';
+    err.style.display = 'block';
+    return;
+  }
+  document.getElementById('review-body').style.display = 'none';
+  document.getElementById('review-footer').style.display = 'none';
+  document.getElementById('review-success').style.display = 'block';
+  setTimeout(() => { closeReviewModal(); renderRequestsList(); }, 1600);
 }
 
 async function confirmCompletion(id) {
