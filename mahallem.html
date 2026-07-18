@@ -1483,8 +1483,8 @@
       <div class="post-body">${escapeHtmlPost(p.content)}</div>
       ${tagsHtml ? `<div style="margin-bottom:12px;">${tagsHtml}</div>` : ''}
       <div class="post-actions">
-        <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.like_count||0}</span></button>
-        <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yorum <span>${p.comment_count||0}</span></button>
+        <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.likes_count||0}</span></button>
+        <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yorum <span>${p.comments_count||0}</span></button>
       </div>
       <div class="post-comments" id="comments-${p.id}" style="display:none;margin-top:12px;border-top:1px solid var(--warm);padding-top:12px;"></div>
     </div>`;
@@ -1512,28 +1512,19 @@
   window._feedTagQuery = '';
   window._feedCategory = '';
 
+  function applyClientFilters(list) {
+    if (!window._feedTagQuery) return list;
+    const q = window._feedTagQuery.toLowerCase().replace(/^#/,'');
+    return list.filter(p =>
+      (p.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+      (p.content||'').toLowerCase().includes(q)
+    );
+  }
+
   function renderFeedFromCache() {
     const el = document.getElementById('posts-feed');
     if (!el) return;
-    let list = window._allPosts;
-    if (window._feedTier === 'city') {
-      list = list.filter(p => (p.city||'').toLowerCase() === city.toLowerCase());
-    } else if (window._feedTier === 'germany') {
-      list = list.filter(p => {
-        const a = window._profileMap[p.author_id];
-        return a && ['almanya','germany','deutschland'].includes((a.country||'').toLowerCase());
-      });
-    } // europe tier = no filter, everyone
-    if (window._feedCategory) {
-      list = list.filter(p => p.category === window._feedCategory);
-    }
-    if (window._feedTagQuery) {
-      const q = window._feedTagQuery.toLowerCase().replace(/^#/,'');
-      list = list.filter(p =>
-        (p.tags||[]).some(t => t.toLowerCase().includes(q)) ||
-        (p.content||'').toLowerCase().includes(q)
-      );
-    }
+    const list = applyClientFilters(window._allPosts);
     if (!list.length) {
       el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz paylaşım yok. İlk paylaşımı sen yap! 👋</div>`;
       return;
@@ -1542,8 +1533,16 @@
   }
 
   async function loadFeed() {
+    let query = `select=*&order=created_at.desc&limit=50`;
+    if (window._feedTier === 'city' && city) {
+      query += `&city=ilike.${encodeURIComponent(city)}`;
+    } else if (window._feedTier === 'germany' && country) {
+      query += `&country=ilike.${encodeURIComponent(country)}`;
+    } // europe tier = no location filter, everyone
+    if (window._feedCategory) query += `&category=eq.${encodeURIComponent(window._feedCategory)}`;
+
     try {
-      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?select=*&order=created_at.desc&limit=50`, { headers });
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?${query}`, { headers });
       window._allPosts = await r.json();
       if (!Array.isArray(window._allPosts)) window._allPosts = [];
     } catch(e) { console.error('Feed load error:', e); window._allPosts = []; }
@@ -1566,8 +1565,8 @@
     }
   }
 
-  window.setFeedTier = function(tier) { window._feedTier = tier; renderFeedFromCache(); };
-  window.setFeedCategory = function(cat) { window._feedCategory = cat; renderFeedFromCache(); };
+  window.setFeedTier = function(tier) { window._feedTier = tier; loadFeed(); };
+  window.setFeedCategory = function(cat) { window._feedCategory = cat; loadFeed(); };
   window.filterByTag = function(tag) {
     const box = document.getElementById('tag-search');
     if (box) box.value = tag;
@@ -1607,7 +1606,7 @@
       if (!box.dataset.loaded) {
         box.innerHTML = '<div style="font-size:12px;color:var(--muted);">Yükleniyor...</div>';
         try {
-          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
+          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
           const comments = await r.json();
           box.innerHTML = renderCommentsBlock(postId, comments);
           box.dataset.loaded = '1';
@@ -1624,12 +1623,12 @@
     if (!content) return;
     input.disabled = true;
     try {
-      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments`, {
+      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments`, {
         method:'POST', headers:{...headers,'Prefer':'return=minimal'},
         body: JSON.stringify({post_id:postId, author_id:user.id, content})
       });
       input.value = '';
-      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
+      const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
       const comments = await r.json();
       document.getElementById(`comments-${postId}`).innerHTML = renderCommentsBlock(postId, comments);
       const card = document.querySelector(`[data-post-id="${postId}"]`);
@@ -1658,7 +1657,7 @@
     try {
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts`, {
         method:'POST', headers:{...headers,'Prefer':'return=representation'},
-        body: JSON.stringify({ author_id:user.id, content, city, tags, category })
+        body: JSON.stringify({ author_id:user.id, content, city, country, tags, category })
       });
       if (!r.ok) throw new Error(await r.text());
       const created = await r.json();
