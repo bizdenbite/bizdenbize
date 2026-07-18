@@ -719,6 +719,37 @@ async function submitReport() {
   setTimeout(() => closeReportModal(), 2200);
 }
 
+async function checkReviewGate() {
+  await window._authReady;
+  const session = window._currentSession;
+  if (!session) return { pending: [], overdue: [] };
+  const uid = session.user.id;
+  let rows = [];
+  try {
+    rows = await sbGetAuth('swap_review_status', `or=(host_user_id.eq.${uid},guest_user_id.eq.${uid})`);
+  } catch(e) { console.error('Review gate fetch error:', e); return { pending: [], overdue: [] }; }
+  const now = new Date();
+  const pending = [], overdue = [];
+  rows.forEach(r => {
+    const amIHost = r.host_user_id === uid;
+    const myReviewed = amIHost ? r.host_reviewed : r.guest_reviewed;
+    if (!myReviewed) {
+      pending.push(r);
+      if ((now - new Date(r.check_out)) / 86400000 >= 7) overdue.push(r);
+    }
+  });
+  return { pending, overdue };
+}
+
+function showReviewToast(message) {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;padding:14px 18px;border-radius:10px;font-size:13px;font-weight:600;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:9999;cursor:pointer;';
+  toast.textContent = message;
+  toast.onclick = () => { toast.remove(); openRequestsModal(); };
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 6000);
+}
+
 async function openPostModal() {
   await window._authReady;
   const session = window._currentSession;
@@ -726,6 +757,15 @@ async function openPostModal() {
     alert('İlan vermek için önce giriş yapmalısın.');
     window.location.href = 'login.html?redirect=ev-takasi.html';
     return;
+  }
+  const gate = await checkReviewGate();
+  if (gate.overdue.length) {
+    alert(`Yeni ilan verebilmek için önce ${gate.overdue.length} geçmiş takas deneyiminizi değerlendirmelisiniz. "Taleplerim" bölümünden değerlendirin.`);
+    openRequestsModal();
+    return;
+  }
+  if (gate.pending.length) {
+    showReviewToast(`📝 ${gate.pending.length} geçmiş takas deneyiminizi henüz değerlendirmediniz. Taleplerim'den değerlendirebilirsiniz.`);
   }
   document.getElementById('p-name-display').textContent = session.user.user_metadata?.full_name || session.user.email || '';
   document.getElementById('post-modal').classList.add('open');
@@ -819,7 +859,7 @@ async function loadMyPoints() {
   window._myPoints = total;
 }
 
-function openRequestModal(offer) {
+async function openRequestModal(offer) {
   if (!window._currentSession) {
     alert('Konaklama talep etmek için önce giriş yapmalısın.');
     window.location.href = 'login.html?redirect=ev-takasi.html';
@@ -828,6 +868,15 @@ function openRequestModal(offer) {
   if (offer.user_id && offer.user_id === window._currentSession.user.id) {
     alert('Kendi ilanınıza talep gönderemezsiniz.');
     return;
+  }
+  const gate = await checkReviewGate();
+  if (gate.overdue.length) {
+    alert(`Konaklama talep edebilmek için önce ${gate.overdue.length} geçmiş takas deneyiminizi değerlendirmelisiniz. "Taleplerim" bölümünden değerlendirin.`);
+    openRequestsModal();
+    return;
+  }
+  if (gate.pending.length) {
+    showReviewToast(`📝 ${gate.pending.length} geçmiş takas deneyiminizi henüz değerlendirmediniz. Taleplerim'den değerlendirebilirsiniz.`);
   }
   document.getElementById('rq-host-info').innerHTML = `<strong>${offer.user_name}</strong>'in ${offer.city} şehrindeki evi için talep gönderiyorsunuz.`;
   document.getElementById('rq-checkin').value = '';
