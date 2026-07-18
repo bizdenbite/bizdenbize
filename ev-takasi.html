@@ -448,10 +448,10 @@
       <div><label class="field-label">Sebep *</label>
         <select class="field-input" id="rp-reason">
           <option value="">Seçin...</option>
-          <option value="fake_listing">Sahte ilan</option>
+          <option value="fake">Sahte ilan</option>
           <option value="inappropriate">Uygunsuz içerik</option>
           <option value="suspicious">Şüpheli davranış</option>
-          <option value="money_request">Para talep edildi</option>
+          <option value="scam">Para talep edildi</option>
           <option value="other">Diğer</option>
         </select>
       </div>
@@ -698,12 +698,14 @@ async function submitReport() {
   if (!reason) { err.textContent = 'Lütfen bir sebep seçin.'; err.style.display = 'block'; return; }
   err.style.display = 'none';
   try {
-    await sbPostAuth('swap_reports', {
+    await sbPostAuth('reports', {
       reporter_id: window._currentSession.user.id,
       reported_user_id: s ? (s.user_id || null) : null,
       reported_listing_id: s ? s.id : null,
+      type: 'listing',
       reason,
-      details: details || null
+      details: details || null,
+      status: 'pending'
     });
   } catch(e) {
     console.error('Report submit error:', e);
@@ -1059,7 +1061,12 @@ async function confirmCompletion(id) {
   loadMyPoints();
 }
 
-document.addEventListener("DOMContentLoaded", function() { renderSwaps(); loadMyPoints(); });
+document.addEventListener("DOMContentLoaded", async function() {
+  await renderSwaps();
+  loadMyPoints();
+  const listingId = new URLSearchParams(window.location.search).get('listing');
+  if (listingId) openDetail(listingId);
+});
 </script>
 </body>
 </html>
