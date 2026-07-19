@@ -204,6 +204,8 @@
   let myExpertName = 'Bir uzman';
   let myExpertPhone = '';
   let myPhoneVerified = false;
+  let myWhatsappNumber = '';
+  let myWhatsappEnabled = false;
   let mySession = null;
   let myReviews = [];
   let myFilter = 'all';
@@ -216,13 +218,15 @@
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: expertRow } = await supabase.from('experts').select('id, profile_id, phone, phone_verified').eq('id', expertRowId).single();
+      const { data: expertRow } = await supabase.from('experts').select('id, profile_id, phone, phone_verified, whatsapp_number, whatsapp_enabled').eq('id', expertRowId).single();
       if (!expertRow || expertRow.profile_id !== session.user.id) return; // not the owner — public view stays as-is
 
       mySession = session;
       myExpertId = expertRow.id;
       myExpertPhone = expertRow.phone || '';
       myPhoneVerified = !!expertRow.phone_verified;
+      myWhatsappNumber = expertRow.whatsapp_number || '';
+      myWhatsappEnabled = !!expertRow.whatsapp_enabled;
 
       const { data: myProfile } = await supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).single();
       myExpertName = myProfile ? `${myProfile.first_name || ''} ${myProfile.last_name || ''}`.trim() : 'Bir uzman';
@@ -290,6 +294,7 @@
   function injectOwnerPanel() {
     if (document.getElementById('owner-panel')) return; // already injected
     injectPhonePanel();
+    injectWhatsappPanel();
     const wrap = document.createElement('div');
     wrap.className = 'owner-panel';
     wrap.id = 'owner-panel';
@@ -336,7 +341,7 @@
     } else {
       body.innerHTML = `
         <div style="padding:10px 14px;background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:12px;">
-          ⚠️ Telefon numaranız henüz doğrulanmadı. Kullanıcıların size WhatsApp üzerinden ulaşabilmesi için doğrulama gereklidir.
+          ⚠️ Telefon numaranız henüz doğrulanmadı. Doğrulama, uzman profilinizin güvenilirliği için gereklidir.
         </div>
         <div style="display:flex;gap:8px;">
           <input type="tel" class="cat-select" id="phone-panel-input" placeholder="+49 151 234 5678" style="flex:1;" value="${myExpertPhone || ''}">
@@ -352,6 +357,91 @@
         </div>`;
     }
   }
+
+  function injectWhatsappPanel() {
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'whatsapp-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">💬 WhatsApp İletişimi (opsiyonel)</div>
+      </div>
+      <div class="owner-panel-note">İsterseniz profilinizde bir WhatsApp numarası gösterebilirsiniz. Bu tamamen isteğe bağlıdır.</div>
+      <div id="whatsapp-panel-body"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderWhatsappPanel();
+  }
+
+  function renderWhatsappPanel() {
+    const body = document.getElementById('whatsapp-panel-body');
+    body.innerHTML = `
+      <div style="padding:12px 14px;background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+        ⚠️ <strong>Önemli:</strong> WhatsApp görüşmeleri platform dışında gerçekleşir. Bu nedenle şikayet ve engelleme özelliklerimiz WhatsApp üzerinden yapılan görüşmeler için geçerli değildir. Önemli konularda kullanıcılara platform içi mesajlaşmayı önermenizi tavsiye ederiz.
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:${myWhatsappEnabled ? '14px' : '0'};">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;">
+          <input type="checkbox" id="whatsapp-panel-toggle" ${myWhatsappEnabled ? 'checked' : ''} onchange="window._toggleWhatsappFields()" style="width:18px;height:18px;cursor:pointer;">
+          Profilimde WhatsApp numarası göster
+        </label>
+      </div>
+      <div id="whatsapp-panel-fields" style="display:${myWhatsappEnabled ? 'block' : 'none'};">
+        <label class="field-label">WhatsApp Numarası</label>
+        <div style="display:flex;gap:8px;">
+          <input type="tel" class="cat-select" id="whatsapp-panel-input" placeholder="+49 151 234 5678" style="flex:1;" value="${myWhatsappNumber || myExpertPhone || ''}">
+          <button onclick="window._saveWhatsappSettings()" id="whatsapp-panel-save-btn" style="flex-shrink:0;padding:0 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        </div>
+        <div id="whatsapp-panel-msg" style="font-size:12px;margin-top:8px;color:var(--muted);"></div>
+      </div>
+    `;
+  }
+
+  window._toggleWhatsappFields = function() {
+    const checked = document.getElementById('whatsapp-panel-toggle').checked;
+    document.getElementById('whatsapp-panel-fields').style.display = checked ? 'block' : 'none';
+    if (!checked) {
+      // Turning the toggle off saves immediately — no reason to make the
+      // expert click "Kaydet" separately just to hide their number again.
+      window._saveWhatsappSettings(false);
+    }
+  };
+
+  window._saveWhatsappSettings = async function(showFieldMsg = true) {
+    const enabled = document.getElementById('whatsapp-panel-toggle').checked;
+    const numberInput = document.getElementById('whatsapp-panel-input');
+    const number = numberInput ? numberInput.value.trim() : myWhatsappNumber;
+    const msg = document.getElementById('whatsapp-panel-msg');
+
+    if (enabled && (!number || number.length < 8)) {
+      if (msg) { msg.textContent = 'Lütfen geçerli bir numara girin.'; msg.style.color = 'var(--red)'; }
+      return;
+    }
+
+    const btn = document.getElementById('whatsapp-panel-save-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
+
+    try {
+      const { error } = await supabase.from('experts')
+        .update({ whatsapp_enabled: enabled, whatsapp_number: enabled ? number : myWhatsappNumber })
+        .eq('id', myExpertId);
+      if (error) throw error;
+
+      myWhatsappEnabled = enabled;
+      if (enabled) myWhatsappNumber = number;
+
+      if (showFieldMsg && msg) { msg.textContent = 'Kaydedildi.'; msg.style.color = 'var(--green)'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+    } catch(e) {
+      console.error('WhatsApp settings save error:', e);
+      if (msg) { msg.textContent = 'Kaydedilemedi: ' + (e.message || 'Lütfen tekrar deneyin.'); msg.style.color = 'var(--red)'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+      // Revert the toggle visually if the save failed, so the UI doesn't
+      // claim a state the database doesn't actually have.
+      const toggle = document.getElementById('whatsapp-panel-toggle');
+      if (toggle) toggle.checked = myWhatsappEnabled;
+      document.getElementById('whatsapp-panel-fields').style.display = myWhatsappEnabled ? 'block' : 'none';
+    }
+  };
 
   window._startPhoneChange = function() {
     myPhoneVerified = false;
@@ -648,8 +738,16 @@
             <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
               ✉️ Doğrudan Soru Sor
             </button>
+            ${expert.whatsapp_enabled && expert.whatsapp_number ? `
+            <a href="https://wa.me/${expert.whatsapp_number.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#25D366;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;">
+              💬 WhatsApp'tan Yaz
+            </a>` : ''}
             <button class="btn-report-expert" onclick="openExpertReportModal('${expert.expert_id}')">🚩 Şikayet Et</button>
           </div>
+          ${expert.whatsapp_enabled && expert.whatsapp_number ? `
+          <div style="font-size:12px;color:var(--muted);margin-top:8px;max-width:480px;line-height:1.4;">
+            ⚠️ WhatsApp görüşmeleri platform dışında gerçekleşir; şikayet ve engelleme özelliklerimiz bu görüşmeler için geçerli değildir. Önemli konularda platform içi mesajlaşmayı tercih etmenizi öneririz.
+          </div>` : ''}
         </div>
       </div>
 
