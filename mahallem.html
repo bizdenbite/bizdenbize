@@ -905,14 +905,15 @@
 
     <div class="loc-filter" id="cat-filter" style="margin-top:8px;flex-wrap:wrap;">
       <button class="loc-btn active" data-cat="">Tümü</button>
-      <button class="loc-btn" data-cat="legal">⚖️ Hukuk</button>
-      <button class="loc-btn" data-cat="visa">🛂 Vize & Göç</button>
-      <button class="loc-btn" data-cat="medical">🏥 Sağlık</button>
-      <button class="loc-btn" data-cat="tax">💰 Vergi & Maliye</button>
-      <button class="loc-btn" data-cat="housing">🏠 Konut</button>
+      <button class="loc-btn" data-cat="legal">⚖️ Hukuki</button>
+      <button class="loc-btn" data-cat="visa">🛂 Vize & Oturma</button>
+      <button class="loc-btn" data-cat="medical">💊 Tıbbi</button>
+      <button class="loc-btn" data-cat="tax">📊 Vergi & Finans</button>
+      <button class="loc-btn" data-cat="housing">🏠 Konut & Kira</button>
       <button class="loc-btn" data-cat="employment">💼 İş & Çalışma</button>
-      <button class="loc-btn" data-cat="school">🎓 Eğitim & Aile</button>
-      <button class="loc-btn" data-cat="insurance">🚗 Sigorta</button>
+      <button class="loc-btn" data-cat="school">🎓 Okul & Yardımlar</button>
+      <button class="loc-btn" data-cat="insurance">🚗 Sigorta & Araç</button>
+      <button class="loc-btn" data-cat="migration">✈️ Avrupa'ya Göç</button>
       <button class="loc-btn" data-cat="diger">💬 Diğer Konular</button>
     </div>
 
@@ -929,14 +930,15 @@
       <div style="padding-left:50px;display:flex;flex-direction:column;gap:6px;">
         <select id="compose-category" style="width:100%;border:1px solid var(--sand);outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
           <option value="" disabled selected>Kategori seçin *</option>
-          <option value="legal">⚖️ Hukuk</option>
-          <option value="visa">🛂 Vize & Göç</option>
-          <option value="medical">🏥 Sağlık</option>
-          <option value="tax">💰 Vergi & Maliye</option>
-          <option value="housing">🏠 Konut</option>
+          <option value="legal">⚖️ Hukuki</option>
+          <option value="visa">🛂 Vize & Oturma</option>
+          <option value="medical">💊 Tıbbi</option>
+          <option value="tax">📊 Vergi & Finans</option>
+          <option value="housing">🏠 Konut & Kira</option>
           <option value="employment">💼 İş & Çalışma</option>
-          <option value="school">🎓 Eğitim & Aile</option>
-          <option value="insurance">🚗 Sigorta</option>
+          <option value="school">🎓 Okul & Yardımlar</option>
+          <option value="insurance">🚗 Sigorta & Araç</option>
+          <option value="migration">✈️ Avrupa'ya Göç</option>
           <option value="diger">💬 Diğer Konular</option>
         </select>
         <input type="text" id="compose-tags" placeholder="Etiketler (virgülle ayırın, opsiyonel): örn. öğrenci, münih" style="width:100%;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--muted);background:var(--warm);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
@@ -1445,15 +1447,16 @@
   // ── Real Mahallem feed (posts / likes / comments / tags) ─────────
 
   const CATEGORY_META = {
-    legal:      { label: '⚖️ Hukuk',           color: '#1B3A8C' },
-    visa:       { label: '🛂 Vize & Göç',       color: '#D42B2B' },
-    medical:    { label: '🏥 Sağlık',            color: '#534AB7' },
-    tax:        { label: '💰 Vergi & Maliye',   color: '#C9A84C' },
-    housing:    { label: '🏠 Konut',             color: '#1E7B4B' },
-    employment: { label: '💼 İş & Çalışma',     color: '#185FA5' },
-    school:     { label: '🎓 Eğitim & Aile',     color: '#E85D75' },
-    insurance:  { label: '🚗 Sigorta',           color: '#6B5E4E' },
-    diger:      { label: '💬 Diğer Konular',    color: '#8A8A8A' }
+    legal:      { label: '⚖️ Hukuki',            color: '#1B3A8C' },
+    visa:       { label: '🛂 Vize & Oturma',     color: '#D42B2B' },
+    medical:    { label: '💊 Tıbbi',              color: '#534AB7' },
+    tax:        { label: '📊 Vergi & Finans',    color: '#C9A84C' },
+    housing:    { label: '🏠 Konut & Kira',      color: '#1E7B4B' },
+    employment: { label: '💼 İş & Çalışma',      color: '#185FA5' },
+    school:     { label: '🎓 Okul & Yardımlar',  color: '#E85D75' },
+    insurance:  { label: '🚗 Sigorta & Araç',    color: '#6B5E4E' },
+    migration:  { label: '✈️ Avrupa\'ya Göç',    color: '#0E9AA7' },
+    diger:      { label: '💬 Diğer Konular',     color: '#8A8A8A' }
   };
 
   function escapeHtmlPost(s) {
