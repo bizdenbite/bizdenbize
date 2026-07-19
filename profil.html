@@ -140,6 +140,46 @@
     const t = await r.text(); return t ? JSON.parse(t) : [];
   }
 
+  async function getAuthToken() {
+    try {
+      const { supabase } = await import('./bizdenbize-client.js');
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token || null;
+    } catch(e) { return null; }
+  }
+
+  async function sbAuthWrite(method, path, body) {
+    const token = await getAuthToken();
+    if (!token) throw new Error('Not authenticated');
+    const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
+      method,
+      headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(await r.text());
+  }
+
+  async function sbAuthGet(path) {
+    const token = await getAuthToken();
+    if (!token) return [];
+    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` } });
+    const t = await r.text(); return t ? JSON.parse(t) : [];
+  }
+
+  async function sendConnectionRequest(targetId) {
+    try {
+      await sbAuthWrite('POST', 'connections', { requester_id: window._currentUserId, addressee_id: targetId, status: 'pending' });
+      location.reload();
+    } catch(e) { console.error('Connection request error:', e); alert('Bağlantı isteği gönderilemedi.'); }
+  }
+
+  async function respondConnection(connId, status) {
+    try {
+      await sbAuthWrite('PATCH', `connections?id=eq.${connId}`, { status, responded_at: new Date().toISOString() });
+      location.reload();
+    } catch(e) { console.error('Connection response error:', e); alert('İşlem başarısız.'); }
+  }
+
   async function init() {
     if (!targetId) { showError('Profil bulunamadı', 'Geçerli bir kullanıcı ID\'si belirtilmedi.'); return; }
 
@@ -152,6 +192,7 @@
     } catch(e) { /* not logged in — fine */ }
 
     const isOwnProfile = currentUserId === targetId;
+    window._currentUserId = currentUserId;
     if (isOwnProfile) {
       document.getElementById('edit-btn').style.display = 'flex';
       document.getElementById('logout-btn').style.display = 'block';
@@ -175,11 +216,20 @@
       swapRating = ratings?.[0] || null;
     } catch(e) { console.error('Swap rating fetch error:', e); }
 
-    renderProfile(profile, listings, reviews.length, isOwnProfile, swapRating);
+    // Load connection status between the viewer and this profile
+    let connection = null;
+    if (currentUserId && !isOwnProfile) {
+      try {
+        const rows = await sbAuthGet(`connections?select=*&or=(and(requester_id.eq.${currentUserId},addressee_id.eq.${targetId}),and(requester_id.eq.${targetId},addressee_id.eq.${currentUserId}))`);
+        connection = rows?.[0] || null;
+      } catch(e) { console.error('Connection fetch error:', e); }
+    }
+
+    renderProfile(profile, listings, reviews.length, isOwnProfile, swapRating, connection);
     document.title = `BizdenBize — ${profile.first_name || ''} ${profile.last_name || ''}`.trim();
   }
 
-  function renderProfile(p, listings, reviewCount, isOwn, swapRating) {
+  function renderProfile(p, listings, reviewCount, isOwn, swapRating, connection) {
     const name  = `${p.first_name||''} ${p.last_name||''}`.trim() || p.username || 'Kullanıcı';
     const ini   = ((p.first_name?.[0]||'')+(p.last_name?.[0]||'')).toUpperCase() || '?';
     const color = COLORS[ini.charCodeAt(0) % COLORS.length];
@@ -207,6 +257,19 @@
         </div>
       </div>`).join('') : `<div class="empty">Henüz ilan yok.</div>`;
 
+    let connectBtnHtml;
+    if (!connection) {
+      connectBtnHtml = `<button class="btn-connect" onclick="sendConnectionRequest('${p.id}')">🤝 Bağlantı Kur</button>`;
+    } else if (connection.status === 'accepted') {
+      connectBtnHtml = `<button class="btn-connect" disabled style="opacity:.6;cursor:default;">✓ Bağlısınız</button>`;
+    } else if (connection.status === 'pending' && connection.requester_id === window._currentUserId) {
+      connectBtnHtml = `<button class="btn-connect" disabled style="opacity:.6;cursor:default;">⏳ İstek Gönderildi</button>`;
+    } else if (connection.status === 'pending') {
+      connectBtnHtml = `<button class="btn-connect" onclick="respondConnection('${connection.id}','accepted')">✓ İsteği Kabul Et</button>`;
+    } else {
+      connectBtnHtml = `<button class="btn-connect" onclick="sendConnectionRequest('${p.id}')">🤝 Bağlantı Kur</button>`;
+    }
+
     const connectSection = isOwn ? `
       <div class="card">
         <div class="card-title">⚙️ Profil Ayarları</div>
@@ -215,8 +278,8 @@
         </a>
       </div>` : `
       <div class="card">
-        <button class="btn-connect">🤝 Bağlantı Kur</button>
-        <button class="btn-msg">💬 Mesaj Gönder</button>
+        ${connectBtnHtml}
+        <button class="btn-msg" onclick="window.location.href='messages.html?with=${p.id}'">💬 Mesaj Gönder</button>
         <button class="btn-report" onclick="openReportModal('${p.id}','user')">🚩 Şikayet Et</button>
       </div>`;
 
