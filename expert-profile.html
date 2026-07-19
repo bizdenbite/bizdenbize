@@ -681,6 +681,7 @@
     // Update page title and modal expert name
     document.title = `BizdenBize — ${name}`;
     window._expertName = name;
+    window._expertCategories = expert.categories || [];
     const modalName = document.getElementById('modal-expert-name');
     if (modalName) modalName.textContent = `${name} · ${expert.title || 'Uzman'}`;
   }
@@ -713,16 +714,10 @@
         <label class="field-label">Kategori</label>
         <select class="cat-select" id="ask-category" onchange="updatePrice()">
           <option value="">Kategori seçin...</option>
-          <option value="legal">⚖️ Hukuki</option>
-          <option value="visa">🛂 Vize & Oturma</option>
-          <option value="medical">🏥 Tıbbi</option>
-          <option value="tax">💶 Vergi & Finans</option>
-          <option value="employment">💼 İş & Çalışma</option>
-          <option value="migration">✈️ Avrupa'ya Göç</option>
-          <option value="housing">🏠 Konut & Kira</option>
-          <option value="insurance">🚗 Sigorta & Araç</option>
-          <option value="school">👶 Okul & Yardımlar</option>
         </select>
+        <div id="ask-category-empty" style="display:none;font-size:12px;color:var(--muted);margin-top:6px;">
+          Bu uzman henüz herhangi bir kategori için onaylanmamış.
+        </div>
       </div>
       <!-- Question -->
       <div>
@@ -797,6 +792,21 @@
       if (go) window.location.href = 'login.html';
       return;
     }
+    // Populate the category dropdown from this expert's own registered
+    // categories only, not the full platform list — asking outside an
+    // expert's specialty defeats the quality-assurance point of picking
+    // a specific expert in the first place.
+    const catSelect = document.getElementById('ask-category');
+    const catEmptyMsg = document.getElementById('ask-category-empty');
+    const expertCats = window._expertCategories || [];
+    const icons = (window.BB_CONFIG && window.BB_CONFIG.categoryIcons) || {};
+    catSelect.innerHTML = '<option value="">Kategori seçin...</option>' +
+      expertCats.map(c => `<option value="${c}">${icons[c] || ''} ${CAT_NAMES[c] || c}</option>`).join('');
+    const hasCats = expertCats.length > 0;
+    catSelect.style.display = hasCats ? '' : 'none';
+    catEmptyMsg.style.display = hasCats ? 'none' : 'block';
+    updatePrice();
+
     document.getElementById('ask-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
 
