@@ -1496,8 +1496,8 @@
           <div class="post-info">📍 ${p.city||'—'}<div class="post-dot"></div>${timeAgoPost(p.created_at)}<div class="post-dot"></div><span class="post-type-badge" style="background:${cat.color}22;color:${cat.color}">${cat.label}</span></div>
         </div>
       </div>
-      <div class="post-body">${escapeHtmlPost(p.content)}</div>
-      ${p.image_urls?.[0] ? `<div style="margin-bottom:12px;"><img src="${p.image_urls[0]}" style="max-width:100%;border-radius:10px;display:block;"></div>` : ''}
+      <div class="post-body" style="cursor:pointer;" onclick="window.location.href='mahallem.html?post=${p.id}'">${escapeHtmlPost(p.content)}</div>
+      ${p.image_urls?.[0] ? `<div style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='mahallem.html?post=${p.id}'"><img src="${p.image_urls[0]}" style="max-width:100%;border-radius:10px;display:block;"></div>` : ''}
       ${tagsHtml ? `<div style="margin-bottom:12px;">${tagsHtml}</div>` : ''}
       <div class="post-actions">
         <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.likes_count||0}</span></button>
