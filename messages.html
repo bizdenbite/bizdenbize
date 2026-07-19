@@ -469,6 +469,10 @@
   </div>
 </nav>
 
+<div style="background:var(--warm,#F0EAE0);border-bottom:1px solid rgba(212,197,169,.5);padding:8px 24px;font-size:11px;color:var(--muted,#6B5E4E);text-align:center;">
+  🔒 Güvenliğiniz için mesajlar saklanır ve bir şikayet durumunda incelenebilir.
+</div>
+
 <div class="shell">
 
   <!-- ── CONVERSATION LIST ── -->
@@ -510,8 +514,14 @@
           <div class="ch-name" id="ch-name"></div>
           <div class="ch-status" id="ch-status"></div>
         </div>
-        <div class="ch-actions">
+        <div class="ch-actions" style="position:relative;">
           <button class="ch-btn" title="Profili gör" id="ch-profile-link">👤</button>
+          <button class="ch-btn" title="Diğer" onclick="window.toggleChatMenu(event)">⋮</button>
+          <div id="chat-more-menu" style="display:none;position:absolute;top:38px;right:0;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;min-width:180px;overflow:hidden;">
+            <button onclick="window.chatMenuGoProfile()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;font-size:13px;color:var(--ink,#1A1208);cursor:pointer;">👤 Profile Git</button>
+            <button onclick="window.chatMenuReport()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;font-size:13px;color:var(--ink,#1A1208);cursor:pointer;">🚩 İçeriği Bildir</button>
+            <button id="chat-block-btn" onclick="window.chatMenuToggleBlock()" style="display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;font-size:13px;color:var(--red,#D42B2B);cursor:pointer;">🚫 Kullanıcıyı Engelle</button>
+          </div>
         </div>
       </div>
 
@@ -583,6 +593,12 @@
     if (navAvatar) navAvatar.textContent = initialsFor(myProfile?.first_name, myProfile?.last_name);
 
     await loadConversations();
+
+    window._myBlockedIds = new Set();
+    try {
+      const { data: blocks } = await supabase.from('blocked_users').select('blocked_id').eq('blocker_id', me.id);
+      window._myBlockedIds = new Set((blocks||[]).map(b => b.blocked_id));
+    } catch(e) { console.error('Block list load error:', e); }
 
     const params = new URLSearchParams(window.location.search);
     const withId = params.get('with');
@@ -690,6 +706,81 @@
     }
   }
 
+  window.toggleChatMenu = function(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('chat-more-menu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  };
+  document.addEventListener('click', () => {
+    const menu = document.getElementById('chat-more-menu');
+    if (menu) menu.style.display = 'none';
+  });
+
+  window.chatMenuGoProfile = function() {
+    const conv = conversations.find(c => c.id === activeConvId);
+    if (conv) window.location.href = `profil.html?id=${conv.otherId}`;
+  };
+
+  window._reportTarget = null;
+  window.chatMenuReport = function() {
+    const conv = conversations.find(c => c.id === activeConvId);
+    if (!conv) return;
+    window._reportTarget = { userId: conv.otherId, conversationId: activeConvId };
+    document.getElementById('rp-reason').value = '';
+    document.getElementById('rp-details').value = '';
+    document.getElementById('rp-error').style.display = 'none';
+    document.getElementById('rp-success').style.display = 'none';
+    document.getElementById('rp-form-fields').style.display = 'block';
+    document.getElementById('rp-actions').style.display = 'flex';
+    document.getElementById('report-modal-overlay').style.display = 'flex';
+    document.getElementById('chat-more-menu').style.display = 'none';
+  };
+  window.closeReportModal = function() {
+    document.getElementById('report-modal-overlay').style.display = 'none';
+  };
+  window.submitReport = async function() {
+    const reason = document.getElementById('rp-reason').value;
+    const details = document.getElementById('rp-details').value.trim();
+    const err = document.getElementById('rp-error');
+    if (!reason) { err.textContent = 'Lütfen bir sebep seçin.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    const t = window._reportTarget;
+    if (!t) return;
+    const btn = document.getElementById('rp-submit-btn');
+    btn.disabled = true;
+    const { error } = await supabase.from('reports').insert({
+      reporter_id: me.id, type: 'message', reason, details: details || null, status: 'pending',
+      reported_user_id: t.userId, reported_conversation_id: t.conversationId
+    });
+    btn.disabled = false;
+    if (error) {
+      console.error('Report submit error:', error);
+      err.textContent = 'Bildirim gönderilemedi.';
+      err.style.display = 'block';
+      return;
+    }
+    document.getElementById('rp-form-fields').style.display = 'none';
+    document.getElementById('rp-actions').style.display = 'none';
+    document.getElementById('rp-success').style.display = 'block';
+    setTimeout(() => window.closeReportModal(), 2000);
+  };
+
+  window.chatMenuToggleBlock = async function() {
+    const conv = conversations.find(c => c.id === activeConvId);
+    if (!conv) return;
+    const isBlocked = window._myBlockedIds.has(conv.otherId);
+    document.getElementById('chat-more-menu').style.display = 'none';
+    if (isBlocked) {
+      const { error } = await supabase.from('blocked_users').delete().eq('blocker_id', me.id).eq('blocked_id', conv.otherId);
+      if (!error) window._myBlockedIds.delete(conv.otherId);
+    } else {
+      if (!confirm('Bu kullanıcıyı engellemek istediğinize emin misiniz? Artık size mesaj gönderemeyecek.')) return;
+      const { error } = await supabase.from('blocked_users').insert({ blocker_id: me.id, blocked_id: conv.otherId });
+      if (!error) window._myBlockedIds.add(conv.otherId);
+    }
+    openConv(activeConvId);
+  };
+
   window.openConv = async function(id) {
     activeConvId = id;
     document.getElementById('empty-state').style.display = 'none';
@@ -705,6 +796,15 @@
     document.getElementById('ch-name').textContent = name;
     document.getElementById('ch-status').textContent = p?.city ? `📍 ${p.city}` : '';
     document.getElementById('ch-profile-link').onclick = () => window.location.href = `profil.html?id=${conv.otherId}`;
+    document.getElementById('chat-more-menu').style.display = 'none';
+    const blockBtn = document.getElementById('chat-block-btn');
+    if (window._myBlockedIds && window._myBlockedIds.has(conv.otherId)) {
+      blockBtn.textContent = '✓ Engeli Kaldır';
+      blockBtn.style.color = 'var(--muted,#6B5E4E)';
+    } else {
+      blockBtn.textContent = '🚫 Kullanıcıyı Engelle';
+      blockBtn.style.color = 'var(--red,#D42B2B)';
+    }
 
     const banner = document.getElementById('context-banner');
     if (conv.listing_id) {
@@ -791,6 +891,12 @@
     const text = input.value.trim();
     if (!text || !activeConvId) return;
 
+    const conv = conversations.find(c => c.id === activeConvId);
+    if (conv && window._myBlockedIds.has(conv.otherId)) {
+      alert('Bu kullanıcıyı engellediniz. Mesaj göndermek için önce engeli kaldırmalısınız.');
+      return;
+    }
+
     const btn = document.getElementById('send-btn');
     btn.disabled = true;
 
@@ -799,15 +905,15 @@
     }).select().single();
 
     btn.disabled = false;
-    if (error) { console.error('Send failed:', error); return; }
+    if (error) { console.error('Send failed:', error); alert('Mesaj gönderilemedi. Karşı taraf sizi engellemiş olabilir.'); return; }
 
     activeMessages.push(data);
     renderMessages();
     input.value = '';
     input.style.height = 'auto';
 
-    const conv = conversations.find(c => c.id === activeConvId);
-    if (conv) { conv.last_message = text; conv.last_message_at = data.created_at; }
+    const conv2 = conversations.find(c => c.id === activeConvId);
+    if (conv2) { conv2.last_message = text; conv2.last_message_at = data.created_at; }
     conversations.sort((a, b) => new Date(b.last_message_at || b.created_at) - new Date(a.last_message_at || a.created_at));
     renderConvList();
   };
@@ -943,7 +1049,7 @@ window.loadNotifications = async function() {
       list.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Henüz bildiriminiz yok.</div>';
     } else {
       list.innerHTML = notifs.map(n => `
-        <div onclick="openNotification('${n.id}', ${JSON.stringify(n.link || '')})" style="padding:12px 16px;border-bottom:1px solid #F0EAE0;cursor:pointer;${n.is_read ? '' : 'background:#FAF7F2;'}">
+        <div class="notif-item" data-id="${n.id}" data-link="${escapeHtmlNotif(n.link || '')}" style="padding:12px 16px;border-bottom:1px solid #F0EAE0;cursor:pointer;${n.is_read ? '' : 'background:#FAF7F2;'}">
           <div style="font-size:13px;font-weight:600;color:#1A1208;display:flex;align-items:center;gap:6px;">
             ${n.is_read ? '' : '<span style="width:7px;height:7px;border-radius:50%;background:var(--red,#D42B2B);flex-shrink:0;"></span>'}
             ${escapeHtmlNotif(n.title || '')}
@@ -952,6 +1058,9 @@ window.loadNotifications = async function() {
           <div style="font-size:11px;color:#D4C5A9;margin-top:4px;">${timeAgoNotif(n.created_at)}</div>
         </div>
       `).join('');
+      list.querySelectorAll('.notif-item').forEach(el => {
+        el.addEventListener('click', () => window.openNotification(el.dataset.id, el.dataset.link));
+      });
     }
   }
   const unread = (notifs || []).filter(n => !n.is_read).length;
@@ -1172,5 +1281,32 @@ document.addEventListener('click', function(e) {
   })();
 
   </script>
+<!-- REPORT MODAL -->
+<div id="report-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,18,8,.5);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)window.closeReportModal()">
+  <div style="background:#fff;border-radius:14px;padding:24px;max-width:380px;width:90%;">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin:0 0 16px;color:var(--ink,#1A1208);">🚩 Bildir</h3>
+    <div id="rp-form-fields">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#6B5E4E);display:block;margin-bottom:6px;">Sebep *</label>
+      <select id="rp-reason" style="width:100%;padding:10px;border:1px solid #D4C5A9;border-radius:8px;font-size:13px;margin-bottom:12px;box-sizing:border-box;">
+        <option value="">Seçin...</option>
+        <option value="harassment">😡 Taciz</option>
+        <option value="scam">💸 Dolandırıcılık</option>
+        <option value="suspicious">🕵️ Şüpheli Davranış</option>
+        <option value="inappropriate">🚫 Uygunsuz</option>
+        <option value="spam">📢 Spam</option>
+        <option value="other">📝 Diğer</option>
+      </select>
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#6B5E4E);display:block;margin-bottom:6px;">Detay</label>
+      <textarea id="rp-details" rows="3" placeholder="Kısaca açıklayın (opsiyonel)" style="width:100%;padding:10px;border:1px solid #D4C5A9;border-radius:8px;font-size:13px;margin-bottom:12px;box-sizing:border-box;resize:vertical;"></textarea>
+    </div>
+    <div id="rp-error" style="display:none;font-size:12px;color:var(--red,#D42B2B);margin-bottom:12px;"></div>
+    <div id="rp-success" style="display:none;font-size:13px;color:#1E7B4B;margin-bottom:12px;text-align:center;">✅ Bildiriminiz alındı, teşekkürler.</div>
+    <div id="rp-actions" style="display:flex;gap:8px;">
+      <button onclick="window.closeReportModal()" style="flex:1;padding:11px;background:none;border:1.5px solid #D4C5A9;color:var(--muted,#6B5E4E);border-radius:9px;font-weight:600;cursor:pointer;">Vazgeç</button>
+      <button id="rp-submit-btn" onclick="window.submitReport()" style="flex:1;padding:11px;background:var(--red,#D42B2B);color:#fff;border:none;border-radius:9px;font-weight:700;cursor:pointer;">Bildir</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
