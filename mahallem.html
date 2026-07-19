@@ -1857,20 +1857,30 @@
   document.getElementById('compose-avatar').style.background = color;
   await loadFeed();
 
-  // Deep link: ?post=<id> — used by the admin reports panel to jump
-  // straight to a reported post, bypassing the current tier/category filters.
+  // Deep link: ?post=<id> — used by the admin reports panel to open
+  // an isolated moderation view of a single reported post (replaces
+  // the whole feed, rather than just prepending it, so it's unambiguous).
   const deepLinkPostId = new URLSearchParams(window.location.search).get('post');
-  if (deepLinkPostId && !window._allPosts.some(p => p.id === deepLinkPostId)) {
+  if (deepLinkPostId) {
+    const el = document.getElementById('posts-feed');
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>';
     try {
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${deepLinkPostId}&select=*`, { headers });
       const found = await r.json();
       if (found?.[0]) {
-        const el = document.getElementById('posts-feed');
-        el.innerHTML = `<div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px;">🔍 Bildirilen gönderi</div>` + renderPostCard(found[0]) + el.innerHTML;
+        el.innerHTML = `
+          <div style="margin-bottom:12px;">
+            <a href="mahallem.html" style="font-size:12px;font-weight:600;color:var(--red);text-decoration:none;">← Tüm gönderilere dön</a>
+          </div>
+          <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:#991B1B;">🔍 Bildirilen gönderi — moderasyon görünümü</div>
+        ` + renderPostCard(found[0]);
+      } else {
+        el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Gönderi bulunamadı (silinmiş olabilir).<br><br><a href="mahallem.html" style="color:var(--red);font-weight:600;">← Tüm gönderilere dön</a></div>`;
       }
-    } catch(e) { console.error('Deep link post fetch error:', e); }
-  } else if (deepLinkPostId) {
-    document.querySelector(`[data-post-id="${deepLinkPostId}"]`)?.scrollIntoView({behavior:'smooth', block:'center'});
+    } catch(e) {
+      console.error('Deep link post fetch error:', e);
+      el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--red);font-size:13px;">Yüklenemedi.<br><br><a href="mahallem.html" style="color:var(--red);font-weight:600;">← Tüm gönderilere dön</a></div>`;
+    }
   }
   })();
 </script>
