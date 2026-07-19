@@ -901,6 +901,7 @@
       <button class="loc-btn active" id="filter-city" data-tier="city">📍 —</button>
       <button class="loc-btn" data-tier="germany">🇩🇪 Almanya</button>
       <button class="loc-btn" data-tier="europe">🌍 Tüm Avrupa</button>
+      <button class="loc-btn" data-tier="saved">🔖 Kaydettiklerim</button>
     </div>
 
     <div class="loc-filter" id="cat-filter" style="margin-top:8px;flex-wrap:wrap;">
@@ -946,6 +947,7 @@
       </div>
       <div style="padding-left:50px;">
         <input type="file" id="compose-photo-input" accept="image/*" style="display:none" onchange="window.handlePhotoSelect(this)">
+        <input type="file" id="comment-photo-input" accept="image/*" style="display:none" onchange="window.handleCommentPhotoSelect(this)">
         <div id="compose-photo-preview" style="display:none;margin-bottom:8px;"></div>
       </div>
       <div class="compose-actions">
@@ -1483,6 +1485,7 @@
       ? `<img src="${author.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : ai;
     const liked = window._myLikedPostIds.has(p.id);
+    const bookmarked = window._myBookmarkedPostIds.has(p.id);
     const cat = CATEGORY_META[p.category] || CATEGORY_META.genel;
     const tagsHtml = (p.tags||[]).map(t => `<span class="trend-tag" style="margin:0 4px 4px 0;padding:3px 10px;font-size:11px;" onclick="window.filterByTag('${t.replace(/'/g,"")}')">#${escapeHtmlPost(t)}</span>`).join('');
     return `<div class="post-card" data-post-id="${p.id}">
@@ -1498,7 +1501,9 @@
       ${tagsHtml ? `<div style="margin-bottom:12px;">${tagsHtml}</div>` : ''}
       <div class="post-actions">
         <button class="post-action ${liked?'liked':''}" onclick="window.togglePostLike('${p.id}', this)">👍 Beğen <span>${p.likes_count||0}</span></button>
-        <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yorum <span>${p.comments_count||0}</span></button>
+        <button class="post-action" onclick="window.toggleComments('${p.id}', this)">💬 Yanıtla <span>${p.comments_count||0}</span></button>
+        <button class="post-action ${bookmarked?'liked':''}" onclick="window.togglePostBookmark('${p.id}', this)">🔖</button>
+        <button class="post-action" onclick="window.sharePost('${p.id}')">📤</button>
         ${p.author_id === user.id ? `<button class="post-action" onclick="window.startEditPost('${p.id}')" style="margin-left:auto;color:var(--muted);">✏️</button>` : ''}
         <button class="post-action" onclick="window.openReportModal('post','${p.id}','${p.author_id}')" style="${p.author_id === user.id ? '' : 'margin-left:auto;'}color:var(--muted);">🚩</button>
       </div>
@@ -1521,11 +1526,14 @@
             </div>
           </div>
           <div class="comment-content-text" style="font-size:12px;color:var(--ink);">${escapeHtmlPost(c.content)}</div>
+          ${c.image_urls?.[0] ? `<img src="${c.image_urls[0]}" style="max-width:160px;border-radius:8px;margin-top:6px;display:block;">` : ''}
         </div>
       </div>`;
     }).join('') || '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Henüz yorum yok. İlk yorumu sen yaz!</div>';
     return `${list}
+      <div id="comment-photo-preview-${postId}" style="display:none;margin-bottom:6px;"></div>
       <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="window.triggerCommentPhoto('${postId}')" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:0 10px;cursor:pointer;font-size:13px;color:var(--muted);">📷</button>
         <input type="text" id="comment-input-${postId}" placeholder="Yorum yaz..." style="flex:1;border:1px solid var(--sand);border-radius:7px;padding:7px 10px;font-size:12px;font-family:'Instrument Sans',sans-serif;outline:none;" onkeypress="if(event.key==='Enter')window.submitComment('${postId}')">
         <button onclick="window.submitComment('${postId}')" style="background:var(--red);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Gönder</button>
       </div>`;
@@ -1533,6 +1541,7 @@
 
   window._allPosts = [];
   window._myLikedPostIds = new Set();
+  window._myBookmarkedPostIds = new Set();
   window._feedTier = 'city';
   window._feedTagQuery = '';
   window._feedCategory = '';
@@ -1551,13 +1560,40 @@
     if (!el) return;
     const list = applyClientFilters(window._allPosts);
     if (!list.length) {
-      el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz paylaşım yok. İlk paylaşımı sen yap! 👋</div>`;
+      el.innerHTML = window._feedTier === 'saved'
+        ? `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz kaydettiğiniz bir gönderi yok.</div>`
+        : `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz paylaşım yok. İlk paylaşımı sen yap! 👋</div>`;
       return;
     }
     el.innerHTML = list.map(renderPostCard).join('');
   }
 
   async function loadFeed() {
+    try {
+      const r2 = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?select=post_id&user_id=eq.${user.id}`, { headers });
+      const mine = await r2.json();
+      window._myLikedPostIds = new Set((mine||[]).map(x => x.post_id));
+    } catch(e) { console.error('Likes load error:', e); }
+    try {
+      const r3 = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks?select=post_id&user_id=eq.${user.id}`, { headers });
+      const mineB = await r3.json();
+      window._myBookmarkedPostIds = new Set((mineB||[]).map(x => x.post_id));
+    } catch(e) { console.error('Bookmarks load error:', e); }
+
+    if (window._feedTier === 'saved') {
+      const ids = Array.from(window._myBookmarkedPostIds);
+      if (!ids.length) { window._allPosts = []; }
+      else {
+        try {
+          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=in.(${ids.join(',')})&select=*&order=created_at.desc`, { headers });
+          window._allPosts = await r.json();
+          if (!Array.isArray(window._allPosts)) window._allPosts = [];
+        } catch(e) { console.error('Saved feed load error:', e); window._allPosts = []; }
+      }
+      renderFeedFromCache();
+      return;
+    }
+
     let query = `select=*&order=created_at.desc&limit=50`;
     if (window._feedTier === 'city' && city) {
       query += `&city=ilike.${encodeURIComponent(city)}`;
@@ -1571,11 +1607,6 @@
       window._allPosts = await r.json();
       if (!Array.isArray(window._allPosts)) window._allPosts = [];
     } catch(e) { console.error('Feed load error:', e); window._allPosts = []; }
-    try {
-      const r2 = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?select=post_id&user_id=eq.${user.id}`, { headers });
-      const mine = await r2.json();
-      window._myLikedPostIds = new Set((mine||[]).map(x => x.post_id));
-    } catch(e) { console.error('Likes load error:', e); }
     renderFeedFromCache();
 
     // Trending tags — real, computed from the loaded feed
@@ -1624,6 +1655,47 @@
     btnEl.disabled = false;
   };
 
+  window.togglePostBookmark = async function(postId, btnEl) {
+    const isBookmarked = btnEl.classList.contains('liked');
+    btnEl.disabled = true;
+    try {
+      if (isBookmarked) {
+        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks?post_id=eq.${postId}&user_id=eq.${user.id}`, { method:'DELETE', headers });
+        btnEl.classList.remove('liked');
+        window._myBookmarkedPostIds.delete(postId);
+        if (window._feedTier === 'saved') { window._allPosts = window._allPosts.filter(p => p.id !== postId); renderFeedFromCache(); }
+      } else {
+        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks`, { method:'POST', headers:{...headers,'Prefer':'return=minimal'}, body: JSON.stringify({post_id:postId,user_id:user.id}) });
+        btnEl.classList.add('liked');
+        window._myBookmarkedPostIds.add(postId);
+        window.showToast('🔖 Kaydedildi');
+      }
+    } catch(e) { console.error('Bookmark toggle error:', e); }
+    btnEl.disabled = false;
+  };
+
+  window.showToast = function(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  };
+
+  window.sharePost = async function(postId) {
+    const post = window._allPosts.find(p => p.id === postId);
+    const url = `${window.location.origin}/mahallem.html?post=${postId}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'BizdenBize', text: post?.content?.slice(0,100) || '', url }); }
+      catch(e) { /* user cancelled share sheet — not an error */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        window.showToast('🔗 Bağlantı kopyalandı');
+      } catch(e) { prompt('Bağlantıyı kopyalayın:', url); }
+    }
+  };
+
   window.toggleComments = async function(postId, btnEl) {
     const box = document.getElementById(`comments-${postId}`);
     if (box.style.display === 'none') {
@@ -1642,17 +1714,60 @@
     }
   };
 
+  window._pendingCommentImageUrl = {};
+  window._activeCommentPostId = null;
+
+  window.triggerCommentPhoto = function(postId) {
+    window._activeCommentPostId = postId;
+    document.getElementById('comment-photo-input').click();
+  };
+
+  window.handleCommentPhotoSelect = async function(inputEl) {
+    const file = inputEl.files[0];
+    const postId = window._activeCommentPostId;
+    if (!file || !postId) return;
+    if (!file.type.startsWith('image/')) { alert('Lütfen bir resim dosyası seçin.'); inputEl.value=''; return; }
+    if (file.size > 8 * 1024 * 1024) { alert('Resim en fazla 8MB olabilir.'); inputEl.value=''; return; }
+    const path = `${user.id}/${Date.now()}-c-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const preview = document.getElementById(`comment-photo-preview-${postId}`);
+    if (preview) { preview.style.display = 'block'; preview.innerHTML = '<div style="font-size:11px;color:var(--muted);">Yükleniyor...</div>'; }
+    try {
+      const uploadRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/storage/v1/object/post-images/${path}`, {
+        method: 'POST',
+        headers: { 'apikey': headers.apikey, 'Authorization': headers.Authorization, 'Content-Type': file.type },
+        body: file
+      });
+      if (!uploadRes.ok) throw new Error(await uploadRes.text());
+      const publicUrl = `https://wxjudojlwksivhzjnmim.supabase.co/storage/v1/object/public/post-images/${path}`;
+      window._pendingCommentImageUrl[postId] = publicUrl;
+      if (preview) preview.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${publicUrl}" style="max-height:80px;border-radius:6px;display:block;"><button onclick="window.removePendingCommentPhoto('${postId}')" style="position:absolute;top:2px;right:2px;background:rgba(26,18,8,.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;">✕</button></div>`;
+    } catch(e) {
+      console.error('Comment photo upload error:', e);
+      if (preview) preview.innerHTML = '<div style="font-size:11px;color:var(--red);">Yükleme başarısız.</div>';
+      delete window._pendingCommentImageUrl[postId];
+    }
+    inputEl.value = '';
+  };
+
+  window.removePendingCommentPhoto = function(postId) {
+    delete window._pendingCommentImageUrl[postId];
+    const preview = document.getElementById(`comment-photo-preview-${postId}`);
+    if (preview) { preview.style.display = 'none'; preview.innerHTML = ''; }
+  };
+
   window.submitComment = async function(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
     const content = input.value.trim();
-    if (!content) return;
+    const pendingImg = window._pendingCommentImageUrl[postId];
+    if (!content && !pendingImg) return;
     input.disabled = true;
     try {
       await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments`, {
         method:'POST', headers:{...headers,'Prefer':'return=minimal'},
-        body: JSON.stringify({post_id:postId, author_id:user.id, content})
+        body: JSON.stringify({post_id:postId, author_id:user.id, content: content || '', image_urls: pendingImg ? [pendingImg] : []})
       });
       input.value = '';
+      window.removePendingCommentPhoto(postId);
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
       const comments = await r.json();
       document.getElementById(`comments-${postId}`).innerHTML = renderCommentsBlock(postId, comments);
@@ -1857,10 +1972,11 @@
   document.getElementById('compose-avatar').style.background = color;
   await loadFeed();
 
-  // Deep link: ?post=<id> — used by the admin reports panel to open
-  // an isolated moderation view of a single reported post (replaces
-  // the whole feed, rather than just prepending it, so it's unambiguous).
+  // Deep link: ?post=<id> — either a moderation view (admin reports panel,
+  // marked with &mod=1) or a plain shared link (from the 📤 Paylaş button).
+  // Both isolate the feed to just that post so it's unambiguous either way.
   const deepLinkPostId = new URLSearchParams(window.location.search).get('post');
+  const isModView = new URLSearchParams(window.location.search).get('mod') === '1';
   if (deepLinkPostId) {
     const el = document.getElementById('posts-feed');
     el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>';
@@ -1868,12 +1984,14 @@
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${deepLinkPostId}&select=*`, { headers });
       const found = await r.json();
       if (found?.[0]) {
+        const banner = isModView
+          ? `<div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:#991B1B;">🔍 Bildirilen gönderi — moderasyon görünümü</div>`
+          : `<div style="background:var(--warm);border:1px solid var(--sand);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:var(--muted);">📌 Paylaşılan gönderi</div>`;
         el.innerHTML = `
           <div style="margin-bottom:12px;">
             <a href="mahallem.html" style="font-size:12px;font-weight:600;color:var(--red);text-decoration:none;">← Tüm gönderilere dön</a>
           </div>
-          <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:#991B1B;">🔍 Bildirilen gönderi — moderasyon görünümü</div>
-        ` + renderPostCard(found[0]);
+        ` + banner + renderPostCard(found[0]);
       } else {
         el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Gönderi bulunamadı (silinmiş olabilir).<br><br><a href="mahallem.html" style="color:var(--red);font-weight:600;">← Tüm gönderilere dön</a></div>`;
       }

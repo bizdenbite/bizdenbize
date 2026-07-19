@@ -1183,10 +1183,10 @@
     document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
       const target = r.reported_comment_id
         ? (r.reported_post_id
-            ? `<a href="mahallem.html?post=${r.reported_post_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">💬 Yorum (gönderiye git)</a>`
+            ? `<a href="mahallem.html?post=${r.reported_post_id}&mod=1" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">💬 Yorum (gönderiye git)</a>`
             : `<span style="font-size:12px;color:var(--muted);">💬 Yorum</span>`)
         : r.reported_post_id
-          ? `<a href="mahallem.html?post=${r.reported_post_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">📝 Gönderi</a>`
+          ? `<a href="mahallem.html?post=${r.reported_post_id}&mod=1" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">📝 Gönderi</a>`
           : r.reported_listing_id
             ? `<a href="ev-takasi.html?listing=${r.reported_listing_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🏠 İlan #${r.reported_listing_id}</a>`
             : r.reported_user_id
