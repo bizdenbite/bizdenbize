@@ -903,15 +903,17 @@
       <button class="loc-btn" data-tier="europe">🌍 Tüm Avrupa</button>
     </div>
 
-    <div class="loc-filter" id="cat-filter" style="margin-top:8px;">
+    <div class="loc-filter" id="cat-filter" style="margin-top:8px;flex-wrap:wrap;">
       <button class="loc-btn active" data-cat="">Tümü</button>
-      <button class="loc-btn" data-cat="egitim">🎓 Eğitim</button>
-      <button class="loc-btn" data-cat="vize">🛂 Vize & Göç</button>
-      <button class="loc-btn" data-cat="is">💼 İş</button>
-      <button class="loc-btn" data-cat="konut">🏠 Konut</button>
-      <button class="loc-btn" data-cat="saglik">🏥 Sağlık</button>
-      <button class="loc-btn" data-cat="etkinlik">🎉 Etkinlik</button>
-      <button class="loc-btn" data-cat="genel">💬 Genel</button>
+      <button class="loc-btn" data-cat="legal">⚖️ Hukuk</button>
+      <button class="loc-btn" data-cat="visa">🛂 Vize & Göç</button>
+      <button class="loc-btn" data-cat="medical">🏥 Sağlık</button>
+      <button class="loc-btn" data-cat="tax">💰 Vergi & Maliye</button>
+      <button class="loc-btn" data-cat="housing">🏠 Konut</button>
+      <button class="loc-btn" data-cat="employment">💼 İş & Çalışma</button>
+      <button class="loc-btn" data-cat="school">🎓 Eğitim & Aile</button>
+      <button class="loc-btn" data-cat="insurance">🚗 Sigorta</button>
+      <button class="loc-btn" data-cat="diger">💬 Diğer Konular</button>
     </div>
 
     <div style="margin-bottom:16px;">
@@ -927,13 +929,15 @@
       <div style="padding-left:50px;display:flex;flex-direction:column;gap:6px;">
         <select id="compose-category" style="width:100%;border:1px solid var(--sand);outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
           <option value="" disabled selected>Kategori seçin *</option>
-          <option value="egitim">🎓 Eğitim & Ders</option>
-          <option value="vize">🛂 Vize & Göç</option>
-          <option value="is">💼 İş & Kariyer</option>
-          <option value="konut">🏠 Konut & Ev Takası</option>
-          <option value="saglik">🏥 Sağlık</option>
-          <option value="etkinlik">🎉 Etkinlik & Sosyal</option>
-          <option value="genel">💬 Genel Sohbet</option>
+          <option value="legal">⚖️ Hukuk</option>
+          <option value="visa">🛂 Vize & Göç</option>
+          <option value="medical">🏥 Sağlık</option>
+          <option value="tax">💰 Vergi & Maliye</option>
+          <option value="housing">🏠 Konut</option>
+          <option value="employment">💼 İş & Çalışma</option>
+          <option value="school">🎓 Eğitim & Aile</option>
+          <option value="insurance">🚗 Sigorta</option>
+          <option value="diger">💬 Diğer Konular</option>
         </select>
         <input type="text" id="compose-tags" placeholder="Etiketler (virgülle ayırın, opsiyonel): örn. öğrenci, münih" style="width:100%;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:12px;color:var(--muted);background:var(--warm);border-radius:7px;padding:8px 10px;box-sizing:border-box;">
         <div id="compose-error" style="display:none;font-size:11px;color:var(--red);"></div>
@@ -1441,13 +1445,15 @@
   // ── Real Mahallem feed (posts / likes / comments / tags) ─────────
 
   const CATEGORY_META = {
-    egitim:   { label: '🎓 Eğitim & Ders',      color: '#185FA5' },
-    vize:     { label: '🛂 Vize & Göç',         color: '#D42B2B' },
-    is:       { label: '💼 İş & Kariyer',       color: '#C9A84C' },
-    konut:    { label: '🏠 Konut & Ev Takası',  color: '#1E7B4B' },
-    saglik:   { label: '🏥 Sağlık',              color: '#534AB7' },
-    etkinlik: { label: '🎉 Etkinlik & Sosyal',  color: '#E85D75' },
-    genel:    { label: '💬 Genel Sohbet',        color: '#6B5E4E' }
+    legal:      { label: '⚖️ Hukuk',           color: '#1B3A8C' },
+    visa:       { label: '🛂 Vize & Göç',       color: '#D42B2B' },
+    medical:    { label: '🏥 Sağlık',            color: '#534AB7' },
+    tax:        { label: '💰 Vergi & Maliye',   color: '#C9A84C' },
+    housing:    { label: '🏠 Konut',             color: '#1E7B4B' },
+    employment: { label: '💼 İş & Çalışma',     color: '#185FA5' },
+    school:     { label: '🎓 Eğitim & Aile',     color: '#E85D75' },
+    insurance:  { label: '🚗 Sigorta',           color: '#6B5E4E' },
+    diger:      { label: '💬 Diğer Konular',    color: '#8A8A8A' }
   };
 
   function escapeHtmlPost(s) {
