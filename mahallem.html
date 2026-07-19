@@ -1490,9 +1490,9 @@
     const tagsHtml = (p.tags||[]).map(t => `<span class="trend-tag" style="margin:0 4px 4px 0;padding:3px 10px;font-size:11px;" onclick="window.filterByTag('${t.replace(/'/g,"")}')">#${escapeHtmlPost(t)}</span>`).join('');
     return `<div class="post-card" data-post-id="${p.id}">
       <div class="post-header">
-        <div class="post-avatar" style="background:${ac}">${avatarHtml}</div>
+        <div class="post-avatar" style="background:${ac};cursor:pointer;" onclick="window.location.href='profil.html?id=${p.author_id}'">${avatarHtml}</div>
         <div class="post-meta">
-          <div class="post-name">${an}</div>
+          <div class="post-name" style="cursor:pointer;" onclick="window.location.href='profil.html?id=${p.author_id}'">${an}</div>
           <div class="post-info">📍 ${p.city||'—'}<div class="post-dot"></div>${timeAgoPost(p.created_at)}<div class="post-dot"></div><span class="post-type-badge" style="background:${cat.color}22;color:${cat.color}">${cat.label}</span></div>
         </div>
       </div>
@@ -1516,10 +1516,10 @@
       const a = window._profileMap[c.author_id] || {};
       const an = `${a.first_name||''} ${a.last_name||''}`.trim() || 'Üye';
       return `<div data-comment-id="${c.id}" style="display:flex;gap:8px;margin-bottom:10px;">
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${(a.first_name?.[0]||'?').toUpperCase()}</div>
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;cursor:pointer;" onclick="window.location.href='profil.html?id=${c.author_id}'">${(a.first_name?.[0]||'?').toUpperCase()}</div>
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-            <div style="font-size:12px;font-weight:600;color:var(--ink);">${an}</div>
+            <div style="font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;" onclick="window.location.href='profil.html?id=${c.author_id}'">${an}</div>
             <div style="display:flex;gap:6px;flex-shrink:0;">
               ${c.author_id === user.id ? `<button onclick="window.startEditComment('${postId}','${c.id}')" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:0;">✏️</button>` : ''}
               <button onclick="window.openReportModal('comment','${c.id}','${c.author_id}','${postId}')" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:0;">🚩</button>
