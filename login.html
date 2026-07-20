@@ -121,6 +121,13 @@
     }
     .form-container { width: 100%; max-width: 400px; }
 
+    /* Mobile-only logo: hidden on desktop, shown when .left-panel is hidden below 900px */
+    .mobile-logo { display: none; }
+    @media (max-width: 900px) {
+      .mobile-logo { display: block; margin: 0 auto 24px; text-align: center; }
+      .mobile-logo img { height: 36px; width: auto; }
+    }
+
     /* Tab switcher */
     .tab-bar {
       display: grid; grid-template-columns: 1fr 1fr;
@@ -830,6 +837,7 @@
 
 <!-- RIGHT PANEL -->
 <div class="right-panel">
+  <div class="mobile-logo"><img src="logo.png" alt="BizdenBize"></div>
   <div class="form-container">
 
     <!-- TAB BAR -->
