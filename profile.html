@@ -243,6 +243,15 @@
       </a>
     </div>
 
+    <!-- Deactivate Account (self-service, reversible) -->
+    <div class="edit-section" style="border:1px solid var(--sand);border-radius:14px;padding:20px;background:var(--warm);">
+      <div class="section-title">😴 Hesabımı Deaktive Et</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Bir süreliğine ara vermek mi istiyorsunuz? Hesabınızı deaktive edin — profiliniz ve ilanlarınız görünmez olur, ama verileriniz silinmez. Tekrar giriş yapmayı denediğinizde hesabınızı anında yeniden aktive edebilirsiniz.</p>
+      <button onclick="openDeactivateModal()" style="padding:10px 20px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(26,18,8,.04)'" onmouseout="this.style.background='none'">
+        😴 Hesabımı Deaktive Et
+      </button>
+    </div>
+
     <!-- Danger Zone -->
     <div class="edit-section" style="border:1px solid rgba(212,43,43,.2);border-radius:14px;padding:20px;background:rgba(212,43,43,.02);">
       <div class="section-title" style="color:var(--red);">⚠️ Tehlikeli Bölge</div>
@@ -254,6 +263,16 @@
         ⏳ Silme talebiniz inceleniyor. Ekibimiz en kısa sürede sizinle iletişime geçecek.
       </div>
     </div>
+  </div>
+</div>
+
+<!-- DEACTIVATE MODAL -->
+<div id="deactivate-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.55);align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;padding:28px;animation:popIn .25s ease;">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;">😴 Hesabımı Deaktive Et</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Hesabınız gizlenecek ve oturumunuz kapatılacak. Verileriniz silinmez — dilediğiniz zaman tekrar giriş yaparak hesabınızı yeniden aktive edebilirsiniz.</div>
+    <button onclick="confirmDeactivate()" id="deactivate-confirm-btn" style="width:100%;padding:11px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-bottom:8px;">Deaktive Et</button>
+    <button onclick="closeDeactivateModal()" style="width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
   </div>
 </div>
 
@@ -544,6 +563,32 @@
       toast('✅ Silme talebiniz alındı. En kısa sürede incelenecek.');
     } catch(e) {
       btn.disabled = false; btn.textContent = 'Talebi Gönder';
+      toast('Hata: ' + e.message, false);
+    }
+  }
+
+  function openDeactivateModal() {
+    document.getElementById('deactivate-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDeactivateModal() {
+    document.getElementById('deactivate-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  async function confirmDeactivate() {
+    const btn = document.getElementById('deactivate-confirm-btn');
+    btn.disabled = true; btn.textContent = 'Deaktive ediliyor...';
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${currentUser.id}`, {
+        method: 'PATCH',
+        headers: hdrs(),
+        body: JSON.stringify({ status: 'deactivated' })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await doLogout();
+    } catch(e) {
+      btn.disabled = false; btn.textContent = 'Deaktive Et';
       toast('Hata: ' + e.message, false);
     }
   }
