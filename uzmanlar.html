@@ -130,6 +130,7 @@
   <button class="filter-pill" onclick="setFilter('school',this)">🎓 Okul & Yardımlar</button>
   <button class="filter-pill" onclick="setFilter('insurance',this)">🚗 Sigorta</button>
   <button class="filter-pill" onclick="setFilter('migration',this)">✈️ Göç</button>
+  <button class="filter-pill" onclick="setFilter('other',this)">📝 Diğer</button>
   <div style="display:flex;align-items:center;gap:8px;background:var(--white);border:2px solid var(--ink);border-radius:20px;padding:7px 16px;min-width:200px;transition:box-shadow .2s;"
        onfocusin="this.style.boxShadow='0 0 0 3px rgba(26,18,8,.1)'" onfocusout="this.style.boxShadow='none'">
     <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -155,12 +156,12 @@
   const CAT_ICONS = {
     legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
     housing:'🏠', employment:'💼', school:'🎓',
-    insurance:'🚗', migration:'✈️'
+    insurance:'🚗', migration:'✈️', other:'📝'
   };
   const CAT_NAMES = {
     legal:'Hukuki', visa:'Vize', medical:'Tıbbi',
     tax:'Vergi', housing:'Konut', employment:'İş',
-    school:'Okul', insurance:'Sigorta', migration:'Göç'
+    school:'Okul', insurance:'Sigorta', migration:'Göç', other:'Diğer'
   };
   const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
   const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
