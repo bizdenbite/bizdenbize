@@ -259,8 +259,7 @@
     </div>
     <div class="hero-stats">
       <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Aktif İlan</div></div>
-      <div><div class="hstat-val">6</div><div class="hstat-label">Ülke</div></div>
-      <div><div class="hstat-val">%100</div><div class="hstat-label">Doğrulanmış Üye</div></div>
+      <div><div class="hstat-val" style="font-size:20px;">Almanya'da</div><div class="hstat-label">Şimdilik</div></div>
       <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Para yok</div></div>
     </div>
     <div id="my-points-box" style="display:none;margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:8px 18px;">
@@ -636,7 +635,7 @@ function openDetail(id) {
   const s = (window._swaps||[]).find(x => String(x.id)===String(id));
   if (!s) return;
   const rating = window._ratings ? window._ratings[s.user_id] : null;
-  document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div><div class="detail-verified">✅ Doğrulanmış Üye</div><button class="detail-close" onclick="closeDetailModal()">×</button>`;
+  document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div>${s.verified ? '<div class="detail-verified">✅ Doğrulanmış Üye</div>' : ''}<button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
   document.getElementById('d-dest-label').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest-arrow').style.display = s.destination ? 'inline' : 'none';
