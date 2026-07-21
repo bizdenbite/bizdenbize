@@ -212,26 +212,6 @@
     }
     .strength-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-    /* Invite code */
-    .invite-wrap {
-      background: rgba(201,168,76,.08);
-      border: 1.5px dashed rgba(201,168,76,.5);
-      border-radius: 9px; padding: 12px 14px;
-      margin-bottom: 16px;
-    }
-    .invite-wrap input {
-      border: none; background: none;
-      box-shadow: none; padding: 0;
-      font-size: 15px; font-weight: 600;
-      letter-spacing: 3px; text-transform: uppercase;
-    }
-    .invite-wrap input:focus { box-shadow: none; }
-    .invite-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 4px;
-    }
-    .invite-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
     /* Forgot password */
     .forgot-link {
       font-size: 12px; color: var(--navy); cursor: pointer;
@@ -586,7 +566,6 @@
       const lname   = document.getElementById('reg-lname').value.trim();
       const email   = document.getElementById('reg-email').value.trim();
       const pass    = document.getElementById('reg-password').value;
-      const invite  = document.getElementById('reg-invite').value.trim();
       let valid = true;
 
       document.getElementById('reg-email-err').style.display = 'none';
@@ -604,7 +583,7 @@
       const { data, error } = await supabase.auth.signUp({
         email, password: pass,
         options: {
-          data: { full_name: fname + ' ' + lname, invite_code: invite },
+          data: { full_name: fname + ' ' + lname },
           emailRedirectTo: 'https://bizdenbize.com/login.html'
         }
       });
@@ -625,7 +604,7 @@
         await fetch(SUPABASE_URL + '/functions/v1/waitlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
-          body: JSON.stringify({ first_name: fname, last_name: lname, email, invite_code: invite }),
+          body: JSON.stringify({ first_name: fname, last_name: lname, email }),
           signal: controller.signal
         });
       } catch(e) { console.warn('Waitlist call failed:', e); }
@@ -945,7 +924,7 @@
     <!-- REGISTER FORM -->
     <div id="register-form" style="display:none">
       <h2 class="form-title">Topluluğa katıl 🤝</h2>
-      <p class="form-sub">Ücretsiz hesap oluştur. Davetiye kodun varsa öncelikli onay alırsın.</p>
+      <p class="form-sub">Ücretsiz hesap oluştur. Kayıt sonrası kısa bir onay sürecinden geçersin.</p>
 
       <div class="social-btns">
         <button class="social-btn" onclick="socialLogin('google')">
@@ -992,11 +971,6 @@
         <div class="strength-label" id="strength-label"></div>
       </div>
 
-      <div class="invite-wrap">
-        <div class="invite-label">✦ Davetiye Kodu (isteğe bağlı)</div>
-        <input type="text" id="reg-invite" placeholder="BZB·XXXX" maxlength="8" oninput="this.value=this.value.toUpperCase()">
-        <div class="invite-hint">Davetiye kodun varsa başvurun otomatik onaylanır.</div>
-      </div>
 
       <button class="submit-btn" id="register-btn" onclick="doRegister()">
         Kayıt Ol
