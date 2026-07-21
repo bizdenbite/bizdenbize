@@ -225,6 +225,19 @@
     .msg-action:hover { border-color: var(--red); color: var(--red); }
     .msg-action.escalate-btn { background: var(--ink); color: var(--white); border-color: var(--ink); }
     .msg-action.escalate-btn:hover { background: var(--red); border-color: var(--red); }
+    .msg-action.verify-btn { }
+    .verify-box { margin-top: 10px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.55; border: 1px solid var(--sand); background: var(--cream, #FAF7F2); display: none; }
+    .verify-box.show { display: block; }
+    .verify-box .vb-head { display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 4px; }
+    .verify-box .vb-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+    .verify-box.reliable  { border-color: rgba(30,123,75,.4);  background: rgba(30,123,75,.07); }
+    .verify-box.reliable  .vb-dot { background: #1E7B4B; } .verify-box.reliable  .vb-head { color: #1E7B4B; }
+    .verify-box.partial   { border-color: rgba(201,168,76,.5); background: rgba(201,168,76,.09); }
+    .verify-box.partial   .vb-dot { background: #C9A84C; } .verify-box.partial   .vb-head { color: #9A7D2E; }
+    .verify-box.doubtful  { border-color: rgba(212,43,43,.4);  background: rgba(212,43,43,.06); }
+    .verify-box.doubtful  .vb-dot { background: var(--red); } .verify-box.doubtful  .vb-head { color: var(--red); }
+    .verify-box .vb-reason { color: var(--ink); }
+    .verify-box .vb-foot { margin-top: 6px; font-size: 11px; color: var(--muted); }
     .translate-wrap { position: relative; display: inline-block; }
     .translate-dropdown {
       display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
@@ -1847,6 +1860,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
             <button class="translate-opt" onclick="translateAnswer(this, 'nl')">🇳🇱 Hollandaca</button>
           </div>
         </div>
+        <button class="msg-action verify-btn" onclick="verifyAnswer(this)">🔍 Doğrula</button>
         <button class="msg-action escalate-btn" onclick="openEscalate()">👨‍⚕️ Uzmana gönder →</button>
       </div>
       <div class="ai-disclaimer">⚠️ Bu yanıt bilgi amaçlıdır ve profesyonel tavsiye yerine geçmez. Önemli kararlar için bir uzmana danışın.</div>
@@ -1864,6 +1878,72 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     msgs.appendChild(div);
     scrollToBottom();
     return div;
+  }
+
+  // ── Level 2: independent cross-check via Gemini (abibot-verify) ──
+  async function verifyAnswer(btn) {
+    const msgBody = btn.closest('.msg-body');
+    const bubble = msgBody ? msgBody.querySelector('.bubble') : null;
+    if (!bubble) return;
+    const answer = bubble.innerText.trim();
+
+    // find the question = nearest preceding user message bubble
+    let question = '';
+    const thisMsg = btn.closest('.msg');
+    let prev = thisMsg ? thisMsg.previousElementSibling : null;
+    while (prev) {
+      if (prev.classList && prev.classList.contains('user')) {
+        const ub = prev.querySelector('.bubble');
+        if (ub) { question = ub.innerText.trim(); break; }
+      }
+      prev = prev.previousElementSibling;
+    }
+
+    // one result box per message (reuse if already there)
+    let box = msgBody.querySelector('.verify-box');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'verify-box';
+      const actionsEl = msgBody.querySelector('.msg-actions');
+      if (actionsEl) actionsEl.insertAdjacentElement('afterend', box);
+      else msgBody.appendChild(box);
+    }
+    box.className = 'verify-box show';
+    box.innerHTML = '<div class="vb-reason" style="color:var(--muted)">⏳ İkinci yapay zeka cevabı kontrol ediyor…</div>';
+    btn.disabled = true;
+
+    try {
+      let token = SUPABASE_ANON;
+      try { if (sb) { const { data:{ session } } = await sb.auth.getSession(); if (session?.access_token) token = session.access_token; } } catch(e){}
+
+      const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-verify', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ question, answer }),
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        box.className = 'verify-box show partial';
+        box.innerHTML = '<div class="vb-reason">Kontrol şu an yapılamadı. Lütfen birazdan tekrar deneyin.</div>';
+        return;
+      }
+      const labels = {
+        reliable: { t: 'Güvenilir görünüyor', },
+        partial:  { t: 'Kısmen güvenilir — dikkatli ol', },
+        doubtful: { t: 'Şüpheli — mutlaka teyit et', },
+      };
+      const v = labels[d.verdict] ? d.verdict : 'partial';
+      box.className = 'verify-box show ' + v;
+      box.innerHTML =
+        '<div class="vb-head"><span class="vb-dot"></span>' + labels[v].t + '</div>' +
+        '<div class="vb-reason">' + (d.reason ? d.reason.replace(/</g,'&lt;') : '') + '</div>' +
+        '<div class="vb-foot">Bağımsız bir yapay zeka (Gemini) tarafından çapraz kontrol edildi. Kesin güvence için uzman incelemesini kullan.</div>';
+    } catch (e) {
+      box.className = 'verify-box show partial';
+      box.innerHTML = '<div class="vb-reason">Bağlantı hatası. Lütfen tekrar deneyin.</div>';
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   function addTyping() {
