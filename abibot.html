@@ -1926,7 +1926,13 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
     try {
       let token = SUPABASE_ANON;
-      try { if (sb) { const { data:{ session } } = await sb.auth.getSession(); if (session?.access_token) token = session.access_token; } } catch(e){}
+      try {
+        const sbClient = window.supabase || (typeof supabase !== 'undefined' ? supabase : null);
+        if (sbClient) {
+          const { data: { session } } = await sbClient.auth.getSession();
+          if (session?.access_token) token = session.access_token;
+        }
+      } catch (e) {}
 
       const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-verify', {
         method: 'POST',
