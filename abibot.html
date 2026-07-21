@@ -1860,7 +1860,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
             <button class="translate-opt" onclick="translateAnswer(this, 'nl')">🇳🇱 Hollandaca</button>
           </div>
         </div>
-        <button class="msg-action verify-btn" onclick="verifyAnswer(this)">🔍 Doğrula</button>
+        <button class="msg-action verify-btn" onclick="verifyAnswer(this)">🔍 2. Kontrol</button>
         <button class="msg-action escalate-btn" onclick="openEscalate()">👨‍⚕️ Uzmana gönder →</button>
       </div>
       <div class="ai-disclaimer">⚠️ Bu yanıt bilgi amaçlıdır ve profesyonel tavsiye yerine geçmez. Önemli kararlar için bir uzmana danışın.</div>
@@ -1937,7 +1937,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       box.innerHTML =
         '<div class="vb-head"><span class="vb-dot"></span>' + labels[v].t + '</div>' +
         '<div class="vb-reason">' + (d.reason ? d.reason.replace(/</g,'&lt;') : '') + '</div>' +
-        '<div class="vb-foot">Bağımsız bir yapay zeka (Gemini) tarafından çapraz kontrol edildi. Kesin güvence için uzman incelemesini kullan.</div>';
+        '<div class="vb-foot">Bu, ayrı bir yapay zeka (Gemini) tarafından yapılan ikinci bir görüştür — kesinlik garantisi değildir. Kesin güvence için uzman incelemesini kullan.</div>';
     } catch (e) {
       box.className = 'verify-box show partial';
       box.innerHTML = '<div class="vb-reason">Bağlantı hatası. Lütfen tekrar deneyin.</div>';
