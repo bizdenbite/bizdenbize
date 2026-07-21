@@ -720,7 +720,7 @@
     <a href="#nasil-calisir">Nasıl çalışır?</a>
     <a href="#ozellikler">Özellikler</a>
     <a href="uzmanlar.html">Uzmanlar</a>
-    <a href="login.html?tab=register" class="nav-cta">Listeye katıl →</a>
+    <a href="login.html?tab=register" class="nav-cta">Kaydol →</a>
   </div>
 </nav>
 
@@ -733,8 +733,8 @@
       Güvenilir Türk komşularınla bağlan. İkinci el al-sat yap, etkinliklere katıl, yerel işletmeleri keşfet — hepsi tek platformda.
     </p>
     <div class="hero-actions">
-      <a href="#bekle" class="btn-primary">
-        Bekleme listesine katıl
+      <a href="login.html?tab=register" class="btn-primary">
+        Hemen kaydol
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
       <a href="#nasil-calisir" class="btn-secondary">
@@ -744,12 +744,12 @@
     </div>
     <div class="hero-stats">
       <div>
-        <div class="stat-val">4M+</div>
-        <div class="stat-label">Avrupa'daki Türk</div>
+        <div class="stat-val">Almanya'dan</div>
+        <div class="stat-label">Başlıyoruz</div>
       </div>
       <div>
-        <div class="stat-val">12</div>
-        <div class="stat-label">Ülke</div>
+        <div class="stat-val">Topluluk</div>
+        <div class="stat-label">Güvenilir & yakın</div>
       </div>
       <div>
         <div class="stat-val">Ücretsiz</div>
@@ -801,15 +801,15 @@
 <!-- HOW IT WORKS -->
 <section class="section" id="nasil-calisir">
   <span class="section-tag">Nasıl çalışır?</span>
-  <h2>Güven, davet ile<br>başlar.</h2>
+  <h2>Güven ile<br>başlar.</h2>
   <p class="section-sub">
-    BizdenBize'ye herkes giremez. Bir arkadaşın davet etmeli ya da bekleme listesinden onay almalısın. Bu şekilde topluluğumuz güvenilir kalır.
+    BizdenBize güvene dayalı bir topluluk. Kaydol, onayını al ve gurbetteki komşularınla bağlan. Bu şekilde topluluğumuz güvenilir kalır.
   </p>
   <div class="steps">
     <div class="step fade-up">
       <div class="step-num">01</div>
-      <h3>Davet al veya başvur</h3>
-      <p>Bir üye seni davet ederse direkt katılırsın. Ya da bekleme listesine başvurarak topluluğun onayını bekleyebilirsin.</p>
+      <h3>Kaydol</h3>
+      <p>E-postanla ücretsiz hesabını oluştur. Kısa bir onay sürecinden sonra topluluğa katılırsın.</p>
     </div>
     <div class="step fade-up" style="transition-delay:.1s">
       <div class="step-num">02</div>
@@ -1012,108 +1012,24 @@
   }).join('');
 </script>
 
-<!-- WAITLIST -->
-<section class="waitlist-section" id="bekle">
-  <div class="waitlist-left">
-    <span class="section-tag">Bekleme listesi</span>
-    <h2>İlk sen<br>haberdar ol.</h2>
-    <p>BizdenBize şu an davetiye ile büyüyor. Bekleme listesine katıl, topluluğun onayını al ve platform açılır açılmaz erişim kazan.</p>
-    <div class="trust-items">
-      <div class="trust-item">
-        <div class="trust-dot"></div>
-        <div class="trust-text">Davetiye kodun varsa direkt onaylanırsın</div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-dot"></div>
-        <div class="trust-text">Başvurun 48 saat içinde değerlendirilir</div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-dot"></div>
-        <div class="trust-text">Onaylandığında 5 davetiye kodu alırsın</div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-dot"></div>
-        <div class="trust-text">Kişisel bilgilerin asla üçüncü şahıslarla paylaşılmaz</div>
-      </div>
+<!-- JOIN CTA -->
+<section class="waitlist-section" id="bekle" style="grid-template-columns:1fr;text-align:center;justify-items:center;">
+  <div class="waitlist-left" style="max-width:640px;">
+    <span class="section-tag">Katıl</span>
+    <h2>Aramıza<br>hoş geldin.</h2>
+    <p style="margin-bottom:32px;">Ücretsiz hesabını oluştur, kısa bir onaydan sonra gurbetteki komşularınla bağlan. Topluluğumuz güvene dayalı — bu yüzden her yeni üyeyi tek tek onaylıyoruz.</p>
+    <div class="trust-list" style="display:inline-flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:32px;">
+      <div class="trust-item"><div class="trust-text">✓ Ücretsiz kayıt, temel kullanım her zaman ücretsiz</div></div>
+      <div class="trust-item"><div class="trust-text">✓ Kaydından kısa süre sonra onaylanırsın</div></div>
+      <div class="trust-item"><div class="trust-text">✓ Kişisel bilgilerin asla üçüncü şahıslarla paylaşılmaz</div></div>
     </div>
-  </div>
-
-  <div class="waitlist-form" id="the-form">
-    <!-- FORM STATE -->
-    <div id="form-state">
-      <p class="form-title">Listeye katıl</p>
-      <p class="form-sub">Kısa başvurunu doldur, topluluğun seni onaylasın.</p>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Ad</label>
-          <input type="text" id="fname" placeholder="Ayşe" required>
-        </div>
-        <div class="form-group">
-          <label>Soyad</label>
-          <input type="text" id="lname" placeholder="Yılmaz" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>E-posta</label>
-        <input type="email" id="email" placeholder="ayse@email.com" required>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Şehir</label>
-          <input type="text" id="city" placeholder="Frankfurt" required>
-        </div>
-        <div class="form-group">
-          <label>Ülke</label>
-          <select id="country">
-            <option value="">Seç...</option>
-            <option>Almanya 🇩🇪</option>
-            <option>Hollanda 🇳🇱</option>
-            <option>Avusturya 🇦🇹</option>
-            <option>Belçika 🇧🇪</option>
-            <option>İsviçre 🇨🇭</option>
-            <option>Fransa 🇫🇷</option>
-            <option>İngiltere 🇬🇧</option>
-            <option>Diğer</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Türk topluluğuyla bağlantın nedir?</label>
-        <textarea id="connection" placeholder="Örn: İkinci nesil, Frankfurt'ta büyüdüm. Türk arkadaşlarımla bağlantıda kalmak istiyorum..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Davetiye kodu <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sand)">(varsa)</span></label>
-        <input type="text" id="invite-code" class="invite-field" placeholder="BZBXXXX" style="text-transform:uppercase;letter-spacing:3px">
-        <p class="invite-hint">
-          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-          Davetiye kodun varsa başvurun otomatik onaylanır
-        </p>
-      </div>
-
-      <button class="submit-btn" onclick="submitForm()">Bekleme listesine katıl →</button>
-      <p class="form-footer">Spam yok. İstediğin zaman çıkabilirsin. 🤝</p>
+    <div>
+      <a href="login.html?tab=register" class="btn-primary" style="display:inline-flex;">
+        Hemen kaydol
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </div>
-
-    <!-- SUCCESS STATE -->
-    <div id="success-state" class="success-state">
-      <div class="success-icon">🎉</div>
-      <p class="success-title">Harika, başvurun alındı!</p>
-      <p class="success-sub">
-        48 saat içinde e-postana onay bildirimi göndereceğiz.<br>
-        Onaylandığında <strong>5 davetiye kodu</strong> alacaksın.
-      </p>
-      <div class="position-badge" id="position-badge">Listedeki sıran: #247</div>
-      <br><br>
-      <p style="font-size:13px;color:var(--muted)">Arkadaşlarını da davet et, sıran yükselsin 👇</p>
-      <button class="btn-primary" style="margin:12px auto 0;font-size:13px;padding:11px 24px" onclick="openShareModal()">
-        Arkadaşını davet et
-      </button>
-    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:16px;">Zaten hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:600;text-decoration:none;">Giriş yap</a></p>
   </div>
 </section>
 
@@ -1128,22 +1044,6 @@
   </div>
 </footer>
 
-<!-- SHARE MODAL -->
-<div class="modal-overlay" id="share-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeShareModal()">×</button>
-    <h3>Arkadaşını davet et</h3>
-    <p>Bu kodu arkadaşınla paylaş. Kod ile başvurursa direkt onaylanır ve ikisi birden kazanır.</p>
-    <div class="invite-code-display">
-      <div class="invite-code" id="generated-code">BZB2847</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px">Kişisel davetiye kodun</div>
-    </div>
-    <button class="copy-btn" onclick="copyCode()">📋 Kodu kopyala</button>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="copy-btn" style="background:var(--red);flex:1" onclick="shareWhatsApp()">WhatsApp'ta paylaş</button>
-    </div>
-  </div>
-</div>
 
 <script>
   // Scroll animations
@@ -1152,62 +1052,12 @@
   }, { threshold: 0.15 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-  // Form submission
-  function submitForm() {
-    const fname = document.getElementById('fname').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const country = document.getElementById('country').value;
-    const connection = document.getElementById('connection').value.trim();
-
-    if (!fname || !email || !country || !connection) {
-      alert('Lütfen zorunlu alanları doldurun.');
-      return;
-    }
-
-    const inviteCode = document.getElementById('invite-code').value.trim();
-    const position = inviteCode ? '⚡ Öncelikli onay' : '#' + (Math.floor(Math.random() * 300) + 200);
-
-    document.getElementById('form-state').style.display = 'none';
-    document.getElementById('success-state').style.display = 'block';
-    document.getElementById('position-badge').textContent = 'Listedeki sıran: ' + position;
-  }
-
-  // Share modal
-  function openShareModal() {
-    document.getElementById('share-modal').classList.add('open');
-  }
-  function closeShareModal() {
-    document.getElementById('share-modal').classList.remove('open');
-  }
-  document.getElementById('share-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeShareModal();
-  });
-
-  function copyCode() {
-    const code = document.getElementById('generated-code').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      const btn = event.target;
-      btn.textContent = '✓ Kopyalandı!';
-      setTimeout(() => btn.textContent = '📋 Kodu kopyala', 2000);
-    });
-  }
-
-  function shareWhatsApp() {
-    const code = document.getElementById('generated-code').textContent;
-    const msg = encodeURIComponent(`Seni BizdenBize'ye davet ediyorum — Gurbette hayat el ele daha kolay. Hadi sende katıl. platformu 🇹🇷\n\nDavetiye kodun: ${code}\n\nhttps://bizdenbize.sobhoy.com`);
-    window.open('https://wa.me/?text=' + msg, '_blank');
-  }
-
   // Language switcher (placeholder)
   function setLang(lang) {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
   }
 
-  // Invite code auto-uppercase
-  document.getElementById('invite-code').addEventListener('input', function() {
-    this.value = this.value.toUpperCase();
-  });
 </script>
 
 <script>
