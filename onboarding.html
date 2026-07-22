@@ -677,7 +677,7 @@
         <div class="step-indicator" id="ind-0">1</div>
         <div class="step-text">
           <div class="step-name">Hoş geldin</div>
-          <div class="step-desc">Davetiye kodun ve avantajların</div>
+          <div class="step-desc">Topluluğa hoş geldin</div>
         </div>
       </div>
       <div class="step-connector" id="conn-0"></div>
@@ -695,7 +695,7 @@
         <div class="step-indicator" id="ind-2">3</div>
         <div class="step-text">
           <div class="step-name">Arkadaşlarını davet et</div>
-          <div class="step-desc">5 davetiye kodunu kullan</div>
+          <div class="step-desc">E-posta veya WhatsApp ile çağır</div>
         </div>
       </div>
       <div class="step-connector" id="conn-2"></div>
@@ -741,31 +741,22 @@
       <span class="panel-tag">Adım 1 / 5</span>
       <h1>Hoş geldin,<br><em>Ayşe!</em> 🎉</h1>
       <p class="panel-sub">
-        Başvurun onaylandı. BizdenBize ailesinin bir parçasısın artık. Sana özel avantajlarını ve davetiye kodlarını aşağıda bulabilirsin.
+        Başvurun onaylandı. BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralım ve seni mahallenle buluşturalım.
       </p>
 
       <div class="welcome-highlight">
         <div class="wh-item">
           <div class="wh-num">5</div>
-          <div class="wh-label">Davetiye kodun</div>
+          <div class="wh-label">Arkadaş davet et</div>
         </div>
         <div class="wh-item">
           <div class="wh-num">Ücretsiz</div>
           <div class="wh-label">Temel üyelik</div>
         </div>
         <div class="wh-item">
-          <div class="wh-num">4M+</div>
-          <div class="wh-label">Türk topluluk</div>
+          <div class="wh-num">Almanya</div>
+          <div class="wh-label">Türkçe topluluk</div>
         </div>
-      </div>
-
-      <div class="invite-box">
-        <div class="invite-left">
-          <div class="invite-label">Kişisel davetiye kodun</div>
-          <div class="invite-code-val" id="my-invite-code">BZB·2847</div>
-          <div class="invite-sub">Bu kodu paylaştığın kişi direkt onaylanır</div>
-        </div>
-        <button class="copy-invite" onclick="copyMyCode()">📋 Kopyala</button>
       </div>
 
       <div class="panel-nav">
@@ -886,7 +877,7 @@
       <span class="panel-tag">Adım 3 / 5</span>
       <h1>Arkadaşlarını<br><em>davet et.</em></h1>
       <p class="panel-sub">
-        5 davetiye kodun var. Güvendiğin Türk arkadaşlarını ekle — onlar da direkt onaylanır ve sen de 5 yeni davetiye kazanırsın.
+        Topluluğu birlikte büyütelim. Güvendiğin arkadaşlarının e-postalarını ekle — hazır bir davet mesajı senin adına açılır, sen de göndermeden önce düzenleyebilirsin.
       </p>
 
       <div class="invite-slots" id="invite-slots">
@@ -921,10 +912,17 @@
         <div class="whatsapp-icon">💬</div>
         <div class="whatsapp-text">
           <strong>WhatsApp grubun var mı?</strong><br>
-          Türk arkadaşlarının bulunduğu gruba davetiye kodunu paylaşabilirsin. Hızlı ve kolay.
+          Tanıdıklarının olduğu gruba davet mesajını tek dokunuşla paylaşabilirsin.
           <br>
           <button class="wa-btn" onclick="shareWA()">WhatsApp'ta paylaş</button>
         </div>
+      </div>
+
+      <div id="invite-fallback" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:14px 18px;max-width:540px;margin-bottom:36px;">
+        <div style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;">
+          E-posta uygulaman açılmadıysa mesajı kopyalayıp dilediğin yerden gönderebilirsin.
+        </div>
+        <button class="wa-btn" id="copy-invite-btn" onclick="copyInviteText()">📋 Mesajı kopyala</button>
       </div>
 
       <div class="panel-nav">
@@ -936,7 +934,7 @@
           <button class="btn-skip" onclick="next()">Şimdi değil</button>
           <span class="step-counter">3 / 5</span>
           <button class="btn-next" onclick="sendInvites()">
-            Davetiye gönder
+            Davet mesajını hazırla
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -987,7 +985,7 @@
         <div class="done-icon">🏘️</div>
         <span class="panel-tag" style="justify-content:center">Tamamlandı</span>
         <h1>Mahalleye<br><em>hoş geldin!</em></h1>
-        <p>Profilin hazır, davetiyeler gönderildi, mahallenle bağlandın. Şimdi platformu keşfetmeye başlayabilirsin.</p>
+        <p>Profilin hazır ve mahallenle bağlandın. Şimdi platformu keşfetmeye başlayabilirsin.</p>
         <div class="done-features">
           <span class="done-feat" data-i18n="nav_community">🏘️ Mahallem</span>
           <span class="done-feat" data-i18n="nav_classifieds">🛍️ İlanlar</span>
@@ -1122,14 +1120,6 @@
     }
   }
 
-  function copyMyCode() {
-    const code = document.getElementById('my-invite-code')?.textContent?.replace(/·/g,'').trim() || 'BZB';
-    navigator.clipboard.writeText(code).then(() => {
-      const btn = event.target;
-      btn.textContent = '✓ Kopyalandı!';
-      setTimeout(() => btn.textContent = '📋 Kopyala', 2000);
-    });
-  }
 
   function updateName() {
     const f = document.getElementById('p-fname').value || 'A';
@@ -1347,26 +1337,62 @@
     st.textContent = valid ? '✓' : '';
   }
 
-  function sendInvites() {
+  // Shared invite text. No codes: registration is open, and every signup is
+  // reviewed by an admin, so the message must not promise instant access.
+  const INVITE_LINK = 'https://bizdenbize.com';
+
+  function inviteMessage() {
+    const name = (document.getElementById('p-fname')?.value || '').trim();
+    const from = name ? `${name} seni BizdenBize'ye davet ediyor.` : `Seni BizdenBize'ye davet ediyorum.`;
+    return `${from}
+
+BizdenBize, Almanya'daki Türkçe konuşan topluluk için kurulmuş bir platform — gurbet hayatını kolaylaştırmak için. Sorularını sorabileceğin, uzmanlara danışabileceğin, ilanları ve etkinlikleri takip edebileceğin bir yer.
+
+Kaydolmak için: ${INVITE_LINK}
+
+Topluluk küçük ve yeni üyeler tek tek onaylanıyor, o yüzden kaydolduktan sonra kısa bir bekleme olabilir.`;
+  }
+
+  function collectInviteEmails() {
     const emails = [];
     for (let i = 0; i < 5; i++) {
       const inp = document.querySelector('#slot-' + i + ' input');
-      if (inp && inp.value.trim()) emails.push(inp.value.trim());
+      const v = inp && inp.value.trim();
+      if (v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) emails.push(v);
     }
-    next();
+    return emails;
+  }
+
+  function sendInvites() {
+    const emails = collectInviteEmails();
+    if (!emails.length) { next(); return; }
+
+    const subject = encodeURIComponent("Seni BizdenBize'ye davet ediyorum");
+    const body    = encodeURIComponent(inviteMessage());
+    const href    = `mailto:${encodeURIComponent(emails.join(','))}?subject=${subject}&body=${body}`;
+
+    // mailto silently does nothing when no mail client is configured, so give
+    // the user a visible fallback instead of a dead button.
+    let opened = false;
+    try { window.location.href = href; opened = true; } catch(e) { console.warn('mailto failed:', e); }
+
+    setTimeout(() => {
+      if (!opened) return;
+      const box = document.getElementById('invite-fallback');
+      if (box) box.style.display = 'block';
+    }, 800);
+  }
+
+  function copyInviteText() {
+    const text = inviteMessage();
+    navigator.clipboard.writeText(text).then(() => {
+      const b = document.getElementById('copy-invite-btn');
+      if (b) { b.textContent = '✓ Kopyalandı'; setTimeout(() => b.textContent = '📋 Mesajı kopyala', 2000); }
+    }).catch(() => alert(text));
   }
 
   function shareWA() {
-    const code = document.getElementById('my-invite-code')?.textContent?.replace(/·/g,'').trim() || 'BZB';
-    const msg = encodeURIComponent(
-      `Seni BizdenBize'ye davet ediyorum — Avrupa'daki Türk topluluğu 🇹🇷\n\nDavetiye kodun: ${code}\n\nhttps://bizdenbize.vercel.app/login.html?invite=${code}`
-    );
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
-      window.location.href = `whatsapp://send?text=${msg}`;
-    } else {
-      window.open(`https://web.whatsapp.com/send?text=${msg}`, '_blank');
-    }
+    window.open('https://wa.me/?text=' + encodeURIComponent(inviteMessage()), '_blank');
   }
 
   async function goToDashboard() {
@@ -1660,14 +1686,8 @@
   if (!user) { window.location.replace('/login.html'); }
 
   // Try profile first, fall back to auth metadata
-  const { data: profile } = await sb.from('profiles').select('first_name, last_name, invite_code').eq('id', user.id).single();
+  const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single();
 
-  // Load real invite code
-  if (profile?.invite_code) {
-    const formatted = profile.invite_code.replace(/(.{3})(.*)/, '$1·$2');
-    const codeEl = document.getElementById('my-invite-code');
-    if (codeEl) codeEl.textContent = formatted;
-  }
   const meta = user.user_metadata || {};
   const fullName = meta.full_name || '';
   const firstName = profile?.first_name || meta.first_name || fullName.split(' ')[0] || user.email.split('@')[0];
