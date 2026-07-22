@@ -695,7 +695,7 @@
 
       // Check if user is banned before granting access
       const { data: profile } = await supabase.from('profiles')
-        .select('status, welcome_email_sent').eq('id', data.user.id).single();
+        .select('status, welcome_email_sent, onboarding_completed').eq('id', data.user.id).single();
 
       if (profile?.status === 'banned') {
         await supabase.auth.signOut();
@@ -755,7 +755,10 @@
       // Store token for smart routing
       localStorage.setItem('bb_auth_token', data.session.access_token);
       localStorage.setItem('bb_user', JSON.stringify({ id: data.user.id, email: data.user.email }));
-      window.location.replace('/mahallem.html');
+
+      // First login after approval goes through onboarding; everyone else
+      // straight to the feed. onboarding.html sets the flag when it finishes.
+      window.location.replace(profile.onboarding_completed ? '/mahallem.html' : '/onboarding.html');
     };
 
     // ── REACTIVATE (from the deactivated-account message) ──

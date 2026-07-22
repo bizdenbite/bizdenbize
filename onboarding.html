@@ -1369,7 +1369,19 @@
     }
   }
 
-  function goToDashboard() {
+  async function goToDashboard() {
+    // Mark onboarding done so doLogin() stops routing this user back here.
+    try {
+      const sb = window._sb;
+      if (sb) {
+        const { data: { user } } = await sb.auth.getUser();
+        if (user) {
+          await sb.from('profiles')
+            .update({ onboarding_completed: true, updated_at: new Date().toISOString() })
+            .eq('id', user.id);
+        }
+      }
+    } catch(e) { console.warn('Onboarding completion flag failed:', e); }
     window.location.href = 'mahallem.html';
   }
 
