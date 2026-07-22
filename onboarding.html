@@ -694,24 +694,6 @@
       <div class="step-item" id="nav-2" onclick="goTo(2)">
         <div class="step-indicator" id="ind-2">3</div>
         <div class="step-text">
-          <div class="step-name">Arkadaşlarını davet et</div>
-          <div class="step-desc">E-posta veya WhatsApp ile çağır</div>
-        </div>
-      </div>
-      <div class="step-connector" id="conn-2"></div>
-
-      <div class="step-item" id="nav-3" onclick="goTo(3)">
-        <div class="step-indicator" id="ind-3">4</div>
-        <div class="step-text">
-          <div class="step-name">Mahalleni seç</div>
-          <div class="step-desc">Şehrini ve yerel grubu bul</div>
-        </div>
-      </div>
-      <div class="step-connector" id="conn-3"></div>
-
-      <div class="step-item" id="nav-4" onclick="goTo(4)">
-        <div class="step-indicator" id="ind-4">5</div>
-        <div class="step-text">
           <div class="step-name">Hazırsın!</div>
           <div class="step-desc">Platformu keşfetmeye başla</div>
         </div>
@@ -738,7 +720,7 @@
 
     <!-- PANEL 0: Welcome -->
     <div class="panel active" id="panel-0">
-      <span class="panel-tag">Adım 1 / 5</span>
+      <span class="panel-tag">Adım 1 / 3</span>
       <h1>Hoş geldin,<br><em>Ayşe!</em> 🎉</h1>
       <p class="panel-sub">
         Başvurun onaylandı. BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralım ve seni mahallenle buluşturalım.
@@ -760,7 +742,7 @@
       </div>
 
       <div class="panel-nav">
-        <span class="step-counter">1 / 5</span>
+        <span class="step-counter">1 / 3</span>
         <button class="btn-next" onclick="next()(2)")">
           Devam et
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -770,7 +752,7 @@
 
     <!-- PANEL 1: Profile -->
     <div class="panel" id="panel-1">
-      <span class="panel-tag">Adım 2 / 5</span>
+      <span class="panel-tag">Adım 2 / 3</span>
       <h1>Profilini<br><em>oluştur.</em></h1>
       <p class="panel-sub">
         Diğer üyeler seni bu bilgilerle tanıyacak. Adını ve fotoğrafını eklemek güven oluşturur.
@@ -863,7 +845,7 @@
           Geri
         </button>
         <div style="display:flex;align-items:center;gap:16px">
-          <span class="step-counter">2 / 5</span>
+          <span class="step-counter">2 / 3</span>
           <button class="btn-next" onclick="next()">
             Kaydet & devam et
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -872,120 +854,28 @@
       </div>
     </div>
 
-    <!-- PANEL 2: Invite friends -->
+    <!-- PANEL 2: Done -->
     <div class="panel" id="panel-2">
-      <span class="panel-tag">Adım 3 / 5</span>
-      <h1>Arkadaşlarını<br><em>davet et.</em></h1>
-      <p class="panel-sub">
-        Topluluğu birlikte büyütelim. Güvendiğin arkadaşlarının e-postalarını ekle — hazır bir davet mesajı senin adına açılır, sen de göndermeden önce düzenleyebilirsin.
-      </p>
-
-      <div class="invite-slots" id="invite-slots">
-        <div class="invite-slot" id="slot-0">
-          <div class="slot-num">1</div>
-          <input class="slot-input" type="email" placeholder="arkadas@email.com" oninput="checkSlot(0, this)">
-          <span class="slot-status" id="st-0"></span>
-        </div>
-        <div class="invite-slot" id="slot-1">
-          <div class="slot-num">2</div>
-          <input class="slot-input" type="email" placeholder="arkadas@email.com" oninput="checkSlot(1, this)">
-          <span class="slot-status" id="st-1"></span>
-        </div>
-        <div class="invite-slot" id="slot-2">
-          <div class="slot-num">3</div>
-          <input class="slot-input" type="email" placeholder="arkadas@email.com" oninput="checkSlot(2, this)">
-          <span class="slot-status" id="st-2"></span>
-        </div>
-        <div class="invite-slot" id="slot-3">
-          <div class="slot-num">4</div>
-          <input class="slot-input" type="email" placeholder="arkadas@email.com" oninput="checkSlot(3, this)">
-          <span class="slot-status" id="st-3"></span>
-        </div>
-        <div class="invite-slot" id="slot-4">
-          <div class="slot-num">5</div>
-          <input class="slot-input" type="email" placeholder="arkadas@email.com" oninput="checkSlot(4, this)">
-          <span class="slot-status" id="st-4"></span>
-        </div>
-      </div>
-
-      <div class="whatsapp-hint">
-        <div class="whatsapp-icon">💬</div>
-        <div class="whatsapp-text">
-          <strong>WhatsApp grubun var mı?</strong><br>
-          Tanıdıklarının olduğu gruba davet mesajını tek dokunuşla paylaşabilirsin.
-          <br>
-          <button class="wa-btn" onclick="shareWA()">WhatsApp'ta paylaş</button>
-        </div>
-      </div>
-
-      <div id="invite-fallback" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:14px 18px;max-width:540px;margin-bottom:36px;">
-        <div style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;">
-          E-posta uygulaman açılmadıysa mesajı kopyalayıp dilediğin yerden gönderebilirsin.
-        </div>
-        <button class="wa-btn" id="copy-invite-btn" onclick="copyInviteText()">📋 Mesajı kopyala</button>
-      </div>
-
-      <div class="panel-nav">
-        <button class="btn-back" onclick="prev()">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Geri
-        </button>
-        <div style="display:flex;align-items:center;gap:16px">
-          <button class="btn-skip" onclick="next()">Şimdi değil</button>
-          <span class="step-counter">3 / 5</span>
-          <button class="btn-next" onclick="sendInvites()">
-            Davet mesajını hazırla
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANEL 3: Choose city -->
-    <div class="panel" id="panel-3">
-      <span class="panel-tag">Adım 4 / 5</span>
-      <h1>Mahalleni<br><em>seç.</em></h1>
-      <p class="panel-sub">
-        Hangi şehirdesin? Şehir adını yazın, listeden seçin. Birden fazla şehir ekleyebilirsiniz.
-      </p>
-
-      <!-- City search input -->
-      <div style="position:relative;max-width:480px;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--sand);border-radius:12px;padding:12px 16px;transition:border-color .2s;"
-             id="city-search-wrap">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2.5" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input id="city-search-input" type="text" placeholder="Şehir ara... (ör: Berlin, Frankfurt)"
-            autocomplete="new-password"
-            style="border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:15px;color:var(--ink);width:100%;background:transparent;">
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px;padding-left:4px;">🔒 Sadece şehir adı kaydedilir — koordinat veya adres bilgisi tutulmaz.</div>
-      </div>
-
-      <!-- Selected cities tags -->
-      <div id="selected-cities" style="display:flex;flex-wrap:wrap;gap:8px;max-width:480px;margin-bottom:28px;min-height:36px;"></div>
-
-      <div class="panel-nav">
-        <button class="btn-back" onclick="prev()">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Geri
-        </button>
-        <div style="display:flex;align-items:center;gap:16px">
-          <span class="step-counter">4 / 5</span>
-          <button class="btn-next" onclick="next()">
-            Devam et
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANEL 4: Done -->
-    <div class="panel" id="panel-4">
       <div class="done-center">
         <div class="done-icon">🏘️</div>
         <span class="panel-tag" style="justify-content:center">Tamamlandı</span>
         <h1>Mahalleye<br><em>hoş geldin!</em></h1>
-        <p>Profilin hazır ve mahallenle bağlandın. Şimdi platformu keşfetmeye başlayabilirsin.</p>
+        <p>Profilin hazır. Şimdi platformu keşfetmeye başlayabilirsin.</p>
+
+        <a id="onboarding-video" href="#" target="_blank" rel="noopener"
+           style="display:none;align-items:center;gap:14px;text-decoration:none;
+                  background:var(--warm);border:1px solid var(--sand);border-radius:14px;
+                  padding:16px 20px;max-width:420px;margin:0 auto 28px;text-align:left;">
+          <span style="font-size:26px;line-height:1;flex-shrink:0;">▶️</span>
+          <span>
+            <span style="display:block;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px;">
+              3 dakikada BizdenBize
+            </span>
+            <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45;">
+              Platformu nasıl kullanacağını anlatan kısa videoyu izle.
+            </span>
+          </span>
+        </a>
         <div class="done-features">
           <span class="done-feat" data-i18n="nav_community">🏘️ Mahallem</span>
           <span class="done-feat" data-i18n="nav_classifieds">🛍️ İlanlar</span>
@@ -1004,7 +894,11 @@
 
 <script>
   let current = 0;
-  const total = 5;
+  const total = 3;
+
+  // Onboarding video. Paste the URL between the quotes to switch it on — the
+  // card stays hidden while this is empty, so there's never a dead link.
+  const ONBOARDING_VIDEO_URL = '';
 
   const avatarColors = ['#D42B2B','#1E7B4B','#185FA5','#854F0B','#534AB7'];
   let avatarColorIdx = 0;
@@ -1039,7 +933,6 @@
       p.classList.toggle('active', i === idx);
     });
     document.querySelector('.main').scrollTo(0, 0);
-    if (idx === 3) loadCities();
   }
 
   function goTo(idx) {
@@ -1054,11 +947,6 @@
     // If on profile step (panel 1), validate location and save
     if (current === 1) {
       saveProfile();
-      return;
-    }
-    // If on city selection step (panel 3), save selected cities
-    if (current === 3) {
-      saveCities();
       return;
     }
     if (current < total - 1) {
@@ -1183,55 +1071,11 @@
   function toggleLang(btn) { btn.classList.toggle('selected'); }
   function toggleTag(btn) { btn.classList.toggle('selected'); }
   // ── CITY SEARCH (panel-3) ──
-  const selectedCityList = []; // [{city, country}]
 
-  function renderCityTags() {
-    const wrap = document.getElementById('selected-cities');
-    if (!wrap) return;
-    if (!selectedCityList.length) {
-      wrap.innerHTML = '<span style="font-size:13px;color:var(--muted);padding:6px 0;">Henüz şehir eklenmedi.</span>';
-      return;
-    }
-    wrap.innerHTML = selectedCityList.map((c, i) => `
-      <div class="city-tag">
-        <span>📍 ${c.city}${c.country ? ', ' + c.country : ''}</span>
-        <button onclick="removeCityTag(${i})" title="Kaldır">×</button>
-      </div>`).join('');
-  }
 
-  function removeCityTag(idx) {
-    selectedCityList.splice(idx, 1);
-    renderCityTags();
-  }
 
-  function addCityTag(city, country) {
-    if (!city) return;
-    const exists = selectedCityList.find(c => c.city.toLowerCase() === city.toLowerCase());
-    if (!exists) {
-      selectedCityList.push({ city, country });
-      renderCityTags();
-    }
-    const input = document.getElementById('city-search-input');
-    if (input) input.value = '';
-  }
 
-  async function saveCities() {
-    const sb = window._sb;
-    if (!sb || !selectedCityList.length) { goNextPanel(); return; }
-    try {
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) {
-        // Save primary city (first selected) to profile
-        const primary = selectedCityList[0];
-        await sb.from('profiles').update({
-          city: primary.city,
-          country: primary.country || '',
-          updated_at: new Date().toISOString()
-        }).eq('id', user.id);
-      }
-    } catch(e) { console.warn('City save failed:', e); }
-    goNextPanel();
-  }
+
 
   function goNextPanel() {
     current++;
@@ -1241,17 +1085,6 @@
 
   renderCityTags(); // init empty state
 
-  // ── CITY GRID (legacy, kept for loadCities if needed) ──
-  const FALLBACK_CITIES = [
-    { city: 'Frankfurt',  country: 'Almanya',   flag: '🇩🇪' },
-    { city: 'Berlin',     country: 'Almanya',   flag: '🇩🇪' },
-    { city: 'München',    country: 'Almanya',   flag: '🇩🇪' },
-    { city: 'Hamburg',    country: 'Almanya',   flag: '🇩🇪' },
-    { city: 'Amsterdam',  country: 'Hollanda',  flag: '🇳🇱' },
-    { city: 'Wien',       country: 'Avusturya', flag: '🇦🇹' },
-    { city: 'Zürich',     country: 'İsviçre',   flag: '🇨🇭' },
-    { city: 'Paris',      country: 'Fransa',    flag: '🇫🇷' },
-  ];
   const COUNTRY_FLAGS = {
     'Almanya':'🇩🇪','Deutschland':'🇩🇪','Germany':'🇩🇪',
     'Hollanda':'🇳🇱','Netherlands':'🇳🇱',
@@ -1262,138 +1095,16 @@
     'İngiltere':'🇬🇧','United Kingdom':'🇬🇧',
   };
 
-  let citiesLoaded = false;
-  async function loadCities() {
-    if (citiesLoaded) return;
-    citiesLoaded = true;
-    const grid = document.getElementById('city-grid');
-    if (!grid) return;
 
-    // Always render fallbacks first so something shows immediately
-    function renderGrid(cities, userCity) {
-      const realNames = new Set(cities.map(c => c.city.toLowerCase()));
-      const fallbacks = FALLBACK_CITIES.filter(f => !realNames.has(f.city.toLowerCase()));
-      let combined = [...cities, ...fallbacks].slice(0, 8);
-      if (userCity && !combined.find(c => c.city.toLowerCase() === userCity.toLowerCase())) {
-        combined.unshift({ city: userCity, count: 0 });
-        combined = combined.slice(0, 8);
-      }
-      grid.innerHTML = combined.map(c => {
-        const flag = COUNTRY_FLAGS[c.country] || '🌍';
-        const count = c.count ? `${c.count} üye` : 'Yeni';
-        const selected = userCity && c.city.toLowerCase() === userCity.toLowerCase();
-        return `<div class="city-card ${selected ? 'selected' : ''}" onclick="toggleCity(this)" data-city="${c.city}">
-          <div class="city-flag">${flag}</div>
-          <div class="city-name">${c.city}</div>
-          <div class="city-count">${count}</div>
-        </div>`;
-      }).join('');
-    }
 
-    // Show fallbacks immediately
-    renderGrid([], '');
+  // Opening WhatsApp can send the browser away from this page; on return the
+  // form would come back blank and the typed addresses would be lost silently.
 
-    // Try to enhance with real Supabase data
-    try {
-      // Wait up to 3s for window._sb to be ready
-      let attempts = 0;
-      while (!window._sb && attempts < 15) {
-        await new Promise(r => setTimeout(r, 200));
-        attempts++;
-      }
-      const sb = window._sb;
-      if (!sb) return; // still not ready, fallbacks already showing
 
-      let userCity = '';
-      let cities = [];
 
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) {
-        const { data: profile } = await sb.from('profiles')
-          .select('city, country').eq('id', user.id).single();
-        userCity = profile?.city || '';
-      }
 
-      const { data } = await sb.from('profiles')
-        .select('city, country').not('city', 'is', null).neq('city', '');
-      if (data?.length) {
-        const counts = {};
-        data.forEach(p => {
-          if (!counts[p.city]) counts[p.city] = { city: p.city, country: p.country, count: 0 };
-          counts[p.city].count++;
-        });
-        cities = Object.values(counts).sort((a, b) => b.count - a.count);
-      }
 
-      renderGrid(cities, userCity);
-    } catch(e) { console.warn('City load error:', e); /* fallbacks already showing */ }
-  }
 
-  function checkSlot(idx, input) {
-    const slot = document.getElementById('slot-' + idx);
-    const st = document.getElementById('st-' + idx);
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
-    slot.classList.toggle('filled', valid);
-    st.textContent = valid ? '✓' : '';
-  }
-
-  // Shared invite text. No codes: registration is open, and every signup is
-  // reviewed by an admin, so the message must not promise instant access.
-  const INVITE_LINK = 'https://bizdenbize.com';
-
-  function inviteMessage() {
-    const name = (document.getElementById('p-fname')?.value || '').trim();
-    const from = name ? `${name} seni BizdenBize'ye davet ediyor.` : `Seni BizdenBize'ye davet ediyorum.`;
-    return `${from}
-
-BizdenBize, Almanya'daki Türkçe konuşan topluluk için kurulmuş bir platform — gurbet hayatını kolaylaştırmak için. Sorularını sorabileceğin, uzmanlara danışabileceğin, ilanları ve etkinlikleri takip edebileceğin bir yer.
-
-Kaydolmak için: ${INVITE_LINK}
-
-Topluluk küçük ve yeni üyeler tek tek onaylanıyor, o yüzden kaydolduktan sonra kısa bir bekleme olabilir.`;
-  }
-
-  function collectInviteEmails() {
-    const emails = [];
-    for (let i = 0; i < 5; i++) {
-      const inp = document.querySelector('#slot-' + i + ' input');
-      const v = inp && inp.value.trim();
-      if (v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) emails.push(v);
-    }
-    return emails;
-  }
-
-  function sendInvites() {
-    const emails = collectInviteEmails();
-    if (!emails.length) { next(); return; }
-
-    const subject = encodeURIComponent("Seni BizdenBize'ye davet ediyorum");
-    const body    = encodeURIComponent(inviteMessage());
-    const href    = `mailto:${encodeURIComponent(emails.join(','))}?subject=${subject}&body=${body}`;
-
-    // mailto silently does nothing when no mail client is configured, so give
-    // the user a visible fallback instead of a dead button.
-    let opened = false;
-    try { window.location.href = href; opened = true; } catch(e) { console.warn('mailto failed:', e); }
-
-    setTimeout(() => {
-      if (!opened) return;
-      const box = document.getElementById('invite-fallback');
-      if (box) box.style.display = 'block';
-    }, 800);
-  }
-
-  function copyInviteText() {
-    const text = inviteMessage();
-    navigator.clipboard.writeText(text).then(() => {
-      const b = document.getElementById('copy-invite-btn');
-      if (b) { b.textContent = '✓ Kopyalandı'; setTimeout(() => b.textContent = '📋 Mesajı kopyala', 2000); }
-    }).catch(() => alert(text));
-  }
-
-  function shareWA() {
-    window.open('https://wa.me/?text=' + encodeURIComponent(inviteMessage()), '_blank');
-  }
 
   async function goToDashboard() {
     // Mark onboarding done so doLogin() stops routing this user back here.
@@ -1410,6 +1121,16 @@ Topluluk küçük ve yeni üyeler tek tek onaylanıyor, o yüzden kaydolduktan s
     } catch(e) { console.warn('Onboarding completion flag failed:', e); }
     window.location.href = 'mahallem.html';
   }
+
+  // Show the video card only once a URL has been set.
+  (function initOnboardingVideo() {
+    const el = document.getElementById('onboarding-video');
+    if (!el) return;
+    const url = (ONBOARDING_VIDEO_URL || '').trim();
+    if (!url) return;
+    el.href = url;
+    el.style.display = 'flex';
+  })();
 
   updateProgress();
 </script>
@@ -1640,37 +1361,6 @@ Topluluk küçük ve yeni üyeler tek tek onaylanıyor, o yüzden kaydolduktan s
       input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
     }
 
-    // ── Panel 3: city search input ──
-    const cityInput = document.getElementById('city-search-input');
-    if (cityInput && window.google) {
-      cityInput.setAttribute('autocomplete', 'new-password');
-      const wrap = document.getElementById('city-search-wrap');
-
-      const cityAC = new google.maps.places.Autocomplete(cityInput, {
-        types: ['(cities)'],
-        fields: ['address_components', 'name'],
-      });
-
-      cityInput.addEventListener('focus', () => { if (wrap) wrap.style.borderColor = 'var(--ink)'; });
-      cityInput.addEventListener('blur',  () => { if (wrap) wrap.style.borderColor = 'var(--sand)'; });
-
-      google.maps.event.addListener(cityAC, 'place_changed', function() {
-        const place = cityAC.getPlace();
-        if (!place.address_components) return;
-        let city = '', country = '';
-        place.address_components.forEach(c => {
-          if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
-            city = c.long_name;
-          if (c.types.includes('administrative_area_level_1') && !city)
-            city = c.long_name;
-          if (c.types.includes('country'))
-            country = c.long_name;
-        });
-        addCityTag(city || place.name, country);
-      });
-
-      cityInput.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
-    }
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initGooglePlaces" async defer></script>
