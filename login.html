@@ -597,18 +597,6 @@
         return;
       }
 
-      // Also submit to waitlist function (non-blocking, 5s timeout)
-      try {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 5000);
-        await fetch(SUPABASE_URL + '/functions/v1/waitlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
-          body: JSON.stringify({ first_name: fname, last_name: lname, email }),
-          signal: controller.signal
-        });
-      } catch(e) { console.warn('Waitlist call failed:', e); }
-
       // Notify admin of the new registration (non-blocking). Fires regardless
       // of whether email confirmation is pending, since the admin should know
       // about the signup attempt either way.
@@ -630,24 +618,11 @@
         } catch(e) { console.warn('Admin notification failed:', e); }
       }
 
-      // Send welcome email (non-blocking) — only if the account is immediately
-      // active (no email confirmation pending). If confirmation is required,
-      // the welcome email is sent later, on first login after confirming
-      // (see doLogin below), so it doesn't arrive before the account is real.
-      if (data?.user?.id && data.session) {
-        try {
-          await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
-            body: JSON.stringify({
-              type: 'welcome',
-              user_id: data.user.id,
-              data: { user_name: fname }
-            })
-          });
-          await supabase.from('profiles').update({ welcome_email_sent: true }).eq('id', data.user.id);
-        } catch(e) { console.warn('Welcome email failed:', e); }
-      }
+      // The welcome email is deliberately NOT sent here. New accounts land as
+      // status='pending' and cannot enter the app until an admin approves, so
+      // welcoming them now would arrive before the account is real. doLogin()
+      // sends it on the first successful login instead (welcome_email_sent
+      // stays false until that happens).
 
       document.getElementById('register-form').style.display = 'none';
       document.querySelector('.tab-bar').style.display = 'none';
@@ -659,21 +634,24 @@
       const goBtn = document.querySelector('.go-btn');
 
       if (!data.session) {
-        // Email confirmation required — do NOT send the user to onboarding yet.
+        // Email confirmation required — confirm first, approval comes after.
         icon.textContent = '📧';
         title.textContent = 'E-postanı onayla';
-        sub.textContent = email + ' adresine bir onay bağlantısı gönderdik. Hesabına giriş yapabilmen için önce e-postandaki bağlantıya tıklaman gerekiyor.';
+        sub.textContent = email + ' adresine bir onay bağlantısı gönderdik. Önce e-postandaki bağlantıya tıkla; ardından hesabın ekibimizin onayına düşecek.';
         goBtn.textContent = 'Giriş sayfasına dön';
         goBtn.removeAttribute('href');
         goBtn.onclick = () => { location.reload(); };
       } else {
-        // Confirmation not required (or already confirmed) — proceed as before.
-        icon.textContent = '🎉';
-        title.textContent = 'Hoş geldin!';
-        sub.textContent = 'Hesabın başarıyla oluşturuldu. Şimdi topluluğuna katıl ve BizdenBize\'yi keşfet.';
-        goBtn.textContent = 'Başlayalım →';
-        goBtn.onclick = null;
-        goBtn.setAttribute('href', 'onboarding.html');
+        // Confirmation not required, so signUp returned a live session. The
+        // account is still pending, so drop that session rather than letting
+        // it walk into onboarding unapproved.
+        try { await supabase.auth.signOut(); } catch(e) { console.warn('Sign-out after signup failed:', e); }
+        icon.textContent = '⏳';
+        title.textContent = 'Kaydın bize ulaştı';
+        sub.textContent = 'BizdenBize şu an davetle büyüyen küçük bir topluluk, bu yüzden her yeni üyeyi elden geçiriyoruz. Hesabın onaylandığında e-posta ile haber vereceğiz — genelde bir gün içinde.';
+        goBtn.textContent = 'Giriş sayfasına dön';
+        goBtn.removeAttribute('href');
+        goBtn.onclick = () => { location.reload(); };
       }
     };
 
@@ -688,6 +666,7 @@
       document.getElementById('login-error-msg').style.display = 'none';
       document.getElementById('login-banned-msg').style.display = 'none';
       document.getElementById('login-deactivated-msg').style.display = 'none';
+      document.getElementById('login-pending-msg').style.display = 'none';
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         document.getElementById('login-email-err').style.display = 'block';
@@ -724,6 +703,25 @@
         document.getElementById('login-banned-msg').style.display = 'block';
         document.getElementById('login-email').classList.add('error');
         document.getElementById('login-password').classList.add('error');
+        return;
+      }
+
+      // No profile row means handle_new_user failed silently (it swallows its
+      // own errors). Fail closed rather than admitting an unprovisioned account.
+      if (!profile) {
+        await supabase.auth.signOut();
+        btn.classList.remove('loading'); btn.textContent = 'Giriş Yap';
+        document.getElementById('login-error-text').textContent =
+          '⚠️ Hesabın kurulumu tamamlanamamış. Lütfen bizimle iletişime geç.';
+        document.getElementById('login-error-msg').style.display = 'block';
+        return;
+      }
+
+      // Awaiting admin approval — no session survives this branch.
+      if (profile.status === 'pending') {
+        await supabase.auth.signOut();
+        btn.classList.remove('loading'); btn.textContent = 'Giriş Yap';
+        document.getElementById('login-pending-msg').style.display = 'block';
         return;
       }
 
@@ -768,7 +766,7 @@
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) throw new Error('Oturum bulunamadı, lütfen tekrar giriş yapın.');
         const { error } = await supabase.from('profiles')
-          .update({ status: 'active' })
+          .update({ status: 'approved' })
           .eq('id', session.user.id);
         if (error) throw error;
         localStorage.setItem('bb_auth_token', session.access_token);
@@ -903,6 +901,11 @@
       <div id="login-banned-msg" style="display:none;background:rgba(212,43,43,.07);border:1px solid rgba(212,43,43,.25);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px;">🚫 Hesabınız askıya alındı</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.5;">Hesabınız platform kurallarını ihlal ettiği için engellendi. Itiraz için <a href="iletisim.html" style="color:var(--red);font-weight:600;">iletişime geçin</a>.</div>
+      </div>
+
+      <div id="login-pending-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">⏳ Hesabın inceleniyor</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Kaydın bize ulaştı. BizdenBize şu an davetle büyüyen küçük bir topluluk, bu yüzden her yeni üyeyi elden geçiriyoruz. Onaylandığında e-posta ile haber vereceğiz — genelde bir gün içinde. Sorun için <a href="iletisim.html" style="color:var(--red);font-weight:600;">bize yazabilirsin</a>.</div>
       </div>
 
       <div id="login-deactivated-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
