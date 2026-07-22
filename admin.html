@@ -822,10 +822,13 @@
           ${u.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-muted">Standart</span>'}
           ${u.is_verified ? ' <span class="badge badge-green">✓</span>' : ''}
           ${u.status === 'banned' ? ' <span class="badge" style="background:rgba(212,43,43,.15);color:var(--red);border:1px solid rgba(212,43,43,.3);">🚫 Engelli</span>' : ''}
+          ${u.status === 'pending' ? ' <span class="badge" style="background:rgba(201,168,76,.18);color:#8a6d1f;border:1px solid rgba(201,168,76,.45);">⏳ Onay bekliyor</span>' : ''}
+          ${u.status === 'deactivated' ? ' <span class="badge badge-muted">💤 Dondurulmuş</span>' : ''}
         </td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(u.created_at)}</td>
         <td>
           <div class="actions">
+            ${u.status === 'pending' ? `<button class="btn btn-sm btn-green" onclick="approveUser('${u.id}')">✅ Onayla</button>` : ''}
             <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">
               ${u.is_premium ? 'Premium Kaldır' : '⭐ Premium Yap'}
             </button>
@@ -862,6 +865,18 @@
       renderUsers(allUsers);
       toast(current ? 'Admin yetkisi kaldırıldı.' : '🛡️ Admin yapıldı!');
     } catch(e) { console.error('toggleAdmin error:', e); toast('Hata: ' + e.message, false); }
+  }
+
+  async function approveUser(id) {
+    const u = allUsers.find(u => u.id === id);
+    const who = (`${u?.first_name||''} ${u?.last_name||''}`).trim() || u?.email || 'Bu kullanıcı';
+    if (!confirm(`${who} onaylansın mı? Onayladıktan sonra platforma giriş yapabilecek.`)) return;
+    try {
+      await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ status: 'approved' }) });
+      if (u) u.status = 'approved';
+      renderUsers(allUsers);
+      toast('✅ Kullanıcı onaylandı.');
+    } catch(e) { console.error('approveUser error:', e); toast('Hata: ' + e.message, false); }
   }
 
   async function toggleBan(id, currentStatus) {
