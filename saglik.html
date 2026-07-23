@@ -286,9 +286,8 @@
       <a href="abibot.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🤖 AbiBOT'a Sor</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hstat-val" id="stat-doctors">48</div><div class="hstat-label">Türkçe Doktor</div></div>
-      <div><div class="hstat-val">12</div><div class="hstat-label">Şehir</div></div>
-      <div><div class="hstat-val">%100</div><div class="hstat-label">Topluluk Önerisi</div></div>
+      <div><div class="hstat-val" id="stat-doctors">—</div><div class="hstat-label">Topluluk Önerisi</div></div>
+      <div><div class="hstat-val">116117</div><div class="hstat-label">Resmî Doktor Arama</div></div>
       <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Rehberler</div></div>
     </div>
   </div>
@@ -387,16 +386,7 @@
     if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
   }
 
-const doctors = [
-  { id:1, name:"Dr. Ayşe Yıldız", spec:"Aile Hekimi", city:"Frankfurt", address:"Bergerstr. 45, 60316 Frankfurt", phone:"+49 69 456 7890", insurance:"GKV", lang:"TR/DE", rating:4.9, reviews:34, emoji:"👩‍⚕️", desc:"20 yıllık deneyimli aile hekimi. Türkçe, Almanca ve İngilizce konuşuyor. Yeni hastalar kabul ediyor.", verified:true },
-  { id:2, name:"Dr. Mehmet Aslan", spec:"Dahiliye", city:"Berlin", address:"Kurfürstenstr. 12, 10785 Berlin", phone:"+49 30 123 4567", insurance:"GKV & PKV", lang:"TR/DE/EN", rating:4.7, reviews:28, emoji:"👨‍⚕️", desc:"İç hastalıkları uzmanı. Diyabet, hipertansiyon ve kalp hastalıkları konusunda deneyimli.", verified:true },
-  { id:3, name:"Dr. Fatma Kocak", spec:"Kadın Doğum", city:"München", address:"Maximilianstr. 8, 80539 München", phone:"+49 89 234 5678", insurance:"GKV", lang:"TR/DE", rating:4.8, reviews:41, emoji:"👩‍⚕️", desc:"Kadın doğum uzmanı. Hamilelik takibi, doğum hazırlığı ve jinekoloji. Türk hastalara özel yaklaşım.", verified:true },
-  { id:4, name:"Dr. Hasan Demir", spec:"Psikiyatrist", city:"Köln", address:"Schildergasse 22, 50667 Köln", phone:"+49 221 345 6789", insurance:"GKV & PKV", lang:"TR/DE", rating:4.6, reviews:19, emoji:"🧠", desc:"Psikiyatri ve psikoterapi. Göç stresi, depresyon ve anksiyete konusunda uzmanlaşmış.", verified:true },
-  { id:5, name:"Dr. Zeynep Ak", spec:"Çocuk Doktoru", city:"Hamburg", address:"Mönckebergstr. 5, 20095 Hamburg", phone:"+49 40 567 8901", insurance:"GKV", lang:"TR/DE/EN", rating:4.9, reviews:52, emoji:"👶", desc:"Çocuk sağlığı ve hastalıkları uzmanı. Bebekten ergene kadar tüm yaş gruplarına hizmet veriyor.", verified:true },
-  { id:6, name:"Dr. Ali Kaya", spec:"Diş Hekimi", city:"Düsseldorf", address:"Königsallee 14, 40212 Düsseldorf", phone:"+49 211 678 9012", insurance:"GKV & PKV", lang:"TR/DE", rating:4.7, reviews:36, emoji:"🦷", desc:"Genel diş hekimliği, implant ve estetik diş tedavileri. Ağrısız tedavi anlayışı.", verified:true },
-  { id:7, name:"Psikolog Selin Çelik", spec:"Psikolog", city:"Stuttgart", address:"Königstr. 28, 70173 Stuttgart", phone:"+49 711 789 0123", insurance:"PKV", lang:"TR/DE", rating:4.8, reviews:23, emoji:"🧠", desc:"Klinik psikolog. Bireysel terapi, çift terapisi ve göç psikolojisi alanlarında uzman.", verified:true },
-  { id:8, name:"Dr. Mustafa Yurt", spec:"Göz Doktoru", city:"Frankfurt", address:"Zeil 33, 60313 Frankfurt", phone:"+49 69 890 1234", insurance:"GKV", lang:"TR/DE", rating:4.5, reviews:17, emoji:"👁️", desc:"Oftalmoloji uzmanı. Gözlük reçetesi, katarakt ve göz tansiyonu tedavileri.", verified:false },
-];
+const doctors = []; // seed data removed — real entries come from the DB
 
 const guides = {
   kranken: [
@@ -459,7 +449,37 @@ function render() {
   const body = document.getElementById('page-body');
   if (activeSection === 'doctors') {
     body.innerHTML = `
-      <div class="section-header"><div class="section-title">🏥 Türkçe Konuşan Doktorlar</div><div class="section-sub">Topluluk tarafından önerilen ve doğrulanmış sağlık profesyonelleri</div></div>
+      <div class="section-header"><div class="section-title">🏥 Türkçe Konuşan Doktorlar</div><div class="section-sub">Topluluk üyelerimizin kendi deneyimlerine dayanarak önerdiği doktorlar</div></div>
+
+      <div style="background:var(--warm);border:1px solid var(--sand);border-radius:14px;padding:20px 22px;margin-bottom:24px;">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px;">
+          🔎 Resmî doktor arama: 116117
+        </div>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--muted);margin:0 0 14px;">
+          Almanya'daki tüm anlaşmalı doktorların resmî listesi Kassenärztliche Bundesvereinigung
+          tarafından tutulur ve <strong>konuştukları yabancı dile göre</strong> filtrelenebilir.
+          En güncel ve en eksiksiz kaynak budur — bizim listemiz bunun yerine geçmez, yanına eklenir.
+        </p>
+        <div style="font-size:13px;line-height:1.7;color:var(--ink);background:var(--cream);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+          <strong>Türkçe konuşan doktor nasıl bulunur:</strong><br>
+          1. Arama kutusuna şehrini ve aradığın uzmanlık alanını yaz.<br>
+          2. Sonuç listesinin yanındaki <strong>„Filter"</strong> bölümünü aç.<br>
+          3. <strong>„Fremdsprachen"</strong> (yabancı diller) altından <strong>„Türkisch"</strong> seç.
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <a href="https://arztsuche.116117.de/" target="_blank" rel="noopener noreferrer"
+             style="display:inline-flex;align-items:center;gap:7px;background:var(--red);color:#fff;
+                    text-decoration:none;font-size:13px;font-weight:600;padding:10px 16px;border-radius:9px;">
+            Resmî doktor aramayı aç ↗
+          </a>
+          <a href="https://www.116117.de/de/tuerkisch.php" target="_blank" rel="noopener noreferrer"
+             style="display:inline-flex;align-items:center;gap:7px;background:var(--cream);color:var(--ink);
+                    border:1px solid var(--sand);text-decoration:none;font-size:13px;font-weight:600;
+                    padding:10px 16px;border-radius:9px;">
+            116117 Türkçe bilgi sayfası ↗
+          </a>
+        </div>
+      </div>
       <div class="dir-filters">
         <input class="dir-filter-input" id="f-city" type="text" placeholder="🔍 Şehir ara..." oninput="renderDoctors()">
         <select class="dir-filter-select" id="f-insurance" onchange="renderDoctors()">
@@ -478,8 +498,17 @@ function render() {
         <button class="dir-filter-btn spec-btn" onclick="setSpec('Diş Hekimi',this)">🦷 Diş</button>
       </div>
       <div class="results-bar">
-        <div class="results-count" id="doc-count"><strong>${doctors.length}</strong> doktor bulundu</div>
+        <div class="results-count" id="doc-count">Yükleniyor...</div>
         <button class="add-doctor-btn" onclick="openAddModal()">+ Doktor / Klinik Öner</button>
+      </div>
+      <div style="font-size:12px;line-height:1.6;color:var(--muted);background:var(--warm);border:1px solid var(--sand);border-radius:10px;padding:12px 15px;margin-bottom:18px;">
+        Bu listedeki muayenehane bilgileri kamuya açık kaynaklardan derlenmiştir ve
+        <strong>BizdenBize tarafından doğrulanmamıştır</strong>. Bilgiler zamanla değişebilir —
+        gitmeden önce telefonla teyit etmeni öneririz. Listede kendi muayenehanesini gören bir hekim
+        veya yanlış bir bilgi fark eden bir üye
+        <a href="mailto:info@bizdenbize.com?subject=Doktor%20listesi%20d%C3%BCzeltme%20talebi"
+           style="color:var(--red);font-weight:600;">bize yazarak</a>
+        düzeltme veya kaldırma talep edebilir.
       </div>
       <div class="doctor-grid" id="doctor-grid"></div>`;
     renderDoctors();
@@ -536,7 +565,21 @@ async function renderDoctors() {
   if (count) count.innerHTML = `<strong>${filtered.length}</strong> doktor bulundu`;
   document.getElementById('stat-doctors').textContent = allDoctors.length;
 
-  if (!filtered.length) { grid.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;">Bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin veya doktor önerin.</p></div>`; return; }
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:44px 24px;color:var(--muted);grid-column:1/-1">
+      <div style="font-size:40px;margin-bottom:12px">🌱</div>
+      <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;">Bu liste topluluğumuzla birlikte büyüyor</div>
+      <p style="font-size:13.5px;line-height:1.6;max-width:440px;margin:0 auto 18px;">
+        Buradaki öneriler yalnızca üyelerimizin gerçekten gittiği doktorlardan oluşur — bu yüzden
+        yavaş büyür ama güvenilirdir. Memnun kaldığın bir doktor varsa toplulukla paylaş.
+      </p>
+      <p style="font-size:13px;line-height:1.6;max-width:440px;margin:0 auto;">
+        Hemen bir doktor arıyorsan yukarıdaki <strong>resmî 116117 arama</strong> bağlantısını kullan —
+        Almanya'daki tüm doktorları kapsar ve Türkçe konuşanlara göre filtrelenebilir.
+      </p>
+    </div>`;
+    return;
+  }
   grid.innerHTML = filtered.map(d => `
     <div class="doctor-card" onclick="openDoctorById(${d.id})">
       <div class="doctor-top">
@@ -552,7 +595,9 @@ async function renderDoctors() {
         <span class="doctor-tag tag-insurance">${d.insurance || ''}</span>
         ${d.verified ? '<span class="doctor-tag tag-verified">✅ Doğrulandı</span>' : ''}
       </div>
-      <div class="doctor-rating">⭐ ${d.rating || '—'} <span style="color:var(--sand);">(${d.reviews||d.review_count||0} değerlendirme)</span></div>
+      ${(d.reviews||d.review_count||0) > 0
+        ? `<div class="doctor-rating">⭐ ${d.rating || '—'} <span style="color:var(--sand);">(${d.reviews||d.review_count} değerlendirme)</span></div>`
+        : `<div class="doctor-rating" style="color:var(--muted);font-size:12px;">Henüz topluluk değerlendirmesi yok</div>`}
       <div class="doctor-footer">
         <span style="font-size:12px;color:var(--muted);">📍 ${d.city}</span>
         <button class="doctor-contact-btn" onclick="event.stopPropagation();openDoctorById(${d.id})">İletişim →</button>
