@@ -421,6 +421,18 @@ const guides = {
 
 let activeSection = 'doctors';
 let activeSpec = 'all';
+// Kaynak veride uzmanlık alanları Almanca yazılı; filtre butonları Türkçe.
+// Bu yüzden tam eşleşme değil, anahtar kelime eşleşmesi kullanıyoruz.
+const SPEC_KEYWORDS = {
+  aile:     ['allgemeinmedizin', 'innere medizin', 'internist', 'hausarzt'],
+  kadin:    ['gynäk', 'gynak', 'geburtshilfe', 'pränatal'],
+  cocuk:    ['kinder', 'jugend'],
+  ruh:      ['psychiatrie', 'psychotherapie', 'psycholog', 'neurologie'],
+  kbb:      ['hals-nasen-ohren', 'hno'],
+  cilt:     ['dermatolog', 'hautarzt', 'venerolog'],
+  kalp:     ['kardiolog', 'herz'],
+  cerrahi:  ['chirurgie', 'orthopäd', 'orthopad', 'urolog', 'nephrolog', 'dialyse'],
+};
 let activeCity = '';
 
 // Deep-link support: nav dropdown / mobile menu links pass ?section=kranken etc.
@@ -490,12 +502,14 @@ function render() {
       </div>
       <div class="dir-filters" id="spec-filters">
         <button class="dir-filter-btn active spec-btn" onclick="setSpec('all',this)">Tümü</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Aile Hekimi',this)">👨‍👩‍👧 Aile</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Psikiyatrist',this)">🧠 Psikiyatri</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Psikolog',this)">🧠 Psikolog</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Kadın Doğum',this)">🤰 Kadın Doğum</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Çocuk Doktoru',this)">👶 Çocuk</button>
-        <button class="dir-filter-btn spec-btn" onclick="setSpec('Diş Hekimi',this)">🦷 Diş</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('aile',this)">👨‍👩‍👧 Aile / Dahiliye</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('kadin',this)">🤰 Kadın Doğum</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('cocuk',this)">👶 Çocuk</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('ruh',this)">🧠 Ruh Sağlığı</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('kbb',this)">👂 KBB</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('cilt',this)">🧴 Cilt</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('kalp',this)">❤️ Kalp</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('cerrahi',this)">🦴 Cerrahi / Ortopedi</button>
       </div>
       <div class="results-bar">
         <div class="results-count" id="doc-count">Yükleniyor...</div>
@@ -560,7 +574,13 @@ async function renderDoctors() {
       allDoctors = await sbGet('doctors', params);
   } catch(e) { console.error('Doctor fetch error:', e); allDoctors = doctors; }
 
-  const filtered = allDoctors.filter(d => activeSpec === 'all' || (d.spec||d.specialty) === activeSpec);
+  const filtered = allDoctors.filter(d => {
+    if (activeSpec === 'all') return true;
+    const s = String(d.spec || d.specialty || '').toLowerCase();
+    const keys = SPEC_KEYWORDS[activeSpec];
+    if (!keys) return s === activeSpec;          // eski davranış, yedek olarak
+    return keys.some(k => s.includes(k));
+  });
   const count = document.getElementById('doc-count');
   if (count) count.innerHTML = `<strong>${filtered.length}</strong> doktor bulundu`;
   document.getElementById('stat-doctors').textContent = allDoctors.length;
@@ -592,7 +612,7 @@ async function renderDoctors() {
       </div>
       <div class="doctor-tags">
         <span class="doctor-tag tag-turkish">🇹🇷 Türkçe</span>
-        <span class="doctor-tag tag-insurance">${d.insurance || ''}</span>
+        ${d.insurance ? `<span class="doctor-tag tag-insurance">${d.insurance}</span>` : ''}
         ${d.verified ? '<span class="doctor-tag tag-verified">✅ Doğrulandı</span>' : ''}
       </div>
       ${(d.reviews||d.review_count||0) > 0
