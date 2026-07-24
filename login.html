@@ -773,9 +773,15 @@
     window.socialLogin = async function(provider) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        // onboarding.html forwards anyone who has already finished, so this
-        // one target works for both first-time and returning Google users.
-        options: { redirectTo: 'https://bizdenbize.com/onboarding.html' }
+        options: {
+          // onboarding.html forwards anyone who has already finished, so this
+          // one target works for both first-time and returning Google users.
+          redirectTo: 'https://bizdenbize.com/onboarding.html',
+          // Without this, Google silently reuses whichever account is already
+          // signed in on the device. People with a work and a personal Gmail
+          // would have no way to choose, so always show the account picker.
+          queryParams: { prompt: 'select_account' }
+        }
       });
       if (error) alert('Google ile giriş hatası: ' + error.message);
     };
