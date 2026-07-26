@@ -1243,7 +1243,8 @@
     <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
     <div style="flex:1;">
       <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
-      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+      <div id="pwa-banner-sub" style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
+      <div id="pwa-ios-hint" style="display:none;font-size:11px;opacity:.75;margin-top:3px;">Safari alt çubuğundaki Paylaş simgesine dokun, ardından "Ana Ekrana Ekle" seç.</div>
     </div>
     <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
       padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
@@ -1277,6 +1278,25 @@
       if (banner) banner.style.display = 'none';
       deferredPrompt = null;
     });
+
+    // iOS Safari never fires beforeinstallprompt — Apple has no programmatic
+    // install. Show a manual hint instead (Share → Add to Home Screen).
+    (function iosInstallHint(){
+      const ua = window.navigator.userAgent;
+      const isIOS = /iPhone|iPad|iPod/.test(ua) && !window.MSStream;
+      const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+      const isStandalone = window.navigator.standalone === true;
+      if (isIOS && isSafari && !isStandalone) {
+        const banner = document.getElementById('pwa-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const iosHint = document.getElementById('pwa-ios-hint');
+        const sub = document.getElementById('pwa-banner-sub');
+        if (installBtn) installBtn.style.display = 'none';   // no programmatic install on iOS
+        if (iosHint) iosHint.style.display = 'block';
+        if (sub) sub.textContent = 'Paylaş ⎘ → "Ana Ekrana Ekle"';
+        if (banner) banner.style.display = 'flex';
+      }
+    })();
   </script>
 <script>
   // ══ COOKIE CONSENT LOGIC ══
