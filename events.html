@@ -452,6 +452,12 @@
     });
   })();
 </script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb = _authSb;
+    window._authReady = _authSb.auth.getSession().then(({ data: { session } }) => { window._currentSession = session || null; });
+  </script>
 </head>
 <body>
 <!-- NAV -->
@@ -667,22 +673,29 @@
 <div class="modal-overlay" id="event-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <h3>Etkinlik Oluştur</h3>
-    <div class="form-group"><label>Etkinlik Adı</label><input type="text" placeholder="Ör: Frankfurt Türk Festivali"></div>
-    <div class="form-group"><label>Kategori</label>
-      <select><option>🎉 Genel Buluşma</option><option>💼 İş & Girişim</option><option>⚽ Spor</option><option>🍽️ Yemek</option><option>🎵 Müzik & Kültür</option><option>👶 Aile</option></select>
+    <h3>Etkinlik Öner</h3>
+    <p style="font-size:12.5px;color:var(--muted);margin:-6px 0 14px;line-height:1.5;">Önerin ekibimiz tarafından incelenip onaylandıktan sonra yayınlanır.</p>
+    <div class="form-group"><label>Etkinlik Adı *</label><input type="text" id="ev-title" placeholder="Ör: Türkçe Stand-Up Gecesi"></div>
+    <div class="form-group"><label>Kategori *</label>
+      <select id="ev-category">
+        <option value="genel">🎉 Genel Buluşma</option>
+        <option value="is">💼 İş & Girişim</option>
+        <option value="spor">⚽ Spor</option>
+        <option value="yemek">🍽️ Yemek</option>
+        <option value="muzik">🎵 Müzik & Kültür</option>
+        <option value="aile">👶 Aile</option>
+      </select>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Tarih</label><input type="date"></div>
-      <div class="form-group"><label>Saat</label><input type="time"></div>
+      <div class="form-group"><label>Tarih *</label><input type="date" id="ev-date"></div>
+      <div class="form-group"><label>Saat / Not</label><input type="text" id="ev-note" placeholder="Ör: 19:00"></div>
     </div>
-    <div class="form-group"><label>Konum</label><input type="text" placeholder="Adres veya mekan adı"></div>
-    <div class="form-group"><label>Şehir</label>
-      <select><option>Frankfurt 🇩🇪</option><option>Berlin 🇩🇪</option><option>Amsterdam 🇳🇱</option><option>Wien 🇦🇹</option><option>Diğer</option></select>
-    </div>
-    <div class="form-group"><label>Açıklama</label><textarea placeholder="Etkinliğini anlat..."></textarea></div>
-    <div class="form-group"><label>Katılımcı Limiti (0 = sınırsız)</label><input type="number" placeholder="0"></div>
-    <button class="submit-btn" onclick="submitEvent()">Etkinliği Yayınla →</button>
+    <div class="form-group"><label>Mekan</label><input type="text" id="ev-venue" placeholder="Mekan adı, adres"></div>
+    <div class="form-group"><label>Şehir *</label><input type="text" id="ev-city" placeholder="Ör: Berlin"></div>
+    <div class="form-group"><label>Açıklama</label><textarea id="ev-desc" placeholder="Etkinliği kısaca anlat..."></textarea></div>
+    <div class="form-group"><label>Bağlantı (bilet/bilgi)</label><input type="text" id="ev-link" placeholder="https://..."></div>
+    <div id="ev-form-err" style="display:none;color:var(--red);font-size:13px;margin-bottom:10px;"></div>
+    <button class="submit-btn" id="ev-submit-btn" onclick="submitEvent()">Öneriyi Gönder →</button>
   </div>
 </div>
 
@@ -953,6 +966,58 @@
     }
   }
   loadEvents();
+
+  // ---- Submit a new event proposal (goes to pending) ----
+  window.submitEvent = async function(){
+    const err=document.getElementById('ev-form-err');
+    const btn=document.getElementById('ev-submit-btn');
+    const show=(m)=>{ if(err){err.textContent=m;err.style.display='block';} };
+    if(err) err.style.display='none';
+
+    await (window._authReady || Promise.resolve());
+    const session = window._currentSession;
+    if(!session){ show('Etkinlik önermek için giriş yapmalısın.'); return; }
+
+    const title=(document.getElementById('ev-title').value||'').trim();
+    const city=(document.getElementById('ev-city').value||'').trim();
+    const date=document.getElementById('ev-date').value||null;
+    if(!title){ show('Etkinlik adı gerekli.'); return; }
+    if(!city){ show('Şehir gerekli.'); return; }
+    if(!date){ show('Tarih gerekli.'); return; }
+
+    const payload={
+      created_by: session.user.id,
+      status: 'pending',
+      title: title,
+      category: document.getElementById('ev-category').value,
+      city: city,
+      venue: (document.getElementById('ev-venue').value||'').trim() || null,
+      event_date: date,
+      event_note: (document.getElementById('ev-note').value||'').trim() || null,
+      description: (document.getElementById('ev-desc').value||'').trim() || null,
+      link_url: (document.getElementById('ev-link').value||'').trim() || null,
+      country: 'de'
+    };
+
+    if(btn){ btn.disabled=true; btn.textContent='Gönderiliyor…'; }
+    try{
+      const r=await fetch(_EV_SB_URL+'/rest/v1/events',{
+        method:'POST',
+        headers:{ 'apikey':_EV_SB_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if(!r.ok) throw new Error(await r.text());
+      // success UI
+      const modal=document.getElementById('event-modal');
+      if(modal) modal.classList.remove('open');
+      alert('Teşekkürler! Etkinlik önerin alındı. İncelendikten sonra yayınlanacak.');
+      ['ev-title','ev-city','ev-venue','ev-note','ev-desc','ev-link'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    }catch(e){
+      show('Gönderilemedi. Lütfen tekrar dene.');
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='Öneriyi Gönder →'; }
+    }
+  };
 </script>
 <!-- SITE FOOTER -->
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
