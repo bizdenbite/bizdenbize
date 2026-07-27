@@ -958,6 +958,32 @@
       </div>
     </div>
 
+    <!-- INVITE FRIENDS BANNER -->
+    <div id="invite-banner" style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(212,43,43,.06),rgba(201,168,76,.06));border:1px solid rgba(212,43,43,.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;">
+      <div style="font-size:30px;line-height:1;flex-shrink:0;">💌</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px;">Güvendiğin birini davet et</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.45;">Gurbetteki bir tanıdığın da aramıza katılsın. Topluluk büyüdükçe hepimize faydası var.</div>
+      </div>
+      <button onclick="openInviteModal()" style="flex-shrink:0;background:var(--red);color:#fff;border:none;border-radius:9px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;white-space:nowrap;">Davet et</button>
+      <button onclick="dismissInviteBanner()" title="Kapat" style="flex-shrink:0;background:none;border:none;font-size:18px;color:var(--sand);cursor:pointer;line-height:1;padding:0 2px;">×</button>
+    </div>
+
+    <!-- INVITE MODAL -->
+    <div id="invite-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(26,18,8,.55);align-items:center;justify-content:center;padding:20px;">
+      <div style="background:#fff;border-radius:18px;max-width:440px;width:100%;padding:26px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+          <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--ink);">Arkadaşını davet et</div>
+          <button onclick="closeInviteModal()" style="background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin:0 0 18px;">Hazır davet mesajını WhatsApp'tan paylaş ya da kopyala. Güvendiğin, gurbetteki tanıdıklarını çağır.</p>
+        <button onclick="inviteViaWhatsApp()" style="width:100%;background:#25D366;color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span style="font-size:18px;">💬</span> WhatsApp'ta paylaş
+        </button>
+        <button onclick="copyInviteText()" id="copy-invite-btn" style="width:100%;background:var(--warm);color:var(--ink);border:1px solid var(--sand);border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">📋 Mesajı kopyala</button>
+      </div>
+    </div>
+
     <div id="posts-feed">
       <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
     </div>
@@ -1354,6 +1380,7 @@
   }
 
   const firstName = profile?.first_name || user.email.split('@')[0];
+  window.__bbFirstName = profile?.first_name || '';  // for invite message personalization
   const lastName  = profile?.last_name  || '';
   const fullName  = `${firstName} ${lastName}`.trim();
   const city      = profile?.city    || '';
@@ -2020,6 +2047,53 @@
     }
   }
   })();
+</script>
+
+<!-- INVITE FRIEND LOGIC -->
+<script>
+  // Reuse the trusted-community invite message. Pulls the current user's first
+  // name if available so the message is personal, but works without it too.
+  function bbInviteMessage() {
+    var name = (window.__bbFirstName || '').trim();
+    var intro = name ? (name + ' seni BizdenBize\'ye davet ediyor.') : 'Seni BizdenBize\'ye davet ediyorum.';
+    return intro + '\n\n' +
+      'BizdenBize, Almanya\'daki Türkçe konuşan topluluk için bir platform — Türkçe konuşan doktorlar, uzmanlara sorular, mahalle akışı ve daha fazlası. Topluluk küçük ve herkes gerçek adıyla katılıyor.\n\n' +
+      'Ücretsiz katıl: https://bizdenbize.com';
+  }
+  window.openInviteModal = function() {
+    var m = document.getElementById('invite-modal');
+    if (m) m.style.display = 'flex';
+  };
+  window.closeInviteModal = function() {
+    var m = document.getElementById('invite-modal');
+    if (m) m.style.display = 'none';
+  };
+  window.dismissInviteBanner = function() {
+    var b = document.getElementById('invite-banner');
+    if (b) b.style.display = 'none';
+  };
+  window.inviteViaWhatsApp = function() {
+    var url = 'https://wa.me/?text=' + encodeURIComponent(bbInviteMessage());
+    window.open(url, '_blank');
+  };
+  window.copyInviteText = function() {
+    var txt = bbInviteMessage();
+    var btn = document.getElementById('copy-invite-btn');
+    function done(){ if(btn){ var o=btn.innerHTML; btn.innerHTML='✓ Kopyalandı'; setTimeout(function(){btn.innerHTML=o;},1800);} }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done).catch(function(){ fallbackCopy(txt); done(); });
+    } else { fallbackCopy(txt); done(); }
+  };
+  function fallbackCopy(txt){
+    var ta=document.createElement('textarea'); ta.value=txt;
+    ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+    ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta);
+  }
+  // Close modal on backdrop tap
+  document.addEventListener('click', function(e){
+    var m=document.getElementById('invite-modal');
+    if(m && e.target===m) m.style.display='none';
+  });
 </script>
 <!-- SITE FOOTER -->
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
