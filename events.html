@@ -616,82 +616,15 @@
 
   <div class="layout">
     <div>
-      <!-- Featured -->
-      <div class="featured-event">
-        <div>
-          <div class="fe-tag">⭐ Öne Çıkan Etkinlik</div>
-          <div class="fe-title">Frankfurt Türk Festivali 2025</div>
-          <div class="fe-meta">📍 Römerberg, Frankfurt · 14 Haziran · 14:00 – 22:00</div>
-          <div class="fe-attendees">
-            <div class="fe-avatar">MK</div>
-            <div class="fe-avatar" style="background:#185FA5">ZD</div>
-            <div class="fe-avatar" style="background:#1E7B4B">AK</div>
-            <div class="fe-avatar" style="background:#C9A84C">SE</div>
-            <span class="fe-count">+39 katılımcı</span>
-          </div>
-        </div>
-        <div class="fe-right">
-          <div class="fe-date-box">
-            <div class="fe-month">Haziran</div>
-            <div class="fe-day">14</div>
-          </div>
-          <button class="rsvp-btn" onclick="this.classList.toggle('going');this.textContent=this.classList.contains('going')?'✓ Katılıyorum':'Katıl'">Katıl</button>
-        </div>
+            <!-- Curated + user events, loaded from DB -->
+      <div style="background:linear-gradient(135deg,rgba(24,95,165,.05),rgba(201,168,76,.05));border:1px solid rgba(24,95,165,.15);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">📅 Topluluk Etkinlikleri</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.5;">Almanya'daki Türkçe konuşan topluluk için etkinlikler. Tarih ve detaylar değişebilir — gitmeden önce resmî bağlantıdan teyit et.</div>
       </div>
 
-      <!-- Events list -->
-      <div class="event-item">
-        <div class="ei-date"><div class="ei-month">Haz</div><div class="ei-day">18</div></div>
-        <div class="ei-body">
-          <div class="ei-title">Türk Girişimciler Networking Gecesi</div>
-          <div class="ei-meta"><span>📍 Coworking Mitte</span><span>🕕 18:00</span><span>👤 Herkese Açık</span></div>
-          <div class="ei-tags"><span class="ei-tag" style="background:rgba(24,95,165,.1);color:#185FA5">İş & Girişim</span><span class="ei-tag" style="background:var(--warm);color:var(--muted)">Networking</span></div>
-        </div>
-        <div class="ei-right">
-          <div class="ei-attendees">22 katılımcı</div>
-          <button class="ei-rsvp" onclick="rsvp(this)">Katıl</button>
-        </div>
+      <div id="events-list">
+        <div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Etkinlikler yükleniyor…</div>
       </div>
-
-      <div class="event-item">
-        <div class="ei-date"><div class="ei-month">Haz</div><div class="ei-day">21</div></div>
-        <div class="ei-body">
-          <div class="ei-title">Türkçe Çocuk Kitapları Okuma Saati</div>
-          <div class="ei-meta"><span>📍 Stadtbibliothek Frankfurt</span><span>🕚 11:00</span><span>👶 Aileler için</span></div>
-          <div class="ei-tags"><span class="ei-tag" style="background:rgba(30,123,75,.1);color:#1E7B4B">Aile</span><span class="ei-tag" style="background:var(--warm);color:var(--muted)">Çocuklar</span></div>
-        </div>
-        <div class="ei-right">
-          <div class="ei-attendees">14 katılımcı</div>
-          <button class="ei-rsvp" onclick="rsvp(this)">Katıl</button>
-        </div>
-      </div>
-
-      <div class="event-item">
-        <div class="ei-date"><div class="ei-month">Haz</div><div class="ei-day">25</div></div>
-        <div class="ei-body">
-          <div class="ei-title">Futbol: Frankfurt Türkler vs Amsterdam — Berlin</div>
-          <div class="ei-meta"><span>📍 Sportplatz Sachsenhausen</span><span>🕔 16:00</span><span>⚽ Spor</span></div>
-          <div class="ei-tags"><span class="ei-tag" style="background:rgba(192,57,43,.1);color:#D42B2B">Spor</span></div>
-        </div>
-        <div class="ei-right">
-          <div class="ei-attendees">31 katılımcı</div>
-          <button class="ei-rsvp going" onclick="rsvp(this)">✓ Katılıyorum</button>
-        </div>
-      </div>
-
-      <div class="event-item">
-        <div class="ei-date"><div class="ei-month">Tem</div><div class="ei-day">04</div></div>
-        <div class="ei-body">
-          <div class="ei-title">Türk Mutfağı Yemek Atölyesi</div>
-          <div class="ei-meta"><span>📍 Kochschule Frankfurt</span><span>🕒 15:00</span><span>🍽️ Yemek</span></div>
-          <div class="ei-tags"><span class="ei-tag" style="background:rgba(201,168,76,.1);color:#C9A84C">Yemek</span><span class="ei-tag" style="background:var(--warm);color:var(--muted)">Atölye</span></div>
-        </div>
-        <div class="ei-right">
-          <div class="ei-attendees">8 katılımcı</div>
-          <button class="ei-rsvp" onclick="rsvp(this)">Katıl</button>
-        </div>
-      </div>
-    </div>
 
     <!-- Right: Calendar + widget -->
     <div>
@@ -963,6 +896,64 @@
   })();
 
   </script>
+
+<!-- EVENTS FROM DATABASE -->
+<script>
+  const _EV_SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _EV_SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const _EV_H = { 'apikey': _EV_SB_KEY, 'Authorization': 'Bearer ' + _EV_SB_KEY };
+
+  const EV_CAT = {
+    muzik: { label: 'Müzik & Kültür', color: '#185FA5' },
+    is:    { label: 'İş & Girişim',    color: '#185FA5' },
+    genel: { label: 'Genel Buluşma',   color: '#C9A84C' },
+    yemek: { label: 'Yemek',           color: '#C9A84C' },
+    spor:  { label: 'Spor',            color: '#D42B2B' },
+    aile:  { label: 'Aile',            color: '#1E7B4B' },
+  };
+  const EV_MONTHS = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+
+  function evEsc(x){ return String(x==null?'':x).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function evDateBox(d){
+    if(!d) return '<div class="ei-month">—</div><div class="ei-day">·</div>';
+    const dt=new Date(d+'T00:00:00');
+    if(isNaN(dt)) return '<div class="ei-month">—</div><div class="ei-day">·</div>';
+    return '<div class="ei-month">'+EV_MONTHS[dt.getMonth()]+'</div><div class="ei-day">'+dt.getDate()+'</div>';
+  }
+
+  function evCard(e){
+    const cat = EV_CAT[e.category] || { label: e.category||'Etkinlik', color:'#6B5E4E' };
+    const venue = e.venue ? ('📍 '+evEsc(e.venue)+(e.city?', '+evEsc(e.city):'')) : (e.city?('📍 '+evEsc(e.city)):'');
+    const note = e.event_note ? '<span>'+evEsc(e.event_note)+'</span>' : '';
+    const link = e.link_label
+      ? '<div style="margin-top:8px;"><a href="'+(e.link_url?evEsc(e.link_url):'#')+'" '+(e.link_url?'target="_blank" rel="noopener"':'onclick="return false"')+' style="font-size:12px;color:var(--muted);text-decoration:none;">🔗 '+evEsc(e.link_label)+'</a></div>'
+      : '';
+    return '<div class="event-item">'
+      + '<div class="ei-date">'+evDateBox(e.event_date)+'</div>'
+      + '<div class="ei-body">'
+      +   '<div class="ei-title">'+evEsc(e.title)+'</div>'
+      +   (e.description?'<div style="font-size:13px;color:var(--muted);margin:4px 0;line-height:1.5;">'+evEsc(e.description)+'</div>':'')
+      +   '<div class="ei-meta">'+(venue?'<span>'+venue+'</span>':'')+note+'</div>'
+      +   '<div class="ei-tags"><span class="ei-tag" style="background:'+cat.color+'1a;color:'+cat.color+'">'+evEsc(cat.label)+'</span></div>'
+      +   link
+      + '</div></div>';
+  }
+
+  async function loadEvents(){
+    const box=document.getElementById('events-list');
+    try{
+      const r=await fetch(_EV_SB_URL+"/rest/v1/events?status=eq.approved&order=event_date.asc&select=*",{headers:_EV_H});
+      if(!r.ok) throw new Error('DB '+r.status);
+      const rows=await r.json();
+      if(!rows.length){ box.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Henüz etkinlik yok. İlk öneren sen ol! 👇</div>'; return; }
+      box.innerHTML=rows.map(evCard).join('');
+    }catch(err){
+      box.innerHTML='<div style="text-align:center;padding:40px;color:var(--red);font-size:13px;">Etkinlikler yüklenemedi. Lütfen sayfayı yenile.</div>';
+    }
+  }
+  loadEvents();
+</script>
 <!-- SITE FOOTER -->
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
