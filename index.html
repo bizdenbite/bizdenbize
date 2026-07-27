@@ -76,6 +76,8 @@
       font-weight: 600; font-size: 13px !important;
       transition: background .2s !important;
     }
+    .nav-login { color:var(--ink,#1A1208);font-weight:600;text-decoration:none;padding:8px 14px;border-radius:8px;transition:background .12s; }
+    .nav-login:hover { background:var(--warm,#F0EAE0); }
     .nav-cta:hover { background: var(--red2) !important; color: var(--white) !important; }
 
     /* ── HERO ── */
@@ -436,7 +438,11 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
-      .nav-links { display: none; }
+      /* Keep Giriş + Kaydol reachable on mobile; hide only the section anchors */
+      .nav-links { display: flex; gap: 8px; align-items: center; }
+      .nav-links > a:not(.nav-login):not(.nav-cta) { display: none; }
+      .nav-login { padding: 8px 12px; font-size: 14px; }
+      .nav-cta { padding: 8px 14px; font-size: 14px; }
       .hero { grid-template-columns: 1fr; }
       .hero-left { padding: 60px 24px 40px; }
       .hero-right { min-height: 340px; }
@@ -767,6 +773,7 @@
     <a href="#nasil-calisir">Nasıl çalışır?</a>
     <a href="#ozellikler">Özellikler</a>
     <a href="uzmanlar.html">Uzmanlar</a>
+    <a href="login.html" class="nav-login">Giriş</a>
     <a href="login.html?tab=register" class="nav-cta">Kaydol →</a>
   </div>
 </nav>
