@@ -264,7 +264,7 @@
     }
 
     @media (max-width: 768px) {
-      .nav-tabs { display: none !important; }
+      .nav-tabs { display: none !important; } .hamburger { display: flex !important; }
       .hamburger { display: flex !important; }
       .nav-search { max-width: 160px !important; }
     }
@@ -466,6 +466,7 @@
   <div class="nav-right">
     <button class="nav-notif" id="notif-bell-btn" onclick="toggleNotifPanel(event)">🔔<div class="notif-dot" id="notif-dot" style="display:none;"></div></button><div id="notif-panel" style="display:none;position:absolute;top:54px;right:64px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:0;width:320px;max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:300;"><div style="padding:14px 16px;border-bottom:1px solid #F0EAE0;font-size:14px;font-weight:700;color:#1A1208;">Bildirimler</div><div id="notif-list"><div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Yükleniyor...</div></div></div>
     <div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" style="display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red,#D42B2B);border:none;cursor:pointer;border-radius:8px;flex-shrink:0;margin-left:8px;"><span style="display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;"></span><span style="display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;"></span><span style="display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;"></span></button>
   </div>
 </nav>
 
