@@ -624,15 +624,13 @@
     <!-- Right: Calendar + widget -->
     <div>
       <div class="widget">
-        <div class="widget-title">🏷️ Kategoriler</div>
-        <div style="display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--ink);">
-          <div>🎵 <strong>Müzik & Kültür</strong></div>
-          <div>💼 <strong>İş & Girişim</strong></div>
-          <div>🎉 <strong>Genel Buluşma</strong></div>
-          <div>🍽️ <strong>Yemek</strong></div>
-          <div>⚽ <strong>Spor</strong></div>
-          <div>👶 <strong>Aile</strong></div>
+        <div class="cal-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <button onclick="calNav(-1)" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:2px 8px;">‹</button>
+          <div id="cal-title" style="font-size:13px;font-weight:700;color:var(--ink);"></div>
+          <button onclick="calNav(1)" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:2px 8px;">›</button>
         </div>
+        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;"></div>
+        <div id="cal-clear" style="display:none;margin-top:10px;text-align:center;"><button onclick="calClearFilter()" style="background:var(--warm);border:1px solid var(--sand);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--ink);cursor:pointer;font-weight:600;">✕ Tarih filtresini temizle</button></div>
       </div>
 
       <div class="widget">
@@ -950,14 +948,15 @@
     const cat = EV_CAT[e.category] || { label: e.category||'Etkinlik', color:'#6B5E4E' };
     const venue = e.venue ? ('📍 '+evEsc(e.venue)+(e.city?', '+evEsc(e.city):'')) : (e.city?('📍 '+evEsc(e.city)):'');
     const note = e.event_note ? '<span>'+evEsc(e.event_note)+'</span>' : '';
-    return '<div class="event-item" data-category="'+evEsc(e.category||'')+'">'
+    const exportBtn = e.event_date ? '<button onclick="evExport(\''+e.id+'\')" title="Takvimime ekle" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-left:8px;">📅 Takvime ekle</button>' : '';
+    return '<div class="event-item" data-category="'+evEsc(e.category||'')+'" data-date="'+(e.event_date||'')+'">'
       + '<div class="ei-date">'+evDateBox(e.event_date)+'</div>'
       + '<div class="ei-body">'
       +   '<div class="ei-title"><a href="event-detail.html?id='+e.id+'" style="color:inherit;text-decoration:none;">'+evEsc(e.title)+' </a><span style="font-size:12px;color:var(--muted);font-weight:400;">→ detay</span></div>'
       +   (e.description?'<div style="font-size:13px;color:var(--muted);margin:4px 0;line-height:1.5;">'+evEsc(e.description)+'</div>':'')
       +   '<div class="ei-meta">'+(venue?'<span>'+venue+'</span>':'')+note+'</div>'
       +   '<div class="ei-tags"><span class="ei-tag" style="background:'+cat.color+'1a;color:'+cat.color+'">'+evEsc(cat.label)+'</span></div>'
-      +   evAction(e)
+      +   '<div style="display:flex;align-items:center;flex-wrap:wrap;">'+evAction(e)+exportBtn+'</div>'
       + '</div></div>';
   }
 
@@ -967,6 +966,7 @@
       const r=await fetch(_EV_SB_URL+"/rest/v1/events?status=eq.approved&order=event_date.asc&select=*",{headers:_EV_H});
       if(!r.ok) throw new Error('DB '+r.status);
       const rows=await r.json();
+      window.__evAll=rows; renderCalendar();
       if(!rows.length){ box.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Henüz etkinlik yok. İlk öneren sen ol! 👇</div>'; return; }
       box.innerHTML=rows.map(evCard).join('');
     }catch(err){
@@ -1006,6 +1006,106 @@
       el.style.display = (cat==='all' || el.getAttribute('data-category')===cat) ? '' : 'none';
     });
   };
+  // ── ADD TO CALENDAR (.ics export) ──
+  window.evExport=function(id){
+    const e=(window.__evAll||[]).find(x=>x.id===id);
+    if(!e||!e.event_date) return;
+    function icsDate(dstr){ return dstr.replace(/-/g,''); }  // all-day YYYYMMDD
+    const dt=e.event_date;
+    const dtEnd=new Date(new Date(dt+'T00:00:00').getTime()+86400000).toISOString().slice(0,10);
+    const loc=[e.venue,e.city].filter(Boolean).join(', ');
+    const desc=(e.description||'')+(e.event_note?' — '+e.event_note:'');
+    const ics=[
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BizdenBize//Etkinlik//TR','CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:'+id+'@bizdenbize.com',
+      'DTSTART;VALUE=DATE:'+icsDate(dt),
+      'DTEND;VALUE=DATE:'+icsDate(dtEnd),
+      'SUMMARY:'+(e.title||'Etkinlik').replace(/[\n,;]/g,' '),
+      'LOCATION:'+loc.replace(/[\n,;]/g,' '),
+      'DESCRIPTION:'+desc.replace(/[\n,;]/g,' '),
+      'END:VEVENT','END:VCALENDAR'
+    ].join('\r\n');
+    const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=(e.title||'etkinlik').replace(/[^a-z0-9]/gi,'_').slice(0,40)+'.ics';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+
+  // ── SIDEBAR MINI CALENDAR ──
+  let calYear, calMonth;  // currently viewed month
+  const CAL_MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  const CAL_DOW=['Pt','Sa','Ça','Pe','Cu','Ct','Pz'];
+
+  function evDatesSet(){
+    // map of 'YYYY-MM-DD' -> count of events that day
+    const m={};
+    (window.__evAll||[]).forEach(e=>{ if(e.event_date){ m[e.event_date]=(m[e.event_date]||0)+1; } });
+    return m;
+  }
+
+  function renderCalendar(){
+    const evs=window.__evAll||[];
+    // default to the month of the earliest upcoming event, else today
+    if(calYear===undefined){
+      const dated=evs.filter(e=>e.event_date).map(e=>e.event_date).sort();
+      const base=dated.length?new Date(dated[0]+'T00:00:00'):new Date();
+      calYear=base.getFullYear(); calMonth=base.getMonth();
+    }
+    const grid=document.getElementById('cal-grid'); const title=document.getElementById('cal-title');
+    if(!grid||!title) return;
+    title.textContent=CAL_MONTHS[calMonth]+' '+calYear;
+    const dayCounts=evDatesSet();
+    let html=CAL_DOW.map(d=>'<div style="text-align:center;font-size:9px;font-weight:700;color:var(--muted);padding:2px 0;">'+d+'</div>').join('');
+    const first=new Date(calYear,calMonth,1);
+    let startDow=(first.getDay()+6)%7; // Monday-first
+    const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+    for(let i=0;i<startDow;i++) html+='<div></div>';
+    const todayStr=new Date().toISOString().slice(0,10);
+    for(let d=1;d<=daysInMonth;d++){
+      const ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const has=dayCounts[ds];
+      const isToday=ds===todayStr;
+      const isSel=window.__calSelected===ds;
+      let style='text-align:center;font-size:12px;padding:5px 0;border-radius:6px;cursor:'+(has?'pointer':'default')+';';
+      if(isSel) style+='background:var(--red);color:#fff;font-weight:700;';
+      else if(has) style+='background:rgba(212,43,43,.1);color:var(--red);font-weight:700;';
+      else style+='color:var(--muted);';
+      if(isToday && !isSel) style+='outline:1.5px solid var(--sand);';
+      const click=has?(' onclick="calPickDay(\''+ds+'\')"'):'';
+      html+='<div style="'+style+'"'+click+'>'+d+'</div>';
+    }
+    grid.innerHTML=html;
+  }
+
+  window.calNav=function(dir){
+    calMonth+=dir;
+    if(calMonth<0){calMonth=11;calYear--;} if(calMonth>11){calMonth=0;calYear++;}
+    renderCalendar();
+  };
+
+  window.calPickDay=function(ds){
+    window.__calSelected=ds;
+    renderCalendar();
+    // filter the event list to that day
+    document.querySelectorAll('#events-list .event-item').forEach(el=>{
+      el.style.display = (el.getAttribute('data-date')===ds) ? '' : 'none';
+    });
+    document.getElementById('cal-clear').style.display='block';
+    // reset category tabs to Tümü visually
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    const first=document.querySelector('.tab'); if(first) first.classList.add('active');
+  };
+
+  window.calClearFilter=function(){
+    window.__calSelected=null;
+    renderCalendar();
+    document.querySelectorAll('#events-list .event-item').forEach(el=>{ el.style.display=''; });
+    document.getElementById('cal-clear').style.display='none';
+  };
+
   loadEvents();
 
   // ---- Submit a new event proposal (goes to pending) ----
