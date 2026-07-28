@@ -250,6 +250,9 @@
     <button class="nav-item" onclick="showSection('experts', this)">
       🛡️ Uzmanlar <span class="nav-badge" id="badge-experts">—</span> <span class="nav-badge" id="badge-expert-apps" style="background:var(--red);">—</span>
     </button>
+    <button class="nav-item" onclick="showSection('events', this)">
+      📅 Etkinlikler <span class="nav-badge" id="badge-events" style="background:var(--red);">—</span>
+    </button>
     <button class="nav-item" onclick="showSection('content', this)">
       📋 İçerik
     </button>
@@ -520,6 +523,16 @@
     </div>
 
     <!-- ── REPORTS ── -->
+    <!-- ── EVENTS ── -->
+    <div class="section" id="section-events">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="evAdminTab('pending',this)">⏳ Onay Bekleyen <span id="ev-pending-count"></span></button>
+        <button class="tab-btn" onclick="evAdminTab('approved',this)">✓ Yayında</button>
+        <button class="tab-btn" onclick="evAdminTab('all',this)">Tümü</button>
+      </div>
+      <div id="events-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
+    </div>
+
     <div class="section" id="section-reports">
       <div class="card">
         <div class="card-head">
@@ -629,7 +642,7 @@
   // ── NAV ──
   const sectionTitles = {
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
-    experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi',
+    experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
     reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri'
   };
@@ -642,6 +655,7 @@
     if (id === 'users') loadUsers();
     if (id === 'experts') { loadExperts(); loadExpertApplications(); }
     if (id === 'content') loadContent();
+    if (id === 'events') loadEvents();
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
     if (id === 'reports') loadReports();
@@ -1174,6 +1188,94 @@
   const REPORT_REASONS = { spam:'📢 Spam', harassment:'😡 Taciz', fake:'🎭 Sahte', inappropriate:'🚫 Uygunsuz', scam:'💸 Dolandırıcılık', suspicious:'🕵️ Şüpheli Davranış', other:'📝 Diğer' };
   let allReports = [];
   let _reportFilter = 'pending';
+
+  function escapeHtml(x){ return String(x==null?'':x).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  // ── EVENTS MANAGEMENT ──
+  let evAdminFilter = 'pending';
+  const EV_CATS = {muzik:'🎵 Müzik',is:'💼 İş',genel:'🎉 Buluşma',yemek:'🍽️ Yemek',spor:'⚽ Spor',aile:'👶 Aile'};
+  const EV_TYPES = {external:'🔗 Dış bağlantı',hosted_free:'🎟️ Ücretsiz',hosted_paid:'💳 Ücretli'};
+
+  function evAdminTab(f, btn){
+    evAdminFilter=f;
+    document.querySelectorAll('#section-events .tab-btn').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    loadEvents();
+  }
+
+  async function loadEvents(){
+    const box=document.getElementById('events-admin-list');
+    box.innerHTML='<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
+    try{
+      let q='events?select=*&order=created_at.desc';
+      if(evAdminFilter==='pending') q='events?status=eq.pending&select=*&order=created_at.desc';
+      else if(evAdminFilter==='approved') q='events?status=eq.approved&select=*&order=event_date.asc';
+      const rows=await sb(q);
+      // pending badge
+      const pend = evAdminFilter==='pending' ? rows.length : (await sb('events?status=eq.pending&select=id')).length;
+      const badge=document.getElementById('badge-events'); if(badge) badge.textContent=pend;
+      const pc=document.getElementById('ev-pending-count'); if(pc) pc.textContent=evAdminFilter==='pending'&&rows.length?('('+rows.length+')'):'';
+      if(!rows.length){ box.innerHTML='<p style="color:var(--muted);padding:20px;">Bu filtrede etkinlik yok.</p>'; return; }
+      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tür</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>'
+        + rows.map(evAdminRow).join('') + '</tbody></table>';
+    }catch(e){ box.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+e.message+'</p>'; }
+  }
+
+  function evAdminRow(e){
+    const statusBadge = e.status==='approved' ? '<span class="badge badge-green">Yayında</span>'
+      : e.status==='pending' ? '<span class="badge badge-red">Bekliyor</span>'
+      : '<span class="badge badge-muted">'+e.status+'</span>';
+    const price = e.price!=null ? (' · €'+Number(e.price).toFixed(0)) : '';
+    let actions='';
+    if(e.status==='pending'){
+      actions += '<button class="btn btn-sm btn-green" onclick="evApprove(\''+e.id+'\')">✓ Onayla</button> ';
+      actions += '<button class="btn btn-sm btn-red" onclick="evReject(\''+e.id+'\')">✗ Reddet</button> ';
+    } else if(e.status==='approved'){
+      actions += '<button class="btn btn-sm btn-muted" onclick="evReject(\''+e.id+'\')">Yayından Kaldır</button> ';
+    }
+    actions += '<button class="btn btn-sm" onclick="evEdit(\''+e.id+'\')">✏️ Düzenle</button> ';
+    actions += '<button class="btn btn-sm btn-red" onclick="evDelete(\''+e.id+'\')">🗑️</button>';
+    return '<tr><td><strong>'+escapeHtml(e.title)+'</strong><br><span style="font-size:12px;color:var(--muted);">'+(EV_CATS[e.category]||e.category||'')+' · '+escapeHtml(e.city||'')+price+'</span></td>'
+      + '<td style="font-size:12px;">'+(EV_TYPES[e.event_type]||e.event_type||'')+'</td>'
+      + '<td style="font-size:12px;">'+(e.event_date||'—')+'</td>'
+      + '<td>'+statusBadge+'</td>'
+      + '<td style="white-space:nowrap;">'+actions+'</td></tr>';
+  }
+
+  async function evSetStatus(id, status){
+    try{
+      await sb('events?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status}) });
+      toast(status==='approved'?'Etkinlik onaylandı ✓':'Durum güncellendi');
+      loadEvents();
+    }catch(e){ toast('Hata: '+e.message,false); }
+  }
+  window.evApprove = id => evSetStatus(id,'approved');
+  window.evReject  = id => { if(confirm('Bu etkinliği yayından kaldır / reddet?')) evSetStatus(id,'rejected'); };
+
+  window.evDelete = async function(id){
+    if(!confirm('Bu etkinliği KALICI olarak sil? Geri alınamaz.')) return;
+    try{
+      await sb('events?id=eq.'+id, { method:'DELETE', headers:{...hdrs(token),'Prefer':'return=minimal'} });
+      toast('Etkinlik silindi');
+      loadEvents();
+    }catch(e){ toast('Hata: '+e.message,false); }
+  };
+
+  window.evEdit = async function(id){
+    let ev;
+    try{ const rows=await sb('events?id=eq.'+id+'&select=*'); ev=rows[0]; }catch(e){ toast('Yüklenemedi',false); return; }
+    if(!ev){ toast('Bulunamadı',false); return; }
+    const title=prompt('Başlık:', ev.title); if(title===null) return;
+    const city=prompt('Şehir:', ev.city||''); if(city===null) return;
+    const date=prompt('Tarih (YYYY-MM-DD):', ev.event_date||''); if(date===null) return;
+    const desc=prompt('Açıklama:', ev.description||''); if(desc===null) return;
+    try{
+      await sb('events?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({title:title.trim(), city:city.trim()||null, event_date:date.trim()||null, description:desc.trim()||null}) });
+      toast('Etkinlik güncellendi ✓');
+      loadEvents();
+    }catch(e){ toast('Hata: '+e.message,false); }
+  };
 
   async function loadReports() {
     try {
