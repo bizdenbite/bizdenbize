@@ -704,6 +704,12 @@
     <div class="form-group"><label>Mekan</label><input type="text" id="ev-venue" placeholder="Mekan adı, adres"></div>
     <div class="form-group"><label>Şehir *</label><input type="text" id="ev-city" placeholder="Ör: Berlin"></div>
     <div class="form-group"><label>Açıklama</label><textarea id="ev-desc" placeholder="Etkinliği kısaca anlat..."></textarea></div>
+    <div class="form-group"><label>Kimler için faydalı?</label><textarea id="ev-audience" placeholder="Ör: Almanya'ya yeni gelenler, girişimciler, öğrenciler..."></textarea></div>
+    <div class="form-group"><label>Program / Akış</label><textarea id="ev-agenda" placeholder="Ör: 19:00 açılış · 19:30 sunum · 20:30 soru-cevap"></textarea></div>
+    <div class="form-group"><label>Organizatör Adı</label><input type="text" id="ev-org-name" placeholder="Etkinliği düzenleyen kişi/kurum"></div>
+    <div class="form-group"><label>Organizatör Hakkında</label><input type="text" id="ev-org-info" placeholder="Kısa açıklama (opsiyonel)"></div>
+    <div class="form-group"><label>İletişim (opsiyonel)</label><input type="text" id="ev-contact" placeholder="E-posta veya telefon"></div>
+    <div class="form-group" id="ev-meeting-wrap" style="display:none;"><label>🔗 Online Bağlantı (Zoom/Meet)</label><input type="text" id="ev-meeting" placeholder="https://zoom.us/... — sadece kayıtlı katılımcılar görür"><div style="font-size:11px;color:var(--muted);margin-top:4px;">Bu bağlantıyı yalnızca etkinliğe kaydolanlar görebilir.</div></div>
     <div class="form-group" id="ev-link-wrap"><label>Bağlantı (bilet/bilgi)</label><input type="text" id="ev-link" placeholder="https://..."></div>
     <div id="ev-form-err" style="display:none;color:var(--red);font-size:13px;margin-bottom:10px;"></div>
     <button class="submit-btn" id="ev-submit-btn" onclick="submitEvent()">Öneriyi Gönder →</button>
@@ -1019,6 +1025,7 @@
     document.getElementById('ev-price-wrap').style.display    = (t==='hosted_paid') ? '' : 'none';
     document.getElementById('ev-capacity-wrap').style.display = (t==='hosted_free'||t==='hosted_paid') ? '' : 'none';
     var lw=document.getElementById('ev-link-wrap'); if(lw) lw.style.display = (t==='external') ? '' : 'none';
+    var mw=document.getElementById('ev-meeting-wrap'); if(mw) mw.style.display = (t==='hosted_free'||t==='hosted_paid') ? '' : 'none';
   };
   window.filterEvents = function(cat, btn){
     document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
@@ -1074,6 +1081,11 @@
       event_date: date,
       event_note: (document.getElementById('ev-note').value||'').trim() || null,
       description: (document.getElementById('ev-desc').value||'').trim() || null,
+      target_audience: (document.getElementById('ev-audience').value||'').trim() || null,
+      agenda: (document.getElementById('ev-agenda').value||'').trim() || null,
+      organizer_name: (document.getElementById('ev-org-name').value||'').trim() || null,
+      organizer_info: (document.getElementById('ev-org-info').value||'').trim() || null,
+      contact_info: (document.getElementById('ev-contact').value||'').trim() || null,
       link_url: regUrl,
       registration_url: regUrl,
       country: 'de'
@@ -1083,15 +1095,30 @@
     try{
       const r=await fetch(_EV_SB_URL+'/rest/v1/events',{
         method:'POST',
-        headers:{ 'apikey':_EV_SB_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+        headers:{ 'apikey':_EV_SB_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=representation' },
         body: JSON.stringify(payload)
       });
       if(!r.ok) throw new Error(await r.text());
+      // If hosted + a meeting link was given, store it in the gated table
+      const meetingUrl=(document.getElementById('ev-meeting').value||'').trim();
+      if(meetingUrl && (evType==='hosted_free'||evType==='hosted_paid')){
+        try{
+          const created=await r.json();
+          const newId=created && created[0] && created[0].id;
+          if(newId){
+            await fetch(_EV_SB_URL+'/rest/v1/event_meeting_links',{
+              method:'POST',
+              headers:{ 'apikey':_EV_SB_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+              body: JSON.stringify({ event_id:newId, meeting_url:meetingUrl })
+            });
+          }
+        }catch(_){ /* meeting link optional; ignore failure */ }
+      }
       // success UI
       const modal=document.getElementById('event-modal');
       if(modal) modal.classList.remove('open');
       alert('Teşekkürler! Etkinlik önerin alındı. İncelendikten sonra yayınlanacak.');
-      ['ev-title','ev-city','ev-venue','ev-note','ev-desc','ev-link'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['ev-title','ev-city','ev-venue','ev-note','ev-desc','ev-link','ev-audience','ev-agenda','ev-org-name','ev-org-info','ev-contact','ev-meeting'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     }catch(e){
       show('Gönderilemedi. Lütfen tekrar dene.');
     }finally{

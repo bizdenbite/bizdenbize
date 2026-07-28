@@ -770,11 +770,55 @@
         body:JSON.stringify({event_id:eventId,user_id:session.user.id,status:'registered',payment_status:'none'})});
       if(r.status===409){ if(btn){btn.textContent='✓ Zaten kayıtlısın';btn.classList.add('going');} return; }
       if(!r.ok) throw new Error(await r.text());
-      if(btn){btn.textContent='✓ Kaydoldun';btn.classList.add('going');}
+      if(btn){btn.textContent='✓ Kaydoldun';btn.classList.add('going');} if(window.__edEvent) edFillMeeting(window.__edEvent);
     }catch(e){ if(btn){btn.disabled=false;btn.textContent='✓ Ücretsiz Kayıt Ol';} alert('Kayıt yapılamadı.'); }
   }
   window.edRegister=edRegister;
 
+  function edSection(title, body){
+    if(!body) return '';
+    return '<div style="margin-bottom:18px;"><div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;">'+title+'</div>'
+      + '<div style="font-size:14px;line-height:1.7;color:var(--muted);white-space:pre-line;">'+edEsc(body)+'</div></div>';
+  }
+  function edOrganizer(e){
+    if(!e.organizer_name && !e.organizer_info) return '';
+    return '<div style="margin-bottom:18px;padding:14px 16px;background:var(--warm,#F0EAE0);border-radius:12px;">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Organizatör</div>'
+      + (e.organizer_name?'<div style="font-size:15px;font-weight:700;color:var(--ink);">'+edEsc(e.organizer_name)+'</div>':'')
+      + (e.organizer_info?'<div style="font-size:13px;color:var(--muted);margin-top:2px;">'+edEsc(e.organizer_info)+'</div>':'')
+      + '</div>';
+  }
+  function edMeetingBlock(e){
+    // Placeholder; filled async after we check registration + fetch the gated link.
+    const t=e.event_type||'external';
+    if(t!=='hosted_free' && t!=='hosted_paid') return '';
+    return '<div id="ed-meeting-block" style="margin-bottom:18px;"></div>';
+  }
+  async function edFillMeeting(e){
+    const block=document.getElementById('ed-meeting-block');
+    if(!block) return;
+    await (window._authReady||Promise.resolve());
+    const session=window._currentSession;
+    // Try to read the gated link — RLS returns it only if this user is registered.
+    let link=null;
+    if(session){
+      try{
+        const r=await fetch(_ED_URL+'/rest/v1/event_meeting_links?event_id=eq.'+encodeURIComponent(e.id)+'&select=meeting_url,meeting_note',{
+          headers:{'apikey':_ED_KEY,'Authorization':'Bearer '+session.access_token}
+        });
+        if(r.ok){ const rows=await r.json(); if(rows.length) link=rows[0]; }
+      }catch(_){}
+    }
+    if(link){
+      block.innerHTML='<div style="padding:14px 16px;background:rgba(30,123,75,.08);border:1px solid rgba(30,123,75,.25);border-radius:12px;">'
+        +'<div style="font-size:13px;font-weight:700;color:var(--green,#1E7B4B);margin-bottom:6px;">🔗 Online Katılım Bağlantısı</div>'
+        +'<a href="'+edEsc(link.meeting_url)+'" target="_blank" rel="noopener" style="font-size:14px;color:var(--navy,#1B3A8C);font-weight:600;word-break:break-all;">'+edEsc(link.meeting_url)+'</a>'
+        +(link.meeting_note?'<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+edEsc(link.meeting_note)+'</div>':'')
+        +'</div>';
+    } else {
+      block.innerHTML='<div style="padding:14px 16px;background:var(--warm,#F0EAE0);border:1px dashed var(--sand);border-radius:12px;font-size:13px;color:var(--muted);">🔒 Online katılım bağlantısı yalnızca kayıtlı katılımcılara gösterilir. Kaydolduğunda burada görünecek.</div>';
+    }
+  }
   async function loadEventDetail(){
     const root=document.getElementById('event-detail-root');
     const id=edId();
@@ -799,8 +843,13 @@
         +   '<div>📍 <strong>'+venue+'</strong></div>'
         +   '<div><span class="ei-tag" style="background:'+cat.c+'1a;color:'+cat.c+';padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600;">'+cat.l+'</span></div>'
         + '</div>'
-        + (e.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:24px;">'+edEsc(e.description)+'</div>':'')
-        + '</div>'
+        + (e.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:20px;">'+edEsc(e.description)+'</div>':'')
+        + edSection('👥 Kimler için faydalı?', e.target_audience)
+        + edSection('🗒️ Program', e.agenda)
+        + edMeetingBlock(e)
+        + edOrganizer(e)
+        + (e.contact_info?edSection('📞 İletişim', e.contact_info):'')
+        + '</div>' 
         + '<div class="right-col"><div class="rsvp-card">'
         +   '<div class="rc-date"><div class="rc-month">'+(dt&&!isNaN(dt)?ED_M[dt.getMonth()].slice(0,3):'—')+'</div><div class="rc-day">'+(dt&&!isNaN(dt)?dt.getDate():'·')+'</div></div>'
         +   (e.event_note?'<div class="rc-time">'+edEsc(e.event_note)+'</div>':'')
@@ -808,7 +857,7 @@
         +   edActionBlock(e)
         +   '<div class="rsvp-share" style="margin-top:10px;"><button class="share-btn" onclick="edShareWA()">💬 WhatsApp</button></div>'
         + '</div></div>';
-      window.__edEvent=e;
+      window.__edEvent=e; edFillMeeting(e);
     }catch(err){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="events.html">← Etkinliklere dön</a></div>'; }
   }
   function edShareWA(){ const e=window.__edEvent; if(!e)return; const txt=e.title+' — BizdenBize\n'+location.href; window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); }
