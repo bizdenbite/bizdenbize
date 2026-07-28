@@ -160,6 +160,7 @@
   </div>
   <div class="nav-right">
     <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+    <a href="messages.html" title="Mesajlar" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--warm);color:var(--ink);border:1px solid var(--sand);border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">💬 Mesajlar</a>
     <a href="#" id="public-link" title="Profilimi Gör" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--warm);color:var(--ink);border:1px solid var(--sand);border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">👁 Profilim</a>
     <button onclick="doLogout()" title="Çıkış Yap" style="padding:7px 13px;background:rgba(212,43,43,.08);color:var(--red);border:1px solid rgba(212,43,43,.25);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;white-space:nowrap;">Çıkış</button>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
@@ -168,6 +169,11 @@
 
 <div class="mobile-menu" id="mobile-menu">
   <div class="mm-header"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div><button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;">×</button></div>
+  <div class="mm-section"><div class="mm-section-title">Hesabım</div>
+    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏠</span>Mahallem</a>
+    <a class="mm-link" href="profile.html"><span class="mm-link-icon">👤</span>Profilim</a>
+    <a class="mm-link" href="messages.html"><span class="mm-link-icon">💬</span>Mesajlar</a>
+  </div>
   <div class="mm-section"><div class="mm-section-title">Sağlık</div>
     <a class="mm-link" href="saglik.html?section=doctors"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
     <a class="mm-link" href="saglik.html?section=mental"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
