@@ -94,6 +94,8 @@
 
     /* Chat header */
     .chat-header { padding: 14px 24px; border-bottom: 1px solid rgba(212,197,169,.3); display: flex; align-items: center; gap: 14px; flex-shrink: 0; background: var(--white); }
+    .ch-back { display:none; background:none; border:none; font-size:30px; line-height:1; color:var(--ink,#1A1208); cursor:pointer; padding:0 6px 0 0; flex-shrink:0; }
+    @media (max-width:768px){ .ch-back { display:block; } }
     .ch-avatar { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--white); position: relative; }
     .ch-online { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: var(--green); border: 2px solid var(--white); }
     .ch-info { flex: 1; }
@@ -183,8 +185,12 @@
 
     @media (max-width: 768px) {
       .shell { grid-template-columns: 1fr; }
-      .conv-list { display: none; }
-      .conv-list.mobile-open { display: flex; position: fixed; inset: 58px 0 0 0; z-index: 50; }
+      /* Default mobile view: show the conversation list, hide the chat panel */
+      .conv-list { display: flex; }
+      .chat-panel { display: none; }
+      /* When a conversation is open, body gets .chat-open → swap them */
+      body.chat-open .conv-list { display: none; }
+      body.chat-open .chat-panel { display: flex; }
     }
   
     /* ── MOBILE NAV ── */
@@ -510,6 +516,7 @@
 
     <div id="active-conv" class="conv-view" style="display:none;flex-direction:column;height:100%">
       <div class="chat-header">
+        <button class="ch-back" onclick="backToConvList()" title="Geri" aria-label="Geri">‹</button>
         <div class="ch-avatar" id="ch-avatar" style="background:#1B3A8C"></div>
         <div class="ch-info">
           <div class="ch-name" id="ch-name"></div>
@@ -782,8 +789,13 @@
     openConv(activeConvId);
   };
 
+  window.backToConvList = function(){
+    document.body.classList.remove('chat-open');  // mobile: show list again
+    activeConvId = null;
+  };
   window.openConv = async function(id) {
     activeConvId = id;
+    document.body.classList.add('chat-open');  // mobile: show chat, hide list
     document.getElementById('empty-state').style.display = 'none';
     document.getElementById('active-conv').style.display = 'flex';
 
