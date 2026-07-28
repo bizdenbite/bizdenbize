@@ -966,7 +966,7 @@
       const r=await fetch(_EV_SB_URL+"/rest/v1/events?status=eq.approved&order=event_date.asc&select=*",{headers:_EV_H});
       if(!r.ok) throw new Error('DB '+r.status);
       const rows=await r.json();
-      window.__evAll=rows; renderCalendar();
+      window.__evAll=rows; calYear=undefined; renderCalendar();
       if(!rows.length){ box.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Henüz etkinlik yok. İlk öneren sen ol! 👇</div>'; return; }
       box.innerHTML=rows.map(evCard).join('');
     }catch(err){
