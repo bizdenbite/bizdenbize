@@ -80,19 +80,6 @@
     .widget{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px;margin-bottom:16px;}
     .widget-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:14px;}
 
-    /* Mini calendar */
-    .mini-cal{width:100%;}
-    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-    .cal-month{font-size:13px;font-weight:600;}
-    .cal-nav{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:2px 6px;}
-    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
-    .cal-day-label{font-size:10px;font-weight:600;color:var(--muted);text-align:center;padding:4px 0;}
-    .cal-day{font-size:12px;text-align:center;padding:6px 2px;border-radius:6px;cursor:pointer;transition:background .15s;}
-    .cal-day:hover{background:var(--warm);}
-    .cal-day.has-event{font-weight:600;color:var(--red);}
-    .cal-day.today{background:var(--red);color:var(--white);font-weight:700;}
-    .cal-day.other{color:var(--sand);}
-
     /* Modal */
     .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
     .modal-overlay.open{display:flex;}
