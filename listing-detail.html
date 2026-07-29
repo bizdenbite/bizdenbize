@@ -692,6 +692,8 @@
     const deliv=l.delivery?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Teslimat</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_DELIV[l.delivery]||l.delivery)+'</td></tr>'):'';
       const loc=[l.location,l.city].filter(Boolean).join(', ');
 
+      const shareHtml = `<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--sand);"><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Bu İlanı Paylaş</div><div style="display:flex;gap:8px;"><button onclick="ldShareWhatsApp()" style="flex:1;background:#1E7B4B;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3A2.8 2.8 0 0 0 6 8.9a4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.9.5 2.2.5a2.4 2.4 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c0-.2-.2-.2-.4-.3z"/></svg>WhatsApp</button><button onclick="ldShareEmail()" style="flex:1;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">✉️ E-posta</button></div></div>`;
+
       root.innerHTML=
         '<div>'
         + gallery
@@ -708,6 +710,7 @@
               ? '<div style="color:var(--muted);font-size:14px;">Bu ilan satılmış.</div>'
               : '<button onclick="ldContact(\''+l.created_by+'\')" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">💬 Mesaj Gönder</button>')
         +   '<div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5;">Güvenliğin için tüm iletişim BizdenBize üzerinden yapılır. Kişisel bilgilerini paylaşmadan önce dikkatli ol.</div>'
+        +   shareHtml
         + '</div></div>';
       window.__ldListing=l;
     }catch(e){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="classifieds.html">← İlanlara dön</a></div>'; }
@@ -721,6 +724,22 @@
     // hand off to messages with the seller preselected
     const ref=encodeURIComponent('"'+(window.__ldListing?window.__ldListing.title:'İlan')+'" ilanı hakkında:');
     location.href='messages.html?with='+sellerId+'&ref='+ref+'&listing='+(window.__ldListing?window.__ldListing.id:'');
+  };
+  function ldShareData(){
+    const l=window.__ldListing||{};
+    const url=location.origin+location.pathname+'?id='+encodeURIComponent(l.id||'');
+    return { url:url, price:ldPrice(l), title:l.title||'İlan' };
+  }
+  window.ldShareWhatsApp=function(){
+    const s=ldShareData();
+    const text='"'+s.title+'" · '+s.price+'\n\nBu ilanı BizdenBize\'de gör:\n'+s.url;
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+  };
+  window.ldShareEmail=function(){
+    const s=ldShareData();
+    const subject='BizdenBize\'de bir ilan: '+s.title;
+    const body='Merhaba,\n\nBu ilanı BizdenBize\'de gördüm, ilgini çekebilir:\n\n"'+s.title+'" · '+s.price+'\n\n'+s.url+'\n\nBizdenBize — Gurbet Hayatını Kolaylaştırıyoruz.';
+    location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
   };
   loadListing();
 </script>
