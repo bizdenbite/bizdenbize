@@ -611,7 +611,7 @@
 <div class="modal-overlay" id="post-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <h3>İlan Ver</h3>
+    <h3 id="cl-modal-title">İlan Ver</h3>
     <p>Mahallenle güvenli alışveriş yap.</p>
     <div class="form-group">
       <label>Kategori *</label>
@@ -669,7 +669,7 @@
 </div>
 
 <script>
-  function openModal(){document.getElementById('post-modal').classList.add('open');}
+  function openModal(){ clResetForm(); document.getElementById('post-modal').classList.add('open'); }
   function closeModal(){document.getElementById('post-modal').classList.remove('open');}
   document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
   function submitAd(){alert('İlanınız yayınlandı! ✓');closeModal();}
@@ -991,9 +991,10 @@
       const soldBtn = isSold
         ? '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',false)" style="flex:1;background:var(--warm);border:1px solid var(--sand);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--ink);">↩ Tekrar aktif</button>'
         : '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',true)" style="flex:1;background:var(--green);border:none;border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;">✓ Satıldı</button>';
-      ownerBar='<div style="display:flex;gap:6px;margin-top:8px;">'
+      ownerBar='<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">'
         + soldBtn
-        + '<button onclick="event.stopPropagation();clRemove(\''+l.id+'\')" style="flex:1;background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--red);">🗑 Kaldır</button>'
+        + '<button onclick="event.stopPropagation();clEditListing(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(27,58,140,.08);border:1px solid rgba(27,58,140,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--navy);">✏️ Düzenle</button>'
+        + '<button onclick="event.stopPropagation();clRemove(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--red);">🗑 Kaldır</button>'
         + '</div>';
     }
 
@@ -1011,6 +1012,10 @@
   async function loadListings(){
     const box=document.getElementById('listings-grid');
     try{
+      // The auth client is set up in a deferred <script type="module"> that runs AFTER
+      // this script. On a fresh page load, wait for it before reading the session —
+      // otherwise __clUserId is null and the owner controls are wrongly hidden.
+      for(let i=0;i<150 && !window._authReady;i++){ await new Promise(r=>setTimeout(r,20)); }
       await (window._authReady||Promise.resolve());
       window.__clUserId = (window._currentSession && window._currentSession.user) ? window._currentSession.user.id : null;
       const r=await fetch(_CL_URL+"/rest/v1/classified_listings?active=eq.true&order=created_at.desc&select=*",{headers:_CL_H});
@@ -1067,31 +1072,68 @@
   };
 
   // ── PHOTO PREVIEW ──
-  let clSelectedFiles=[];
+  let clSelectedFiles=[];      // newly picked File objects (uploaded on save)
+  let clExistingPhotos=[];     // existing photo URLs kept during an edit
+  let clEditId=null;           // null = create mode; a listing id = edit mode
   function clRenderPreviews(){
     const prev=document.getElementById('cl-photo-preview');
+    if(!prev) return;
     prev.innerHTML='';
-    clSelectedFiles.forEach((f,idx)=>{
-      const url=URL.createObjectURL(f);
+    const mkThumb=(bg,onRemove)=>{
       const wrap=document.createElement('div');
       wrap.style.cssText='position:relative;width:60px;height:60px;';
       const img=document.createElement('div');
-      img.style.cssText='width:60px;height:60px;border-radius:8px;background-image:url('+url+');background-size:cover;background-position:center;border:1px solid var(--sand);';
+      img.style.cssText='width:60px;height:60px;border-radius:8px;background-image:url("'+bg+'");background-size:cover;background-position:center;border:1px solid var(--sand);';
       const del=document.createElement('button');
-      del.type='button';
-      del.textContent='×';
-      del.title='Kaldır';
+      del.type='button'; del.textContent='×'; del.title='Kaldır';
       del.style.cssText='position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);';
-      del.onclick=function(){ clSelectedFiles.splice(idx,1); clRenderPreviews(); };
+      del.onclick=onRemove;
       wrap.appendChild(img); wrap.appendChild(del);
       prev.appendChild(wrap);
-    });
+    };
+    clExistingPhotos.forEach((url,idx)=>{ mkThumb(url, function(){ clExistingPhotos.splice(idx,1); clRenderPreviews(); }); });
+    clSelectedFiles.forEach((f,idx)=>{ mkThumb(URL.createObjectURL(f), function(){ clSelectedFiles.splice(idx,1); clRenderPreviews(); }); });
   }
+  function clResetForm(){
+    clEditId=null; clExistingPhotos=[]; clSelectedFiles=[];
+    ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    const cat=document.getElementById('cl-category'); if(cat) cat.value='arac';
+    const cond=document.getElementById('cl-condition'); if(cond) cond.value='';
+    const dlv=document.getElementById('cl-delivery'); if(dlv) dlv.value='';
+    const t=document.getElementById('cl-modal-title'); if(t) t.textContent='İlan Ver';
+    const b=document.getElementById('cl-submit-btn'); if(b) b.textContent='İlanı Yayınla →';
+    const e=document.getElementById('cl-form-err'); if(e) e.style.display='none';
+    const fileInput=document.getElementById('cl-photos'); if(fileInput) fileInput.value='';
+    clRenderPreviews();
+  }
+  window.clEditListing=function(id){
+    const l=(clAll||[]).find(x=>String(x.id)===String(id));
+    if(!l){ alert('İlan bulunamadı.'); return; }
+    if(!window.__clUserId || l.created_by!==window.__clUserId){ alert('Bu ilanı düzenleme yetkin yok.'); return; }
+    clEditId=id;
+    const set=(elid,val)=>{const el=document.getElementById(elid); if(el) el.value=val;};
+    set('cl-category', l.category||'diger');
+    set('cl-title', l.title||'');
+    set('cl-price', (l.price!=null? l.price : ''));
+    set('cl-condition', l.condition||'');
+    set('cl-desc', l.description||'');
+    set('cl-delivery', l.delivery||'');
+    set('cl-city', l.city||'');
+    set('cl-location', l.location||'');
+    clExistingPhotos=Array.isArray(l.photos)? l.photos.slice() : [];
+    clSelectedFiles=[];
+    clRenderPreviews();
+    const t=document.getElementById('cl-modal-title'); if(t) t.textContent='İlanı Düzenle';
+    const b=document.getElementById('cl-submit-btn'); if(b) b.textContent='Değişiklikleri Kaydet →';
+    const e=document.getElementById('cl-form-err'); if(e) e.style.display='none';
+    document.getElementById('post-modal').classList.add('open');
+  };
   document.addEventListener('change', function(ev){
     if(ev.target && ev.target.id==='cl-photos'){
       // append newly chosen files to existing selection, cap at 5
       const picked=Array.from(ev.target.files);
-      clSelectedFiles=clSelectedFiles.concat(picked).slice(0,5);
+      const room=Math.max(0, 5 - clExistingPhotos.length);
+      clSelectedFiles=clSelectedFiles.concat(picked).slice(0,room);
       ev.target.value='';  // reset so the same file can be re-picked if removed
       clRenderPreviews();
     }
@@ -1131,11 +1173,10 @@
         }
       }
 
-      // 2. insert the listing
+      // 2. build the field payload (shared by create + edit)
       const priceVal=document.getElementById('cl-price').value;
-      const payload={
-        created_by: session.user.id,
-        active: true,
+      const finalPhotos=clExistingPhotos.concat(photoUrls);
+      const fields={
         title: title,
         category: document.getElementById('cl-category').value,
         price: priceVal!==''? parseFloat(priceVal): null,
@@ -1144,27 +1185,34 @@
         city: city,
         location: (document.getElementById('cl-location').value||'').trim() || null,
         delivery: document.getElementById('cl-delivery').value || null,
-        photos: photoUrls,
-        country: 'de'
+        photos: finalPhotos
       };
-      const r=await fetch(_CL_URL+'/rest/v1/classified_listings',{
-        method:'POST',
-        headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
-        body: JSON.stringify(payload)
-      });
-      if(!r.ok) throw new Error(await r.text());
+
+      if(clEditId){
+        // EDIT: update the existing row (RLS restricts this to the owner)
+        const ok=await clOwnerPatch(clEditId, fields);
+        if(!ok) throw new Error('update failed');
+      } else {
+        // CREATE: insert a new row
+        const payload=Object.assign({ created_by: session.user.id, active: true, country: 'de' }, fields);
+        const r=await fetch(_CL_URL+'/rest/v1/classified_listings',{
+          method:'POST',
+          headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+          body: JSON.stringify(payload)
+        });
+        if(!r.ok) throw new Error(await r.text());
+      }
 
       // success
+      const wasEdit=!!clEditId;
       document.getElementById('post-modal').classList.remove('open');
-      ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-      clSelectedFiles=[]; clRenderPreviews();
-      const fileInput=document.getElementById('cl-photos'); if(fileInput) fileInput.value='';
-      await loadListings();  // refresh grid — your new listing appears immediately
-      alert('İlanın yayınlandı! ✓');
+      clResetForm();
+      await loadListings();  // refresh grid
+      alert(wasEdit ? 'İlanın güncellendi! ✓' : 'İlanın yayınlandı! ✓');
     }catch(e){
-      show('İlan yayınlanamadı. Lütfen tekrar dene.');
+      show(clEditId ? 'Değişiklikler kaydedilemedi. Lütfen tekrar dene.' : 'İlan yayınlanamadı. Lütfen tekrar dene.');
     }finally{
-      if(btn){ btn.disabled=false; btn.textContent='İlanı Yayınla →'; }
+      if(btn){ btn.disabled=false; btn.textContent = clEditId ? 'Değişiklikleri Kaydet →' : 'İlanı Yayınla →'; }
     }
   };
 
