@@ -656,6 +656,7 @@
   const _LD_H={'apikey':_LD_KEY,'Authorization':'Bearer '+_LD_KEY};
   const LD_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
   const LD_COND={sifir:'Sıfır gibi',iyi:'İyi',orta:'Kullanılmış'};
+  const LD_DELIV={elden:'🤝 Elden teslim',kargo:'📦 Kargo',ikisi:'🤝📦 Elden veya kargo'};
   function ldEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function ldId(){return new URLSearchParams(location.search).get('id');}
   function ldPrice(l){ return l.price!=null ? '€'+Number(l.price).toLocaleString('de-DE') : 'Pazarlık'; }
@@ -687,7 +688,8 @@
         gallery='<div class="gallery"><div style="width:100%;aspect-ratio:4/3;border-radius:14px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:72px;">'+cat.e+'</div></div>';
       }
 
-      const cond=l.condition?('<tr><td>Durum</td><td>'+ldEsc(LD_COND[l.condition]||l.condition)+'</td></tr>'):'';
+      const cond=l.condition?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Durum</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_COND[l.condition]||l.condition)+'</td></tr>'):'';
+    const deliv=l.delivery?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Teslimat</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_DELIV[l.delivery]||l.delivery)+'</td></tr>'):'';
       const loc=[l.location,l.city].filter(Boolean).join(', ');
 
       root.innerHTML=
@@ -698,7 +700,7 @@
         + '<div class="li-title">'+ldEsc(l.title)+'</div>'
         + '<div style="color:var(--muted);font-size:14px;margin:8px 0 20px;">'+cat.e+' '+ldEsc(cat.l)+(loc?' · 📍 '+ldEsc(loc):'')+'</div>'
         + (l.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:20px;white-space:pre-line;">'+ldEsc(l.description)+'</div>':'')
-        + (cond?'<table style="width:100%;font-size:14px;border-collapse:collapse;"><tbody>'+cond+'</tbody></table>':'')
+        + ((cond||deliv)?'<table style="width:auto;font-size:14px;border-collapse:collapse;"><tbody>'+cond+deliv+'</tbody></table>':'')
         + '</div>'
         + '<div class="right-col"><div class="seller-card">'
         +   '<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Satıcı ile İletişim</div>'

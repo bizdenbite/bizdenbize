@@ -639,6 +639,15 @@
       <label>Açıklama</label>
       <textarea id="cl-desc" placeholder="İlanını detaylıca anlat..."></textarea>
     </div>
+    <div class="form-group">
+      <label>Teslimat</label>
+      <select id="cl-delivery">
+        <option value="">—</option>
+        <option value="elden">🤝 Elden teslim</option>
+        <option value="kargo">📦 Kargo</option>
+        <option value="ikisi">🤝📦 Elden veya kargo</option>
+      </select>
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label>Şehir *</label>
@@ -1134,6 +1143,7 @@
         description: (document.getElementById('cl-desc').value||'').trim() || null,
         city: city,
         location: (document.getElementById('cl-location').value||'').trim() || null,
+        delivery: document.getElementById('cl-delivery').value || null,
         photos: photoUrls,
         country: 'de'
       };
