@@ -160,6 +160,11 @@
     .ia-btn:hover { border-color: var(--navy); color: var(--navy); }
     .input-wrap { display: flex; gap: 10px; align-items: flex-end; background: var(--cream); border: 1.5px solid var(--sand); border-radius: 12px; padding: 10px 14px; transition: border-color .2s; }
     .input-wrap:focus-within { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,140,.08); }
+    .conv-group { border-bottom: 6px solid var(--warm, #F0EAE0); }
+    .cg-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; }
+    .cg-thumb { width: 40px; height: 40px; border-radius: 8px; background: var(--warm, #F0EAE0); font-size: 20px; flex-shrink: 0; }
+    .cg-title { font-size: 13px; font-weight: 700; color: var(--ink, #1A1208); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cg-sub { font-size: 11px; color: var(--muted, #6B5E4E); margin-top: 1px; }
     #msg-input { flex: 1; border: none; background: none; outline: none; resize: none; font-family: 'Instrument Sans', sans-serif; font-size: 14px; color: var(--ink); min-height: 22px; max-height: 100px; line-height: 1.5; }
     #msg-input::placeholder { color: var(--sand); }
     .send-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--navy); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s, transform .1s; flex-shrink: 0; }
@@ -617,8 +622,9 @@
     const params = new URLSearchParams(window.location.search);
     const withId = params.get('with');
     const refText = params.get('ref');
+    const listingId = params.get('listing');
     if (withId && withId !== me.id) {
-      const convId = await findOrCreateConversation(withId);
+      const convId = await findOrCreateConversation(withId, listingId);
       if (convId) {
         await loadConversations();
         await openConv(convId);
@@ -655,9 +661,20 @@
       (unreadRows || []).forEach(m => unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1);
     }
 
+    // Enrich with listing info (title) for listing-scoped conversations
+    let listingMap = {};
+    const listingIds = [...new Set(convRows.map(c => c.listing_id).filter(Boolean))];
+    if (listingIds.length) {
+      const { data: listings } = await supabase.from('classified_listings')
+        .select('id, title, photos, price, status').in('id', listingIds);
+      (listings || []).forEach(l => listingMap[l.id] = l);
+    }
+
     conversations = convRows.map(c => {
       const otherId = c.participant_1 === me.id ? c.participant_2 : c.participant_1;
-      return { ...c, otherId, otherProfile: profileMap[otherId] || null, unreadCount: unreadMap[c.id] || 0 };
+      return { ...c, otherId, otherProfile: profileMap[otherId] || null,
+               listing: c.listing_id ? (listingMap[c.listing_id] || null) : null,
+               unreadCount: unreadMap[c.id] || 0 };
     });
 
     renderConvList();
@@ -687,6 +704,35 @@
     return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
+  function convItemHtml(c, opts) {
+    opts = opts || {};
+    const p = c.otherProfile;
+    const name = escapeHtml(p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : 'Kullanıcı');
+    const initials = initialsFor(p?.first_name, p?.last_name);
+    const color = colorFor(c.otherId);
+    const preview = escapeHtml(c.last_message || 'Henüz mesaj yok');
+    const type = c.unreadCount > 0 ? 'unread' : 'all';
+    const listingType = c.listing_id ? ' listings' : '';
+    // in grouped mode we hide the per-item listing tag (the group header already shows it)
+    const listingTag = (!opts.grouped && c.listing_id)
+      ? `<span class="ci-context">🛍️ ${c.listing ? escapeHtml(c.listing.title) : 'İlan hakkında'}</span>` : '';
+    return `
+      <div class="conv-item ${c.id === activeConvId ? 'active' : ''} ${c.unreadCount > 0 ? 'unread' : ''}" data-id="${c.id}" data-type="${type}${listingType}" onclick="openConv('${c.id}')">
+        <div class="ci-avatar" style="background:${color}">${initials}</div>
+        <div class="ci-body">
+          <div class="ci-top">
+            <span class="ci-name">${name}</span>
+            <span class="ci-time">${timeLabel(c.last_message_at || c.created_at)}</span>
+          </div>
+          <div class="ci-preview">${preview}</div>
+          ${listingTag}
+        </div>
+        ${c.unreadCount > 0 ? `<div class="unread-dot"></div>` : ''}
+      </div>`;
+  }
+
+  let convGroupMode = false;  // toggled by the İlanlar filter
+
   function renderConvList() {
     const container = document.getElementById('conv-items');
     if (!conversations.length) {
@@ -694,28 +740,43 @@
       updateUnreadBadge();
       return;
     }
-    container.innerHTML = conversations.map(c => {
-      const p = c.otherProfile;
-      const name = escapeHtml(p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : 'Kullanıcı');
-      const initials = initialsFor(p?.first_name, p?.last_name);
-      const color = colorFor(c.otherId);
-      const preview = escapeHtml(c.last_message || 'Henüz mesaj yok');
-      const type = c.unreadCount > 0 ? 'unread' : 'all';
-      const listingType = c.listing_id ? ' listings' : '';
-      return `
-        <div class="conv-item ${c.id === activeConvId ? 'active' : ''} ${c.unreadCount > 0 ? 'unread' : ''}" data-id="${c.id}" data-type="${type}${listingType}" onclick="openConv('${c.id}')">
-          <div class="ci-avatar" style="background:${color}">${initials}</div>
-          <div class="ci-body">
-            <div class="ci-top">
-              <span class="ci-name">${name}</span>
-              <span class="ci-time">${timeLabel(c.last_message_at || c.created_at)}</span>
+
+    if (convGroupMode) {
+      // Group by listing: show each listing with all its buyer conversations under it
+      const listingConvs = conversations.filter(c => c.listing_id);
+      if (!listingConvs.length) {
+        container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;">İlanlarla ilgili mesaj yok.</div>`;
+        updateUnreadBadge();
+        return;
+      }
+      const groups = {};
+      listingConvs.forEach(c => { (groups[c.listing_id] = groups[c.listing_id] || []).push(c); });
+      let html = '';
+      Object.keys(groups).forEach(lid => {
+        const convs = groups[lid];
+        const listing = convs[0].listing;
+        const title = listing ? escapeHtml(listing.title) : 'İlan';
+        const photo = (listing && listing.photos && listing.photos.length) ? listing.photos[0] : null;
+        const unreadTotal = convs.reduce((n,c)=>n+(c.unreadCount||0),0);
+        html += `
+          <div class="conv-group">
+            <div class="cg-header">
+              <div class="cg-thumb" style="${photo ? `background-image:url('${escapeHtml(photo)}');background-size:cover;background-position:center;` : 'display:flex;align-items:center;justify-content:center;'}">${photo ? '' : '🛍️'}</div>
+              <div style="flex:1;min-width:0;">
+                <div class="cg-title">${title}</div>
+                <div class="cg-sub">${convs.length} kişi${unreadTotal>0?` · <span style="color:var(--red);font-weight:600;">${unreadTotal} yeni</span>`:''}</div>
+              </div>
+              <a href="listing-detail.html?id=${lid}" onclick="event.stopPropagation()" title="İlanı gör" style="font-size:12px;color:var(--navy,#1B3A8C);text-decoration:none;font-weight:600;white-space:nowrap;">İlanı gör →</a>
             </div>
-            <div class="ci-preview">${preview}</div>
-            ${c.listing_id ? `<span class="ci-context">🛍️ İlan hakkında</span>` : ''}
-          </div>
-          ${c.unreadCount > 0 ? `<div class="unread-dot"></div>` : ''}
-        </div>`;
-    }).join('');
+            ${convs.map(c => convItemHtml(c, {grouped:true})).join('')}
+          </div>`;
+      });
+      container.innerHTML = html;
+      updateUnreadBadge();
+      return;
+    }
+
+    container.innerHTML = conversations.map(c => convItemHtml(c)).join('');
     updateUnreadBadge();
   }
 
@@ -958,6 +1019,13 @@
   window.filterTab = function(btn, type) {
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
+    if (type === 'listings') {
+      convGroupMode = true;
+      renderConvList();   // re-render grouped by listing
+      return;
+    }
+    // leaving grouped mode → flat list, then apply filter
+    if (convGroupMode) { convGroupMode = false; renderConvList(); }
     document.querySelectorAll('.conv-item').forEach(item => {
       if (type === 'all') { item.style.display = 'flex'; return; }
       const t = item.dataset.type || '';
@@ -975,15 +1043,20 @@
   };
 
   // ===== New conversation =====
-  async function findOrCreateConversation(otherId) {
-    const { data: existing } = await supabase.from('conversations')
+  async function findOrCreateConversation(otherId, listingId) {
+    // When a listingId is given, scope the thread to that listing (one thread per listing per buyer).
+    // Otherwise, find the general person-to-person thread (no listing).
+    let q = supabase.from('conversations')
       .select('id')
-      .or(`and(participant_1.eq.${me.id},participant_2.eq.${otherId}),and(participant_1.eq.${otherId},participant_2.eq.${me.id})`)
-      .maybeSingle();
+      .or(`and(participant_1.eq.${me.id},participant_2.eq.${otherId}),and(participant_1.eq.${otherId},participant_2.eq.${me.id})`);
+    q = listingId ? q.eq('listing_id', listingId) : q.is('listing_id', null);
+    const { data: existing } = await q.maybeSingle();
     if (existing) return existing.id;
 
+    const insertRow = { participant_1: me.id, participant_2: otherId };
+    if (listingId) insertRow.listing_id = listingId;
     const { data: created, error } = await supabase.from('conversations')
-      .insert({ participant_1: me.id, participant_2: otherId })
+      .insert(insertRow)
       .select().single();
     if (error) { console.error('Could not start conversation:', error); return null; }
     return created.id;
