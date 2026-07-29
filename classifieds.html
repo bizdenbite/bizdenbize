@@ -418,6 +418,12 @@
     });
   })();
 </script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb=_authSb;
+    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+  </script>
 </head>
 <body>
 <!-- NAV -->
@@ -585,81 +591,18 @@
       <option>€500 – €2000</option>
       <option>€2000+</option>
     </select>
-    <button class="filter-cat active" onclick="filterCat(this)">Tümü</button>
-    <button class="filter-cat" onclick="filterCat(this)">🚗 Araç</button>
-    <button class="filter-cat" onclick="filterCat(this)">🏠 Emlak</button>
-    <button class="filter-cat" onclick="filterCat(this)">📱 Elektronik</button>
-    <button class="filter-cat" onclick="filterCat(this)">🛋️ Mobilya</button>
-    <button class="filter-cat" onclick="filterCat(this)">👗 Giyim</button>
-    <button class="filter-cat" onclick="filterCat(this)">🍳 Diğer</button>
-    <span class="result-count">247 ilan bulundu</span>
+    <button class="filter-cat active" onclick="clFilter('all',this)">Tümü</button>
+    <button class="filter-cat" onclick="clFilter('arac',this)">🚗 Araç</button>
+    <button class="filter-cat" onclick="clFilter('emlak',this)">🏠 Emlak</button>
+    <button class="filter-cat" onclick="clFilter('elektronik',this)">📱 Elektronik</button>
+    <button class="filter-cat" onclick="clFilter('mobilya',this)">🛋️ Mobilya</button>
+    <button class="filter-cat" onclick="clFilter('ev_esyasi',this)">🍳 Ev Eşyası</button>
+    <button class="filter-cat" onclick="clFilter('diger',this)">📦 Diğer</button>
+    <span class="result-count" id="cl-count"></span>
   </div>
 
-  <div class="listings-grid">
-    <div class="listing featured" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">🚗<span class="featured-badge">⭐ Öne Çıkan</span><button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€18.500</div>
-        <div class="listing-title">Audi A3 Satılık — 2019, 68.000 km</div>
-        <div class="listing-meta">📍 Frankfurt · 3 saat önce <span class="listing-tag" style="background:rgba(192,57,43,.1);color:#D42B2B">Araç</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">📱<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€650</div>
-        <div class="listing-title">iPhone 14 Pro — 256GB, Siyah</div>
-        <div class="listing-meta">📍 Frankfurt · Dün <span class="listing-tag" style="background:rgba(24,95,165,.1);color:#185FA5">Elektronik</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">🛋️<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€180</div>
-        <div class="listing-title">IKEA Koltuk Takımı — Temiz, Gri</div>
-        <div class="listing-meta">📍 Frankfurt · Dün <span class="listing-tag" style="background:rgba(201,168,76,.1);color:#C9A84C">Mobilya</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">🏠<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€1.200/ay</div>
-        <div class="listing-title">3 Oda Kiralık Daire — Sachsenhausen</div>
-        <div class="listing-meta">📍 Frankfurt · 2 gün önce <span class="listing-tag" style="background:rgba(30,123,75,.1);color:#1E7B4B">Emlak</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">🚲<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€320</div>
-        <div class="listing-title">E-Bisiklet — Bosch Motor, 2022</div>
-        <div class="listing-meta">📍 Frankfurt · 3 gün önce <span class="listing-tag" style="background:rgba(192,57,43,.1);color:#D42B2B">Araç</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">👗<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€45</div>
-        <div class="listing-title">Zara Kışlık Mont — M Beden, Lacivert</div>
-        <div class="listing-meta">📍 Frankfurt · 4 gün önce <span class="listing-tag" style="background:rgba(83,74,183,.1);color:#534AB7">Giyim</span></div>
-      </div>
-    </div>
-    <div class="listing featured" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">🏪<span class="featured-badge">⭐ Öne Çıkan</span><button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€45.000</div>
-        <div class="listing-title">Devren Satılık Kebap Dükkanı — Kurulu Müşteri Kitlesi</div>
-        <div class="listing-meta">📍 Frankfurt · 1 hafta önce <span class="listing-tag" style="background:rgba(201,168,76,.1);color:#C9A84C">İşletme</span></div>
-      </div>
-    </div>
-    <div class="listing" onclick="window.location='listing-detail.html'">
-      <div class="listing-thumb">📺<button class="save-btn">🤍</button></div>
-      <div class="listing-body">
-        <div class="listing-price">€290</div>
-        <div class="listing-title">Samsung 55" 4K Smart TV</div>
-        <div class="listing-meta">📍 Frankfurt · 1 hafta önce <span class="listing-tag" style="background:rgba(24,95,165,.1);color:#185FA5">Elektronik</span></div>
-      </div>
-    </div>
+  <div class="listings-grid" id="listings-grid">
+    <div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">İlanlar yükleniyor…</div>
   </div>
 </div>
 
@@ -704,7 +647,6 @@
 </div>
 
 <script>
-  function filterCat(btn){document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
   function openModal(){document.getElementById('post-modal').classList.add('open');}
   function closeModal(){document.getElementById('post-modal').classList.remove('open');}
   document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
@@ -1002,5 +944,62 @@
     }
   </style>
 </footer>
+<script>
+  const _CL_URL='https://wxjudojlwksivhzjnmim.supabase.co';
+  const _CL_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const _CL_H={'apikey':_CL_KEY,'Authorization':'Bearer '+_CL_KEY};
+  const CL_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},ev_esyasi:{l:'Ev Eşyası',e:'🍳'},diger:{l:'Diğer',e:'📦'}};
+  function clEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function clPrice(e){ return e.price!=null ? '€'+Number(e.price).toLocaleString('de-DE') : 'Pazarlık'; }
+
+  function clCard(l){
+    const cat=CL_CATS[l.category]||{l:l.category||'',e:'📦'};
+    const photo=(l.photos&&l.photos.length)?l.photos[0]:null;
+    const thumb=photo
+      ? '<div class="listing-thumb" style="background-image:url(\''+clEsc(photo)+'\');background-size:cover;background-position:center;"></div>'
+      : '<div class="listing-thumb" style="display:flex;align-items:center;justify-content:center;font-size:44px;">'+cat.e+'</div>';
+    const loc=[l.location,l.city].filter(Boolean).join(', ');
+    return '<div class="listing" data-category="'+clEsc(l.category||'')+'" onclick="window.location=\'listing-detail.html?id='+l.id+'\'">'
+      + thumb
+      + '<div class="listing-body">'
+      +   '<div class="listing-price">'+clPrice(l)+'</div>'
+      +   '<div class="listing-title">'+clEsc(l.title)+'</div>'
+      +   '<div class="listing-meta">'+cat.e+' '+clEsc(cat.l)+(loc?' · 📍 '+clEsc(loc):'')+'</div>'
+      + '</div></div>';
+  }
+
+  let clAll=[];
+  async function loadListings(){
+    const box=document.getElementById('listings-grid');
+    try{
+      const r=await fetch(_CL_URL+"/rest/v1/classified_listings?active=eq.true&order=created_at.desc&select=*",{headers:_CL_H});
+      if(!r.ok) throw new Error('DB '+r.status);
+      clAll=await r.json();
+      renderListings('all');
+    }catch(e){
+      box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--red);">İlanlar yüklenemedi. Sayfayı yenile.</div>';
+    }
+  }
+
+  function renderListings(cat){
+    const box=document.getElementById('listings-grid');
+    const rows = cat==='all' ? clAll : clAll.filter(l=>l.category===cat);
+    const countEl=document.getElementById('cl-count');
+    if(countEl) countEl.textContent = rows.length+' ilan';
+    if(!rows.length){
+      box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">Bu kategoride henüz ilan yok. İlk ilanı sen ver! 👆</div>';
+      return;
+    }
+    box.innerHTML=rows.map(clCard).join('');
+  }
+
+  window.clFilter=function(cat,btn){
+    document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    renderListings(cat);
+  };
+
+  loadListings();
+</script>
 </body>
 </html>
