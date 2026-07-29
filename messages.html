@@ -616,9 +616,17 @@
 
     const params = new URLSearchParams(window.location.search);
     const withId = params.get('with');
+    const refText = params.get('ref');
     if (withId && withId !== me.id) {
       const convId = await findOrCreateConversation(withId);
-      if (convId) { await loadConversations(); openConv(convId); }
+      if (convId) {
+        await loadConversations();
+        await openConv(convId);
+        if (refText) {
+          const inp = document.getElementById('msg-input');
+          if (inp) { inp.value = decodeURIComponent(refText) + '\n'; inp.focus(); if (window.autoResize) autoResize(inp); }
+        }
+      }
     }
   }
 

@@ -719,7 +719,8 @@
     if(!session){ alert('Mesaj göndermek için giriş yapmalısın.'); location.href='login.html'; return; }
     if(session.user.id===sellerId){ alert('Bu senin kendi ilanın.'); return; }
     // hand off to messages with the seller preselected
-    location.href='messages.html?to='+sellerId;
+    const ref=encodeURIComponent('"'+(window.__ldListing?window.__ldListing.title:'İlan')+'" ilanı hakkında:');
+    location.href='messages.html?with='+sellerId+'&ref='+ref;
   };
   loadListing();
 </script>
