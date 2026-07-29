@@ -391,6 +391,12 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
   <script src="i18n.js"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb=_authSb;
+    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+  </script>
 </head>
 <body>
 
@@ -413,137 +419,11 @@
 <div class="breadcrumb">
   <a href="mahallem.html">Ana Sayfa</a><span>/</span>
   <a href="classifieds.html">İlanlar</a><span>/</span>
-  <a href="classifieds.html">Araç</a><span>/</span>
-  <span style="color:var(--ink)">Audi A3 Satılık</span>
+  <span id="bc-title" style="color:var(--ink)">İlan</span>
 </div>
 
-<div class="page">
-  <div>
-    <!-- Gallery -->
-    <div class="gallery">
-      <div class="main-img" id="main-img">
-        <span id="main-emoji">🚗</span>
-        <button class="img-nav img-prev" onclick="changeImg(-1)">‹</button>
-        <button class="img-nav img-next" onclick="changeImg(1)">›</button>
-        <div class="img-counter" id="img-counter">1 / 5</div>
-      </div>
-      <div class="thumbs">
-        <div class="thumb active" onclick="setImg(0)">🚗</div>
-        <div class="thumb" onclick="setImg(1)">🪟</div>
-        <div class="thumb" onclick="setImg(2)">🛞</div>
-        <div class="thumb" onclick="setImg(3)">💺</div>
-        <div class="thumb" onclick="setImg(4)">🔧</div>
-      </div>
-    </div>
-
-    <!-- Listing info -->
-    <div class="listing-info">
-      <div class="li-top">
-        <span class="li-badge">✓ Aktif İlan</span>
-        <button class="save-btn" id="save-btn" onclick="toggleSave()" title="Kaydet">🤍</button>
-      </div>
-      <div class="li-price">€18.500</div>
-      <div class="li-title">Audi A3 Satılık — 2019 Model, 68.000 km</div>
-      <div class="li-meta">
-        <span class="li-tag">🚗 Araç</span>
-        <span class="li-tag">📍 Frankfurt</span>
-        <span class="li-tag">🕐 3 saat önce</span>
-        <span class="li-tag">👁 47 görüntüleme</span>
-      </div>
-      <p class="li-desc">
-        2019 model Audi A3 Sedan, 68.000 km'de bakımı yeni yapılmış, hasar kayıtsız temiz araç satılıktır. Servis geçmişi mevcuttur. Orjinal boyalıdır, herhangi bir kaza veya hasar kaydı bulunmamaktadır.<br><br>
-        Araç özellikleri: Otomatik şanzıman, deri koltuklar, navigasyon, park sensörleri, LED farlar, 18" jantlar. İlk sahibinden, bakımlar Audi yetkili servisinde yaptırılmıştır.<br><br>
-        Muayenesi yenidir (2026). Ciddi alıcılar lütfen arayın.
-      </p>
-      <div class="li-stats">
-        <div class="ls-item"><div class="ls-val">47</div><div class="ls-label">Görüntüleme</div></div>
-        <div class="ls-item"><div class="ls-val">8</div><div class="ls-label">Kaydedenler</div></div>
-        <div class="ls-item"><div class="ls-val">3</div><div class="ls-label">Mesaj</div></div>
-      </div>
-    </div>
-
-    <!-- Details -->
-    <div class="details-card">
-      <div class="dc-title">📋 Araç Detayları</div>
-      <table class="details-table">
-        <tr><td>Marka / Model</td><td>Audi A3 Sedan</td></tr>
-        <tr><td>Yıl</td><td>2019</td></tr>
-        <tr><td>Kilometre</td><td>68.000 km</td></tr>
-        <tr><td>Yakıt</td><td>Benzin</td></tr>
-        <tr><td>Şanzıman</td><td>Otomatik (S-Tronic)</td></tr>
-        <tr><td>Motor</td><td>1.5 TFSI · 150 HP</td></tr>
-        <tr><td>Renk</td><td>Gümüş Metalik</td></tr>
-        <tr><td>Kasa Tipi</td><td>Sedan</td></tr>
-        <tr><td>Hasar Kaydı</td><td>Yok ✓</td></tr>
-        <tr><td>Muayene</td><td>2026'ya kadar geçerli</td></tr>
-        <tr><td>İlan No</td><td>#BZB-2847</td></tr>
-      </table>
-    </div>
-
-    <!-- Similar -->
-    <div class="similar-card">
-      <div class="sc-title">🔍 Benzer İlanlar</div>
-      <div class="similar-list">
-        <div class="sim-item" onclick="window.location='listing-detail.html'">
-          <div class="sim-thumb">🚙</div>
-          <div><div class="sim-price">€16.900</div><div class="sim-title">VW Golf — 2018 · 72.000 km · Frankfurt</div></div>
-        </div>
-        <div class="sim-item" onclick="window.location='listing-detail.html'">
-          <div class="sim-thumb">🚘</div>
-          <div><div class="sim-price">€21.500</div><div class="sim-title">Audi A4 — 2020 · 54.000 km · Frankfurt</div></div>
-        </div>
-        <div class="sim-item" onclick="window.location='listing-detail.html'">
-          <div class="sim-thumb">🚗</div>
-          <div><div class="sim-price">€14.200</div><div class="sim-title">BMW 118i — 2017 · 88.000 km · Frankfurt</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── RIGHT ── -->
-  <div class="right-col">
-
-    <div class="seller-card">
-      <div class="seller-header">
-        <div class="seller-avatar">AY</div>
-        <div>
-          <div class="seller-name">Ayşe Yılmaz</div>
-          <div class="seller-meta">📍 Frankfurt · 3 ilanı var</div>
-          <div class="seller-verified">✓ Onaylı Üye</div>
-        </div>
-      </div>
-      <div class="seller-stats">
-        <div class="ss-item"><div class="ss-val">4.9</div><div class="ss-label">Puan</div></div>
-        <div class="ss-item"><div class="ss-val">12</div><div class="ss-label">İşlem</div></div>
-        <div class="ss-item"><div class="ss-val">2g</div><div class="ss-label">Yanıt süresi</div></div>
-      </div>
-      <div class="contact-btns">
-        <button class="contact-btn primary" onclick="window.location='messages.html'">💬 Mesaj Gönder</button>
-        <button class="contact-btn secondary" onclick="window.location='profile.html'">👤 Profili Gör</button>
-        <button class="contact-btn danger" onclick="alert('Rapor alındı, incelenecek.')">⚑ Şikayet Et</button>
-      </div>
-    </div>
-
-    <div class="offer-card">
-      <div class="oc-title">💶 Fiyat Teklifi Ver</div>
-      <div class="oc-sub">İlan fiyatından farklı bir teklif sunabilirsin.</div>
-      <div class="offer-input-wrap">
-        <input class="offer-input" type="number" placeholder="€ Teklifiniz" id="offer-val">
-        <button class="offer-btn" onclick="sendOffer()">Teklif Ver</button>
-      </div>
-    </div>
-
-    <div class="safety-card">
-      <div class="safety-title">🔒 Güvenli Alışveriş</div>
-      <div class="safety-tips">
-        <div class="safety-tip">Yalnızca onaylı BizdenBize üyeleriyle işlem yapıyorsunuz</div>
-        <div class="safety-tip">Ödemeyi peşin ve yüz yüze yapın</div>
-        <div class="safety-tip">Aracı teslim almadan önce uzman kontrolü yaptırın</div>
-        <div class="safety-tip">Şüpheli durumları bize bildirin</div>
-      </div>
-    </div>
-
-  </div>
+<div class="page" id="listing-root">
+  <div style="text-align:center;padding:60px;color:var(--muted);">İlan yükleniyor…</div>
 </div>
 
 <script>
@@ -770,5 +650,76 @@
   })();
 
   </script>
+<script>
+  const _LD_URL='https://wxjudojlwksivhzjnmim.supabase.co';
+  const _LD_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const _LD_H={'apikey':_LD_KEY,'Authorization':'Bearer '+_LD_KEY};
+  const LD_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
+  const LD_COND={sifir:'Sıfır gibi',iyi:'İyi',orta:'Kullanılmış'};
+  function ldEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function ldId(){return new URLSearchParams(location.search).get('id');}
+  function ldPrice(l){ return l.price!=null ? '€'+Number(l.price).toLocaleString('de-DE') : 'Pazarlık'; }
+
+  async function loadListing(){
+    const root=document.getElementById('listing-root');
+    const id=ldId();
+    if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
+    try{
+      const r=await fetch(_LD_URL+'/rest/v1/classified_listings?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_LD_H});
+      const rows=await r.json();
+      if(!rows.length){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı ya da kaldırılmış. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
+      const l=rows[0];
+      const cat=LD_CATS[l.category]||{l:l.category||'',e:'📦'};
+      const isSold=l.status==='satildi';
+      document.getElementById('bc-title').textContent=l.title;
+      document.title='BizdenBize — '+l.title;
+
+      // gallery
+      const photos=(l.photos&&l.photos.length)?l.photos:[];
+      let gallery;
+      if(photos.length){
+        gallery='<div class="gallery"><div id="ld-main" style="width:100%;aspect-ratio:4/3;border-radius:14px;background-image:url(\''+ldEsc(photos[0])+'\');background-size:cover;background-position:center;"></div>';
+        if(photos.length>1){
+          gallery+='<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'+photos.map((p,i)=>'<div onclick="ldSwap(\''+ldEsc(p)+'\')" style="width:64px;height:64px;border-radius:8px;background-image:url(\''+ldEsc(p)+'\');background-size:cover;background-position:center;cursor:pointer;border:2px solid '+(i===0?'var(--red)':'transparent')+';"></div>').join('')+'</div>';
+        }
+        gallery+='</div>';
+      } else {
+        gallery='<div class="gallery"><div style="width:100%;aspect-ratio:4/3;border-radius:14px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:72px;">'+cat.e+'</div></div>';
+      }
+
+      const cond=l.condition?('<tr><td>Durum</td><td>'+ldEsc(LD_COND[l.condition]||l.condition)+'</td></tr>'):'';
+      const loc=[l.location,l.city].filter(Boolean).join(', ');
+
+      root.innerHTML=
+        '<div>'
+        + gallery
+        + (isSold?'<div style="margin:14px 0;background:var(--red);color:#fff;text-align:center;padding:8px;border-radius:10px;font-weight:700;">SATILDI</div>':'')
+        + '<div class="li-price">'+ldPrice(l)+'</div>'
+        + '<div class="li-title">'+ldEsc(l.title)+'</div>'
+        + '<div style="color:var(--muted);font-size:14px;margin:8px 0 20px;">'+cat.e+' '+ldEsc(cat.l)+(loc?' · 📍 '+ldEsc(loc):'')+'</div>'
+        + (l.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:20px;white-space:pre-line;">'+ldEsc(l.description)+'</div>':'')
+        + (cond?'<table style="width:100%;font-size:14px;border-collapse:collapse;"><tbody>'+cond+'</tbody></table>':'')
+        + '</div>'
+        + '<div class="right-col"><div class="seller-card">'
+        +   '<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Satıcı ile İletişim</div>'
+        +   (isSold
+              ? '<div style="color:var(--muted);font-size:14px;">Bu ilan satılmış.</div>'
+              : '<button onclick="ldContact(\''+l.created_by+'\')" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">💬 Mesaj Gönder</button>')
+        +   '<div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5;">Güvenliğin için tüm iletişim BizdenBize üzerinden yapılır. Kişisel bilgilerini paylaşmadan önce dikkatli ol.</div>'
+        + '</div></div>';
+      window.__ldListing=l;
+    }catch(e){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="classifieds.html">← İlanlara dön</a></div>'; }
+  }
+  window.ldSwap=function(url){ const m=document.getElementById('ld-main'); if(m) m.style.backgroundImage='url(\''+url+'\')'; };
+  window.ldContact=async function(sellerId){
+    await (window._authReady||Promise.resolve());
+    const session=window._currentSession;
+    if(!session){ alert('Mesaj göndermek için giriş yapmalısın.'); location.href='login.html'; return; }
+    if(session.user.id===sellerId){ alert('Bu senin kendi ilanın.'); return; }
+    // hand off to messages with the seller preselected
+    location.href='messages.html?to='+sellerId;
+  };
+  loadListing();
+</script>
 </body>
 </html>
