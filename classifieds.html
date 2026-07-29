@@ -613,36 +613,48 @@
     <h3>İlan Ver</h3>
     <p>Mahallenle güvenli alışveriş yap.</p>
     <div class="form-group">
-      <label>Kategori</label>
-      <select>
-        <option>🚗 Araç</option><option>🏠 Emlak & Kiralık</option>
-        <option>📱 Elektronik</option><option>🛋️ Mobilya</option>
-        <option>👗 Giyim</option><option>🍳 Diğer</option>
+      <label>Kategori *</label>
+      <select id="cl-category">
+        <option value="arac">🚗 Araç</option><option value="emlak">🏠 Emlak & Kiralık</option>
+        <option value="elektronik">📱 Elektronik</option><option value="mobilya">🛋️ Mobilya</option>
+        <option value="ev_esyasi">🍳 Ev Eşyası</option><option value="diger">📦 Diğer</option>
       </select>
     </div>
     <div class="form-group">
-      <label>Başlık</label>
-      <input type="text" placeholder="Ör: iPhone 14 Pro, 256GB, Siyah">
+      <label>Başlık *</label>
+      <input type="text" id="cl-title" placeholder="Ör: iPhone 14 Pro, 256GB, Siyah">
     </div>
     <div class="form-row">
       <div class="form-group">
         <label>Fiyat (€)</label>
-        <input type="number" placeholder="0">
+        <input type="number" id="cl-price" min="0" step="1" placeholder="Boş = pazarlık">
       </div>
       <div class="form-group">
         <label>Durum</label>
-        <select><option>Sıfır gibi</option><option>İyi</option><option>Kullanılmış</option></select>
+        <select id="cl-condition"><option value="">—</option><option value="sifir">Sıfır gibi</option><option value="iyi">İyi</option><option value="orta">Kullanılmış</option></select>
       </div>
     </div>
     <div class="form-group">
       <label>Açıklama</label>
-      <textarea placeholder="İlanını detaylıca anlat..."></textarea>
+      <textarea id="cl-desc" placeholder="İlanını detaylıca anlat..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Şehir *</label>
+        <input type="text" id="cl-city" placeholder="Frankfurt">
+      </div>
+      <div class="form-group">
+        <label>Semt / Konum</label>
+        <input type="text" id="cl-location" placeholder="Opsiyonel">
+      </div>
     </div>
     <div class="form-group">
-      <label>Şehir</label>
-      <input type="text" placeholder="Frankfurt">
+      <label>Fotoğraflar (en fazla 5)</label>
+      <input type="file" id="cl-photos" accept="image/*" multiple>
+      <div id="cl-photo-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
     </div>
-    <button class="submit-btn" onclick="submitAd()">İlanı Yayınla →</button>
+    <div id="cl-form-err" style="display:none;color:var(--red);font-size:13px;margin-bottom:10px;"></div>
+    <button class="submit-btn" id="cl-submit-btn" onclick="submitAd()">İlanı Yayınla →</button>
   </div>
 </div>
 
@@ -997,6 +1009,92 @@
     document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));
     if(btn) btn.classList.add('active');
     renderListings(cat);
+  };
+
+  // ── PHOTO PREVIEW ──
+  let clSelectedFiles=[];
+  document.addEventListener('change', function(ev){
+    if(ev.target && ev.target.id==='cl-photos'){
+      clSelectedFiles=Array.from(ev.target.files).slice(0,5);
+      const prev=document.getElementById('cl-photo-preview');
+      prev.innerHTML='';
+      clSelectedFiles.forEach(f=>{
+        const url=URL.createObjectURL(f);
+        const d=document.createElement('div');
+        d.style.cssText='width:60px;height:60px;border-radius:8px;background-image:url('+url+');background-size:cover;background-position:center;border:1px solid var(--sand);';
+        prev.appendChild(d);
+      });
+    }
+  });
+
+  // ── SUBMIT AD (upload photos → insert listing) ──
+  window.submitAd=async function(){
+    const err=document.getElementById('cl-form-err');
+    const btn=document.getElementById('cl-submit-btn');
+    const show=m=>{ if(err){err.textContent=m;err.style.display='block';} };
+    if(err) err.style.display='none';
+
+    await (window._authReady||Promise.resolve());
+    const session=window._currentSession;
+    if(!session){ show('İlan vermek için giriş yapmalısın.'); return; }
+
+    const title=(document.getElementById('cl-title').value||'').trim();
+    const city=(document.getElementById('cl-city').value||'').trim();
+    if(!title){ show('Başlık gerekli.'); return; }
+    if(!city){ show('Şehir gerekli.'); return; }
+
+    if(btn){ btn.disabled=true; btn.textContent='Yükleniyor…'; }
+    try{
+      // 1. upload photos to storage
+      const photoUrls=[];
+      for(let i=0;i<clSelectedFiles.length;i++){
+        const f=clSelectedFiles[i];
+        const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+        const path=session.user.id+'/'+Date.now()+'_'+i+'.'+ext;
+        const up=await fetch(_CL_URL+'/storage/v1/object/listing-photos/'+encodeURIComponent(path),{
+          method:'POST',
+          headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':f.type||'image/jpeg' },
+          body:f
+        });
+        if(up.ok){
+          photoUrls.push(_CL_URL+'/storage/v1/object/public/listing-photos/'+path);
+        }
+      }
+
+      // 2. insert the listing
+      const priceVal=document.getElementById('cl-price').value;
+      const payload={
+        created_by: session.user.id,
+        active: true,
+        title: title,
+        category: document.getElementById('cl-category').value,
+        price: priceVal!==''? parseFloat(priceVal): null,
+        condition: document.getElementById('cl-condition').value || null,
+        description: (document.getElementById('cl-desc').value||'').trim() || null,
+        city: city,
+        location: (document.getElementById('cl-location').value||'').trim() || null,
+        photos: photoUrls,
+        country: 'de'
+      };
+      const r=await fetch(_CL_URL+'/rest/v1/classified_listings',{
+        method:'POST',
+        headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if(!r.ok) throw new Error(await r.text());
+
+      // success
+      document.getElementById('post-modal').classList.remove('open');
+      ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      clSelectedFiles=[]; document.getElementById('cl-photo-preview').innerHTML='';
+      const fileInput=document.getElementById('cl-photos'); if(fileInput) fileInput.value='';
+      await loadListings();  // refresh grid — your new listing appears immediately
+      alert('İlanın yayınlandı! ✓');
+    }catch(e){
+      show('İlan yayınlanamadı. Lütfen tekrar dene.');
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='İlanı Yayınla →'; }
+    }
   };
 
   loadListings();
