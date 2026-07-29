@@ -976,8 +976,9 @@
 
   window.sendMsg = async function() {
     const input = document.getElementById('msg-input');
-    const text = input.value.trim();
-    if (!text || !activeConvId) return;
+    const text = (input.value || '').trim();
+    if (!text) { return; }                       // never send empty
+    if (!activeConvId) { alert('Konuşma henüz hazır değil, lütfen bir an bekleyin.'); return; }
 
     const conv = conversations.find(c => c.id === activeConvId);
     if (conv && window._myBlockedIds.has(conv.otherId)) {
@@ -993,7 +994,21 @@
     }).select().single();
 
     btn.disabled = false;
-    if (error) { console.error('Send failed:', error); alert('Mesaj gönderilemedi. Karşı taraf sizi engellemiş olabilir.'); return; }
+    if (error) {
+      console.error('Send failed:', error);
+      // Surface the real reason instead of always blaming a block
+      const code = error.code || '';
+      const msg = (error.message || '').toLowerCase();
+      if (code === '42501' || msg.includes('row-level security') || msg.includes('policy')) {
+        alert('Mesaj gönderilemedi: bu konuşmaya yazma izniniz yok. (Karşı taraf sizi engellemiş olabilir.)');
+      } else if (code === '23502' || msg.includes('null value') || msg.includes('not-null')) {
+        alert('Mesaj gönderilemedi: mesaj boş görünüyor. Lütfen tekrar deneyin.');
+      } else {
+        alert('Mesaj gönderilemedi. Hata: ' + (error.message || 'bilinmiyor'));
+      }
+      return;
+    }
+    if (!data) { alert('Mesaj kaydedilemedi, lütfen tekrar deneyin.'); return; }
 
     activeMessages.push(data);
     renderMessages();
