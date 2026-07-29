@@ -480,8 +480,9 @@
       <button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-ilanlar">
         <a href="classifieds.html">🚗 Araç</a>
-        <a href="classifieds.html">🛋️ Ev Eşyası</a>
+        <a href="classifieds.html">🏠 Emlak</a>
         <a href="classifieds.html">📱 Elektronik</a>
+        <a href="classifieds.html">🛋️ Mobilya</a>
         <a href="classifieds.html">👗 Giyim</a>
         <a href="classifieds.html">📋 Tümü</a>
       </div>
@@ -596,7 +597,7 @@
     <button class="filter-cat" onclick="clFilter('emlak',this)">🏠 Emlak</button>
     <button class="filter-cat" onclick="clFilter('elektronik',this)">📱 Elektronik</button>
     <button class="filter-cat" onclick="clFilter('mobilya',this)">🛋️ Mobilya</button>
-    <button class="filter-cat" onclick="clFilter('ev_esyasi',this)">🍳 Ev Eşyası</button>
+    <button class="filter-cat" onclick="clFilter('giyim',this)">👗 Giyim</button>
     <button class="filter-cat" onclick="clFilter('diger',this)">📦 Diğer</button>
     <span class="result-count" id="cl-count"></span>
   </div>
@@ -617,7 +618,7 @@
       <select id="cl-category">
         <option value="arac">🚗 Araç</option><option value="emlak">🏠 Emlak & Kiralık</option>
         <option value="elektronik">📱 Elektronik</option><option value="mobilya">🛋️ Mobilya</option>
-        <option value="ev_esyasi">🍳 Ev Eşyası</option><option value="diger">📦 Diğer</option>
+        <option value="giyim">👗 Giyim</option><option value="diger">📦 Diğer</option>
       </select>
     </div>
     <div class="form-group">
@@ -960,7 +961,7 @@
   const _CL_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _CL_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _CL_H={'apikey':_CL_KEY,'Authorization':'Bearer '+_CL_KEY};
-  const CL_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},ev_esyasi:{l:'Ev Eşyası',e:'🍳'},diger:{l:'Diğer',e:'📦'}};
+  const CL_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
   function clEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function clPrice(e){ return e.price!=null ? '€'+Number(e.price).toLocaleString('de-DE') : 'Pazarlık'; }
 
