@@ -968,16 +968,33 @@
   function clCard(l){
     const cat=CL_CATS[l.category]||{l:l.category||'',e:'📦'};
     const photo=(l.photos&&l.photos.length)?l.photos[0]:null;
-    const thumb=photo
-      ? '<div class="listing-thumb" style="background-image:url(\''+clEsc(photo)+'\');background-size:cover;background-position:center;"></div>'
-      : '<div class="listing-thumb" style="display:flex;align-items:center;justify-content:center;font-size:44px;">'+cat.e+'</div>';
+    const isSold=l.status==='satildi';
+    const soldOverlay=isSold?'<div style="position:absolute;inset:0;background:rgba(26,18,8,.45);display:flex;align-items:center;justify-content:center;border-radius:inherit;"><span style="background:var(--red);color:#fff;font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;transform:rotate(-8deg);">SATILDI</span></div>':'';
+    const thumb=(photo
+      ? '<div class="listing-thumb" style="position:relative;background-image:url(\''+clEsc(photo)+'\');background-size:cover;background-position:center;">'
+      : '<div class="listing-thumb" style="position:relative;display:flex;align-items:center;justify-content:center;font-size:44px;">'+cat.e)
+      + soldOverlay + '</div>';
     const loc=[l.location,l.city].filter(Boolean).join(', ');
-    return '<div class="listing" data-category="'+clEsc(l.category||'')+'" onclick="window.location=\'listing-detail.html?id='+l.id+'\'">'
+
+    // Owner controls (only for the listing's owner)
+    let ownerBar='';
+    if(window.__clUserId && l.created_by===window.__clUserId){
+      const soldBtn = isSold
+        ? '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',false)" style="flex:1;background:var(--warm);border:1px solid var(--sand);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--ink);">↩ Tekrar aktif</button>'
+        : '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',true)" style="flex:1;background:var(--green);border:none;border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;">✓ Satıldı</button>';
+      ownerBar='<div style="display:flex;gap:6px;margin-top:8px;">'
+        + soldBtn
+        + '<button onclick="event.stopPropagation();clRemove(\''+l.id+'\')" style="flex:1;background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--red);">🗑 Kaldır</button>'
+        + '</div>';
+    }
+
+    return '<div class="listing" data-category="'+clEsc(l.category||'')+'" style="'+(isSold?'opacity:.85;':'')+'" onclick="window.location=\'listing-detail.html?id='+l.id+'\'">'
       + thumb
       + '<div class="listing-body">'
-      +   '<div class="listing-price">'+clPrice(l)+'</div>'
+      +   '<div class="listing-price">'+clPrice(l)+(isSold?' <span style="font-size:11px;color:var(--red);font-weight:600;">· Satıldı</span>':'')+'</div>'
       +   '<div class="listing-title">'+clEsc(l.title)+'</div>'
       +   '<div class="listing-meta">'+cat.e+' '+clEsc(cat.l)+(loc?' · 📍 '+clEsc(loc):'')+'</div>'
+      +   ownerBar
       + '</div></div>';
   }
 
@@ -985,6 +1002,8 @@
   async function loadListings(){
     const box=document.getElementById('listings-grid');
     try{
+      await (window._authReady||Promise.resolve());
+      window.__clUserId = (window._currentSession && window._currentSession.user) ? window._currentSession.user.id : null;
       const r=await fetch(_CL_URL+"/rest/v1/classified_listings?active=eq.true&order=created_at.desc&select=*",{headers:_CL_H});
       if(!r.ok) throw new Error('DB '+r.status);
       clAll=await r.json();
@@ -1006,6 +1025,32 @@
     box.innerHTML=rows.map(clCard).join('');
   }
 
+  // ── OWNER CONTROLS: mark sold / remove ──
+  async function clOwnerPatch(id, body){
+    await (window._authReady||Promise.resolve());
+    const session=window._currentSession;
+    if(!session){ alert('Bu işlem için giriş yapmalısın.'); return false; }
+    const r=await fetch(_CL_URL+'/rest/v1/classified_listings?id=eq.'+id,{
+      method:'PATCH',
+      headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+      body: JSON.stringify(body)
+    });
+    return r.ok;
+  }
+
+  window.clSetSold=async function(id, sold){
+    const ok=await clOwnerPatch(id, { status: sold?'satildi':'aktif' });
+    if(ok){ await loadListings(); }
+    else { alert('Güncellenemedi.'); }
+  };
+
+  window.clRemove=async function(id){
+    if(!confirm('Bu ilanı kaldırmak istediğine emin misin? İlan listeden kalkacak.')) return;
+    const ok=await clOwnerPatch(id, { active: false });
+    if(ok){ await loadListings(); }
+    else { alert('Kaldırılamadı.'); }
+  };
+
   window.clFilter=function(cat,btn){
     document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));
     if(btn) btn.classList.add('active');
@@ -1014,17 +1059,32 @@
 
   // ── PHOTO PREVIEW ──
   let clSelectedFiles=[];
+  function clRenderPreviews(){
+    const prev=document.getElementById('cl-photo-preview');
+    prev.innerHTML='';
+    clSelectedFiles.forEach((f,idx)=>{
+      const url=URL.createObjectURL(f);
+      const wrap=document.createElement('div');
+      wrap.style.cssText='position:relative;width:60px;height:60px;';
+      const img=document.createElement('div');
+      img.style.cssText='width:60px;height:60px;border-radius:8px;background-image:url('+url+');background-size:cover;background-position:center;border:1px solid var(--sand);';
+      const del=document.createElement('button');
+      del.type='button';
+      del.textContent='×';
+      del.title='Kaldır';
+      del.style.cssText='position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);';
+      del.onclick=function(){ clSelectedFiles.splice(idx,1); clRenderPreviews(); };
+      wrap.appendChild(img); wrap.appendChild(del);
+      prev.appendChild(wrap);
+    });
+  }
   document.addEventListener('change', function(ev){
     if(ev.target && ev.target.id==='cl-photos'){
-      clSelectedFiles=Array.from(ev.target.files).slice(0,5);
-      const prev=document.getElementById('cl-photo-preview');
-      prev.innerHTML='';
-      clSelectedFiles.forEach(f=>{
-        const url=URL.createObjectURL(f);
-        const d=document.createElement('div');
-        d.style.cssText='width:60px;height:60px;border-radius:8px;background-image:url('+url+');background-size:cover;background-position:center;border:1px solid var(--sand);';
-        prev.appendChild(d);
-      });
+      // append newly chosen files to existing selection, cap at 5
+      const picked=Array.from(ev.target.files);
+      clSelectedFiles=clSelectedFiles.concat(picked).slice(0,5);
+      ev.target.value='';  // reset so the same file can be re-picked if removed
+      clRenderPreviews();
     }
   });
 
@@ -1087,7 +1147,7 @@
       // success
       document.getElementById('post-modal').classList.remove('open');
       ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-      clSelectedFiles=[]; document.getElementById('cl-photo-preview').innerHTML='';
+      clSelectedFiles=[]; clRenderPreviews();
       const fileInput=document.getElementById('cl-photos'); if(fileInput) fileInput.value='';
       await loadListings();  // refresh grid — your new listing appears immediately
       alert('İlanın yayınlandı! ✓');
