@@ -467,20 +467,20 @@
     <div class="nav-item">
       <button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-emlak">
-        <a href="classifieds.html">🔑 Kiralık Ev</a>
-        <a href="classifieds.html">🏡 Satılık Ev</a>
-        <a href="classifieds.html">🤝 Sublet</a>
-        <a href="classifieds.html">👥 Paylaşımlı Ev</a>
+        <a href="emlak.html">🔑 Kiralık Ev</a>
+        <a href="emlak.html">🏡 Satılık Ev</a>
+        <a href="emlak.html">🤝 Sublet</a>
+        <a href="emlak.html">👥 Paylaşımlı Ev</a>
         <hr>
         <a href="ev-takasi.html">🔄 Tatil Takası</a>
-        <a href="classifieds.html">📋 Tüm Emlak İlanları</a>
+        <a href="emlak.html">📋 Tüm Emlak İlanları</a>
       </div>
     </div>
     <div class="nav-item">
       <button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
       <div class="nav-dropdown" id="dd-ilanlar">
         <a href="classifieds.html">🚗 Araç</a>
-        <a href="classifieds.html">🏠 Emlak</a>
+        <a href="emlak.html">🏠 Emlak</a>
         <a href="classifieds.html">📱 Elektronik</a>
         <a href="classifieds.html">🛋️ Mobilya</a>
         <a href="classifieds.html">👗 Giyim</a>
@@ -547,9 +547,9 @@
     <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
   </div>
   <div class="mm-section"><div class="mm-section-title">Konut & Emlak</div>
-    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🔑</span>Kiralık Ev</a>
-    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🏡</span>Satılık Ev</a>
-    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">👥</span>Paylaşımlı Ev</a>
+    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">🔑</span>Kiralık Ev</a>
+    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">🏡</span>Satılık Ev</a>
+    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">👥</span>Paylaşımlı Ev</a>
   </div>
   <div class="mm-section"><div class="mm-section-title">İlanlar & Bilgiler</div>
     <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
@@ -594,7 +594,6 @@
     </select>
     <button class="filter-cat active" onclick="clFilter('all',this)">Tümü</button>
     <button class="filter-cat" onclick="clFilter('arac',this)">🚗 Araç</button>
-    <button class="filter-cat" onclick="clFilter('emlak',this)">🏠 Emlak</button>
     <button class="filter-cat" onclick="clFilter('elektronik',this)">📱 Elektronik</button>
     <button class="filter-cat" onclick="clFilter('mobilya',this)">🛋️ Mobilya</button>
     <button class="filter-cat" onclick="clFilter('giyim',this)">👗 Giyim</button>
@@ -616,7 +615,7 @@
     <div class="form-group">
       <label>Kategori *</label>
       <select id="cl-category">
-        <option value="arac">🚗 Araç</option><option value="emlak">🏠 Emlak & Kiralık</option>
+        <option value="arac">🚗 Araç</option>
         <option value="elektronik">📱 Elektronik</option><option value="mobilya">🛋️ Mobilya</option>
         <option value="giyim">👗 Giyim</option><option value="diger">📦 Diğer</option>
       </select>
@@ -970,7 +969,7 @@
   const _CL_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _CL_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _CL_H={'apikey':_CL_KEY,'Authorization':'Bearer '+_CL_KEY};
-  const CL_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
+  const CL_CATS={arac:{l:'Araç',e:'🚗'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
   function clEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function clPrice(e){ return e.price!=null ? '€'+Number(e.price).toLocaleString('de-DE') : 'Pazarlık'; }
 
