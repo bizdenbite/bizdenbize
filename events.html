@@ -689,7 +689,59 @@
 
 <script>
   function rsvp(btn){btn.classList.toggle('going');btn.textContent=btn.classList.contains('going')?'✓ Katılıyorum':'Katıl';}
-  function openModal(){document.getElementById('event-modal').classList.add('open');}
+  function openModal(){ __eventDraft.restore(); document.getElementById('event-modal').classList.add('open'); }
+
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener('input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          el.value=val; any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
+  }
+  const __eventDraft = bbDraft({
+    key:'bb_draft_event',
+    fields:['ev-title','ev-price','ev-capacity','ev-date','ev-note','ev-venue','ev-city','ev-desc',
+      'ev-audience','ev-agenda','ev-org-name','ev-org-info','ev-contact','ev-meeting','ev-link']
+      .map(function(id){ return {id:id}; })
+  });
   function closeModal(){document.getElementById('event-modal').classList.remove('open');}
   document.getElementById('event-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 </script>
@@ -1192,6 +1244,7 @@
       if(modal) modal.classList.remove('open');
       alert('Teşekkürler! Etkinlik önerin alındı. İncelendikten sonra yayınlanacak.');
       ['ev-title','ev-city','ev-venue','ev-note','ev-desc','ev-link','ev-audience','ev-agenda','ev-org-name','ev-org-info','ev-contact','ev-meeting'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      __eventDraft.clear();
     }catch(e){
       show('Gönderilemedi. Lütfen tekrar dene.');
     }finally{

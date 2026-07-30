@@ -247,6 +247,13 @@
     <!-- Personal Info -->
     <div class="edit-section">
       <div class="section-title">👤 Kişisel Bilgiler</div>
+      <div id="profile-draft-banner" style="display:none;margin-bottom:14px;padding:10px 14px;background:var(--warm);border:1px solid var(--sand);border-radius:9px;font-size:12.5px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <span>💾 Kaydedilmemiş değişiklikleriniz var.</span>
+        <span style="display:flex;gap:8px;">
+          <button type="button" onclick="__profileDraftRestore()" style="background:var(--navy);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Geri Yükle</button>
+          <button type="button" onclick="__profileDraftDismiss()" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:'Instrument Sans',sans-serif;">Yoksay</button>
+        </span>
+      </div>
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">Ad</label>
@@ -494,6 +501,8 @@
     document.getElementById('inp-country').value    = profile.country    || '';
     document.getElementById('inp-bio').value        = profile.bio        || '';
 
+    __initProfileDraft();
+
     // Languages
     selectedLangs = profile.languages || [];
     document.querySelectorAll('#lang-tags .tag-pill').forEach(p => {
@@ -557,6 +566,60 @@
     }
   }
 
+  // ── PROFILE DRAFT PROTECTION ──
+  // Unlike a blank creation form, this form pre-fills real saved data, so we
+  // never silently overwrite it with an old local draft. If a differing
+  // draft exists, a banner lets the person choose to restore it or dismiss it.
+  const __PROFILE_DRAFT_FIELDS = ['inp-first-name','inp-last-name','inp-username','inp-city','inp-country','inp-bio'];
+  const __PROFILE_DRAFT_KEY = 'bb_draft_profile';
+  let __profileDraftTimer=null;
+  function __profileDraftSnapshot(){
+    const v={};
+    __PROFILE_DRAFT_FIELDS.forEach(id=>{ const el=document.getElementById(id); v[id]=el?el.value:''; });
+    return v;
+  }
+  function __profileDraftSave(){
+    try{ localStorage.setItem(__PROFILE_DRAFT_KEY, JSON.stringify({t:Date.now(), v:__profileDraftSnapshot()})); }catch(e){}
+  }
+  function __initProfileDraft(){
+    const loaded = __profileDraftSnapshot(); // what the server actually says, right now
+    try{
+      const raw = localStorage.getItem(__PROFILE_DRAFT_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        const TTL = 1000*60*60*24*3; // 3 days
+        if(obj && obj.t && (Date.now()-obj.t)<=TTL && obj.v){
+          const differs = __PROFILE_DRAFT_FIELDS.some(id => (obj.v[id]||'') !== (loaded[id]||''));
+          if(differs){ document.getElementById('profile-draft-banner').style.display='flex'; }
+          else{ localStorage.removeItem(__PROFILE_DRAFT_KEY); }
+        } else {
+          localStorage.removeItem(__PROFILE_DRAFT_KEY);
+        }
+      }
+    }catch(e){}
+    __PROFILE_DRAFT_FIELDS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input', ()=>{ clearTimeout(__profileDraftTimer); __profileDraftTimer=setTimeout(__profileDraftSave,500); });
+    });
+  }
+  window.__profileDraftRestore = function(){
+    try{
+      const raw = localStorage.getItem(__PROFILE_DRAFT_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        if(obj && obj.v){
+          __PROFILE_DRAFT_FIELDS.forEach(id=>{ const el=document.getElementById(id); if(el && obj.v[id]!==undefined) el.value=obj.v[id]; });
+        }
+      }
+    }catch(e){}
+    document.getElementById('profile-draft-banner').style.display='none';
+  };
+  window.__profileDraftDismiss = function(){
+    try{ localStorage.removeItem(__PROFILE_DRAFT_KEY); }catch(e){}
+    document.getElementById('profile-draft-banner').style.display='none';
+  };
+
   async function saveProfile() {
     const btn = document.querySelector('.btn-save');
     btn.disabled = true; btn.textContent = 'Kaydediliyor...';
@@ -573,6 +636,8 @@
       await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify(payload) });
       Object.assign(profile, payload);
       renderProfile();
+      try{ localStorage.removeItem(__PROFILE_DRAFT_KEY); }catch(e){}
+      document.getElementById('profile-draft-banner').style.display='none';
       toast('✅ Profil kaydedildi!');
     } catch(e) { toast('Hata oluştu.', false); }
     btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';

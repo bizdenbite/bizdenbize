@@ -882,6 +882,7 @@
     activeConvId = null;
   };
   window.openConv = async function(id) {
+    __msgDraftSave();  // preserve any unsent text in the conversation we're leaving
     activeConvId = id;
     document.body.classList.add('chat-open');  // mobile: show chat, hide list
     document.getElementById('empty-state').style.display = 'none';
@@ -920,6 +921,9 @@
     document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
     const item = document.querySelector(`.conv-item[data-id="${id}"]`);
     if (item) { item.classList.add('active'); item.classList.remove('unread'); const dot = item.querySelector('.unread-dot'); if (dot) dot.remove(); }
+
+    const msgInp = document.getElementById('msg-input');
+    if (msgInp) { msgInp.value = __msgDraftLoad(id); if (window.autoResize) autoResize(msgInp); }
 
     await loadMessages(id);
     await markRead(id);
@@ -989,6 +993,42 @@
       .subscribe();
   }
 
+  // ── PER-CONVERSATION DRAFT AUTOSAVE ──
+  // Protects unsent typed text if the tab is discarded/reloaded, and — as a
+  // side effect — stops unsent text from one conversation leaking into
+  // another when switching chats.
+  function __msgDraftKey(id){ return 'bb_draft_msg:'+id; }
+  function __msgDraftSave(){
+    try{
+      if(!activeConvId) return;
+      const el=document.getElementById('msg-input');
+      const val=(el && el.value) || '';
+      if(val.trim()===''){ localStorage.removeItem(__msgDraftKey(activeConvId)); }
+      else { localStorage.setItem(__msgDraftKey(activeConvId), JSON.stringify({t:Date.now(), v:val})); }
+    }catch(e){}
+  }
+  function __msgDraftLoad(id){
+    try{
+      const raw=localStorage.getItem(__msgDraftKey(id));
+      if(!raw) return '';
+      const obj=JSON.parse(raw);
+      const TTL=1000*60*60*24*3; // 3 days
+      if(!obj || !obj.t || (Date.now()-obj.t)>TTL){ localStorage.removeItem(__msgDraftKey(id)); return ''; }
+      return obj.v || '';
+    }catch(e){ return ''; }
+  }
+  function __msgDraftClear(id){ try{ localStorage.removeItem(__msgDraftKey(id)); }catch(e){} }
+  let __msgDraftTimer=null;
+  (function attachMsgDraftAutosave(){
+    const el=document.getElementById('msg-input');
+    if(!el) return;
+    el.addEventListener('input', function(){
+      clearTimeout(__msgDraftTimer);
+      __msgDraftTimer=setTimeout(__msgDraftSave, 500);
+    });
+    window.addEventListener('beforeunload', __msgDraftSave);
+  })();
+
   window.sendMsg = async function() {
     const input = document.getElementById('msg-input');
     const text = (input.value || '').trim();
@@ -1029,6 +1069,7 @@
     renderMessages();
     input.value = '';
     input.style.height = 'auto';
+    __msgDraftClear(activeConvId);
 
     const conv2 = conversations.find(c => c.id === activeConvId);
     if (conv2) { conv2.last_message = text; conv2.last_message_at = data.created_at; }

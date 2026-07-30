@@ -781,7 +781,64 @@ async function openPostModal() {
   document.getElementById('p-name-display').textContent = session.user.user_metadata?.full_name || session.user.email || '';
   document.getElementById('post-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
+  __swapDraft.restore();
 }
+
+// ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+function bbDraft(opts){
+  var TTL_MS = 1000*60*60*24*3; // 3 days
+  function read(){
+    try{
+      var raw=localStorage.getItem(opts.key);
+      if(!raw) return null;
+      var obj=JSON.parse(raw);
+      if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+      return obj.v||null;
+    }catch(e){ return null; }
+  }
+  function write(){
+    try{
+      var v={};
+      opts.fields.forEach(function(f){
+        var el=document.getElementById(f.id);
+        if(!el) return;
+        v[f.id]=(f.type==='checkbox')?el.checked:el.value;
+      });
+      localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+    }catch(e){}
+  }
+  var timer=null;
+  function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+  opts.fields.forEach(function(f){
+    var el=document.getElementById(f.id);
+    if(!el) return;
+    el.addEventListener((f.type==='select'||f.type==='checkbox')?'change':'input', schedule);
+  });
+  return {
+    restore:function(){
+      var v=read(); if(!v) return false;
+      var any=false;
+      opts.fields.forEach(function(f){
+        var el=document.getElementById(f.id); if(!el) return;
+        var val=v[f.id];
+        if(val===undefined||val===null||val==='') return;
+        if(f.type==='checkbox'){ el.checked=!!val; } else { el.value=val; }
+        any=true;
+      });
+      return any;
+    },
+    clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+  };
+}
+const __swapDraft = bbDraft({
+  key:'bb_draft_ev_takasi',
+  fields:[
+    {id:'p-city',type:'text'},{id:'p-country',type:'select'},{id:'p-no-dest',type:'checkbox'},
+    {id:'p-dest',type:'text'},{id:'p-type',type:'select'},{id:'p-rooms',type:'select'},
+    {id:'p-from',type:'text'},{id:'p-to',type:'text'},{id:'p-family',type:'select'},
+    {id:'p-duration',type:'select'},{id:'p-desc',type:'textarea'}
+  ]
+});
 function closePostModal() {
   document.getElementById('post-modal').classList.remove('open');
   document.body.style.overflow='';
@@ -840,6 +897,7 @@ async function submitPost() {
   document.getElementById('post-body').style.display='none';
   document.getElementById('post-footer').style.display='none';
   document.getElementById('post-success').style.display='block';
+  __swapDraft.clear();
   setTimeout(() => { closePostModal(); renderSwaps(); }, 2500);
 }
 

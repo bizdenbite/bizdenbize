@@ -1874,6 +1874,57 @@
     setTimeout(() => toast.remove(), 3000);
   };
 
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=(f.type==='select')?el.value:el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener((f.type==='select')?'change':'input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          el.value=val; any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
+  }
+  const __composeDraft = bbDraft({
+    key:'bb_draft_mahallem_post',
+    fields:[{id:'compose-input',type:'textarea'},{id:'compose-category',type:'select'},{id:'compose-tags',type:'text'}]
+  });
+  __composeDraft.restore();
+
   window.submitNewPost = async function() {
     const input = document.getElementById('compose-input');
     const tagsInput = document.getElementById('compose-tags');
@@ -1900,6 +1951,7 @@
       const created = await r.json();
       if (created?.[0]) window._allPosts.unshift(created[0]);
       input.value=''; tagsInput.value=''; catSelect.value='';
+      __composeDraft.clear();
       window.removePendingPhoto();
       renderFeedFromCache();
     } catch(e) { console.error('Post submit error:', e); errBox.textContent = 'Paylaşım yapılamadı. Tekrar deneyin.'; errBox.style.display = 'block'; }

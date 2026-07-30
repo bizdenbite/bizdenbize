@@ -1072,7 +1072,72 @@
     document.getElementById('sp-name-display').textContent = realName;
     document.getElementById('seeker-post-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    __seekerDraft.restore();
   }
+
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  // Payment fields (pay-card/pay-exp/pay-cvv/pay-name) are NEVER included —
+  // card details must never be persisted client-side.
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener((f.type==='select')?'change':'input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          el.value=val; any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
+  }
+  const __seekerDraft = bbDraft({
+    key:'bb_draft_is_arayan',
+    fields:[
+      {id:'sp-title',type:'text'},{id:'sp-city',type:'text'},{id:'sp-auth',type:'select'},
+      {id:'sp-avail',type:'select'},{id:'sp-worktype',type:'select'},{id:'sp-skills',type:'text'},
+      {id:'sp-salary',type:'text'},{id:'sp-desc',type:'textarea'},{id:'sp-contact',type:'text'}
+    ]
+  });
+  const __jobDraft = bbDraft({
+    key:'bb_draft_is_veren',
+    fields:[
+      {id:'p-title',type:'text'},{id:'p-location',type:'text'},{id:'p-cat',type:'select'},
+      {id:'p-worktype',type:'select'},{id:'p-price',type:'text'},{id:'p-desc',type:'textarea'},
+      {id:'p-contact',type:'text'}
+    ]
+  });
   function closeSeekerPostModal() {
     document.getElementById('seeker-post-modal').classList.remove('open');
     document.body.style.overflow = '';
@@ -1119,12 +1184,14 @@
     document.getElementById('sp-body').style.display = 'none';
     document.getElementById('sp-footer').style.display = 'none';
     document.getElementById('sp-success').style.display = 'block';
+    __seekerDraft.clear();
     setTimeout(() => { closeSeekerPostModal(); if (activeMode === 'seeker') renderSeekers(); }, 2500);
   }
 
   function openPostModal() {
     document.getElementById('post-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    __jobDraft.restore();
   }
 
   function closePostModal() {
@@ -1239,6 +1306,7 @@
     document.getElementById('success-sub').innerHTML = featured
       ? 'İlanın listenin en üstünde görünüyor.<br>60 gün boyunca aktif kalacak!'
       : 'Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!';
+    __jobDraft.clear();
     setTimeout(() => closePostModal(), 3500);
   }
 

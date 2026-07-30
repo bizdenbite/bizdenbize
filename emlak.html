@@ -690,7 +690,7 @@
 </div>
 
 <script>
-  function openModal(){ clResetForm(); document.getElementById('post-modal').classList.add('open'); }
+  function openModal(){ clResetForm(); __clDraft.restore(); document.getElementById('post-modal').classList.add('open'); }
   function closeModal(){document.getElementById('post-modal').classList.remove('open');}
   document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
   function submitAd(){alert('İlanınız yayınlandı! ✓');closeModal();}
@@ -1095,6 +1095,65 @@
   };
 
   // ── PHOTO PREVIEW ──
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      if(opts.guard && !opts.guard()) return;
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=(f.type==='checkbox')?el.checked:el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener((f.type==='select'||f.type==='checkbox')?'change':'input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          if(f.type==='checkbox'){ el.checked=!!val; } else { el.value=val; }
+          any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
+  }
+  const __clDraft = bbDraft({
+    key:'bb_draft_emlak',
+    guard: function(){ return clEditId===null; },
+    fields:[
+      {id:'cl-tip',type:'select'},{id:'cl-title',type:'text'},{id:'cl-price',type:'text'},
+      {id:'cl-nebenkosten',type:'text'},{id:'cl-kaution',type:'text'},{id:'cl-rooms',type:'text'},
+      {id:'cl-size',type:'text'},{id:'cl-floor',type:'text'},{id:'cl-furnished',type:'select'},
+      {id:'cl-available',type:'text'},{id:'cl-desc',type:'textarea'},{id:'cl-city',type:'text'},
+      {id:'cl-location',type:'text'}
+    ]
+  });
+
   let clSelectedFiles=[];      // newly picked File objects (uploaded on save)
   let clExistingPhotos=[];     // existing photo URLs kept during an edit
   let clEditId=null;           // null = create mode; a listing id = edit mode
@@ -1238,6 +1297,7 @@
 
       // success
       const wasEdit=!!clEditId;
+      if(!wasEdit) __clDraft.clear();
       document.getElementById('post-modal').classList.remove('open');
       clResetForm();
       await loadListings();  // refresh grid

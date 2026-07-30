@@ -152,6 +152,60 @@
         <button class="btn-submit" id="app-submit" onclick="window._submitApplication()">Başvuruyu Gönder →</button>
       </div>
     `;
+    __ubDraft = bbDraft({
+      key:'bb_draft_uzman_basvuru',
+      fields:[{id:'app-title',type:'text'},{id:'app-bio',type:'textarea'},{id:'app-address',type:'text'}]
+    });
+    __ubDraft.restore();
+  }
+
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  // Only title/bio/address are saved — never phone/OTP (security-sensitive,
+  // short-lived) and never the WhatsApp consent checkbox.
+  let __ubDraft=null;
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener('input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          el.value=val; any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
   }
 
   window._onPhoneEdited = function() {
@@ -271,6 +325,7 @@
         });
       } catch(e) { console.warn('Admin notification failed:', e); }
 
+      if(__ubDraft) __ubDraft.clear();
       document.getElementById('page-content').innerHTML = statusBox('📨', 'Başvurunuz alındı!',
         'Ekibimiz başvurunuzu inceleyip en kısa sürede size dönüş yapacak. Onaylandığında profiliniz yayına alınacak.');
     } catch(err) {
