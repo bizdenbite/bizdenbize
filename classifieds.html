@@ -628,13 +628,14 @@
       <div class="form-group">
         <label>Fiyat (€)</label>
         <input type="number" id="cl-price" min="0" step="1" placeholder="Boş = pazarlık">
-        <div id="cl-price-help" style="margin-top:6px;">
+        <div id="cl-price-help" style="margin-top:10px;padding:12px;background:var(--warm);border:1px solid var(--sand);border-radius:11px;">
+          <div style="font-size:10.5px;font-weight:700;color:var(--gold,#C9A84C);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">✨ Yapay Zeka Destekli</div>
           <button type="button" id="cl-price-help-btn" onclick="clEstimatePrice()"
-            style="background:none;border:1px solid var(--navy);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--navy);cursor:pointer;font-family:'Instrument Sans',sans-serif;">
+            style="width:100%;background:var(--navy);border:none;border-radius:9px;padding:11px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
             💡 Fiyat Tahmini Al
           </button>
-          <div id="cl-price-help-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Fotoğraf eklersen tahmin daha isabetli olur</div>
-          <div id="cl-price-help-result" style="display:none;margin-top:8px;padding:10px 12px;background:var(--warm);border-radius:10px;font-size:12.5px;line-height:1.5;"></div>
+          <div id="cl-price-help-hint" style="font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5;">Fotoğraf eklersen tahmin daha isabetli olur. Bu bir tahmindir, garanti edilen bir fiyat değildir.</div>
+          <div id="cl-price-help-result" style="display:none;margin-top:10px;padding:10px 12px;background:var(--white);border-radius:10px;font-size:12.5px;line-height:1.5;"></div>
         </div>
       </div>
       <div class="form-group">
@@ -1165,7 +1166,9 @@
   function clSyncPriceHelpBtn(){
     const hint=document.getElementById('cl-price-help-hint');
     const hasPhoto=(clExistingPhotos.length+clSelectedFiles.length)>0;
-    if(hint) hint.style.display=hasPhoto?'none':'block';
+    if(hint) hint.textContent = hasPhoto
+      ? 'Bu bir tahmindir, garanti edilen bir fiyat değildir.'
+      : 'Fotoğraf eklersen tahmin daha isabetli olur. Bu bir tahmindir, garanti edilen bir fiyat değildir.';
     const res=document.getElementById('cl-price-help-result'); if(res) res.style.display='none';
   }
   window.clEstimatePrice=async function(){
