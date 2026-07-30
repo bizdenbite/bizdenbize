@@ -628,6 +628,14 @@
       <div class="form-group">
         <label>Fiyat (€)</label>
         <input type="number" id="cl-price" min="0" step="1" placeholder="Boş = pazarlık">
+        <div id="cl-price-help" style="margin-top:6px;">
+          <button type="button" id="cl-price-help-btn" onclick="clEstimatePrice()"
+            style="background:none;border:1px solid var(--navy);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--navy);cursor:pointer;font-family:'Instrument Sans',sans-serif;">
+            💡 Fiyat Tahmini Al
+          </button>
+          <div id="cl-price-help-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Fotoğraf eklersen tahmin daha isabetli olur</div>
+          <div id="cl-price-help-result" style="display:none;margin-top:8px;padding:10px 12px;background:var(--warm);border-radius:10px;font-size:12.5px;line-height:1.5;"></div>
+        </div>
       </div>
       <div class="form-group">
         <label>Durum</label>
@@ -1092,7 +1100,69 @@
     };
     clExistingPhotos.forEach((url,idx)=>{ mkThumb(url, function(){ clExistingPhotos.splice(idx,1); clRenderPreviews(); }); });
     clSelectedFiles.forEach((f,idx)=>{ mkThumb(URL.createObjectURL(f), function(){ clSelectedFiles.splice(idx,1); clRenderPreviews(); }); });
+    clSyncPriceHelpBtn();
   }
+  function clSyncPriceHelpBtn(){
+    const hint=document.getElementById('cl-price-help-hint');
+    const hasPhoto=(clExistingPhotos.length+clSelectedFiles.length)>0;
+    if(hint) hint.style.display=hasPhoto?'none':'block';
+    const res=document.getElementById('cl-price-help-result'); if(res) res.style.display='none';
+  }
+  window.clEstimatePrice=async function(){
+    const btn=document.getElementById('cl-price-help-btn');
+    const resultBox=document.getElementById('cl-price-help-result');
+    if(!btn || btn.disabled) return;
+    const title=(document.getElementById('cl-title').value||'').trim();
+    if(!title){ alert('Önce bir başlık gir.'); return; }
+    btn.disabled=true; btn.textContent='⏳ Tahmin ediliyor...';
+    resultBox.style.display='none';
+    try{
+      // Convert newly-picked (not-yet-uploaded) files to base64, inline —
+      // existing photos (during edit) already have URLs the function can fetch.
+      const toBase64=(file)=>new Promise((resolve,reject)=>{
+        const r=new FileReader();
+        r.onload=()=>resolve({ mime:file.type||'image/jpeg', data:r.result.split(',')[1] });
+        r.onerror=reject;
+        r.readAsDataURL(file);
+      });
+      const photoBase64=await Promise.all(clSelectedFiles.slice(0,3).map(toBase64));
+
+      const r=await fetch(_CL_URL+'/functions/v1/estimate-price',{
+        method:'POST',
+        headers:{ ..._CL_H, 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          title,
+          description: (document.getElementById('cl-desc').value||'').trim(),
+          category: document.getElementById('cl-category').value,
+          condition: document.getElementById('cl-condition').value,
+          city: (document.getElementById('cl-city').value||'').trim(),
+          photoUrls: clExistingPhotos.slice(0,3),
+          photoBase64
+        })
+      });
+      const data=await r.json();
+      if(!r.ok || data.error){ throw new Error(data.error||'estimate failed'); }
+
+      const usedPhotoCount = clExistingPhotos.slice(0,3).length + photoBase64.length;
+      const noPhotoNote = usedPhotoCount===0
+        ? '<div style="font-size:11px;color:#8a6d1f;margin-bottom:6px;">📷 Fotoğrafsız tahmin — daha geniş bir aralık olabilir.</div>'
+        : '';
+
+      resultBox.innerHTML =
+        '<div style="font-weight:700;color:var(--ink);margin-bottom:4px;">💡 Tahmini fiyat aralığı: €'+data.min.toLocaleString('de-DE')+' – €'+data.max.toLocaleString('de-DE')+'</div>'
+        + noPhotoNote
+        + (data.gerekce? '<div style="color:var(--muted);margin-bottom:8px;">'+clEsc(data.gerekce)+'</div>' : '')
+        + '<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Bu bir yapay zeka tahminidir, gerçek piyasa verisi değildir. Son kararı sen ver.</div>'
+        + '<button type="button" onclick="document.getElementById(\'cl-price\').value='+Math.round((data.min+data.max)/2)+'" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">Ortalama değeri kullan (€'+Math.round((data.min+data.max)/2)+')</button>';
+      resultBox.style.display='block';
+    }catch(e){
+      resultBox.innerHTML='<div style="color:var(--red);">Tahmin alınamadı. Lütfen tekrar dene.</div>';
+      resultBox.style.display='block';
+    }finally{
+      btn.disabled=false; btn.textContent='💡 Fiyat Tahmini Al';
+      btn.style.cursor='pointer'; btn.style.color='var(--navy)'; btn.style.borderColor='var(--navy)';
+    }
+  };
   function clResetForm(){
     clEditId=null; clExistingPhotos=[]; clSelectedFiles=[];
     ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
