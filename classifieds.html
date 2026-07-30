@@ -631,7 +631,7 @@
         <div id="cl-price-help" style="margin-top:10px;padding:12px;background:var(--warm);border:1px solid var(--sand);border-radius:11px;">
           <div style="font-size:10.5px;font-weight:700;color:var(--gold,#C9A84C);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">✨ Yapay Zeka Destekli</div>
           <button type="button" id="cl-price-help-btn" onclick="clEstimatePrice()"
-            style="width:100%;background:var(--navy);border:none;border-radius:9px;padding:11px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
+            style="width:100%;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:11px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
             💡 Fiyat Tahmini Al
           </button>
           <div id="cl-price-help-hint" style="font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5;">Fotoğraf eklersen tahmin daha isabetli olur. Bu bir tahmindir, garanti edilen bir fiyat değildir.</div>
@@ -1001,7 +1001,7 @@
         : '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',true)" style="flex:1;background:var(--green);border:none;border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;">✓ Satıldı</button>';
       ownerBar='<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">'
         + soldBtn
-        + '<button onclick="event.stopPropagation();clEditListing(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(27,58,140,.08);border:1px solid rgba(27,58,140,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--navy);">✏️ Düzenle</button>'
+        + '<button onclick="event.stopPropagation();clEditListing(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(27,58,140,.08);border:1px solid rgba(27,58,140,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--navy,#1B3A8C);">✏️ Düzenle</button>'
         + '<button onclick="event.stopPropagation();clRemove(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--red);">🗑 Kaldır</button>'
         + '</div>';
     }
@@ -1216,14 +1216,14 @@
         + noPhotoNote
         + (data.gerekce? '<div style="color:var(--muted);margin-bottom:8px;">'+clEsc(data.gerekce)+'</div>' : '')
         + '<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Bu bir yapay zeka tahminidir, gerçek piyasa verisi değildir. Son kararı sen ver.</div>'
-        + '<button type="button" onclick="document.getElementById(\'cl-price\').value='+Math.round((data.min+data.max)/2)+'" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">Ortalama değeri kullan (€'+Math.round((data.min+data.max)/2)+')</button>';
+        + '<button type="button" onclick="document.getElementById(\'cl-price\').value='+Math.round((data.min+data.max)/2)+'" style="background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">Ortalama değeri kullan (€'+Math.round((data.min+data.max)/2)+')</button>';
       resultBox.style.display='block';
     }catch(e){
       resultBox.innerHTML='<div style="color:var(--red);">Tahmin alınamadı. Lütfen tekrar dene.</div>';
       resultBox.style.display='block';
     }finally{
       btn.disabled=false; btn.textContent='💡 Fiyat Tahmini Al';
-      btn.style.cursor='pointer'; btn.style.color='var(--navy)'; btn.style.borderColor='var(--navy)';
+      btn.style.cursor='pointer'; btn.style.color='var(--navy,#1B3A8C)'; btn.style.borderColor='var(--navy,#1B3A8C)';
     }
   };
   function clResetForm(){
