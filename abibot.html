@@ -316,6 +316,26 @@
     .send-btn:hover { background: var(--red2); }
     .send-btn:active { transform: scale(.95); }
     .send-btn:disabled { background: var(--sand); cursor: not-allowed; }
+    .attach-btn {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: none; border: 1.5px solid var(--sand); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+      transition: background .2s;
+    }
+    .attach-btn:hover { background: var(--warm); }
+    .photo-preview-bar {
+      display: none; align-items: center; gap: 10px; margin-bottom: 10px;
+      padding: 8px 10px; background: var(--warm); border-radius: 10px;
+    }
+    .photo-preview-bar.show { display: flex; }
+    .photo-preview-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .photo-preview-name { flex: 1; font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .photo-preview-remove {
+      background: none; border: none; color: var(--muted); font-size: 20px; line-height: 1;
+      cursor: pointer; flex-shrink: 0; padding: 2px 6px;
+    }
+    .photo-preview-remove:hover { color: var(--red); }
+    .msg-image { max-width: 220px; border-radius: 10px; display: block; margin-bottom: 6px; }
     .input-hints {
       display: flex; gap: 8px; margin-top: 10px; align-items: center;
       font-size: 11px; color: var(--muted); flex-wrap: wrap;
@@ -1023,7 +1043,14 @@
     </div>
 
     <div class="input-bar">
+      <div class="photo-preview-bar" id="photo-preview-bar">
+        <img class="photo-preview-thumb" id="photo-preview-thumb" src="" alt="">
+        <span class="photo-preview-name" id="photo-preview-name"></span>
+        <button class="photo-preview-remove" onclick="removeAttachedPhoto()" title="Kaldır">×</button>
+      </div>
       <div class="input-wrap">
+        <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoSelect(this)">
+        <button class="attach-btn" onclick="document.getElementById('photo-input').click()" title="Belge veya fotoğraf ekle">📎</button>
         <textarea id="chat-input" placeholder="Sorunuzu Türkçe, Almanca, İngilizce, Hollandaca veya Fransızca yazın..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
         <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Gönder">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1862,7 +1889,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     if (w) w.style.display = 'none';
   }
 
-  function addMessage(role, content, showActions = false) {
+  function addMessage(role, content, showActions = false, imageDataUrl = null) {
     hideWelcome();
     const msgs = document.getElementById('messages');
     const isUser = role === 'user';
@@ -1895,10 +1922,11 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     ` : '';
 
     const formattedContent = content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
+    const imageHtml = imageDataUrl ? `<img class="msg-image" src="${imageDataUrl}" alt="Eklenen görsel">` : '';
 
     div.innerHTML = avatarHtml + `
       <div class="msg-body">
-        <div class="bubble ${isUser ? 'user' : 'ai'}">${formattedContent}</div>
+        <div class="bubble ${isUser ? 'user' : 'ai'}">${imageHtml}${formattedContent}</div>
         <div class="msg-time">${now}</div>
         ${actionsHtml}
       </div>`;
@@ -2016,10 +2044,44 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   // topic string here and silently fell back to the raw category id in the classifier prompt.
   const catTopics = window.BB_CONFIG.categoryTopics;
 
+  // ── PHOTO ATTACHMENT (for document/photo questions) ──
+  let attachedPhoto = null; // { file, dataUrl }
+  const MAX_PHOTO_BYTES = 3.5 * 1024 * 1024; // 3.5MB raw (~4.7MB after base64) — stays safely under Anthropic's ~5MB per-image API limit
+
+  window.handlePhotoSelect = function(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Lütfen bir görsel dosyası seçin (fotoğraf veya taranmış belge).');
+      input.value = '';
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      alert('Dosya çok büyük. Lütfen 3.5MB altında bir görsel seçin (çoğu telefon fotoğrafı buna uyar).');
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      attachedPhoto = { file, dataUrl: reader.result };
+      document.getElementById('photo-preview-thumb').src = reader.result;
+      document.getElementById('photo-preview-name').textContent = file.name;
+      document.getElementById('photo-preview-bar').classList.add('show');
+    };
+    reader.readAsDataURL(file);
+    input.value = ''; // allow re-selecting the same file later
+  };
+
+  window.removeAttachedPhoto = function() {
+    attachedPhoto = null;
+    document.getElementById('photo-preview-bar').classList.remove('show');
+    document.getElementById('photo-preview-thumb').src = '';
+  };
+
   async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
-    if (!text || isLoading) return;
+    if ((!text && !attachedPhoto) || isLoading) return;
     isLoading = true; // set immediately to block overlapping calls (was previously set much later, allowing rapid double-sends to race through)
 
     // ── COOLDOWN CHECK (3s between messages) ──
@@ -2082,7 +2144,8 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
             if (usedToday >= limit) {
               hideWelcome();
-              addMessage('user', text);
+              addMessage('user', text, false, attachedPhoto ? attachedPhoto.dataUrl : null);
+              removeAttachedPhoto();
               const limitDiv = document.createElement('div');
               limitDiv.className = 'msg';
               const limitMsg = profile.is_premium
@@ -2108,8 +2171,25 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     input.value = '';
     input.style.height = 'auto';
 
-    addMessage('user', text);
-    messageHistory.push({ role: 'user', content: text });
+    // If a photo is attached, the message sent to Claude carries both the
+    // image and the text as a multimodal content array (Anthropic's native
+    // format) instead of a plain string — callClaude forwards messageHistory
+    // as-is, so no other change is needed downstream for this to work.
+    const sentPhoto = attachedPhoto;
+    let historyContent = text;
+    if (sentPhoto) {
+      const mimeMatch = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.*)$/.exec(sentPhoto.dataUrl);
+      if (mimeMatch) {
+        historyContent = [
+          { type: 'image', source: { type: 'base64', media_type: mimeMatch[1], data: mimeMatch[2] } },
+          { type: 'text', text: text || 'Bu belgeyi/görseli açıklar mısın?' }
+        ];
+      }
+    }
+
+    addMessage('user', text || '📷 Fotoğraf gönderildi', false, sentPhoto ? sentPhoto.dataUrl : null);
+    messageHistory.push({ role: 'user', content: historyContent });
+    removeAttachedPhoto();
     hideWelcome();
     addTyping();
 
@@ -2140,10 +2220,14 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       }
 
       // ── 2. CATEGORY RELEVANCE CHECK ──
-      const verdict = await callClaude([{
-        role: 'user',
-        content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
-      }], 'You are a topic classifier. Reply only YES or NO.');
+      // Skipped for photo-only sends (no text to classify) — the selected
+      // category already scopes the question in that case.
+      const verdict = (sentPhoto && !text)
+        ? 'YES'
+        : await callClaude([{
+            role: 'user',
+            content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
+          }], 'You are a topic classifier. Reply only YES or NO.');
 
       if (verdict.trim().toUpperCase().startsWith('NO')) {
         removeTyping();
