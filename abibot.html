@@ -708,7 +708,56 @@
     .mm-link.active { background:rgba(212,43,43,.07);color:#D42B2B;font-weight:600; }
     .mm-link-icon { font-size:20px;width:28px;text-align:center;flex-shrink:0; }
     .mm-footer { padding:16px 20px 32px;border-top:1px solid var(--warm,#F0EAE0);margin-top:auto; }
-    @media (max-width:900px) { .nav-menu { display:none!important; } .hamburger { display:flex!important; } }
+        @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
+
+    /* ── SIMPLIFIED PRIMARY NAV ── */
+    .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
+    .nav-primary a,.nav-kesfet-btn{
+      display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
+      font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;
+      background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
+    }
+    .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
+    .nav-primary a.active{background:var(--warm);color:var(--red);}
+
+    /* ── KEŞFET PANEL (desktop) ── */
+    .kesfet-panel{
+      display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);
+      background:#fff;border:1px solid var(--sand);border-radius:14px;
+      box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;
+    }
+    .kesfet-panel.open{display:block;}
+    .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;
+      padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);
+      font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile:hover{background:var(--warm);}
+    .kesfet-tile .e{font-size:22px;}
+
+    /* ── UTILITY: messages icon (matches existing notif-bell styling) ── */
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
+      padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg:hover{background:var(--warm);}
+
+    /* ── BOTTOM TAB BAR (mobile only) ── */
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
+      background:#fff;border-top:1px solid var(--sand);
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+      font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;
+      background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bt-item.active{color:var(--red);}
+    .bt-icon{font-size:20px;}
+
+    /* ── KEŞFET SHEET (mobile) ── */
+    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
+    .kesfet-sheet-overlay.open{display:block;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;
+      border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));
+      z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
+    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
   </style>
 
@@ -772,150 +821,98 @@
 <!-- NAV -->
 <nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
   <a href="mahallem.html" class="nav-logo-link" id="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
-  <div class="nav-menu" id="nav-menu">
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-mahallem',this)">🏘️ Mahallem <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-mahallem">
-        <a href="mahallem.html">🏘️ Komşularım</a>
-        <a href="events.html">🎉 Etkinlikler</a>
-        <a href="mahallem.html">📝 Paylaşımlar</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-is',this)">💼 İş & Göç <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-is">
-        <a href="is-guc.html">💼 İş İlanları</a>
-        <a href="is-guc.html">⚡ Freelance & Gig</a>
-        <a href="is-guc.html">👤 İş Arayanlar</a>
-        <a href="is-guc.html">✈️ Avrupa'ya Göç</a>
-        <hr>
-        <a href="business.html">🏢 İşletmeler</a>
-        <a href="uzmanlar.html">👨‍⚖️ Uzmanlar</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-ogrenim',this)">🎓 Öğrenim <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-ogrenim">
-        <a href="ogrenim.html">🗣️ Dil Kursları</a>
-        <a href="ogrenim.html">🎓 Yüksek Öğrenim</a>
-        <a href="ogrenim.html">📜 Diploma Denkliği</a>
-        <a href="ogrenim.html">🏭 Ausbildung</a>
-        <hr>
-        <a href="nachhilfe.html">✏️ Nachhilfe</a>
-        <a href="webinar.html">🎥 Webinarlar</a>
-        <a href="ogrenim.html">📚 Weiterbildung</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-saglik',this)">🏥 Sağlık <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-saglik">
-        <a href="saglik.html">🏥 Doktor Bul</a>
-        <a href="saglik.html">📋 Krankenkasse Rehberi</a>
-        <a href="saglik.html">🧠 Ruh Sağlığı</a>
-        <a href="saglik.html">💊 İlaç & Reçete</a>
-        <a href="saglik.html">🤰 Aile & Hamilelik</a>
-        <hr>
-        <a href="saglik.html">🚨 Acil Durumlar</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-emlak',this)">🏠 Konut & Emlak <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-emlak">
-        <a href="emlak.html">🔑 Kiralık Ev</a>
-        <a href="emlak.html">🏡 Satılık Ev</a>
-        <a href="emlak.html">🤝 Sublet</a>
-        <a href="emlak.html">👥 Paylaşımlı Ev</a>
-        <hr>
-        <a href="ev-takasi.html">🔄 Tatil Takası</a>
-        <a href="emlak.html">📋 Tüm Emlak İlanları</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-ilanlar',this)">🛍️ İlanlar <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-ilanlar">
-        <a href="classifieds.html">🚗 Araç</a>
-        <a href="emlak.html">🏠 Emlak</a>
-        <a href="classifieds.html">📱 Elektronik</a>
-        <a href="classifieds.html">🛋️ Mobilya</a>
-        <a href="classifieds.html">👗 Giyim</a>
-        <a href="classifieds.html">📋 Tümü</a>
-      </div>
-    </div>
-    <div class="nav-item">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-bilgiler',this)">📚 Bilgiler <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-bilgiler">
-        <a href="library.html">📚 Tüm Kaynaklar</a>
-        <hr>
-        <a href="library.html">💶 Kindergeld & Sosyal Yardımlar</a>
-        <a href="library.html">🏫 Okul & Çocuklar</a>
-        <a href="library.html">🛂 Vize & Oturum</a>
-        <a href="library.html">🚗 Sigorta</a>
-        <a href="library.html">💼 Çalışma Hayatı</a>
-      </div>
-    </div>
-    <div class="nav-item" id="nav-item-abibot">
-      <button class="nav-item-btn" onclick="toggleDropdown('dd-abibot',this)">🤖 AbiBOT <span class="chevron">▼</span></button>
-      <div class="nav-dropdown" id="dd-abibot">
-        <a href="abibot.html">🤖 AbiBOT'a Sor</a>
-        <hr>
-        <div id="abibot-nav-cat-links"></div>
-        <hr>
-        <a href="uzmanlar.html">👨‍⚖️ Uzmanlar</a>
-      </div>
+  <div class="nav-primary" id="nav-menu">
+    <a href="mahallem.html" id="np-mahallem">🏘️ Mahallem</a>
+    <a href="abibot.html" id="np-abibot">🤖 AbiBOT</a>
+    <a href="classifieds.html" id="np-ilanlar">🛍️ İlanlar</a>
+    <button class="nav-kesfet-btn" onclick="toggleKesfet(event)" id="np-kesfet">🔍 Keşfet</button>
+  </div>
+  <div class="kesfet-panel" id="kesfet-panel">
+    <div class="kesfet-grid">
+      <a class="kesfet-tile" href="is-guc.html"><span class="e">💼</span>İş İlanları</a>
+      <a class="kesfet-tile" href="business.html"><span class="e">🏢</span>İşletmeler</a>
+      <a class="kesfet-tile" href="uzmanlar.html"><span class="e">👨‍⚖️</span>Uzmanlar</a>
+      <a class="kesfet-tile" href="ogrenim.html"><span class="e">🎓</span>Öğrenim</a>
+      <a class="kesfet-tile" href="nachhilfe.html"><span class="e">✏️</span>Nachhilfe</a>
+      <a class="kesfet-tile" href="webinar.html"><span class="e">🎥</span>Webinarlar</a>
+      <a class="kesfet-tile" href="saglik.html"><span class="e">🏥</span>Sağlık</a>
+      <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
+      <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
+      <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgiler</a>
+      <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
     </div>
   </div>
+  <div style="flex:1;"></div>
   <div class="nav-right">
-    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">— kredi</span></div><div class="nav-avatar" id="nav-avatar" onclick="window.location='profile.html'" title="Profilim">AY</div>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menü"><span></span><span></span><span></span></button>
+    <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
+    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">— kredi</span></div>
+    <a class="nav-avatar" id="nav-avatar" href="profile.html" title="Profilim" style="position:relative;text-decoration:none;">—</a>
   </div>
 </nav>
 
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobile-menu">
-  <div class="mm-header">
-    <div id="mm-logo" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#1A1208;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-    <button onclick="toggleMenu()" style="background:none;border:none;font-size:26px;color:#6B5E4E;cursor:pointer;line-height:1;">×</button>
+<!-- KEŞFET SHEET (mobile) -->
+<div class="kesfet-sheet-overlay" id="kesfet-sheet-overlay" onclick="closeKesfetSheet()"></div>
+<div class="kesfet-sheet" id="kesfet-sheet" style="display:none;">
+  <div class="kesfet-sheet-header">
+    <div class="kesfet-sheet-title">Keşfet</div>
+    <button onclick="closeKesfetSheet()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
   </div>
-  <div id="mm-bb-sections">
-  <div class="mm-section"><div class="mm-section-title">Topluluk</div>
-    <a class="mm-link" href="mahallem.html"><span class="mm-link-icon">🏘️</span>Komşularım</a>
-    <a class="mm-link" href="events.html"><span class="mm-link-icon">🎉</span>Etkinlikler</a>
-  </div>
-  <div class="mm-section"><div class="mm-section-title">İş & Göç</div>
-    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">💼</span>İş İlanları</a>
-    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">⚡</span>Freelance & Gig</a>
-    <a class="mm-link" href="is-guc.html"><span class="mm-link-icon">✈️</span>Avrupa'ya Göç</a>
-    <a class="mm-link" href="business.html"><span class="mm-link-icon">🏢</span>İşletmeler</a>
-    <a class="mm-link" href="uzmanlar.html"><span class="mm-link-icon">👨‍⚖️</span>Uzmanlar</a>
-  </div>
-  <div class="mm-section"><div class="mm-section-title">Öğrenim</div>
-    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🗣️</span>Dil Kursları</a>
-    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🎓</span>Yüksek Öğrenim</a>
-    <a class="mm-link" href="ogrenim.html"><span class="mm-link-icon">🏭</span>Ausbildung</a>
-  </div>
-  <div class="mm-section"><div class="mm-section-title">Sağlık</div>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🏥</span>Doktor Bul</a>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🧠</span>Ruh Sağlığı</a>
-    <a class="mm-link" href="saglik.html"><span class="mm-link-icon">🚨</span>Acil Durumlar</a>
-  </div>
-  <div class="mm-section"><div class="mm-section-title">Konut & Emlak</div>
-    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">🔑</span>Kiralık Ev</a>
-    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">🏡</span>Satılık Ev</a>
-    <a class="mm-link" href="emlak.html"><span class="mm-link-icon">👥</span>Paylaşımlı Ev</a>
-  </div>
-  <div class="mm-section"><div class="mm-section-title">İlanlar & Bilgiler</div>
-    <a class="mm-link" href="classifieds.html"><span class="mm-link-icon">🛍️</span>İlanlar</a>
-    <a class="mm-link" href="library.html"><span class="mm-link-icon">📚</span>Bilgiler</a>
-    <a class="mm-link" href="abibot.html"><span class="mm-link-icon">🤖</span>AbiBOT</a>
-  </div>
-  </div>
-  <div class="mm-footer">
-    <a href="profile.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#1A1208;">
-      <div id="mm-avatar" style="width:36px;height:36px;border-radius:50%;background:#D42B2B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">AY</div>
-      <div><div style="font-size:13px;font-weight:600;">Profilim</div><div style="font-size:11px;color:#6B5E4E;">Hesabımı gör</div></div>
-    </a>
+  <div class="kesfet-sheet-grid">
+    <a class="kesfet-tile" href="is-guc.html"><span class="e">💼</span>İş İlanları</a>
+    <a class="kesfet-tile" href="business.html"><span class="e">🏢</span>İşletmeler</a>
+    <a class="kesfet-tile" href="uzmanlar.html"><span class="e">👨‍⚖️</span>Uzmanlar</a>
+    <a class="kesfet-tile" href="ogrenim.html"><span class="e">🎓</span>Öğrenim</a>
+    <a class="kesfet-tile" href="nachhilfe.html"><span class="e">✏️</span>Nachhilfe</a>
+    <a class="kesfet-tile" href="webinar.html"><span class="e">🎥</span>Webinarlar</a>
+    <a class="kesfet-tile" href="saglik.html"><span class="e">🏥</span>Sağlık</a>
+    <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
+    <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
+    <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgiler</a>
+    <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
+    <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
   </div>
 </div>
+
+<!-- BOTTOM TAB BAR (mobile) -->
+<div class="bottom-tabbar" id="bottom-tabbar">
+  <a class="bt-item" href="mahallem.html" id="bt-mahallem"><span class="bt-icon">🏘️</span>Mahallem</a>
+  <a class="bt-item" href="abibot.html" id="bt-abibot"><span class="bt-icon">🤖</span>AbiBOT</a>
+  <a class="bt-item" href="classifieds.html" id="bt-ilanlar"><span class="bt-icon">🛍️</span>İlanlar</a>
+  <button class="bt-item" onclick="openKesfetSheet()" id="bt-kesfet"><span class="bt-icon">🔍</span>Keşfet</button>
+  <a class="bt-item" href="profile.html" id="bt-profil"><span class="bt-icon">👤</span>Profil</a>
+</div>
+
+<script>
+  function toggleKesfet(e) {
+    e.stopPropagation();
+    document.getElementById('kesfet-panel').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    const panel = document.getElementById('kesfet-panel');
+    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') {
+      panel.classList.remove('open');
+    }
+  });
+  function openKesfetSheet() {
+    document.getElementById('kesfet-sheet-overlay').classList.add('open');
+    document.getElementById('kesfet-sheet').style.display = 'block';
+  }
+  function closeKesfetSheet() {
+    document.getElementById('kesfet-sheet-overlay').classList.remove('open');
+    document.getElementById('kesfet-sheet').style.display = 'none';
+  }
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    const map = { 'mahallem.html': 'mahallem', 'abibot.html': 'abibot', 'classifieds.html': 'ilanlar', 'profile.html': 'profil' };
+    const key = map[page];
+    if (key) {
+      const npEl = document.getElementById('np-' + key);
+      const btEl = document.getElementById('bt-' + key);
+      if (npEl) npEl.classList.add('active');
+      if (btEl) btEl.classList.add('active');
+    }
+  })();
+</script>
 
 <div class="shell">
 
@@ -953,6 +950,12 @@
       <div class="eb-title">AbiBOT cevabını bir uzmana onaylat</div>
       <div class="eb-desc">Önemli kararlar için AbiBOT cevabını Türkçe konuşan gerçek bir uzman doğrulasın.</div>
       <button class="eb-btn" id="escalate-sidebar-btn" disabled onclick="openEscalate()">Uzman İncelesin →</button>
+    </div>
+
+    <div class="panel-section" style="padding-top:14px;padding-bottom:14px;">
+      <button onclick="window.BB_SSO && window.BB_SSO.crossTo('https://abibot.eu','/')" style="background:none;border:none;cursor:pointer;padding:0;font-size:11.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:5px;font-family:inherit;">
+        🌐 AbiBOT'u abibot.eu'da aç →
+      </button>
     </div>
 
   </aside>
