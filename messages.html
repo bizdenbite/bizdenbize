@@ -549,7 +549,7 @@
       <div class="context-banner" id="context-banner" style="display:none;">
         <div class="cb-icon">🛍️</div>
         <div class="cb-text" id="context-banner-text"></div>
-        <a class="cb-link" href="classifieds.html">İlanı gör →</a>
+        <a class="cb-link" id="context-banner-link" href="classifieds.html">İlanı gör →</a>
       </div>
 
       <div class="messages" id="active-messages"></div>
@@ -664,12 +664,18 @@
     }
 
     // Enrich with listing info (title) for listing-scoped conversations
+    // Listings can come from either the classifieds table or the emlak table —
+    // check both and remember which one each id came from, so the "İlanı gör"
+    // link always points at the right detail page.
     let listingMap = {};
     const listingIds = [...new Set(convRows.map(c => c.listing_id).filter(Boolean))];
     if (listingIds.length) {
-      const { data: listings } = await supabase.from('classified_listings')
-        .select('id, title, photos, price, status').in('id', listingIds);
-      (listings || []).forEach(l => listingMap[l.id] = l);
+      const [clRes, emRes] = await Promise.all([
+        supabase.from('classified_listings').select('id, title, photos, price, status').in('id', listingIds),
+        supabase.from('emlak_listings').select('id, title, photos, price, status, tip').in('id', listingIds)
+      ]);
+      (clRes.data || []).forEach(l => listingMap[l.id] = { ...l, _kind: 'classified' });
+      (emRes.data || []).forEach(l => listingMap[l.id] = { ...l, _kind: 'emlak' });
     }
 
     conversations = convRows.map(c => {
@@ -704,6 +710,11 @@
     const diffDays = Math.floor((now - d) / 86400000);
     if (diffDays < 7) return d.toLocaleDateString('tr-TR', { weekday: 'long' });
     return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function listingDetailUrl(listing, id) {
+    const kind = listing ? listing._kind : null;
+    return (kind === 'emlak' ? 'emlak-detail.html?id=' : 'listing-detail.html?id=') + id;
   }
 
   function convItemHtml(c, opts) {
@@ -768,7 +779,7 @@
                 <div class="cg-title">${title}</div>
                 <div class="cg-sub">${convs.length} kişi${unreadTotal>0?` · <span style="color:var(--red);font-weight:600;">${unreadTotal} yeni</span>`:''}</div>
               </div>
-              <a href="listing-detail.html?id=${lid}" onclick="event.stopPropagation()" title="İlanı gör" style="font-size:12px;color:var(--navy,#1B3A8C);text-decoration:none;font-weight:600;white-space:nowrap;">İlanı gör →</a>
+              <a href="${listingDetailUrl(listing, lid)}" onclick="event.stopPropagation()" title="İlanı gör" style="font-size:12px;color:var(--navy,#1B3A8C);text-decoration:none;font-weight:600;white-space:nowrap;">İlanı gör →</a>
             </div>
             ${convs.map(c => convItemHtml(c, {grouped:true})).join('')}
           </div>`;
@@ -900,6 +911,8 @@
     if (conv.listing_id) {
       banner.style.display = 'flex';
       document.getElementById('context-banner-text').innerHTML = `Bu konuşma bir <strong>ilan</strong> hakkında`;
+      const bannerLink = document.getElementById('context-banner-link');
+      if (bannerLink) bannerLink.href = listingDetailUrl(conv.listing, conv.listing_id);
     } else {
       banner.style.display = 'none';
     }
