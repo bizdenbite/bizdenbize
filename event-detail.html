@@ -633,11 +633,23 @@
 </div>
 
 
-<div class="breadcrumb">
-  <a href="mahallem.html">Ana Sayfa</a><span>/</span>
-  <a href="events.html">Etkinlikler</a><span>/</span>
-  <span id="bc-title" style="color:var(--ink)">Etkinlik</span>
+<div class="breadcrumb" style="flex-direction:column;align-items:flex-start;gap:10px;">
+  <button onclick="bbGoBack('events.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--warm);border:1px solid var(--sand);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;">← Geri</button>
+  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+    <a href="mahallem.html">Ana Sayfa</a><span>/</span>
+    <a href="events.html">Etkinlikler</a><span>/</span>
+    <span id="bc-title" style="color:var(--ink)">Etkinlik</span>
+  </div>
 </div>
+<script>
+  function bbGoBack(fallbackUrl) {
+    if (document.referrer && document.referrer.indexOf(window.location.hostname) !== -1 && history.length > 1) {
+      history.back();
+    } else {
+      window.location.href = fallbackUrl;
+    }
+  }
+</script>
 
 <div class="page" id="event-detail-root">
   <div style="text-align:center;padding:60px;color:var(--muted);">Etkinlik yükleniyor…</div>
