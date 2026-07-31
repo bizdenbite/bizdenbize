@@ -837,7 +837,7 @@
         +   '<div>📍 <strong>'+venue+'</strong></div>'
         +   '<div><span class="ei-tag" style="background:'+cat.c+'1a;color:'+cat.c+';padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600;">'+cat.l+'</span></div>'
         + '</div>'
-        + (e.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:20px;">'+edEsc(e.description)+'</div>':'')
+        + (e.description?'<div id="ld-description" style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:8px;">'+edEsc(e.description)+'</div><div style="margin-bottom:20px;">'+mhTranslateMenuHtml('#ld-description')+'</div>':'')
         + edSection('👥 Kimler için faydalı?', e.target_audience)
         + edSection('🗒️ Program', e.agenda)
         + edMeetingBlock(e)
@@ -858,5 +858,6 @@
   window.edShareWA=edShareWA;
   loadEventDetail();
 </script>
+  <script src="translate-widget.js"></script>
 </body>
 </html>
