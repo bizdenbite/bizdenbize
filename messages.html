@@ -146,11 +146,10 @@
     }
     .msg-translate-btn:hover { background: var(--warm); color: var(--ink); }
     .msg-translate-dropdown {
-      display: none; position: absolute; bottom: 100%; margin-bottom: 4px; left: 0;
+      display: none; position: fixed;
       background: #fff; border: 1px solid var(--sand); border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(26,18,8,.14); padding: 6px; z-index: 50; white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(26,18,8,.14); padding: 6px; z-index: 500; white-space: nowrap;
     }
-    .msg-row.mine .msg-translate-dropdown { left: auto; right: 0; }
     .msg-translate-dropdown.open { display: block; }
     .msg-translate-opt {
       display: block; width: 100%; text-align: left; background: none; border: none;
@@ -1153,12 +1152,31 @@
     const dropdown = btn.nextElementSibling;
     const isOpen = dropdown.classList.contains('open');
     document.querySelectorAll('.msg-translate-dropdown.open').forEach(d => d.classList.remove('open'));
-    if (!isOpen) dropdown.classList.add('open');
+    if (isOpen) return;
+
+    // Position as position:fixed, calculated from the button's real screen
+    // location — this escapes the messages list's overflow-y:auto container,
+    // which was clipping the old position:absolute dropdown when a message
+    // sat near the top of the scrollable area.
+    dropdown.classList.add('open'); // show first (off-screen calc) so offsetHeight/Width are real
+    const rect = btn.getBoundingClientRect();
+    const ddH = dropdown.offsetHeight;
+    const ddW = dropdown.offsetWidth;
+    const spaceAbove = rect.top;
+    const openUpward = spaceAbove >= (ddH + 12);
+    dropdown.style.top = openUpward ? (rect.top - ddH - 4) + 'px' : (rect.bottom + 4) + 'px';
+    let left = rect.left;
+    if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
+    if (left < 8) left = 8;
+    dropdown.style.left = left + 'px';
   };
   document.addEventListener('click', e => {
     if (!e.target.closest('.msg-translate-wrap')) {
       document.querySelectorAll('.msg-translate-dropdown.open').forEach(d => d.classList.remove('open'));
     }
+  });
+  document.getElementById('active-messages')?.addEventListener('scroll', () => {
+    document.querySelectorAll('.msg-translate-dropdown.open').forEach(d => d.classList.remove('open'));
   });
 
   const msgLangNames = { tr: '🇹🇷 Türkçe', de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce', fr: '🇫🇷 Fransızca', nl: '🇳🇱 Hollandaca' };
