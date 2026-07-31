@@ -140,9 +140,23 @@
   <div class="nav-right">
     <button onclick="bbGoBack('uzmanlar.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</button>
     <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
+    <button onclick="bbSignOut()" title="Çıkış Yap" style="background:none;border:none;font-size:17px;cursor:pointer;padding:6px 8px;border-radius:8px;color:var(--muted);">🚪</button>
   </div>
 </nav>
 <script>
+  function bbSignOut() {
+    if (!confirm('Çıkış yapmak istediğine emin misin?')) return;
+    (async () => {
+      try {
+        const { supabase } = await import('./bizdenbize-client.js');
+        await supabase.auth.signOut();
+      } catch(e) {}
+      localStorage.removeItem('bb_auth_token');
+      localStorage.removeItem('bb_user');
+      Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+      window.location.href = 'login.html';
+    })();
+  }
   function bbGoBack(fallbackUrl) {
     if (document.referrer && document.referrer.indexOf(window.location.hostname) !== -1 && history.length > 1) {
       history.back();

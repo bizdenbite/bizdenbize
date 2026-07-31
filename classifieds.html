@@ -503,7 +503,23 @@
   <div class="nav-right">
     <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
     <a class="nav-avatar" id="nav-avatar" href="profile.html" title="Profilim" style="position:relative;text-decoration:none;">—</a>
+    <button onclick="bbSignOut()" title="Çıkış Yap" style="background:none;border:none;font-size:17px;cursor:pointer;padding:6px 8px;border-radius:8px;color:var(--muted);">🚪</button>
   </div>
+  <script>
+    function bbSignOut() {
+      if (!confirm('Çıkış yapmak istediğine emin misin?')) return;
+      (async () => {
+        try {
+          const { supabase } = await import('./bizdenbize-client.js');
+          await supabase.auth.signOut();
+        } catch(e) {}
+        localStorage.removeItem('bb_auth_token');
+        localStorage.removeItem('bb_user');
+        Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+        window.location.href = 'login.html';
+      })();
+    }
+  </script>
 </nav>
 
 <!-- KEŞFET SHEET (mobile) -->
