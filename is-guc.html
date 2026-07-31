@@ -903,7 +903,7 @@
     document.getElementById('results-count').innerHTML = `<strong>${allSeekers.length}</strong> iş arayan profili`;
     container.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;">` +
       allSeekers.map(s => `
-        <div class="listing-card" onclick="openSeekerDetail('${s.id}')" style="cursor:pointer;flex-direction:column;gap:0;padding:0;overflow:hidden;">
+        <div class="listing-card" data-listing-id="${s.id}" onclick="openSeekerDetail('${s.id}')" style="cursor:pointer;flex-direction:column;gap:0;padding:0;overflow:hidden;">
           <div style="padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">
             <div style="width:46px;height:46px;border-radius:12px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;">${s.avatar || (s.name||'').split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
             <div style="flex:1;min-width:0;">
@@ -919,7 +919,7 @@
               <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">⏱️ ${s.availability}</span>
               <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">${worktypeLabel[s.worktype]||''}</span>
             </div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${s.desc || s.description || ''}</div>
+            ${(s.desc || s.description) ? `<div class="seeker-desc-preview" style="font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${s.desc || s.description}</div><div onclick="event.stopPropagation()">${mhTranslateMenuHtml('.seeker-desc-preview')}</div>` : ''}
             <div style="display:flex;gap:5px;flex-wrap:wrap;">${(s.skills||[]).slice(0,3).map(sk => `<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;border:1px solid var(--sand);color:var(--muted);">${sk}</span>`).join("")}</div>
           </div>
           <div style="padding:10px 18px;border-top:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;">
@@ -940,6 +940,7 @@
     document.getElementById('detail-price').textContent = s.salary || '—';
     document.getElementById('detail-price-box').style.background = "rgba(30,123,75,.06)";
     document.getElementById('detail-desc').textContent = s.desc || s.description || '';
+    document.getElementById('detail-desc-translate-wrap').innerHTML = (s.desc || s.description) ? mhTranslateMenuHtml('#detail-desc') : '';
     const workAuth = s.workAuth || s.work_auth || '—';
     document.getElementById('detail-tags').innerHTML = `
       <span class="listing-tag tag-job" style="font-size:12px;padding:4px 12px;">👤 İş Arıyor</span>
@@ -1000,7 +1001,7 @@
       return;
     }
     container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
-      <div class="listing-card ${l.featured ? 'featured' : ''}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
+      <div class="listing-card ${l.featured ? 'featured' : ''}" data-listing-id="${l.id}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
         <div class="listing-avatar" style="background:${catBg[l.category||l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.category||l.cat]||'#185FA5'}">${catEmoji[l.category||l.cat]||'✈️'}</div>
         <div class="listing-body">
@@ -1014,7 +1015,7 @@
             <span style="color:var(--sand)">·</span>
             <span class="listing-location">📍 ${l.location||''}</span>
           </div>
-          <div class="listing-desc">${l.description||l.desc||''}</div>
+          ${(l.description||l.desc) ? `<div class="listing-desc">${l.description||l.desc}</div><div onclick="event.stopPropagation()">${mhTranslateMenuHtml('.listing-desc')}</div>` : ''}
           <div class="listing-footer">
             <span class="listing-tag ${l.type === 'migration' ? 'tag-job' : l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'migration' ? "✈️ Avrupa'ya Göç" : l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
             <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
@@ -1373,6 +1374,7 @@
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">İlan Açıklaması</div>
         <div id="detail-desc" style="font-size:14px;color:var(--ink);line-height:1.7;"></div>
+        <div id="detail-desc-translate-wrap" style="margin-top:4px;"></div>
       </div>
       <!-- Details grid -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="detail-grid"></div>
@@ -1405,6 +1407,7 @@
     document.getElementById('detail-company').textContent = (l.company || l.author) + '  ·  📍 ' + l.location;
     document.getElementById('detail-price').textContent = l.price;
     document.getElementById('detail-desc').textContent = l.description || l.desc || '';
+    document.getElementById('detail-desc-translate-wrap').innerHTML = (l.description || l.desc) ? mhTranslateMenuHtml('#detail-desc') : '';
 
     const tags = document.getElementById('detail-tags');
     tags.innerHTML = `
@@ -1595,5 +1598,6 @@
   </div>
 </div>
 
+  <script src="translate-widget.js"></script>
 </body>
 </html>

@@ -485,7 +485,7 @@
         <div style="text-align:right;flex-shrink:0;"><div style="font-size:10px;color:var(--muted);">Tarih</div><div style="font-size:13px;font-weight:700;color:var(--teal);" id="d-dates"></div></div>
       </div>
       <div class="info-grid" id="d-info-grid"></div>
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Açıklama</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="d-desc"></div></div>
+      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Açıklama</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="d-desc"></div><div id="d-desc-translate-wrap" style="margin-top:4px;"></div></div>
       <div class="trust-box"><div class="trust-icon">🛡️</div><div><div class="trust-title">Güvenli Takas</div><div class="trust-text">Bu üye BizdenBize kimlik doğrulamasından geçmiştir. Para transferi talep etmesi yasaktır. Şüpheli durumları bildirin.</div></div></div>
       <div style="text-align:right;"><button onclick="openReportModal()" style="background:none;border:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;padding:2px 0;">🚩 Bu ilanı bildir</button></div>
       <div class="trust-box" style="background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🪙</div><div><div class="trust-title" style="color:var(--gold);">Puanla Konaklama</div><div class="trust-text">Karşılıklı takas yapmak zorunda değilsiniz. "Konaklama Talep Et" ile puanınızı kullanarak tek taraflı kalabilirsiniz — ev sahibi daha sonra puanlarını başka bir yerde kullanır.</div></div></div>
@@ -679,7 +679,7 @@ function filterAndRenderSwaps() {
   }
 
   grid.innerHTML = filtered.map(s => `
-    <div class="swap-card ${s.featured?'featured':''}" onclick="openDetail('${s.id}')">
+    <div class="swap-card ${s.featured?'featured':''}" data-listing-id="${s.id}" onclick="openDetail('${s.id}')">
       <div class="card-img">
         <div style="font-size:52px">${"🏠"}</div>
         ${s.verified?'<div class="card-verified">✅ Doğrulanmış</div>':''}
@@ -702,7 +702,7 @@ function filterAndRenderSwaps() {
           <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
           ${s.suggested_duration ? `<span class="card-detail-tag">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</span>` : ''}
         </div>
-        <div class="card-desc">${s.description||""}</div>
+        ${s.description ? `<div class="card-desc">${s.description}</div><div onclick="event.stopPropagation()" style="margin:2px 0 4px;">${mhTranslateMenuHtml('.card-desc')}</div>` : ""}
         <div class="card-footer">
           <div class="card-user">
             <div class="card-avatar">${s.user_name ? s.user_name.split(" ").map(n=>n[0]).join("").slice(0,2) : "??"}</div>
@@ -737,6 +737,7 @@ function openDetail(id) {
   document.getElementById('d-dest').textContent = destText(s);
   document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
+  document.getElementById('d-desc-translate-wrap').innerHTML = s.description ? mhTranslateMenuHtml('#d-desc') : '';
   document.getElementById('d-info-grid').innerHTML = `
     <div class="info-box"><div class="info-box-label">Ev Tipi</div><div class="info-box-val">${HOME_TYPE_LABELS[s.home_type] || s.home_type} · ${s.rooms}</div></div>
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
@@ -1269,5 +1270,6 @@ document.addEventListener("DOMContentLoaded", async function() {
   if (listingId) openDetail(listingId);
 });
 </script>
+  <script src="translate-widget.js"></script>
 </body>
 </html>

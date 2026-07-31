@@ -809,7 +809,7 @@
         + '<div class="li-price">'+ldPrice(l)+'</div>'
         + '<div class="li-title">'+ldEsc(l.title)+'</div>'
         + '<div style="color:var(--muted);font-size:14px;margin:8px 0 20px;">'+cat.e+' '+ldEsc(cat.l)+(loc?' · 📍 '+ldEsc(loc):'')+'</div>'
-        + (l.description?'<div style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:20px;white-space:pre-line;">'+ldEsc(l.description)+'</div>':'')
+        + (l.description?'<div id="ld-description" style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:8px;white-space:pre-line;">'+ldEsc(l.description)+'</div><div style="margin-bottom:20px;">'+mhTranslateMenuHtml('#ld-description')+'</div>':'')
         + ((cond||deliv)?'<table style="width:auto;font-size:14px;border-collapse:collapse;"><tbody>'+cond+deliv+'</tbody></table>':'')
         + '</div>'
         + '<div class="right-col"><div class="seller-card">'
@@ -851,5 +851,6 @@
   };
   loadListing();
 </script>
+  <script src="translate-widget.js"></script>
 </body>
 </html>

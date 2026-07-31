@@ -710,7 +710,7 @@
           <div class="review-cat">${CAT_ICONS[r.category] || ''} ${CAT_NAMES[r.category] || r.category}</div>
           <div class="review-stars">${filled}${empty}</div>
           ${r.rating_comment
-            ? `<div class="review-comment">"${r.rating_comment}"</div>`
+            ? `<div class="review-comment">"${r.rating_comment}"</div><div style="margin-top:4px;">${mhTranslateMenuHtml('.review-comment')}</div>`
             : `<div class="review-comment" style="color:var(--sand);">Yorum yapılmadı.</div>`}
           <div class="review-meta">${ratedDate}</div>
         </div>`;
@@ -1166,5 +1166,6 @@
     }
   };
 </script>
+  <script src="translate-widget.js"></script>
 </body>
 </html>
