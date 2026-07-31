@@ -579,8 +579,24 @@
     <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
     <button class="nav-notif" id="notif-bell-btn" onclick="toggleNotifPanel(event)">🔔<div class="notif-dot" id="notif-dot" style="display:none;"></div></button><div id="notif-panel" style="display:none;position:absolute;top:54px;right:64px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:0;width:320px;max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:300;"><div style="padding:14px 16px;border-bottom:1px solid #F0EAE0;font-size:14px;font-weight:700;color:#1A1208;">Bildirimler</div><div id="notif-list"><div style="padding:20px;text-align:center;font-size:13px;color:#6B5E4E;">Yükleniyor...</div></div></div>
     <a class="nav-avatar" id="nav-avatar" href="profile.html" title="Profilim" style="position:relative;text-decoration:none;">—</a>
+    <button onclick="bbSignOut()" style="background:none;border:1px solid var(--sand);border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;padding:6px 10px;color:var(--muted);font-family:'Instrument Sans',sans-serif;white-space:nowrap;">Çıkış</button>
   </div>
 </nav>
+<script>
+  function bbSignOut() {
+    if (!confirm('Çıkış yapmak istediğine emin misin?')) return;
+    (async () => {
+      try {
+        const { supabase } = await import('./bizdenbize-client.js');
+        await supabase.auth.signOut();
+      } catch(e) {}
+      localStorage.removeItem('bb_auth_token');
+      localStorage.removeItem('bb_user');
+      Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+      window.location.href = 'login.html';
+    })();
+  }
+</script>
 
 <!-- KEŞFET SHEET (mobile) -->
 <div class="kesfet-sheet-overlay" id="kesfet-sheet-overlay" onclick="closeKesfetSheet()"></div>
@@ -1527,7 +1543,7 @@ document.addEventListener('click', function(e) {
     <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
       padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
       font-family:inherit;white-space:nowrap;">Yükle</button>
-    <button onclick="localStorage.setItem('bb_pwa_dismissed','1');document.getElementById('pwa-banner').style.display='none'"
+    <button onclick="document.getElementById('pwa-banner').style.display='none'"
       style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
       padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
   </div>
@@ -1536,7 +1552,6 @@ document.addEventListener('click', function(e) {
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
-      if (localStorage.getItem('bb_pwa_dismissed')) return;
       const banner = document.getElementById('pwa-banner');
       if (banner) banner.style.display = 'flex';
     });
@@ -1553,7 +1568,6 @@ document.addEventListener('click', function(e) {
       });
     }
     window.addEventListener('appinstalled', () => {
-      localStorage.setItem('bb_pwa_dismissed','1');
       const banner = document.getElementById('pwa-banner');
       if (banner) banner.style.display = 'none';
       deferredPrompt = null;
