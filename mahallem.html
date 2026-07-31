@@ -1387,24 +1387,27 @@
     document.getElementById('germany-count').textContent = germanyCount || '—';
     document.getElementById('europe-count').textContent  = totalCount   || '—';
 
-    // New members — prefer people from the viewer's own city, but fall
-    // back to the newest members overall if there aren't enough (a small
-    // member base means a strict same-city filter would often show almost
-    // nothing). The title only claims "X'dan Yeni Üyeler" when the members
-    // actually shown are genuinely from that city — previously it always
-    // showed the viewer's city regardless of who was actually listed.
-    const others = allProfiles.filter(p => p.id !== user.id && p.first_name);
-    const sameCity = city ? others.filter(p => (p.city||'').toLowerCase() === city.toLowerCase()) : [];
-    const rest = others.filter(p => !sameCity.includes(p));
-    const bySort = arr => arr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    const newMembers = bySort(sameCity).slice(0, 3);
-    if (newMembers.length < 3) newMembers.push(...bySort(rest).slice(0, 3 - newMembers.length));
+    // "Yeni Üyeler" = same city as the viewer AND registered within the
+    // last 7 days — a real, strict criteria on both dimensions, not a
+    // "prefer, then fall back to anyone" approximation. If fewer than 3
+    // people genuinely qualify, fewer than 3 are shown — never padded with
+    // people from elsewhere or who joined longer ago, since that would be
+    // the same "label claims something the data doesn't back up" problem
+    // already fixed here once.
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const newMembers = city
+      ? allProfiles
+          .filter(p => p.id !== user.id && p.first_name
+            && (p.city||'').toLowerCase() === city.toLowerCase()
+            && new Date(p.created_at) >= sevenDaysAgo)
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 3)
+      : [];
 
     const memberColors = ['#D42B2B','#185FA5','#1E7B4B'];
     const list  = document.getElementById('new-members-list');
     const title = document.getElementById('new-members-title');
-    const allShownAreSameCity = newMembers.length > 0 && newMembers.every(m => (m.city||'').toLowerCase() === city.toLowerCase());
-    title.textContent = (city && allShownAreSameCity) ? `👥 ${city}'dan Yeni Üyeler` : '👥 Yeni Üyeler';
+    title.textContent = city ? `👥 ${city}'dan Yeni Üyeler` : '👥 Yeni Üyeler';
 
     if (newMembers.length) {
       list.innerHTML = newMembers.map((m, i) => {
@@ -1424,7 +1427,9 @@
         </div>`;
       }).join('');
     } else {
-      list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Henüz başka üye yok.</div>';
+      list.innerHTML = city
+        ? `<div style="font-size:12px;color:var(--muted);padding:8px 0;">Bu hafta ${city}'da yeni üye yok.</div>`
+        : '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Yakın üyeleri görmek için profilinde şehrini belirt.</div>';
     }
   }
 
