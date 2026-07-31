@@ -583,15 +583,24 @@ function bb_injectLangSwitcher() {
 
 // ── AUTO-INIT ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  // If there's no saved preference yet, force Turkish as default
-  // (clears old auto-detected language from previous visits)
-  const saved = localStorage.getItem(BB_STORAGE_KEY);
-  if (!saved) {
-    localStorage.setItem(BB_STORAGE_KEY, 'tr');
-  }
-  const lang = bb_detectLanguage();
-  bb_injectLangSwitcher();
-  bb_applyLanguage(lang);
+  // ── Multi-language temporarily disabled — platform is Turkish-only for now ──
+  // The switcher UI and translation application are both off, and any
+  // previously-saved language choice (e.g. from earlier testing) is reset to
+  // Turkish, so nobody gets stuck on a stale non-Turkish selection.
+  //
+  // NOT deleted: BB_TRANSLATIONS (all 5 languages' real translated strings)
+  // and bb_applyLanguage()'s data-i18n mechanism are both left fully intact
+  // below, dormant, ready for a future relaunch.
+  //
+  // IMPORTANT before re-enabling: the primary nav (Mahallem/AbiBOT/İlanlar/
+  // Keşfet/Profil + Keşfet panel tiles), added across ~21 pages in the July
+  // 2026 nav redesign, has NO data-i18n attributes — bb_applyLanguage() will
+  // silently leave it in Turkish while everything else translates. Add
+  // data-i18n tags (+ matching BB_TRANSLATIONS entries) to that nav first,
+  // or re-enabling will show a broken, half-translated nav.
+  localStorage.setItem(BB_STORAGE_KEY, 'tr');
+  bb_applyLanguage('tr');
+  // bb_injectLangSwitcher();  // disabled — see note above
 });
 
 // Expose globally
