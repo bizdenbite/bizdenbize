@@ -1387,16 +1387,24 @@
     document.getElementById('germany-count').textContent = germanyCount || '—';
     document.getElementById('europe-count').textContent  = totalCount   || '—';
 
-    // New members excluding current user
-    const newMembers = allProfiles
-      .filter(p => p.id !== user.id && p.first_name)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 3);
+    // New members — prefer people from the viewer's own city, but fall
+    // back to the newest members overall if there aren't enough (a small
+    // member base means a strict same-city filter would often show almost
+    // nothing). The title only claims "X'dan Yeni Üyeler" when the members
+    // actually shown are genuinely from that city — previously it always
+    // showed the viewer's city regardless of who was actually listed.
+    const others = allProfiles.filter(p => p.id !== user.id && p.first_name);
+    const sameCity = city ? others.filter(p => (p.city||'').toLowerCase() === city.toLowerCase()) : [];
+    const rest = others.filter(p => !sameCity.includes(p));
+    const bySort = arr => arr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const newMembers = bySort(sameCity).slice(0, 3);
+    if (newMembers.length < 3) newMembers.push(...bySort(rest).slice(0, 3 - newMembers.length));
 
     const memberColors = ['#D42B2B','#185FA5','#1E7B4B'];
     const list  = document.getElementById('new-members-list');
     const title = document.getElementById('new-members-title');
-    if (city) title.textContent = `👥 ${city}'dan Yeni Üyeler`;
+    const allShownAreSameCity = newMembers.length > 0 && newMembers.every(m => (m.city||'').toLowerCase() === city.toLowerCase());
+    title.textContent = (city && allShownAreSameCity) ? `👥 ${city}'dan Yeni Üyeler` : '👥 Yeni Üyeler';
 
     if (newMembers.length) {
       list.innerHTML = newMembers.map((m, i) => {
@@ -1408,8 +1416,10 @@
           ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
           : mi;
         return `<div class="nearby-user">
-          <div class="nu-avatar" style="background:${mc}">${avatarHtml}</div>
-          <div><div class="nu-name">${mn}</div><div class="nu-city">${loc}</div></div>
+          <a href="profil.html?id=${m.id}" style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-decoration:none;color:inherit;">
+            <div class="nu-avatar" style="background:${mc}">${avatarHtml}</div>
+            <div><div class="nu-name">${mn}</div><div class="nu-city">${loc}</div></div>
+          </a>
           <button class="connect-btn" data-user-id="${m.id}" onclick="toggleFollow(this)">${myFollowingIds.has(m.id) ? 'Takip Ediliyor ✓' : 'Takip Et'}</button>
         </div>`;
       }).join('');
