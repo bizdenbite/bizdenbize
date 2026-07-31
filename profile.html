@@ -424,6 +424,15 @@
       </a>
     </div>
 
+    <!-- Sign Out (simple, safe — separate from account deactivation below) -->
+    <div class="edit-section" style="border:1px solid var(--sand);border-radius:14px;padding:20px;">
+      <div class="section-title">🚪 Çıkış Yap</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Hesabından çıkış yap. Tekrar giriş yapmak için e-posta ve şifrenle giriş ekranına dönebilirsin.</p>
+      <button onclick="doLogout()" style="padding:10px 20px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(26,18,8,.04)'" onmouseout="this.style.background='none'">
+        🚪 Çıkış Yap
+      </button>
+    </div>
+
     <!-- Deactivate Account (self-service, reversible) -->
     <div class="edit-section" style="border:1px solid var(--sand);border-radius:14px;padding:20px;background:var(--warm);">
       <div class="section-title">😴 Hesabımı Deaktive Et</div>
@@ -604,7 +613,6 @@
 
     // Public profile link
     const pubLink = `profil.html?id=${currentUser.id}`;
-    document.getElementById('public-link').href = pubLink;
     document.getElementById('view-public-btn').href = pubLink;
   }
 
