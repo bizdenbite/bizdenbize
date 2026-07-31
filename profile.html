@@ -303,6 +303,10 @@
           <div class="ps-val" id="stat-reviews">0</div>
           <div class="ps-label">Uzman Yanıtı</div>
         </div>
+        <div class="ps-item" onclick="openFollowersModal()" style="cursor:pointer;">
+          <div class="ps-val" id="stat-followers">0</div>
+          <div class="ps-label">Takipçilerim</div>
+        </div>
       </div>
       <div class="credit-box">
         <div class="credit-row">
@@ -605,17 +609,93 @@
   }
 
   async function loadStats() {
-    const [listings, questions, reviews] = await Promise.all([
+    const [listings, questions, reviews, followers] = await Promise.all([
       sb(`listings?select=id&author=eq.${profile.username || currentUser.id}`),
       sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`),
-      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`)
+      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`),
+      sb(`follows?select=id&following_id=eq.${currentUser.id}`)
     ]);
     document.getElementById('stat-listings').textContent = listings.length || 0;
     document.getElementById('stat-questions').textContent = questions.length || 0;
     document.getElementById('stat-reviews').textContent = reviews.length || 0;
+    document.getElementById('stat-followers').textContent = followers.length || 0;
   }
 
+  // ── FOLLOWERS MODAL ──
+  window.openFollowersModal = async function() {
+    document.getElementById('followers-modal').style.display = 'flex';
+    const list = document.getElementById('followers-list');
+    list.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">Yükleniyor...</div>';
+    try {
+      const rows = await sb(`follows?select=id,follower_id,created_at&following_id=eq.${currentUser.id}&order=created_at.desc`);
+      if (!rows.length) {
+        list.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--muted);">Henüz takipçin yok.</div>';
+        return;
+      }
+      const ids = rows.map(r => r.follower_id).join(',');
+      const profiles = await sb(`profiles?select=id,first_name,last_name,avatar_url,city&id=in.(${ids})`);
+      const byId = {}; profiles.forEach(p => byId[p.id] = p);
+      list.innerHTML = rows.map(r => {
+        const p = byId[r.follower_id] || {};
+        const name = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Kullanıcı';
+        const initials = ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase() || '?';
+        const avatarHtml = p.avatar_url
+          ? `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          : initials;
+        return `<div class="follower-row" data-follow-id="${r.id}" data-follower-id="${r.follower_id}" style="display:flex;align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid var(--warm);">
+          <div style="width:38px;height:38px;border-radius:50%;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink);flex-shrink:0;">${avatarHtml}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">${name}</div>
+            <div style="font-size:11px;color:var(--muted);">${p.city || ''}</div>
+          </div>
+          <button onclick="removeFollower(this)" title="Kaldır" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 9px;font-size:11px;color:var(--muted);cursor:pointer;">Kaldır</button>
+          <button onclick="blockFollower(this)" title="Engelle" style="background:none;border:1px solid rgba(212,43,43,.3);border-radius:7px;padding:5px 9px;font-size:11px;color:var(--red);cursor:pointer;">Engelle</button>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:var(--red);">Yüklenemedi. Lütfen tekrar dene.</div>';
+    }
+  };
+
+  window.closeFollowersModal = function() {
+    document.getElementById('followers-modal').style.display = 'none';
+  };
+
+  window.removeFollower = async function(btn) {
+    const row = btn.closest('.follower-row');
+    const followId = row.dataset.followId;
+    try {
+      await sb(`follows?id=eq.${followId}`, { method: 'DELETE' });
+      row.remove();
+      const count = document.getElementById('followers-list').children.length;
+      document.getElementById('stat-followers').textContent = count;
+      if (!count) document.getElementById('followers-list').innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--muted);">Henüz takipçin yok.</div>';
+      toast('✅ Takipçi kaldırıldı');
+    } catch (e) {
+      toast('Bir hata oluştu.', false);
+    }
+  };
+
+  window.blockFollower = async function(btn) {
+    if (!confirm('Bu kişiyi engellemek istediğine emin misin? Seni bir daha takip edemez ve mesaj gönderemez.')) return;
+    const row = btn.closest('.follower-row');
+    const followId = row.dataset.followId;
+    const followerId = row.dataset.followerId;
+    try {
+      await sb('blocked_users', { method: 'POST', body: JSON.stringify({ blocker_id: currentUser.id, blocked_id: followerId }) });
+      await sb(`follows?id=eq.${followId}`, { method: 'DELETE' });
+      row.remove();
+      const count = document.getElementById('followers-list').children.length;
+      document.getElementById('stat-followers').textContent = count;
+      if (!count) document.getElementById('followers-list').innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--muted);">Henüz takipçin yok.</div>';
+      toast('🚫 Kullanıcı engellendi');
+    } catch (e) {
+      toast('Bir hata oluştu.', false);
+    }
+  };
+
   async function loadActivity() {
+
     const reviews = await sb(
       `expert_reviews?select=category,status,created_at,rating&user_id=eq.${currentUser.id}&order=created_at.desc&limit=6`
     );
@@ -844,6 +924,18 @@
       if (act) item.querySelector('.nav-item-btn').classList.add('active');
     });
   })();
-</script>
+</script>  <!-- FOLLOWERS MODAL -->
+  <div class="modal-overlay" id="followers-modal" onclick="if(event.target===this)closeFollowersModal()" style="display:none;position:fixed;inset:0;background:rgba(26,18,8,.45);z-index:600;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;width:92%;max-width:420px;max-height:78vh;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);">Takipçilerim</div>
+        <button onclick="closeFollowersModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div id="followers-list" style="overflow-y:auto;padding:8px;">
+        <div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
