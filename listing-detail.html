@@ -487,23 +487,17 @@
   <div style="flex:1;"></div>
   <div class="nav-right">
     <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
-    <a class="nav-avatar" id="nav-avatar" href="profile.html" title="Profilim" style="position:relative;text-decoration:none;">—</a>
-    <button onclick="bbSignOut()" style="background:none;border:1px solid var(--sand);border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;padding:6px 10px;color:var(--muted);font-family:'Instrument Sans',sans-serif;white-space:nowrap;">Çıkış</button>
+    <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;">—</div>
+    <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
+      <a href="profile.html" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;">👤 Profilim</a>
+      <hr style="border:none;border-top:1px solid #F0EAE0;margin:4px 0;">
+      <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
+    </div>
   </div>
   <script>
-    function bbSignOut() {
-      if (!confirm('Çıkış yapmak istediğine emin misin?')) return;
-      (async () => {
-        try {
-          const { supabase } = await import('./bizdenbize-client.js');
-          await supabase.auth.signOut();
-        } catch(e) {}
-        localStorage.removeItem('bb_auth_token');
-        localStorage.removeItem('bb_user');
-        Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
-        window.location.href = 'login.html';
-      })();
-    }
+    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
+    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
+    async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
 
     // Populate the nav avatar with the real logged-in user's initials/photo,
     // reusing the existing session promise this page already sets up above
