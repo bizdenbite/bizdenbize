@@ -763,7 +763,6 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
         <div class="avatar-actions">
           <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
           <button class="avatar-btn" onclick="document.getElementById('avatar-file-input').click()">📷 Fotoğraf yükle</button>
-          <button class="avatar-btn" onclick="randomAvatar()">🎲 Renk seç</button>
         </div>
       </div>
 
@@ -900,8 +899,6 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
   // card stays hidden while this is empty, so there's never a dead link.
   const ONBOARDING_VIDEO_URL = '';
 
-  const avatarColors = ['#D42B2B','#1E7B4B','#185FA5','#854F0B','#534AB7'];
-  let avatarColorIdx = 0;
 
   function updateProgress() {
     const pct = ((current + 1) / total) * 100;
@@ -1019,13 +1016,6 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
     const h = document.querySelector('#panel-0 h1 em');
     if (h) h.textContent = f + '!';
     const h1 = document.querySelector('#panel-1 h1');
-  }
-
-  function randomAvatar() {
-    avatarColorIdx = (avatarColorIdx + 1) % avatarColors.length;
-    const col = avatarColors[avatarColorIdx];
-    document.getElementById('avatar-preview').style.background = col;
-    document.getElementById('sidebar-avatar').style.background = col;
   }
 
   async function handleAvatarUpload(input) {
