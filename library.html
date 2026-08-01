@@ -414,28 +414,46 @@
     document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
     async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
 
-    if (window._authReady) {
-      window._authReady.then(async () => {
+    // NOTE: window._authReady is created inside a deferred module script, which
+    // browsers DEFER until after all regular scripts run. Checking for it
+    // directly here would always find it undefined and silently skip — which is
+    // exactly the bug this replaces. Poll briefly for the session instead, so
+    // this doesn't depend on script execution order at all.
+    (function initNavAvatar() {
+      let waited = 0;
+      const timer = setInterval(async () => {
+        waited += 100;
         const session = window._currentSession;
+        if (!session) {
+          if (waited >= 5000) clearInterval(timer); // give up quietly (e.g. logged out)
+          return;
+        }
+        clearInterval(timer);
         const navAvatar = document.getElementById('nav-avatar');
-        if (!session || !navAvatar) return;
+        if (!navAvatar) return;
         try {
           const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
             headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
           });
           const rows = await r.json();
           const p = rows[0] || {};
-          if (p.avatar_url) {
-            navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          const meta = session.user?.user_metadata || {};
+          // Fall back to auth metadata (e.g. Google sign-in picture/name) when
+          // the profiles row doesn't have them filled in.
+          const photo = p.avatar_url || meta.avatar_url || meta.picture;
+          if (photo) {
+            navAvatar.innerHTML = `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
           } else {
-            const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
+            const fn = p.first_name || (meta.full_name || meta.name || '').split(' ')[0] || '';
+            const ln = p.last_name || (meta.full_name || meta.name || '').split(' ').slice(1).join(' ') || '';
+            const initials = ((fn[0]||'') + (ln[0]||'')).toUpperCase() || '?';
             const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
             navAvatar.textContent = initials;
             navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
           }
         } catch(e) { console.error('Nav avatar load error:', e); }
-      });
-    }
+      }, 100);
+    })();
   </script>
 </nav>
 
