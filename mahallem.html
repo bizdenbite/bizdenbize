@@ -1268,6 +1268,15 @@
   const profiles = await profRes.json();
   const profile = profiles?.[0];
 
+  // ── Manual-approval gate ──
+  // Backstop for direct URLs / lingering sessions: a not-yet-approved account
+  // is sent back to login (which shows the awaiting-approval screen) rather
+  // than seeing the feed.
+  if (!profile || profile.status !== 'approved') {
+    window.location.replace('login.html');
+    return;
+  }
+
   // New/incomplete accounts (no city set) haven't finished onboarding yet —
   // send them there instead of showing the empty mahallem feed. Covers every
   // entry path (email confirmation link, Google OAuth, normal login), since

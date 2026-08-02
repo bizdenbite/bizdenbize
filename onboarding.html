@@ -1367,10 +1367,18 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
 
   // Try profile first, fall back to auth metadata
   const { data: profile } = await sb.from('profiles')
-    .select('first_name, last_name, onboarding_completed').eq('id', user.id).single();
+    .select('first_name, last_name, onboarding_completed, status').eq('id', user.id).single();
 
-  // Google sign-in lands here for everyone, so returning members who already
-  // finished onboarding get forwarded straight to the feed.
+  // ── Manual-approval gate ──────────────────────────────────────────────
+  // Google sign-ups land here directly, so this is the chokepoint for that
+  // path. Only approved accounts may onboard; everyone else goes back to the
+  // login screen, which shows the "awaiting approval" state.
+  if (!profile || profile.status !== 'approved') {
+    window.location.replace('/login.html');
+    throw new Error('account not approved — redirected to login');
+  }
+
+  // Returning members who already finished onboarding skip straight to the feed.
   if (profile?.onboarding_completed) { window.location.replace('/mahallem.html'); }
 
   const meta = user.user_metadata || {};
