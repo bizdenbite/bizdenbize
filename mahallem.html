@@ -623,7 +623,7 @@
   
     /* ── DROPDOWN NAV ── */
     .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
-    /* Küçük ekranlarda (telefon) logo küçültme — masaüstü 44px kalır */
+    /* Küçük ekranlarda (telefon) logo 26px — masaüstü/tablet 34px */
     @media (max-width:480px){
       .nav-logo-link img{ height:26px !important; }
     }
@@ -752,7 +752,7 @@
 <body>
 <!-- NAV -->
 <nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
-  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:44px;width:auto;display:block;"></a>
+  <a href="mahallem.html" class="nav-logo-link"><img src="logo.png" alt="BizdenBize" style="height:34px;width:auto;display:block;"></a>
   <div class="nav-primary">
     <a href="mahallem.html" id="np-mahallem">🏘️ Mahallem</a>
     <a href="abibot.html" id="np-abibot">🤖 AbiBOT</a>
@@ -2478,5 +2478,6 @@ document.addEventListener('click', function(e) {
   </div>
 </div>
 
+  <script type="module" src="nav-msg-badge.js"></script>
 </body>
 </html>
