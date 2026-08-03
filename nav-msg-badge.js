@@ -66,3 +66,52 @@ async function initBadge() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initBadge);
 else initBadge();
+
+// ─────────────────────────────────────────────────────────────────────────
+// Feedback CTA — a floating "Geri bildirim" button, site-wide. Opens a
+// pre-filled email to support@bizdenbize.com (with the page URL) and asks the
+// user to attach a screenshot. Folded in here so it rides the same include
+// that's already on every app page — no per-page edits needed.
+// ─────────────────────────────────────────────────────────────────────────
+(function injectFeedbackButton() {
+  function build() {
+    if (document.getElementById('bb-feedback-btn')) return;
+    const style = document.createElement('style');
+    style.id = 'bb-feedback-style';
+    style.textContent = `
+      #bb-feedback-btn {
+        position: fixed; right: 16px; bottom: 84px; z-index: 9998;
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--navy, #1B3A8C); color: #fff; border: none;
+        border-radius: 999px; padding: 9px 14px; cursor: pointer;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        font-size: 13px; font-weight: 600; text-decoration: none;
+        box-shadow: 0 3px 12px rgba(0,0,0,.18);
+      }
+      #bb-feedback-btn:hover { filter: brightness(1.08); }
+      @media (max-width: 480px) {
+        #bb-feedback-btn { bottom: 90px; padding: 8px 12px; font-size: 12px; }
+      }`;
+    document.head.appendChild(style);
+
+    const a = document.createElement('a');
+    a.id = 'bb-feedback-btn';
+    a.href = '#';
+    a.textContent = '📣 Geri bildirim';
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      const subject = encodeURIComponent('BizdenBize Geri Bildirim');
+      const body = encodeURIComponent(
+        'Merhaba,\n\nGeri bildirimini aşağıya yaz (bir sorun, öneri ya da beğendiğin bir şey):\n\n\n\n' +
+        '📎 Lütfen varsa EKRAN GÖRÜNTÜNÜ bu e-postaya ekle — sorunu görmemize çok yardımcı olur.\n\n' +
+        '--------------------------------\n' +
+        'Sayfa: ' + location.href + '\n' +
+        'Tarih: ' + new Date().toLocaleString('tr-TR')
+      );
+      window.location.href = 'mailto:support@bizdenbize.com?subject=' + subject + '&body=' + body;
+    });
+    document.body.appendChild(a);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();

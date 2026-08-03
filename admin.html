@@ -918,10 +918,13 @@
 
   async function executeDirectDelete(userId) {
     try {
-      const res = await fetch(`${SB_URL}/functions/v1/delete-user`, {
+      // Delete via a SECURITY DEFINER SQL function (raw SQL delete works;
+      // the GoTrue auth-admin API returns a generic "Database error deleting
+      // user", so we bypass it). The function verifies the caller is an admin.
+      const res = await fetch(`${SB_URL}/rest/v1/rpc/admin_delete_user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
-        body: JSON.stringify({ user_id: userId })
+        body: JSON.stringify({ p_user_id: userId })
       });
       if (!res.ok) throw new Error(await res.text());
       allUsers = allUsers.filter(u => u.id !== userId);
