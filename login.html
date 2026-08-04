@@ -642,23 +642,26 @@
       const sub   = document.querySelector('.success-sub');
       const goBtn = document.querySelector('.go-btn');
 
-      if (!data.session) {
-        // Email confirmation required — confirm first, approval comes after.
-        icon.textContent = '📧';
-        title.textContent = 'E-postanı onayla';
-        sub.textContent = email + ' adresine bir onay bağlantısı gönderdik. Hesabına giriş yapabilmen için önce e-postandaki bağlantıya tıklaman gerekiyor.';
-        goBtn.textContent = 'Giriş sayfasına dön';
-        goBtn.removeAttribute('href');
-        goBtn.onclick = () => { location.reload(); };
-      } else {
-        // Live session straight away — registration is open, so go on in.
-        icon.textContent = '🎉';
-        title.textContent = 'Hoş geldin!';
-        sub.textContent = 'Hesabın oluşturuldu. Birkaç adımda profilini kuralım.';
-        goBtn.textContent = 'Başlayalım →';
-        goBtn.onclick = null;
-        goBtn.setAttribute('href', 'onboarding.html');
-      }
+      // Manual-approval flow: acknowledge the signup, fire the "request
+      // received / pending approval" email, and stop here. Approval is the
+      // gate — new signups are NOT sent into the app.
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/notify-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${data.session?.access_token || SUPABASE_ANON}` },
+          body: JSON.stringify({ type: 'signup_pending', user_id: data.user.id })
+        });
+      } catch (e) { console.warn('signup_pending email failed:', e); }
+
+      // Don't leave a new signup logged in (they'd only hit the pending wall).
+      if (data.session) { try { await supabase.auth.signOut(); } catch (e) {} }
+
+      icon.textContent = '⏳';
+      title.textContent = 'Kaydın alındı!';
+      sub.textContent = 'Hesabın ekibimiz tarafından kısa sürede incelenip onaylanacak. Onaylandığında e-posta ile haber vereceğiz — sonra giriş yapıp keşfetmeye başlayabilirsin.';
+      goBtn.textContent = 'Giriş sayfasına dön';
+      goBtn.removeAttribute('href');
+      goBtn.onclick = () => { location.reload(); };
     };
 
     // ── LOGIN ──

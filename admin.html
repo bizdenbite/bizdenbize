@@ -888,6 +888,14 @@
     try {
       await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ status: 'approved' }) });
       if (u) u.status = 'approved';
+      // Send the welcome email now that they're approved.
+      try {
+        await fetch(`${SB_URL}/functions/v1/notify-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ type: 'welcome', user_id: id })
+        });
+      } catch (e) { console.warn('welcome email failed:', e); }
       renderUsers(allUsers);
       toast('✅ Kullanıcı onaylandı.');
     } catch(e) { console.error('approveUser error:', e); toast('Hata: ' + e.message, false); }
