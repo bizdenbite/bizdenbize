@@ -59,6 +59,22 @@ async function initBadge() {
     await refresh();
     // Exposed so the real-time step (B) can refresh the badge live.
     window.__refreshMsgBadge = refresh;
+
+    // Real-time: when a notification is inserted for me (a new message creates
+    // one via the notify_on_new_message trigger), refresh the badge and the
+    // bell live — no reload. Requires Realtime enabled on public.notifications.
+    try {
+      sb.channel('notif-live-' + session.user.id)
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${session.user.id}` },
+          () => {
+            refresh();
+            if (typeof window.loadNotifications === 'function') {
+              try { window.loadNotifications(); } catch (e) {}
+            }
+          })
+        .subscribe();
+    } catch (e) { console.warn('notif realtime subscribe failed:', e); }
   } catch (e) {
     console.warn('unread badge init failed:', e);
   }
