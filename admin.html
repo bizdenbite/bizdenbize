@@ -823,6 +823,7 @@
           <div>
             <div style="font-weight:600;">${u.first_name||''} ${u.last_name||''}</div>
             <div style="font-size:11px;color:var(--muted);">@${u.username||'—'}</div>
+            ${u.status === 'pending' && (u.join_challenges || u.join_reason || u.join_source) ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(201,168,76,.10);border-left:3px solid rgba(201,168,76,.55);border-radius:4px;font-size:11px;line-height:1.5;max-width:320px;white-space:normal;">${u.join_challenges ? `<div style="margin-bottom:4px;"><b>Zorluklar:</b> ${escapeHtml(u.join_challenges)}</div>` : ''}${u.join_reason ? `<div style="margin-bottom:4px;"><b>Neden katılmak istiyor:</b> ${escapeHtml(u.join_reason)}</div>` : ''}${u.join_source ? `<div><b>Nereden duydu:</b> ${escapeHtml(u.join_source)}</div>` : ''}</div>` : ''}
           </div>
         </div></td>
         <td>

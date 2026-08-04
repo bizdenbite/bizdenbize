@@ -575,6 +575,10 @@
       const lname   = document.getElementById('reg-lname').value.trim();
       const email   = document.getElementById('reg-email').value.trim();
       const pass    = document.getElementById('reg-password').value;
+      const challenges = document.getElementById('reg-challenges').value.trim();
+      const reason     = document.getElementById('reg-reason').value.trim();
+      const source     = document.getElementById('reg-source').value.trim();
+      const rulesOk    = document.getElementById('reg-rules').checked;
       let valid = true;
 
       document.getElementById('reg-email-err').style.display = 'none';
@@ -584,6 +588,13 @@
         document.getElementById('reg-email').classList.add('error'); valid = false;
       }
       if (pass.length < 8) { document.getElementById('reg-password').classList.add('error'); valid = false; }
+      document.getElementById('reg-join-err').style.display = 'none';
+      if (!challenges) { document.getElementById('reg-challenges').classList.add('error'); valid = false; }
+      if (!reason)     { document.getElementById('reg-reason').classList.add('error'); valid = false; }
+      if (!source)     { document.getElementById('reg-source').classList.add('error'); valid = false; }
+      if (!rulesOk || !challenges || !reason || !source) {
+        document.getElementById('reg-join-err').style.display = 'block'; valid = false;
+      }
       if (!valid) return;
 
       const btn = document.getElementById('register-btn');
@@ -592,7 +603,7 @@
       const { data, error } = await supabase.auth.signUp({
         email, password: pass,
         options: {
-          data: { full_name: fname + ' ' + lname },
+          data: { full_name: fname + ' ' + lname, join_challenges: challenges, join_reason: reason, join_source: source },
           emailRedirectTo: 'https://bizdenbize.com/login.html'
         }
       });
@@ -995,6 +1006,26 @@
         <div class="strength-label" id="strength-label"></div>
       </div>
 
+
+      <div class="form-group">
+        <label>Almanya'da şu anda karşılaştığın zorluklar neler? *</label>
+        <textarea id="reg-challenges" rows="2" placeholder="Örn. dil, iş, bürokrasi, yalnızlık…" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #E0D8CC;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1208;resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>BizdenBize'ye neden katılmak istiyorsun? *</label>
+        <textarea id="reg-reason" rows="2" placeholder="Bize kısaca anlat…" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #E0D8CC;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1208;resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Bizi nereden duydun? *</label>
+        <input type="text" id="reg-source" placeholder="Örn. bir arkadaş, Instagram, Google…">
+      </div>
+      <div class="form-group" style="display:flex;flex-direction:row;align-items:flex-start;gap:8px;">
+        <input type="checkbox" id="reg-rules" style="width:auto;margin-top:3px;flex-shrink:0;cursor:pointer;">
+        <label for="reg-rules" style="font-weight:400;font-size:13px;line-height:1.45;cursor:pointer;">
+          <a href="kullanim-kosullari.html" target="_blank" style="color:var(--navy,#1B3A8C);font-weight:600;">Topluluk kurallarını</a> okudum ve kabul ediyorum. *
+        </label>
+      </div>
+      <div class="field-error" id="reg-join-err" style="display:none;">Lütfen tüm alanları doldur ve kuralları kabul et.</div>
 
       <button class="submit-btn" id="register-btn" onclick="doRegister()">
         Kayıt Ol
