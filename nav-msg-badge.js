@@ -102,31 +102,25 @@ else initBadge();
 (function injectFeedbackButton() {
   function build() {
     if (document.getElementById('bb-feedback-btn')) return;
-    // Skip on the messages screen — it has its own send button bottom-right,
-    // and a fixed feedback button would overlap it.
-    if (/messages/i.test(location.pathname)) return;
     const style = document.createElement('style');
     style.id = 'bb-feedback-style';
     style.textContent = `
       #bb-feedback-btn {
-        position: fixed; right: 16px; bottom: 84px; z-index: 9998;
-        display: inline-flex; align-items: center; gap: 6px;
+        position: fixed; right: 0; top: 58%; transform: translateY(-50%);
+        z-index: 9998; writing-mode: vertical-rl;
         background: var(--navy, #1B3A8C); color: #fff; border: none;
-        border-radius: 999px; padding: 9px 14px; cursor: pointer;
+        border-radius: 8px 0 0 8px; padding: 14px 6px; cursor: pointer;
         font-family: 'Instrument Sans', system-ui, sans-serif;
-        font-size: 13px; font-weight: 600; text-decoration: none;
-        box-shadow: 0 3px 12px rgba(0,0,0,.18);
+        font-size: 12px; font-weight: 600; letter-spacing: .4px; text-decoration: none;
+        box-shadow: -2px 2px 8px rgba(0,0,0,.18);
       }
-      #bb-feedback-btn:hover { filter: brightness(1.08); }
-      @media (max-width: 480px) {
-        #bb-feedback-btn { bottom: 90px; padding: 8px 12px; font-size: 12px; }
-      }`;
+      #bb-feedback-btn:hover { filter: brightness(1.1); }`;
     document.head.appendChild(style);
 
     const a = document.createElement('a');
     a.id = 'bb-feedback-btn';
     a.href = '#';
-    a.textContent = '📣 Geri bildirim';
+    a.textContent = 'Geri bildirim';
     a.addEventListener('click', function (e) {
       e.preventDefault();
       const subject = encodeURIComponent('BizdenBize Geri Bildirim');
@@ -154,4 +148,18 @@ else initBadge();
   st.id = 'bb-navlogo-style';
   st.textContent = 'a.nav-logo-link > span{display:inline-block;border-bottom:2px solid #1B3A8C;padding-bottom:2px;}';
   document.head.appendChild(st);
+})();
+
+
+// Remove any leftover language switcher injected by a cached old i18n.js.
+// Platform is Turkish-only, so the switcher should never appear.
+(function killLangSwitcher() {
+  function kill() {
+    var el = document.getElementById('bb-lang-switcher'); if (el) el.remove();
+    document.querySelectorAll('.bb-lang-wrap').forEach(function (n) { n.remove(); });
+  }
+  kill();
+  var obs;
+  try { obs = new MutationObserver(kill); obs.observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+  setTimeout(function () { kill(); if (obs) obs.disconnect(); }, 4000);
 })();
