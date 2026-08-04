@@ -1468,6 +1468,7 @@ function timeAgoNotif(iso) {
   if (diffHr < 24) return `${diffHr} saat önce`;
   return `${Math.round(diffHr / 24)} gün önce`;
 }
+window.loadConversations = loadConversations;
 window.loadNotifications = async function() {
   const sb = window.supabase;
   if (!sb) return;

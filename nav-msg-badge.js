@@ -60,38 +60,30 @@ async function initBadge() {
     // Exposed so the real-time step (B) can refresh the badge live.
     window.__refreshMsgBadge = refresh;
 
-    // Real-time: when a notification is inserted for me (a new message creates
-    // one via the notify_on_new_message trigger), refresh the badge and the
-    // bell live — no reload. Requires Realtime enabled on public.notifications.
+    // Refresh badge + bell + conversation list together (whichever exist here).
+    const refreshAll = () => {
+      refresh();
+      if (typeof window.loadNotifications === 'function') { try { window.loadNotifications(); } catch (e) {} }
+      if (typeof window.loadConversations === 'function') { try { window.loadConversations(); } catch (e) {} }
+    };
+
+    // Reliable path: refresh whenever the user returns to the screen — tab/app
+    // focus, or bfcache restore. Covers the common case (you come back to
+    // Mesajlar and see the latest) without depending on the realtime socket.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refreshAll();
+    });
+    window.addEventListener('focus', refreshAll);
+    window.addEventListener('pageshow', refreshAll);
+
+    // Live bonus: realtime push when a notification is inserted for me.
     try {
-      // Give realtime the user's token so RLS delivers their notifications.
-      try { sb.realtime.setAuth(session.access_token); } catch (e) {}
-
-      // ── TEMPORARY DEBUG PILL (remove after we confirm realtime) ──────────
-      const dbg = document.createElement('div');
-      dbg.id = 'rt-debug';
-      dbg.style.cssText = 'position:fixed;top:6px;left:6px;z-index:99999;background:#1A1208;color:#fff;font:11px/1.3 monospace;padding:4px 8px;border-radius:6px;opacity:.92;';
-      dbg.textContent = 'RT: connecting…';
-      (document.body || document.documentElement).appendChild(dbg);
-      let evCount = 0;
-      // ────────────────────────────────────────────────────────────────────
-
+      sb.realtime.setAuth(session.access_token); // so RLS delivers my rows
       sb.channel('notif-live-' + session.user.id)
         .on('postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${session.user.id}` },
-          () => {
-            evCount++;
-            dbg.textContent = 'RT: subscribed ✓ | events: ' + evCount;
-            refresh();
-            if (typeof window.loadNotifications === 'function') {
-              try { window.loadNotifications(); } catch (e) {}
-            }
-          })
-        .subscribe((status) => {
-          dbg.textContent = 'RT: ' + status + (status === 'SUBSCRIBED' ? ' ✓' : '') + ' | events: ' + evCount;
-          dbg.style.background = status === 'SUBSCRIBED' ? '#1E7B4B'
-            : (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') ? '#D42B2B' : '#1A1208';
-        });
+          refreshAll)
+        .subscribe();
     } catch (e) { console.warn('notif realtime subscribe failed:', e); }
   } catch (e) {
     console.warn('unread badge init failed:', e);
