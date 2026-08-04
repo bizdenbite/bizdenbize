@@ -825,9 +825,7 @@
             <div style="font-size:11px;color:var(--muted);">@${u.username||'—'}</div>
             <button onclick="toggleDetail('${u.id}')" style="margin-top:3px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;color:var(--navy,#1B3A8C);font-weight:600;">📋 Başvuru &amp; detay ▾</button>
             <div id="detail-${u.id}" style="display:none;margin-top:6px;padding:10px 12px;background:rgba(201,168,76,.10);border-left:3px solid rgba(201,168,76,.55);border-radius:4px;font-size:11px;line-height:1.6;max-width:340px;white-space:normal;">
-              <div><b>📧 E-posta:</b> ${escapeHtml(u.email||'—')}</div>
-              <div><b>📅 Üyelik:</b> ${fmtDate(u.created_at)}</div>
-              ${u.join_challenges ? `<div style="margin-top:4px;"><b>Zorluklar:</b> ${escapeHtml(u.join_challenges)}</div>` : ''}
+              ${u.join_challenges ? `<div><b>Zorluklar:</b> ${escapeHtml(u.join_challenges)}</div>` : ''}
               ${u.join_reason ? `<div><b>Neden katılmak istiyor:</b> ${escapeHtml(u.join_reason)}</div>` : ''}
               ${u.join_source ? `<div><b>Nereden duydu:</b> ${escapeHtml(u.join_source)}</div>` : ''}
               <div style="margin-top:4px;"><b>🔗 Bağlantılar:</b> ${u.following_count||0} takip · ${u.follower_count||0} takipçi${u.connections ? ` — ${escapeHtml(u.connections)}` : ''}</div>
