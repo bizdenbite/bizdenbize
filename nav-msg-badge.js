@@ -64,6 +64,8 @@ async function initBadge() {
     // one via the notify_on_new_message trigger), refresh the badge and the
     // bell live — no reload. Requires Realtime enabled on public.notifications.
     try {
+      // Give realtime the user's token so RLS delivers their notifications.
+      try { sb.realtime.setAuth(session.access_token); } catch (e) {}
       sb.channel('notif-live-' + session.user.id)
         .on('postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${session.user.id}` },
@@ -92,6 +94,9 @@ else initBadge();
 (function injectFeedbackButton() {
   function build() {
     if (document.getElementById('bb-feedback-btn')) return;
+    // Skip on the messages screen — it has its own send button bottom-right,
+    // and a fixed feedback button would overlap it.
+    if (/messages/i.test(location.pathname)) return;
     const style = document.createElement('style');
     style.id = 'bb-feedback-style';
     style.textContent = `
