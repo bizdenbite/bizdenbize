@@ -216,6 +216,15 @@
       });
     } catch(e) { console.error('Contact submit error:', e); }
 
+    // Email the team so a message is never missed sitting in the table.
+    try {
+      await fetch(_SB_URL + '/functions/v1/notify-user', {
+        method: 'POST',
+        headers: _SB_H,
+        body: JSON.stringify({ type: 'contact_notification', data: { name, email, subject, message } })
+      });
+    } catch(e) { console.error('Contact notify error:', e); }
+
     document.getElementById('contact-form').style.display = 'none';
     document.getElementById('contact-success').style.display = 'block';
   }
