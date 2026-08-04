@@ -115,3 +115,14 @@ else initBadge();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
   else build();
 })();
+
+
+// Navy underline accent on the nav wordmark (brand look), site-wide.
+(function navLogoUnderline() {
+  /* nav-logo underline */
+  if (document.getElementById('bb-navlogo-style')) return;
+  const st = document.createElement('style');
+  st.id = 'bb-navlogo-style';
+  st.textContent = 'a.nav-logo-link > span{display:inline-block;border-bottom:2px solid #1B3A8C;padding-bottom:2px;}';
+  document.head.appendChild(st);
+})();
