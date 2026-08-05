@@ -60,6 +60,30 @@ async function initBadge() {
     // Exposed so the real-time step (B) can refresh the badge live.
     window.__refreshMsgBadge = refresh;
 
+    // Add Admin/Uzman panel links to the avatar menu for admins/experts, so
+    // they are reachable on mobile (the desktop sidebar is hidden there).
+    (async () => {
+      const menu = document.getElementById('avatar-menu');
+      if (!menu || document.getElementById('avatar-admin-link') || document.getElementById('avatar-expert-link')) return;
+      const style = 'display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;';
+      const mk = (href, label, id) => { const a = document.createElement('a'); a.id = id; a.href = href; a.style.cssText = style; a.textContent = label; return a; };
+      const anchor = menu.querySelector('a'); // the "Profilim" link
+      try {
+        const { data: prof } = await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+        if (prof && prof.is_admin) {
+          const a = mk('admin.html', '\u2699\uFE0F Admin Paneli', 'avatar-admin-link');
+          anchor ? anchor.after(a) : menu.prepend(a);
+        }
+      } catch (e) {}
+      try {
+        const { data: exp } = await sb.from('experts').select('id').eq('profile_id', session.user.id).eq('is_active', true);
+        if (exp && exp.length) {
+          const a = mk('expert-panel.html', '\uD83D\uDEE1\uFE0F Uzman Paneli', 'avatar-expert-link');
+          anchor ? anchor.after(a) : menu.prepend(a);
+        }
+      } catch (e) {}
+    })();
+
     // Refresh badge + bell + conversation list together (whichever exist here).
     const refreshAll = () => {
       refresh();
