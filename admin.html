@@ -221,10 +221,23 @@
 
     @media(max-width: 900px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .sidebar { transform: translateX(-100%); z-index: 400; box-shadow: 4px 0 24px rgba(0,0,0,.3); }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .admin-menu-btn { display: inline-flex !important; }
+      /* Admin nav becomes an always-visible horizontal scroll strip at the top */
+      .sidebar {
+        position: static !important; transform: none !important;
+        width: 100% !important; height: auto !important;
+        flex-direction: row !important; align-items: center;
+        overflow-x: auto !important; overflow-y: hidden !important;
+        white-space: nowrap; -webkit-overflow-scrolling: touch;
+        border-right: none; border-bottom: 1px solid rgba(212,197,169,.4);
+        padding: 8px 10px !important; gap: 6px; box-shadow: none !important;
+      }
+      .sidebar-logo, .nav-label { display: none !important; }
+      .nav-section { display: flex !important; flex-direction: row !important; gap: 6px; margin: 0 !important; }
+      .nav-item { width: auto !important; white-space: nowrap; flex-shrink: 0; padding: 9px 13px !important; font-size: 13px; }
+      .nav-item .nav-badge { display: none; }
+      .main { margin-left: 0 !important; }
+      .admin-menu-btn { display: none !important; }
+      .sidebar-backdrop { display: none !important; }
     }
     .admin-menu-btn { display: none; align-items: center; background: none; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: #1A1208; margin-right: 6px; padding: 2px 6px; }
     .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 399; }
