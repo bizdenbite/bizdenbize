@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videolar — BizdenBize</title>
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF; --navy:#1B3A8C;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; }
+
+    nav { position: sticky; top: 0; z-index: 200; background: rgba(250,247,242,0.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,0.4); height: 58px; display: flex; align-items: center; padding: 0 16px 0 12px; gap: 10px; }
+    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; }
+    .nav-spacer { flex: 1; }
+    .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; font-weight: 500; }
+    .nav-back:hover { color: var(--ink); }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; }
+
+    .hero { background: linear-gradient(160deg, #1A1208 0%, #2a1d10 100%); color: var(--white); padding: 48px 24px 40px; text-align: center; }
+    .hero-tag { display: inline-block; border: 1px solid rgba(212,197,169,.4); border-radius: 999px; padding: 5px 14px; font-size: 12px; letter-spacing: .05em; color: var(--sand); margin-bottom: 16px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 40px; line-height: 1.1; margin-bottom: 12px; }
+    .hero h1 em { color: var(--red2); font-style: normal; }
+    .hero p { font-size: 15px; color: rgba(255,255,255,.7); max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px; width: 100%; }
+    .cat-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; color: var(--ink); margin: 36px 0 16px; padding-left: 12px; border-left: 3px solid var(--red); }
+    .cat-title:first-child { margin-top: 0; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    .video-card { background: var(--white); border: 1px solid rgba(212,197,169,.5); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.03); }
+    .video-embed { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+    .video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .video-body { padding: 14px 16px 16px; }
+    .video-body h3 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; color: var(--ink); margin-bottom: 6px; line-height: 1.3; }
+    .video-body p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 60px 20px; }
+    .empty .big { font-size: 32px; margin-bottom: 10px; }
+
+    footer { background: var(--ink); color: rgba(255,255,255,.55); font-family: 'Instrument Sans', sans-serif; padding: 40px 24px 28px; margin-top: auto; text-align: center; }
+    footer .fl { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 20px; color: #fff; margin-bottom: 8px; }
+    footer .fl span { color: var(--red2); }
+    footer .fmeta { font-size: 12px; color: rgba(255,255,255,.45); }
+    footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 30px; }
+      .video-grid { grid-template-columns: 1fr; }
+      .wrap { padding: 28px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="mahallem.html" class="nav-logo-link"><span style="display:inline-block;border-bottom:2px solid #1B3A8C;padding-bottom:2px;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:-.3px;color:#1A1208;white-space:nowrap;vertical-align:middle;">Bizden<span style="color:#D42B2B;">Bize</span></span></a>
+    <span style="color:var(--sand);">|</span>
+    <span style="font-size:13px;color:var(--muted);font-weight:500;">Videolar</span>
+    <span class="nav-spacer"></span>
+    <a href="mahallem.html" class="nav-back">← Geri dön</a>
+    <a href="profile.html" class="nav-avatar" id="nav-avatar">?</a>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag">🎬 Videolar</div>
+    <h1>BizdenBize <em>Videolar</em></h1>
+    <p>Tanıtım videoları, ipuçları ve topluluğumuzdan haberler — hepsi tek yerde.</p>
+  </div>
+
+  <div class="wrap">
+    <div id="video-content">
+      <div class="empty"><div class="big">⏳</div>Videolar yükleniyor…</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fl">Bizden<span>Bize</span></div>
+    <div class="fmeta">© 2026 BizdenBize · <a href="hakkimizda.html">Hakkımızda</a> · <a href="iletisim.html">İletişim</a></div>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const sb = createClient(SB_URL, SB_KEY);
+
+    function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    async function loadVideos() {
+      const el = document.getElementById('video-content');
+      let data = [];
+      try {
+        const res = await sb.from('videos')
+          .select('title,description,youtube_id,category,sort_order')
+          .eq('is_published', true)
+          .order('category', { ascending: true })
+          .order('sort_order', { ascending: true });
+        if (res.error) throw res.error;
+        data = res.data || [];
+      } catch (e) {
+        console.error('Video load error:', e);
+        el.innerHTML = '<div class="empty"><div class="big">😕</div>Videolar şu an yüklenemedi. Lütfen sonra tekrar deneyin.</div>';
+        return;
+      }
+
+      if (!data.length) {
+        el.innerHTML = '<div class="empty"><div class="big">🎬</div>Henüz video eklenmedi. Çok yakında burada olacaklar!</div>';
+        return;
+      }
+
+      // group by category, preserving order
+      const groups = {};
+      const order = [];
+      for (const v of data) {
+        const c = v.category || 'Genel';
+        if (!groups[c]) { groups[c] = []; order.push(c); }
+        groups[c].push(v);
+      }
+
+      el.innerHTML = order.map(cat => `
+        <div class="cat-title">${esc(cat)}</div>
+        <div class="video-grid">
+          ${groups[cat].map(v => `
+            <div class="video-card">
+              <div class="video-embed">
+                <iframe src="https://www.youtube-nocookie.com/embed/${esc(v.youtube_id)}" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+              </div>
+              <div class="video-body">
+                <h3>${esc(v.title)}</h3>
+                ${v.description ? `<p>${esc(v.description)}</p>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>`).join('');
+    }
+
+    // Nav avatar (best-effort, mirrors other pages)
+    async function loadAvatar() {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
+        const r = await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
+          headers: { apikey: SB_KEY, Authorization: `Bearer ${session.access_token}` }
+        });
+        const p = (await r.json())[0] || {};
+        const av = document.getElementById('nav-avatar');
+        if (p.avatar_url) { av.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; }
+        else {
+          const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
+          const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+          av.textContent = initials;
+          av.style.background = colors[initials.charCodeAt(0) % colors.length];
+        }
+      } catch(e) { /* logged out or offline — leave default */ }
+    }
+
+    loadVideos();
+    loadAvatar();
+  </script>
+  <script type="module" src="nav-msg-badge.js"></script>
+</body>
+</html>
