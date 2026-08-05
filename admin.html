@@ -221,9 +221,14 @@
 
     @media(max-width: 900px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .sidebar { transform: translateX(-100%); }
+      .sidebar { transform: translateX(-100%); z-index: 400; box-shadow: 4px 0 24px rgba(0,0,0,.3); }
+      .sidebar.open { transform: translateX(0); }
       .main { margin-left: 0; }
+      .admin-menu-btn { display: inline-flex; }
     }
+    .admin-menu-btn { display: none; align-items: center; background: none; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: #1A1208; margin-right: 6px; padding: 2px 6px; }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 399; }
+    .sidebar-backdrop.show { display: block; }
   </style>
 </head>
 <body>
@@ -284,10 +289,12 @@
     <a href="mahallem.html" class="sidebar-back">← Mahallem'e Dön</a>
   </div>
 </aside>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleAdminSidebar()"></div>
 
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <button class="admin-menu-btn" onclick="toggleAdminSidebar()" aria-label="Menü">☰</button>
     <div class="topbar-title" id="topbar-title">📊 Dashboard</div>
     <div class="topbar-right">
       <span class="topbar-time" id="topbar-time"></span>
@@ -669,11 +676,19 @@
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
     reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek'
   };
+  window.toggleAdminSidebar = function() {
+    const sb = document.querySelector('.sidebar');
+    const bd = document.getElementById('sidebar-backdrop');
+    const open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+  };
   function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('section-' + id).classList.add('active');
     btn.classList.add('active');
+    document.querySelector('.sidebar')?.classList.remove('open');
+    document.getElementById('sidebar-backdrop')?.classList.remove('show');
     document.getElementById('topbar-title').textContent = sectionTitles[id];
     if (id === 'users') loadUsers();
     if (id === 'videos') loadVideos();
