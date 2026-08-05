@@ -146,7 +146,7 @@ else initBadge();
   if (document.getElementById('bb-navlogo-style')) return;
   const st = document.createElement('style');
   st.id = 'bb-navlogo-style';
-  st.textContent = 'a.nav-logo-link > span{display:inline-block;border-bottom:2px solid #1B3A8C;padding-bottom:2px;}';
+  st.textContent = 'a.nav-logo-link > span{display:inline-block;border-bottom:4px double #1B3A8C;padding-bottom:2px;}';
   document.head.appendChild(st);
 })();
 

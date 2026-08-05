@@ -21,8 +21,9 @@ function wrap(inner: string): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#FAF7F2;margin:0;padding:40px 20px;">
 <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #D4C5A9;">
-  <div style="background:#1A1208;padding:28px 32px;text-align:center;">
-    <div style="font-family:Georgia,serif;font-size:26px;font-weight:900;color:#fff;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+  <div style="background:#1A1208;padding:26px 32px 22px;text-align:center;">
+    <div style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:28px;letter-spacing:-.3px;color:#ffffff;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+    <div style="font-size:12px;color:#8a7f70;margin-top:6px;letter-spacing:.3px;">İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz</div>
   </div>
   <div style="padding:32px;">${inner}</div>
   <div style="padding:20px 32px;background:#FAF7F2;text-align:center;">
@@ -114,25 +115,63 @@ function adminNotifEmail(d: Record<string, string>): { subject: string; html: st
   };
 }
 
+// Sent right after signup — acknowledges the request and sets the
+// approval-pending expectation. The welcome email comes later, on approval.
+function signupPendingEmail(d: Record<string, string>): { subject: string; html: string } {
+  return {
+    subject: "Kaydın alındı — onay bekliyor ⏳ · BizdenBize",
+    html: wrap(`
+      <div style="font-size:22px;font-weight:700;color:#1A1208;margin-bottom:8px;">Kaydın alındı! ⏳</div>
+      <p style="font-size:15px;color:#6B5E4E;line-height:1.6;margin-bottom:20px;">
+        Merhaba ${d.user_name || "değerli üyemiz"}, BizdenBize'ye kaydolduğun için teşekkürler.
+      </p>
+      <p style="font-size:15px;color:#1A1208;line-height:1.7;margin-bottom:20px;">
+        Hesabın şu anda ekibimiz tarafından inceleniyor. Topluluğu güvende tutmak için her yeni üyeyi kısa bir onaydan geçiriyoruz. Onaylandığında sana ayrı bir "Hoş geldin" e-postası göndereceğiz — sonra giriş yapıp keşfetmeye başlayabilirsin.
+      </p>
+      ${highlight("Sırada ne var?", "1) Ekibimiz hesabını inceler<br>2) Onaylandığında \"Hoş geldin\" e-postanı alırsın<br>3) Giriş yapıp topluluğa katılırsın")}
+      <p style="font-size:13px;color:#6B5E4E;text-align:center;">Sabrın için teşekkürler! 🌍</p>
+    `)
+  };
+}
+
+// Sent on approval — the real welcome, with a log-in button.
 function welcomeEmail(d: Record<string, string>): { subject: string; html: string } {
   return {
-    subject: `🎉 BizdenBize'ye hoş geldiniz!`,
+    subject: `🎉 Onaylandın — BizdenBize'ye hoş geldin!`,
     html: wrap(`
-      <div style="font-size:22px;font-weight:700;color:#1A1208;margin-bottom:8px;">Hoş geldiniz! 🎉</div>
+      <div style="font-size:22px;font-weight:700;color:#1A1208;margin-bottom:8px;">Onaylandın, hoş geldin! 🎉</div>
       <p style="font-size:15px;color:#6B5E4E;line-height:1.6;margin-bottom:20px;">
-        Merhaba ${d.user_name || "değerli üyemiz"}, BizdenBize topluluğuna katıldığınız için teşekkürler!
+        Merhaba ${d.user_name || "değerli üyemiz"}, hesabın onaylandı — artık BizdenBize topluluğunun bir parçasısın!
       </p>
       ${highlight("Platformda neler var?",
-        "🤖 <strong>AbiBOT</strong> — AI destekli hukuki, tıbbi ve finansal danışman<br>" +
-        "👨‍⚖️ <strong>Uzmanlar</strong> — Gerçek uzmanlardan doğrudan yanıt<br>" +
-        "🏘️ <strong>Mahallem</strong> — Topluluğunuzla bağlantıda kalın"
+        "🏘️ <strong>Mahallem</strong> — Topluluğunla bağlantıda kal, soru sor, paylaş<br>" +
+        "🤖 <strong>AbiBOT</strong> — Almanya'daki hayata dair sorularına anında yanıt<br>" +
+        "🛍️ <strong>İlanlar</strong> — Al, sat, takas et<br>" +
+        "🎓 <strong>Uzmanlar</strong> — Uzmanlara doğrudan danış"
       )}
-      ${btn("AbiBOT'u Dene →", `${SITE}/abibot.html`)}
+      ${btn("Giriş Yap →", `${SITE}/login.html`)}
     `)
   };
 }
 
 // ── SEND VIA RESEND ─────────────────────────────────────────────
+function escC(s: string): string {
+  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function contactNotifEmail(d: Record<string, string>): { subject: string; html: string } {
+  const subject = `\u{1F4EC} Yeni iletişim mesajı: ${d.name || "İsimsiz"}`;
+  const html = wrap(`
+    <h2 style="font-family:Georgia,serif;font-size:20px;color:#1A1208;margin:0 0 16px;">\u{1F4EC} Yeni İletişim Mesajı</h2>
+    <p style="font-size:14px;color:#3a342c;line-height:1.6;margin:0 0 6px;"><strong>Ad:</strong> ${escC(d.name)}</p>
+    <p style="font-size:14px;color:#3a342c;line-height:1.6;margin:0 0 6px;"><strong>E-posta:</strong> ${escC(d.email)}</p>
+    <p style="font-size:14px;color:#3a342c;line-height:1.6;margin:0 0 6px;"><strong>Konu:</strong> ${escC(d.subject) || "—"}</p>
+    <div style="margin:14px 0;padding:14px 16px;background:#FAF7F2;border-left:3px solid #D42B2B;border-radius:6px;font-size:14px;color:#1A1208;line-height:1.6;white-space:pre-wrap;">${escC(d.message)}</div>
+    <p style="font-size:12px;color:#8a7f70;margin-top:16px;">Bu mesaj bizdenbize.com iletişim formundan geldi. Yanıtlamak için doğrudan gönderenin e-posta adresine yazabilirsin.</p>
+  `);
+  return { subject, html };
+}
+
 async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -161,6 +200,15 @@ serve(async (req) => {
       review_id: body.review_id,
     } : (body.data || {});
 
+    // Contact-form notification: no user involved; email goes to the support inbox.
+    if (type === "contact_notification") {
+      const { subject, html } = contactNotifEmail(body.data || {});
+      const sent = await sendEmail("support@bizdenbize.com", subject, html);
+      return new Response(JSON.stringify({ success: sent }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
     if (!type || !user_id) {
       return new Response(JSON.stringify({ error: "type and user_id are required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -188,6 +236,7 @@ serve(async (req) => {
       case "direct_question_expert": ({ subject, html } = directQuestionExpertEmail(enriched)); break;
       case "admin_notification": ({ subject, html } = adminNotifEmail(enriched));  break;
       case "welcome":          ({ subject, html } = welcomeEmail(enriched));       break;
+      case "signup_pending":   ({ subject, html } = signupPendingEmail(enriched)); break;
       default:
         return new Response(JSON.stringify({ error: `Unknown type: ${type}` }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }

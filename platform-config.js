@@ -12,7 +12,7 @@ window.BB_CONFIG = {
   platform: {
     id: 'bizdenbize',
     name: 'BizdenBize',
-    tagline: 'Gurbet Hayatını Kolaylaştırıyoruz',
+    tagline: 'İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz',
     defaultLanguage: 'tr',
   },
 

@@ -68,7 +68,7 @@ const BB_TRANSLATIONS = {
     form_submit:     'Bekleme listesine katıl →',
 
     // Footer
-    footer_tagline:  'Gurbet Hayatını Kolaylaştırıyoruz',
+    footer_tagline:  'İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz',
     footer_legal:    'Yasal',
     footer_privacy:  'Gizlilik',
     footer_terms:    'Şartlar',
