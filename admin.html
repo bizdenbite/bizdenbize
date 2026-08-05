@@ -254,7 +254,7 @@
       📅 Etkinlikler <span class="nav-badge" id="badge-events" style="background:var(--red);">—</span>
     </button>
     <button class="nav-item" onclick="showSection('videos', this)">
-      🎬 Videolar
+      🎬 Videothek
     </button>
     <button class="nav-item" onclick="showSection('content', this)">
       📋 İçerik
@@ -493,6 +493,7 @@
           <textarea id="vid-desc" placeholder="Açıklama (isteğe bağlı)" rows="2" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
           <input id="vid-category" placeholder="Kategori" value="Tanıtım" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-welcome"> Bu, "Hoş geldin" videosu olsun (onboarding'de gösterilir)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-vertical"> Dikey video (Shorts / portre — dar çerçevede gösterilir)</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-published" checked> Yayında</label>
           <div id="vid-err" style="color:var(--red);font-size:13px;display:none;"></div>
           <button onclick="addVideo()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;">＋ Video Ekle</button>
@@ -666,7 +667,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videolar'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek'
   };
   function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1250,7 +1251,7 @@ async function loadVideos() {
         <img src="https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg" style="width:92px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#000;">
         <div style="flex:1;min-width:0;">
           <div style="font-weight:600;font-size:14px;">${escapeHtml(v.title)}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${escapeHtml(v.category||'')}${v.is_welcome?' · ⭐ Hoş geldin':''}${v.is_published?'':' · 🚫 Taslak'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${escapeHtml(v.category||'')}${v.is_welcome?' · ⭐ Hoş geldin':''}${v.is_vertical?' · 📱 dikey':''}${v.is_published?'':' · 🚫 Taslak'}</div>
         </div>
         <button onclick="deleteVideo('${v.id}')" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;flex-shrink:0;">Sil</button>
       </div>`).join('');
@@ -1262,6 +1263,7 @@ async function addVideo() {
   const desc = document.getElementById('vid-desc').value.trim();
   const category = document.getElementById('vid-category').value.trim() || 'Genel';
   const welcome = document.getElementById('vid-welcome').checked;
+  const vertical = document.getElementById('vid-vertical').checked;
   const published = document.getElementById('vid-published').checked;
   const err = document.getElementById('vid-err');
   const id = ytId(url);
@@ -1270,9 +1272,9 @@ async function addVideo() {
   err.style.display = 'none';
   try {
     if (welcome) { await sb('videos?is_welcome=eq.true', { method: 'PATCH', body: JSON.stringify({ is_welcome: false }) }); }
-    await sb('videos', { method: 'POST', body: JSON.stringify({ title, description: desc || null, youtube_id: id, category, is_welcome: welcome, is_published: published }) });
+    await sb('videos', { method: 'POST', body: JSON.stringify({ title, description: desc || null, youtube_id: id, category, is_welcome: welcome, is_vertical: vertical, is_published: published }) });
     document.getElementById('vid-url').value = ''; document.getElementById('vid-title').value = '';
-    document.getElementById('vid-desc').value = ''; document.getElementById('vid-welcome').checked = false;
+    document.getElementById('vid-desc').value = ''; document.getElementById('vid-welcome').checked = false; document.getElementById('vid-vertical').checked = false;
     toast('🎬 Video eklendi.');
     loadVideos();
   } catch(e) { err.textContent = 'Hata: ' + e.message; err.style.display = 'block'; }
