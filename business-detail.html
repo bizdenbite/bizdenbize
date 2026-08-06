@@ -776,7 +776,7 @@
 <script>
 (function(){
   var SB_URL='https://wxjudojlwksivhzjnmim.supabase.co', SB_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-  var sb=null, BIZ=null, ME=null, MYREVIEW=null, selectedStars=5;
+  var sb=null, BIZ=null, ME=null, MYREVIEW=null, selectedStars=5, IS_ADMIN=false;
   var CATS={restoran:{i:'🍽️',l:'Restoran'},hukuk:{i:'⚖️',l:'Avukat'},saglik:{i:'🏥',l:'Doktor'},berber:{i:'✂️',l:'Berber'},market:{i:'🛒',l:'Market'},usta:{i:'🏗️',l:'Usta'},nakliyat:{i:'📦',l:'Nakliyat'},egitim:{i:'📚',l:'Eğitim'},diger:{i:'🏢',l:'Diğer'}};
   var COLORS=['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
@@ -803,13 +803,34 @@
     }catch(e){ console.error(e); alert('Fotoğraf yüklenemedi. Lütfen tekrar dene.'); }
     finally{ inp.value=''; }
   };
-  window.editOffer=async function(){
-    if(!BIZ||!(ME&&BIZ.owner_id===ME))return;
-    var cur=BIZ.description||'';
-    var v=prompt('Ne sunuyor? (birkaç kelime)\nÖrn: Shop-Cafe, Çiçekçi, Dekorasyon, Aksesuar', cur);
-    if(v===null)return; v=v.trim();
-    try{ var r=await sb.from('businesses').update({description:v||null}).eq('id',BIZ.id); if(r.error)throw r.error; BIZ.description=v||null; renderBiz(); }
-    catch(e){ console.error(e); alert('Güncellenemedi. Lütfen tekrar dene.'); }
+  function canEdit(){ return !!(ME && BIZ && (BIZ.owner_id===ME || IS_ADMIN)); }
+  window.openEditBiz=function(){
+    if(!canEdit())return;
+    function setv(id,val){var e=document.getElementById(id);if(e)e.value=(val==null?'':val);}
+    setv('be-name',BIZ.name); setv('be-cat',BIZ.category||'diger'); setv('be-desc',BIZ.description);
+    setv('be-city',BIZ.city); setv('be-address',BIZ.address); setv('be-phone',BIZ.phone);
+    setv('be-email',BIZ.email); setv('be-website',BIZ.website); setv('be-hours',BIZ.hours);
+    var m=document.getElementById('bez-msg'); if(m){m.className='bez-msg';m.textContent='';}
+    document.getElementById('bez-overlay').classList.add('open');
+  };
+  window.closeEditBiz=function(){document.getElementById('bez-overlay').classList.remove('open');};
+  window.saveEditBiz=async function(){
+    var m=document.getElementById('bez-msg'), btn=document.getElementById('bez-submit-btn');
+    function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+    var name=gv('be-name');
+    if(!name){m.className='bez-msg err';m.textContent='İşletme adı gerekli.';return;}
+    if(!canEdit())return;
+    btn.disabled=true;btn.textContent='Kaydediliyor…';
+    try{
+      var patch={name:name,category:gv('be-cat')||'diger',description:gv('be-desc')||null,city:gv('be-city')||null,address:gv('be-address')||null,phone:gv('be-phone')||null,email:gv('be-email')||null,website:gv('be-website')||null,hours:gv('be-hours')||null};
+      var r=await sb.from('businesses').update(patch).eq('id',BIZ.id);
+      if(r.error)throw r.error;
+      Object.keys(patch).forEach(function(k){BIZ[k]=patch[k];});
+      m.className='bez-msg ok';m.textContent='Kaydedildi ✓';
+      renderBiz(); await loadReviews();
+      setTimeout(closeEditBiz,900);
+    }catch(e){console.error(e);m.className='bez-msg err';m.textContent='Kaydedilemedi. Lütfen tekrar dene.';}
+    finally{btn.disabled=false;btn.textContent='Kaydet';}
   };
   window.directions=function(){if(BIZ&&BIZ.address)window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(BIZ.address+' '+(BIZ.city||'')),'_blank');};
   window.reportBiz=function(){if(!BIZ)return;var subj=encodeURIComponent('İşletme bildirimi: '+BIZ.name);var body=encodeURIComponent('İşletme: '+BIZ.name+'\nID: '+BIZ.id+'\nURL: '+location.href+'\n\nSorun / düzeltme:\n');location.href='mailto:support@bizdenbize.com?subject='+subj+'&body='+body;};
@@ -850,7 +871,7 @@
     var _hero=document.getElementById('biz-hero');
     if(BIZ.image_url){_hero.style.backgroundImage='url("'+String(BIZ.image_url).replace(/["]/g,'')+'")';_hero.style.backgroundSize='cover';_hero.style.backgroundPosition='center';document.getElementById('hero-emoji').style.display='none';}
     else{_hero.style.backgroundImage='';document.getElementById('hero-emoji').style.display='';}
-    var _oa=document.getElementById('hero-owner-actions'); if(_oa) _oa.innerHTML=(ME&&BIZ.owner_id===ME)?'<button class="hero-btn" onclick="pickBizPhoto()" title="Fotoğraf ekle/değiştir">📷</button>':'';
+    var _oa=document.getElementById('hero-owner-actions'); if(_oa) _oa.innerHTML=canEdit()?'<button class="hero-btn" onclick="pickBizPhoto()" title="Fotoğraf ekle/değiştir">📷</button>':'';
     document.getElementById('bh-cat').textContent=c.i+' '+c.l+(BIZ.city?(' · '+BIZ.city):'');
     var tags=[];
     if(BIZ.is_verified)tags.push('<span class="bh-tag featured">✓ Doğrulandı</span>');
@@ -878,7 +899,7 @@
     ab+='<button class="action-btn secondary" onclick="reportBiz()">⚠️ Bildir</button>';
     document.getElementById('action-btns').innerHTML=ab;
     var _oe=document.getElementById('owner-edit');
-    if(_oe) _oe.innerHTML=(ME&&BIZ.owner_id===ME)?'<button class="prov-report" style="color:var(--navy,#1B3A8C);margin-top:12px;" onclick="editOffer()">\u270f\ufe0f \'Ne sunuyor?\' bilgisini düzenle</button>':'';
+    if(_oe) _oe.innerHTML=canEdit()?'<button class="prov-report" style="color:var(--navy,#1B3A8C);margin-top:12px;" onclick="openEditBiz()">✏️ İşletmeyi düzenle</button>':''
     renderOwner();
   }
 
@@ -932,6 +953,7 @@
     var mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     sb=mod.createClient(SB_URL,SB_KEY);
     var u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
+    if(ME){try{var _pa=await sb.from('profiles').select('is_admin').eq('id',ME).maybeSingle();IS_ADMIN=!!(_pa.data&&_pa.data.is_admin);}catch(_e){}}
     if(!id){document.getElementById('bh-name').textContent='İşletme bulunamadı';return;}
     var res=await sb.from('businesses').select('*').eq('id',id).maybeSingle();
     if(res.error||!res.data){document.getElementById('bh-name').textContent='İşletme bulunamadı';document.getElementById('bh-cat').textContent='Bu işletme kaldırılmış veya erişilemiyor olabilir.';return;}
@@ -1238,5 +1260,43 @@
   </style>
 </footer>
   <script type="module" src="nav-msg-badge.js"></script>
+<style>
+  .bez-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:700;display:none;align-items:center;justify-content:center;padding:18px;}
+  .bez-overlay.open{display:flex;}
+  .bez-modal{background:var(--white);border-radius:14px;max-width:460px;width:100%;max-height:90vh;overflow:auto;padding:24px;}
+  .bez-modal h3{font-family:'Playfair Display',serif;font-size:20px;margin:0 0 16px;color:var(--ink);}
+  .bez-field{margin-bottom:12px;}
+  .bez-field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  .bez-field input,.bez-field select,.bez-field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;background:var(--white);color:var(--ink);}
+  .bez-field textarea{resize:vertical;min-height:60px;}
+  .bez-actions{display:flex;gap:10px;margin-top:16px;}
+  .bez-actions button{flex:1;padding:11px;border-radius:8px;font-weight:600;font-size:14px;border:none;cursor:pointer;font-family:inherit;}
+  .bez-cancel{background:var(--warm,#F0EAE0);color:var(--ink);}
+  .bez-submit{background:var(--red);color:#fff;}
+  .bez-msg{font-size:12.5px;margin-top:10px;padding:8px 10px;border-radius:7px;display:none;}
+  .bez-msg.ok{display:block;background:rgba(30,123,75,.1);color:#1E7B4B;}
+  .bez-msg.err{display:block;background:rgba(212,43,43,.1);color:var(--red);}
+</style>
+<div class="bez-overlay" id="bez-overlay">
+  <div class="bez-modal">
+    <h3>İşletmeyi düzenle</h3>
+    <div class="bez-field"><label>İşletme adı *</label><input id="be-name" type="text" maxlength="120"></div>
+    <div class="bez-field"><label>Kategori</label><select id="be-cat">
+      <option value="restoran">🍽️ Restoran</option><option value="hukuk">⚖️ Avukat</option>
+      <option value="saglik">🏥 Doktor / Sağlık</option><option value="berber">✂️ Berber / Kuaför</option>
+      <option value="market">🛒 Market</option><option value="usta">🏗️ Usta / Tamir</option>
+      <option value="nakliyat">📦 Nakliyat</option><option value="egitim">📚 Eğitim</option>
+      <option value="diger">🏢 Diğer</option></select></div>
+    <div class="bez-field"><label>Ne sunuyor?</label><textarea id="be-desc" maxlength="400" placeholder="Örn: Shop-Cafe, Çiçekçi, Dekorasyon, Aksesuar"></textarea></div>
+    <div class="bez-field"><label>Şehir</label><input id="be-city" type="text" maxlength="60"></div>
+    <div class="bez-field"><label>Adres</label><input id="be-address" type="text" maxlength="160"></div>
+    <div class="bez-field"><label>Telefon</label><input id="be-phone" type="tel" maxlength="40"></div>
+    <div class="bez-field"><label>E-posta</label><input id="be-email" type="email" maxlength="120"></div>
+    <div class="bez-field"><label>Web sitesi</label><input id="be-website" type="url" maxlength="160"></div>
+    <div class="bez-field"><label>Çalışma saatleri</label><input id="be-hours" type="text" maxlength="120" placeholder="Örn: Pzt-Cmt 09:00-19:00"></div>
+    <div class="bez-msg" id="bez-msg"></div>
+    <div class="bez-actions"><button class="bez-cancel" onclick="closeEditBiz()">Vazgeç</button><button class="bez-submit" id="bez-submit-btn" onclick="saveEditBiz()">Kaydet</button></div>
+  </div>
+</div>
 </body>
 </html>
