@@ -871,6 +871,7 @@
     var _hero=document.getElementById('biz-hero');
     if(BIZ.image_url){_hero.style.backgroundImage='url("'+String(BIZ.image_url).replace(/["]/g,'')+'")';_hero.style.backgroundSize='cover';_hero.style.backgroundPosition='center';document.getElementById('hero-emoji').style.display='none';}
     else{_hero.style.backgroundImage='';document.getElementById('hero-emoji').style.display='';}
+    var _hl=document.getElementById('hero-logo'); if(_hl) _hl.style.display=(BIZ.image_url && !BIZ.logo_url)?'none':'';
     var _oa=document.getElementById('hero-owner-actions'); if(_oa) _oa.innerHTML=canEdit()?'<button class="hero-btn" onclick="pickBizPhoto()" title="Fotoğraf ekle/değiştir">📷</button>':'';
     document.getElementById('bh-cat').textContent=c.i+' '+c.l+(BIZ.city?(' · '+BIZ.city):'');
     var tags=[];
