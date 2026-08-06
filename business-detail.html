@@ -739,6 +739,7 @@
       <div class="ic-title">📋 İşletme Bilgileri</div>
       <div id="info-rows"></div>
       <div class="prov-note" id="provenance"></div>
+      <div id="owner-edit"></div>
     </div>
 
     <div class="reviews-card">
@@ -802,6 +803,14 @@
     }catch(e){ console.error(e); alert('Fotoğraf yüklenemedi. Lütfen tekrar dene.'); }
     finally{ inp.value=''; }
   };
+  window.editOffer=async function(){
+    if(!BIZ||!(ME&&BIZ.owner_id===ME))return;
+    var cur=BIZ.description||'';
+    var v=prompt('Ne sunuyor? (birkaç kelime)\nÖrn: Shop-Cafe, Çiçekçi, Dekorasyon, Aksesuar', cur);
+    if(v===null)return; v=v.trim();
+    try{ var r=await sb.from('businesses').update({description:v||null}).eq('id',BIZ.id); if(r.error)throw r.error; BIZ.description=v||null; renderBiz(); }
+    catch(e){ console.error(e); alert('Güncellenemedi. Lütfen tekrar dene.'); }
+  };
   window.directions=function(){if(BIZ&&BIZ.address)window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(BIZ.address+' '+(BIZ.city||'')),'_blank');};
   window.reportBiz=function(){if(!BIZ)return;var subj=encodeURIComponent('İşletme bildirimi: '+BIZ.name);var body=encodeURIComponent('İşletme: '+BIZ.name+'\nID: '+BIZ.id+'\nURL: '+location.href+'\n\nSorun / düzeltme:\n');location.href='mailto:support@bizdenbize.com?subject='+subj+'&body='+body;};
   window.claimBiz=async function(){
@@ -856,7 +865,7 @@
     if(BIZ.website)rows+=row('🌐','Website','<a href="'+esc(normUrl(BIZ.website))+'" target="_blank" rel="noopener">'+esc(BIZ.website.replace(/^https?:\/\//i,''))+'</a>');
     if(BIZ.hours)rows+=row('🕐','Çalışma Saatleri',esc(BIZ.hours));
     if(BIZ.languages&&BIZ.languages.length)rows+=row('🗣️','Diller',esc(BIZ.languages.join(' · ')));
-    if(BIZ.description)rows+=row('📝','Hakkında',esc(BIZ.description));
+    if(BIZ.description)rows+=row('📝','Ne sunuyor?',esc(BIZ.description));
     document.getElementById('info-rows').innerHTML=rows||'<div class="ir-val" style="color:var(--muted);font-size:13px;">Ek bilgi eklenmemiş.</div>';
     var prov=document.getElementById('provenance');
     if(BIZ.is_verified){prov.className='prov-note ok';prov.innerHTML='✓ Bu işletme sahibi tarafından doğrulandı.';}
@@ -868,6 +877,8 @@
     if(BIZ.website)ab+='<button class="action-btn secondary" onclick="window.open(\''+esc(normUrl(BIZ.website))+'\',\'_blank\')">🌐 Web Sitesi</button>';
     ab+='<button class="action-btn secondary" onclick="reportBiz()">⚠️ Bildir</button>';
     document.getElementById('action-btns').innerHTML=ab;
+    var _oe=document.getElementById('owner-edit');
+    if(_oe) _oe.innerHTML=(ME&&BIZ.owner_id===ME)?'<button class="prov-report" style="color:var(--navy,#1B3A8C);margin-top:12px;" onclick="editOffer()">\u270f\ufe0f \'Ne sunuyor?\' bilgisini düzenle</button>':'';
     renderOwner();
   }
 

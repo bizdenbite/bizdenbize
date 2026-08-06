@@ -968,6 +968,7 @@
 
 <style>
   .biz-card{cursor:pointer;}
+  .biz-offer{font-size:12.5px;color:var(--muted);margin:2px 0 6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .biz-cover{position:relative;}
   .biz-rating.none{font-size:12px;color:var(--muted);font-style:italic;}
   .biz-badge{position:absolute;top:10px;left:10px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;z-index:2;}
@@ -1017,7 +1018,7 @@
     <div class="abz-field"><label>Telefon</label><input id="ab-phone" type="tel" maxlength="40" placeholder="+49 …"></div>
     <div class="abz-field"><label>Web sitesi</label><input id="ab-website" type="url" maxlength="160" placeholder="https://…"></div>
     <div class="abz-field"><label>Fotoğraf (opsiyonel)</label><input id="ab-photo" type="file" accept="image/*"><div style="font-size:11px;color:var(--muted);margin-top:4px;">Yalnızca işletmeye ait gerçek bir fotoğraf yükle. İnternetten alınan görseller kullanılmaz.</div></div>
-    <div class="abz-field"><label>Kısa açıklama</label><textarea id="ab-desc" maxlength="400" placeholder="Ne sunuyor, neden öneriyorsun?"></textarea></div>
+    <div class="abz-field"><label>Ne sunuyor?</label><textarea id="ab-desc" maxlength="400" placeholder="Örn: Shop-Cafe, Çiçekçi, Dekorasyon, Aksesuar"></textarea></div>
     <div class="abz-msg" id="abz-msg"></div>
     <div class="abz-actions">
       <button class="abz-cancel" onclick="closeAddBiz()">Vazgeç</button>
@@ -1056,6 +1057,7 @@
     if(b.is_verified) badge='<span class="biz-badge verified">✓ Doğrulandı</span>';
     else if(b.source==='public'||b.source==='official') badge='<span class="biz-badge unverified" title="'+esc(b.source_name?('Kaynak: '+b.source_name):'Herkese açık kaynaktan alındı, işletme henüz doğrulamadı')+'">ⓘ Doğrulanmadı</span>';
     var catline=c.icon+' '+c.label+(b.city?(' · '+esc(b.city)):'');
+    var offer=b.description?('<div class="biz-offer">'+esc(b.description)+'</div>'):'';
     var meta=[b.address?'<span>📍 '+esc(b.address)+'</span>':'', b.hours?'<span>🕗 '+esc(b.hours)+'</span>':''].filter(Boolean).join('');
     var src='';
     if(!b.is_verified&&(b.source==='public'||b.source==='official')&&b.source_url) src='<div class="biz-src">Kaynak: <a href="'+esc(b.source_url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(b.source_name||'bağlantı')+'</a></div>';
@@ -1063,7 +1065,7 @@
     var logo=b.logo_url?'<img src="'+esc(b.logo_url)+'" style="width:100%;height:100%;object-fit:cover;">':c.icon;
     return '<div class="biz-card" onclick="openBiz(\''+b.id+'\')">'
       +'<div class="biz-cover '+c.c+'">'+cover+badge+'<div class="biz-logo">'+logo+'</div></div>'
-      +'<div class="biz-body"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-cat">'+catline+'</div>'+rate+'<div class="biz-meta">'+meta+'</div>'+src+'</div>'
+      +'<div class="biz-body"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-cat">'+catline+'</div>'+offer+rate+'<div class="biz-meta">'+meta+'</div>'+src+'</div>'
       +'<div class="biz-footer">'
       +'<button class="biz-btn" onclick="event.stopPropagation();openBiz(\''+b.id+'\')">💬 Yorum</button>'
       +(b.address?'<button class="biz-btn" onclick="event.stopPropagation();mapOpen(\''+esc((b.address+' '+(b.city||'')).replace(/\'/g,""))+'\')">📍 Harita</button>':'')
