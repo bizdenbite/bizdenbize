@@ -643,120 +643,33 @@
 
 <div class="page">
   <div class="cat-row">
-    <div class="cat-btn active" onclick="filterCat(this)"><div class="cat-icon">🌍</div><div class="cat-label">Tümü</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">🍽️</div><div class="cat-label">Restoran</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">⚖️</div><div class="cat-label">Avukat</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">🏥</div><div class="cat-label">Doktor</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">✂️</div><div class="cat-label">Berber</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">🛒</div><div class="cat-label">Market</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">🏗️</div><div class="cat-label">Usta</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">📦</div><div class="cat-label">Nakliyat</div></div>
-    <div class="cat-btn" onclick="filterCat(this)"><div class="cat-icon">📚</div><div class="cat-label">Eğitim</div></div>
+    <div class="cat-btn active" onclick="setCat('all',this)"><div class="cat-icon">🌍</div><div class="cat-label">Tümü</div></div>
+    <div class="cat-btn" onclick="setCat('restoran',this)"><div class="cat-icon">🍽️</div><div class="cat-label">Restoran</div></div>
+    <div class="cat-btn" onclick="setCat('hukuk',this)"><div class="cat-icon">⚖️</div><div class="cat-label">Avukat</div></div>
+    <div class="cat-btn" onclick="setCat('saglik',this)"><div class="cat-icon">🏥</div><div class="cat-label">Doktor</div></div>
+    <div class="cat-btn" onclick="setCat('berber',this)"><div class="cat-icon">✂️</div><div class="cat-label">Berber</div></div>
+    <div class="cat-btn" onclick="setCat('market',this)"><div class="cat-icon">🛒</div><div class="cat-label">Market</div></div>
+    <div class="cat-btn" onclick="setCat('usta',this)"><div class="cat-icon">🏗️</div><div class="cat-label">Usta</div></div>
+    <div class="cat-btn" onclick="setCat('nakliyat',this)"><div class="cat-icon">📦</div><div class="cat-label">Nakliyat</div></div>
+    <div class="cat-btn" onclick="setCat('egitim',this)"><div class="cat-icon">📚</div><div class="cat-label">Eğitim</div></div>
   </div>
 
   <div class="filter-bar">
-    <select class="filter-select"><option>📍 Frankfurt</option><option>🇩🇪 Almanya</option><option>🌍 Tüm Avrupa</option></select>
-    <select class="filter-select"><option>Sıralama: Önerilen</option><option>En yüksek puan</option><option>En yakın</option><option>En yeni</option></select>
-    <span class="result-count">84 işletme bulundu</span>
-    <button class="add-btn">+ İşletme Ekle</button>
+    <select class="filter-select" id="sort-select" onchange="setSort(this.value)">
+      <option value="new">Sıralama: En yeni</option>
+      <option value="rating">En yüksek puan</option>
+      <option value="name">İsme göre (A-Z)</option>
+    </select>
+    <span class="result-count" id="result-count">Yükleniyor…</span>
+    <button class="add-btn" id="add-biz-btn" onclick="openAddBiz()">+ İşletme Ekle</button>
   </div>
 
-  <div class="biz-grid">
-    <div class="biz-card featured">
-      <div class="biz-cover c5"><span class="biz-featured-badge">⭐ Öne Çıkan</span><div class="biz-logo">🍽️</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Sultanahmet Restoran Frankfurt</div>
-        <div class="biz-cat">🍽️ Türk Mutfağı · Sachsenhausen</div>
-        <div class="biz-rating"><span class="stars">★★★★★</span><span class="rating-val">4.9</span><span class="review-count">(127 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Darmstädter Landstr. 28</span><span>🕗 09:00 – 23:00 · Açık</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
+  <div class="biz-grid" id="biz-grid"></div>
+  <div class="biz-empty" id="biz-empty" style="display:none;"></div>
 
-    <div class="biz-card">
-      <div class="biz-cover c2"><div class="biz-logo">⚖️</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Av. Mehmet Yıldız — Hukuk Bürosu</div>
-        <div class="biz-cat">⚖️ Avukat · Innenstadt</div>
-        <div class="biz-rating"><span class="stars">★★★★★</span><span class="rating-val">4.8</span><span class="review-count">(43 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Kaiserstr. 55</span><span>🕗 Mo-Fr 09:00–18:00</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
-
-    <div class="biz-card">
-      <div class="biz-cover c3"><div class="biz-logo">✂️</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Ahmet Usta Berber</div>
-        <div class="biz-cat">✂️ Berber · Sachsenhausen</div>
-        <div class="biz-rating"><span class="stars">★★★★☆</span><span class="rating-val">4.6</span><span class="review-count">(89 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Darmstädter Landstr. 12</span><span>🕗 08:00 – 20:00 · Açık</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
-
-    <div class="biz-card featured">
-      <div class="biz-cover c4"><span class="biz-featured-badge">⭐ Öne Çıkan</span><div class="biz-logo">🛒</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Türk Market Frankfurt — Halay</div>
-        <div class="biz-cat">🛒 Türk Market · Gallus</div>
-        <div class="biz-rating"><span class="stars">★★★★★</span><span class="rating-val">4.7</span><span class="review-count">(214 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Galluswarte Str. 3</span><span>🕗 07:00 – 22:00 · Açık</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
-
-    <div class="biz-card">
-      <div class="biz-cover c6"><div class="biz-logo">🏥</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Dr. Fatma Şahin — Pratisyen Hekim</div>
-        <div class="biz-cat">🏥 Doktor · Nordend</div>
-        <div class="biz-rating"><span class="stars">★★★★★</span><span class="rating-val">4.9</span><span class="review-count">(67 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Eschersheimer Landstr. 44</span><span>🕗 Mo-Fr 08:00–17:00</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
-
-    <div class="biz-card">
-      <div class="biz-cover c1"><div class="biz-logo">📦</div></div>
-      <div class="biz-body">
-        <div class="biz-name">Anadolu Nakliyat GmbH</div>
-        <div class="biz-cat">📦 Nakliyat · Tüm Almanya</div>
-        <div class="biz-rating"><span class="stars">★★★★☆</span><span class="rating-val">4.4</span><span class="review-count">(31 yorum)</span></div>
-        <div class="biz-meta"><span>📍 Heerstr. 8, Frankfurt</span><span>🕗 Mo-Sa 07:00–20:00</span></div>
-      </div>
-      <div class="biz-footer">
-        <button class="biz-btn">💬 Yorum</button>
-        <button class="biz-btn">📍 Harita</button>
-        <button class="biz-btn primary">📞 Ara</button>
-      </div>
-    </div>
-  </div>
 </div>
 
-<script>
-  function filterCat(btn){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-</script>
+
 <script>
   // Mobile menu
   function toggleMenu() {
@@ -1052,5 +965,182 @@
   </style>
 </footer>
   <script type="module" src="nav-msg-badge.js"></script>
+
+<style>
+  .biz-card{cursor:pointer;}
+  .biz-cover{position:relative;}
+  .biz-rating.none{font-size:12px;color:var(--muted);font-style:italic;}
+  .biz-badge{position:absolute;top:10px;left:10px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;z-index:2;}
+  .biz-badge.verified{background:rgba(30,123,75,.94);color:#fff;}
+  .biz-badge.unverified{background:rgba(0,0,0,.55);color:#fff;cursor:help;}
+  .biz-src{font-size:11px;color:var(--muted);margin-top:6px;}
+  .biz-src a{color:var(--muted);text-decoration:underline;}
+  .biz-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+  .be-emoji{font-size:42px;} .be-title{font-size:16px;font-weight:700;color:var(--ink);margin:10px 0 4px;} .be-sub{font-size:13px;margin-bottom:16px;line-height:1.5;}
+  .abz-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:none;align-items:center;justify-content:center;padding:18px;}
+  .abz-overlay.open{display:flex;}
+  .abz-modal{background:var(--white);border-radius:14px;max-width:440px;width:100%;max-height:88vh;overflow:auto;padding:24px;}
+  .abz-modal h3{font-family:'Playfair Display',serif;font-size:20px;margin:0 0 6px;color:var(--ink);}
+  .abz-note{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+  .abz-field{margin-bottom:12px;}
+  .abz-field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  .abz-field input,.abz-field select,.abz-field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;background:var(--white);color:var(--ink);}
+  .abz-field textarea{resize:vertical;min-height:64px;}
+  .abz-actions{display:flex;gap:10px;margin-top:18px;}
+  .abz-actions button{flex:1;padding:11px;border-radius:8px;font-weight:600;font-size:14px;border:none;cursor:pointer;font-family:inherit;}
+  .abz-cancel{background:var(--warm,#F0EAE0);color:var(--ink);}
+  .abz-submit{background:var(--red);color:#fff;}
+  .abz-msg{font-size:13px;margin-top:12px;padding:10px 12px;border-radius:8px;display:none;}
+  .abz-msg.ok{display:block;background:rgba(30,123,75,.1);color:#1E7B4B;}
+  .abz-msg.err{display:block;background:rgba(212,43,43,.1);color:var(--red);}
+</style>
+<div class="abz-overlay" id="abz-overlay">
+  <div class="abz-modal">
+    <h3>İşletme Ekle</h3>
+    <div class="abz-note">Bildiğin bir Türk işletmesini toplulukla paylaş. Eklenen işletmeler <strong>ekip onayından sonra</strong> yayınlanır. Puanlar yalnızca gerçek üye yorumlarından oluşur — kendin puan veremezsin.</div>
+    <div class="abz-field"><label>İşletme adı *</label><input id="ab-name" type="text" maxlength="120" placeholder="Örn: Anadolu Market"></div>
+    <div class="abz-field"><label>Kategori</label>
+      <select id="ab-cat">
+        <option value="restoran">🍽️ Restoran</option>
+        <option value="hukuk">⚖️ Avukat</option>
+        <option value="saglik">🏥 Doktor / Sağlık</option>
+        <option value="berber">✂️ Berber / Kuaför</option>
+        <option value="market">🛒 Market</option>
+        <option value="usta">🏗️ Usta / Tamir</option>
+        <option value="nakliyat">📦 Nakliyat</option>
+        <option value="egitim">📚 Eğitim</option>
+        <option value="diger">🏢 Diğer</option>
+      </select>
+    </div>
+    <div class="abz-field"><label>Şehir</label><input id="ab-city" type="text" maxlength="60" placeholder="Frankfurt"></div>
+    <div class="abz-field"><label>Adres</label><input id="ab-address" type="text" maxlength="160" placeholder="Cadde, no"></div>
+    <div class="abz-field"><label>Telefon</label><input id="ab-phone" type="tel" maxlength="40" placeholder="+49 …"></div>
+    <div class="abz-field"><label>Web sitesi</label><input id="ab-website" type="url" maxlength="160" placeholder="https://…"></div>
+    <div class="abz-field"><label>Kısa açıklama</label><textarea id="ab-desc" maxlength="400" placeholder="Ne sunuyor, neden öneriyorsun?"></textarea></div>
+    <div class="abz-msg" id="abz-msg"></div>
+    <div class="abz-actions">
+      <button class="abz-cancel" onclick="closeAddBiz()">Vazgeç</button>
+      <button class="abz-submit" id="abz-submit-btn" onclick="submitBiz()">Gönder</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var SB_URL='https://wxjudojlwksivhzjnmim.supabase.co';
+  var SB_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  var sb=null, ALL=[], CUR='all', SORT='new', ME=null;
+  var CATS={
+    restoran:{icon:'🍽️',label:'Restoran',c:'c5'},
+    hukuk:{icon:'⚖️',label:'Avukat',c:'c2'},
+    saglik:{icon:'🏥',label:'Doktor',c:'c6'},
+    berber:{icon:'✂️',label:'Berber',c:'c3'},
+    market:{icon:'🛒',label:'Market',c:'c4'},
+    usta:{icon:'🏗️',label:'Usta',c:'c1'},
+    nakliyat:{icon:'📦',label:'Nakliyat',c:'c1'},
+    egitim:{icon:'📚',label:'Eğitim',c:'c2'},
+    diger:{icon:'🏢',label:'Diğer',c:'c1'}
+  };
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function val(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+
+  function cardHTML(b){
+    var c=CATS[b.category]||CATS.diger, r=b._r, rate;
+    if(r&&r.review_count>0){
+      var full=Math.round(r.avg_rating);
+      rate='<div class="biz-rating"><span class="stars">'+'★'.repeat(full)+'☆'.repeat(5-full)+'</span><span class="rating-val">'+r.avg_rating+'</span><span class="review-count">('+r.review_count+' yorum)</span></div>';
+    } else {
+      rate='<div class="biz-rating none">Henüz değerlendirilmedi</div>';
+    }
+    var badge='';
+    if(b.is_verified) badge='<span class="biz-badge verified">✓ Doğrulandı</span>';
+    else if(b.source==='public'||b.source==='official') badge='<span class="biz-badge unverified" title="'+esc(b.source_name?('Kaynak: '+b.source_name):'Herkese açık kaynaktan alındı, işletme henüz doğrulamadı')+'">ⓘ Doğrulanmadı</span>';
+    var catline=c.icon+' '+c.label+(b.city?(' · '+esc(b.city)):'');
+    var meta=[b.address?'<span>📍 '+esc(b.address)+'</span>':'', b.hours?'<span>🕗 '+esc(b.hours)+'</span>':''].filter(Boolean).join('');
+    var src='';
+    if(!b.is_verified&&(b.source==='public'||b.source==='official')&&b.source_url) src='<div class="biz-src">Kaynak: <a href="'+esc(b.source_url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(b.source_name||'bağlantı')+'</a></div>';
+    var logo=b.logo_url?'<img src="'+esc(b.logo_url)+'" style="width:100%;height:100%;object-fit:cover;">':c.icon;
+    return '<div class="biz-card" onclick="openBiz(\''+b.id+'\')">'
+      +'<div class="biz-cover '+c.c+'">'+badge+'<div class="biz-logo">'+logo+'</div></div>'
+      +'<div class="biz-body"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-cat">'+catline+'</div>'+rate+'<div class="biz-meta">'+meta+'</div>'+src+'</div>'
+      +'<div class="biz-footer">'
+      +'<button class="biz-btn" onclick="event.stopPropagation();openBiz(\''+b.id+'\')">💬 Yorum</button>'
+      +(b.address?'<button class="biz-btn" onclick="event.stopPropagation();mapOpen(\''+esc((b.address+' '+(b.city||'')).replace(/\'/g,""))+'\')">📍 Harita</button>':'')
+      +(b.phone?'<button class="biz-btn primary" onclick="event.stopPropagation();window.location.href=\'tel:'+esc(b.phone)+'\'">📞 Ara</button>':'')
+      +'</div></div>';
+  }
+
+  function render(){
+    var list=ALL.filter(function(b){return CUR==='all'||(b.category||'diger')===CUR;});
+    if(SORT==='rating') list.sort(function(a,b){return ((b._r?b._r.avg_rating:0)-(a._r?a._r.avg_rating:0));});
+    else if(SORT==='name') list.sort(function(a,b){return (a.name||'').localeCompare(b.name||'','tr');});
+    else list.sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at);});
+    var grid=document.getElementById('biz-grid'), empty=document.getElementById('biz-empty'), count=document.getElementById('result-count');
+    count.textContent=list.length+' işletme';
+    if(!list.length){
+      grid.innerHTML=''; empty.style.display='block';
+      empty.innerHTML = ALL.length
+        ? '<div class="be-emoji">🔍</div><div class="be-title">Bu kategoride işletme yok</div><div class="be-sub">Başka bir kategori dene ya da ilk işletmeyi sen ekle.</div><button class="add-btn" onclick="openAddBiz()">+ İşletme Ekle</button>'
+        : '<div class="be-emoji">🏪</div><div class="be-title">Henüz işletme eklenmedi</div><div class="be-sub">Topluluğun güvendiği ilk işletmeyi sen ekle.<br>Puanlar zamanla gerçek üye yorumlarıyla oluşur.</div><button class="add-btn" onclick="openAddBiz()">+ İşletme Ekle</button>';
+      return;
+    }
+    empty.style.display='none';
+    grid.innerHTML=list.map(cardHTML).join('');
+  }
+
+  async function loadBiz(){
+    try{
+      var u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
+      var res=await sb.from('businesses')
+        .select('id,name,category,description,address,city,phone,website,logo_url,image_url,hours,source,source_name,source_url,is_verified,claim_status,status,created_at')
+        .eq('status','approved').order('created_at',{ascending:false});
+      if(res.error){throw res.error;}
+      var sums=await sb.from('business_rating_summary').select('business_id,avg_rating,review_count');
+      var smap={}; (sums.data||[]).forEach(function(x){smap[x.business_id]=x;});
+      ALL=(res.data||[]).map(function(b){b._r=smap[b.id]||null;return b;});
+      render();
+    }catch(e){
+      console.error('İşletmeler yüklenemedi',e);
+      var empty=document.getElementById('biz-empty'); document.getElementById('biz-grid').innerHTML='';
+      document.getElementById('result-count').textContent='';
+      empty.style.display='block';
+      empty.innerHTML='<div class="be-emoji">⚠️</div><div class="be-title">İşletmeler yüklenemedi</div><div class="be-sub">Lütfen sayfayı yenile.</div>';
+    }
+  }
+
+  function setCat(slug,btn){CUR=slug;document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('active');});if(btn)btn.classList.add('active');render();}
+  function setSort(v){SORT=v;render();}
+  function openBiz(id){window.location.href='business-detail.html?id='+encodeURIComponent(id);}
+  function mapOpen(q){window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q),'_blank');}
+  function openAddBiz(){if(!ME){window.location.href='login.html';return;}var m=document.getElementById('abz-msg');m.className='abz-msg';m.textContent='';document.getElementById('abz-overlay').classList.add('open');}
+  function closeAddBiz(){document.getElementById('abz-overlay').classList.remove('open');}
+  async function submitBiz(){
+    var m=document.getElementById('abz-msg'), btn=document.getElementById('abz-submit-btn');
+    var name=val('ab-name');
+    if(!name){m.className='abz-msg err';m.textContent='İşletme adı gerekli.';return;}
+    if(!ME){window.location.href='login.html';return;}
+    btn.disabled=true;btn.textContent='Gönderiliyor…';
+    try{
+      var payload={owner_id:ME,name:name,category:val('ab-cat')||'diger',city:val('ab-city')||null,address:val('ab-address')||null,phone:val('ab-phone')||null,website:val('ab-website')||null,description:val('ab-desc')||null,source:'member',status:'pending'};
+      var res=await sb.from('businesses').insert(payload);
+      if(res.error){throw res.error;}
+      m.className='abz-msg ok';m.textContent='Teşekkürler! Başvurun alındı. Ekip onayından sonra yayında olacak.';
+      ['ab-name','ab-city','ab-address','ab-phone','ab-website','ab-desc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+      setTimeout(closeAddBiz,2200);
+    }catch(e){
+      console.error(e);m.className='abz-msg err';m.textContent='Bir hata oluştu. Lütfen tekrar dene.';
+    }finally{btn.disabled=false;btn.textContent='Gönder';}
+  }
+
+  window.setCat=setCat;window.setSort=setSort;window.openBiz=openBiz;window.mapOpen=mapOpen;
+  window.openAddBiz=openAddBiz;window.closeAddBiz=closeAddBiz;window.submitBiz=submitBiz;
+
+  async function init(){
+    var mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    sb=mod.createClient(SB_URL,SB_KEY);
+    await loadBiz();
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
 </body>
 </html>

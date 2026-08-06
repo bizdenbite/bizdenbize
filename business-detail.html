@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BizdenBize — Sultanahmet Restoran Frankfurt</title>
+  <title id="page-title">BizdenBize — İşletme</title>
   <meta name="description" content="İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz — bizdenbize.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -698,145 +698,54 @@
 <div class="breadcrumb">
   <a href="mahallem.html">Ana Sayfa</a><span>/</span>
   <a href="business.html">İşletmeler</a><span>/</span>
-  <a href="business.html">Restoran</a><span>/</span>
-  <span style="color:var(--ink)">Sultanahmet Restoran</span>
+  <span style="color:var(--ink)" id="bc-name">İşletme</span>
 </div>
 
+<style>
+  .prov-note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px;padding-top:14px;border-top:1px solid var(--warm);}
+  .prov-note.warn{color:#8a6d1f;} .prov-note.ok{color:#1E7B4B;}
+  .prov-note a{color:inherit;text-decoration:underline;}
+  .prov-report{display:inline-block;margin-top:6px;background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline;}
+  .rev-msg{font-size:12px;margin:8px 0;padding:8px 10px;border-radius:7px;display:none;}
+  .rev-msg.ok{display:block;background:rgba(30,123,75,.1);color:#1E7B4B;} .rev-msg.err{display:block;background:rgba(212,43,43,.1);color:var(--red);}
+  .rev-mine{font-size:11px;color:var(--red);font-weight:600;}
+</style>
 <div class="page">
   <div>
 
-    <!-- Hero -->
-    <div class="biz-hero">
-      <div class="biz-hero-emoji">🍽️</div>
+    <div class="biz-hero" id="biz-hero">
+      <div class="biz-hero-emoji" id="hero-emoji">🏢</div>
       <div class="hero-actions">
-        <button class="hero-btn" id="save-biz" onclick="toggleSaveBiz()">🤍</button>
-        <button class="hero-btn" onclick="shareBiz()">↗</button>
+        <button class="hero-btn" onclick="shareBiz()" title="Paylaş">↗</button>
       </div>
-      <div class="biz-logo-wrap">🍽️</div>
+      <div class="biz-logo-wrap" id="hero-logo">🏢</div>
     </div>
 
-    <!-- Header -->
     <div class="biz-header">
       <div class="bh-top">
         <div class="bh-info">
-          <div class="bh-name">Sultanahmet Restoran Frankfurt</div>
-          <div class="bh-cat">🍽️ Türk Mutfağı · Sachsenhausen, Frankfurt</div>
-          <div class="bh-tags">
-            <span class="bh-tag featured">⭐ Öne Çıkan</span>
-            <span class="bh-tag">🍖 Kebap</span>
-            <span class="bh-tag">🥗 Meze</span>
-            <span class="bh-tag">🍷 İçki Lisansı</span>
-            <span class="bh-tag">🅿️ Otopark</span>
-            <span class="bh-tag">♿ Engelli Erişimi</span>
-          </div>
+          <div class="bh-name" id="bh-name">Yükleniyor…</div>
+          <div class="bh-cat" id="bh-cat"></div>
+          <div class="bh-tags" id="bh-tags"></div>
         </div>
       </div>
-      <div class="bh-rating">
-        <span class="stars">★★★★★</span>
-        <span class="rating-val">4.9</span>
-        <span class="rating-count">· 127 yorum · BizdenBize topluluğundan</span>
-      </div>
-      <div class="bh-stats">
-        <div class="bs-item"><div class="bs-val">127</div><div class="bs-label">Yorum</div></div>
-        <div class="bs-item"><div class="bs-val">4.9</div><div class="bs-label">Puan</div></div>
-        <div class="bs-item"><div class="bs-val">8 yıl</div><div class="bs-label">Faaliyet</div></div>
-        <div class="bs-item"><div class="bs-val">%98</div><div class="bs-label">Tavsiye</div></div>
-      </div>
+      <div class="bh-rating" id="bh-rating"></div>
+      <div class="bh-stats" id="bh-stats"></div>
     </div>
 
-    <!-- Info -->
     <div class="info-card">
       <div class="ic-title">📋 İşletme Bilgileri</div>
-      <div class="info-row">
-        <div class="ir-icon">📍</div>
-        <div><div class="ir-label">Adres</div><div class="ir-val">Darmstädter Landstr. 28, 60598 Frankfurt am Main</div></div>
-      </div>
-      <div class="info-row">
-        <div class="ir-icon">📞</div>
-        <div><div class="ir-label">Telefon</div><div class="ir-val"><a href="tel:+4969123456">+49 69 123 456</a></div></div>
-      </div>
-      <div class="info-row">
-        <div class="ir-icon">🌐</div>
-        <div><div class="ir-label">Website</div><div class="ir-val"><a href="#">sultanahmet-frankfurt.de</a></div></div>
-      </div>
-      <div class="info-row">
-        <div class="ir-icon">🕐</div>
-        <div style="flex:1">
-          <div class="ir-label">Çalışma Saatleri</div>
-          <div class="open-badge"><div class="open-dot"></div>Şu an açık · 23:00'e kadar</div>
-          <div class="hours-grid">
-            <div class="hour-row"><span class="hour-day">Pazartesi</span><span class="hour-time">09:00–23:00</span></div>
-            <div class="hour-row"><span class="hour-day">Salı</span><span class="hour-time">09:00–23:00</span></div>
-            <div class="hour-row today"><span class="hour-day">Çarşamba ●</span><span class="hour-time">09:00–23:00</span></div>
-            <div class="hour-row"><span class="hour-day">Perşembe</span><span class="hour-time">09:00–23:00</span></div>
-            <div class="hour-row"><span class="hour-day">Cuma</span><span class="hour-time">09:00–00:00</span></div>
-            <div class="hour-row"><span class="hour-day">Cumartesi</span><span class="hour-time">10:00–00:00</span></div>
-            <div class="hour-row"><span class="hour-day">Pazar</span><span class="hour-time">11:00–22:00</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="info-row">
-        <div class="ir-icon">💳</div>
-        <div><div class="ir-label">Ödeme</div><div class="ir-val">Nakit, Kart, EC, PayPal</div></div>
-      </div>
-      <div class="info-row">
-        <div class="ir-icon">🗣️</div>
-        <div><div class="ir-label">Diller</div><div class="ir-val">Türkçe 🇹🇷 · Deutsch 🇩🇪 · English 🇬🇧</div></div>
-      </div>
+      <div id="info-rows"></div>
+      <div class="prov-note" id="provenance"></div>
     </div>
 
-    <!-- Reviews -->
     <div class="reviews-card">
       <div class="rc-header">
-        <span class="rc-title">⭐ Yorumlar (127)</span>
+        <span class="rc-title" id="rc-title">⭐ Yorumlar</span>
         <button class="write-review-btn" onclick="toggleReviewForm()">+ Yorum Yaz</button>
       </div>
-
-      <div class="rating-bars">
-        <div class="rb-row"><span class="rb-label">5</span><div class="rb-bar"><div class="rb-fill" style="width:88%"></div></div><span class="rb-count">112</span></div>
-        <div class="rb-row"><span class="rb-label">4</span><div class="rb-bar"><div class="rb-fill" style="width:9%"></div></div><span class="rb-count">11</span></div>
-        <div class="rb-row"><span class="rb-label">3</span><div class="rb-bar"><div class="rb-fill" style="width:2%"></div></div><span class="rb-count">3</span></div>
-        <div class="rb-row"><span class="rb-label">2</span><div class="rb-bar"><div class="rb-fill" style="width:1%"></div></div><span class="rb-count">1</span></div>
-        <div class="rb-row"><span class="rb-label">1</span><div class="rb-bar"><div class="rb-fill" style="width:0%"></div></div><span class="rb-count">0</span></div>
-      </div>
-
-      <div class="review">
-        <div class="rev-avatar" style="background:#1B3A8C">MK</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="rev-name">Mustafa Kaya</span>
-            <span class="rev-stars">★★★★★</span>
-            <span class="rev-date">2 gün önce</span>
-          </div>
-          <div class="rev-text">Frankfurt'taki en iyi Türk restoranı bu! Özellikle Adana kebabı ve lahmacun mükemmel. Sahibi de çok kibar. Her gittiğimde aynı kalite. Kesinlikle tavsiye ederim! 👍</div>
-          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (13)'">Faydalı (12)</button>
-        </div>
-      </div>
-      <div class="review">
-        <div class="rev-avatar" style="background:#1E7B4B">ZD</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="rev-name">Zeynep Demir</span>
-            <span class="rev-stars">★★★★★</span>
-            <span class="rev-date">1 hafta önce</span>
-          </div>
-          <div class="rev-text">Viyana'dan geçerken uğradım, çok memnun kaldım. Türkçe konuşulması ve ev yemeği tadı insanı rahatlattı. Porsiyon büyüklüğü de süper. Fiyatlar da makul.</div>
-          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (8)'">Faydalı (7)</button>
-        </div>
-      </div>
-      <div class="review">
-        <div class="rev-avatar" style="background:#C9A84C">AK</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="rev-name">Ali Korkmaz</span>
-            <span class="rev-stars">★★★★★</span>
-            <span class="rev-date">2 hafta önce</span>
-          </div>
-          <div class="rev-text">Annelerimizin eli gibi yemekler yapıyorlar. Her gittiğimde aynı lezzet var. Çalışanlar çok sıcakkanlı, kendi ülkendeymiş gibi hissediyorsun. ❤️</div>
-          <button class="rev-useful" onclick="this.textContent='✓ Faydalı (6)'">Faydalı (5)</button>
-        </div>
-      </div>
-
+      <div class="rating-bars" id="rating-bars"></div>
+      <div id="reviews-list"></div>
       <div class="write-review-form" id="review-form">
         <div class="star-select" id="star-select">
           <button class="star-btn" onclick="setStars(1)">★</button>
@@ -845,87 +754,163 @@
           <button class="star-btn" onclick="setStars(4)">★</button>
           <button class="star-btn active" onclick="setStars(5)">★</button>
         </div>
-        <textarea class="review-textarea" id="review-text" placeholder="Deneyiminizi paylaşın..."></textarea>
-        <button class="submit-review" onclick="submitReview()">Yorumu Gönder</button>
+        <textarea class="review-textarea" id="review-text" placeholder="Deneyimini paylaş…"></textarea>
+        <div class="rev-msg" id="rev-msg"></div>
+        <button class="submit-review" id="submit-review-btn" onclick="submitReview()">Yorumu Gönder</button>
       </div>
     </div>
 
   </div>
 
-  <!-- ── RIGHT ── -->
   <div class="right-col">
-
     <div class="action-card">
       <div class="ac-title">İletişim</div>
-      <div class="action-btns">
-        <button class="action-btn primary" onclick="window.location='tel:+4969123456'">📞 Hemen Ara</button>
-        <button class="action-btn secondary" onclick="window.location='messages.html'">💬 Mesaj Gönder</button>
-        <button class="action-btn green" onclick="alert('Google Haritalar\'da açılıyor...')">🗺️ Yol Tarifi Al</button>
-      </div>
+      <div class="action-btns" id="action-btns"></div>
     </div>
-
-    <div class="owner-card">
-      <div class="ow-label">İşletme Sahibi</div>
-      <div class="ow-row">
-        <div class="ow-avatar">MŞ</div>
-        <div>
-          <div class="ow-name">Mehmet Şahin</div>
-          <div class="ow-meta">Sahibi · 8 yıldır Frankfurt</div>
-          <div class="ow-verified">✓ Onaylı Üye</div>
-        </div>
-      </div>
-      <button class="ow-btn" onclick="window.location='messages.html'">💬 Sahibiyle Konuş</button>
-    </div>
-
-    <div class="premium-promo">
-      <div class="pp-title">🌟 Bu işletme misin?</div>
-      <div class="pp-sub">Premium ile profilini öne çıkar, analitiklere eriş ve daha fazla müşteriye ulaş.</div>
-      <button class="pp-btn" onclick="window.location='premium.html'">Premium'a Geç →</button>
-    </div>
-
+    <div class="owner-card" id="owner-card" style="display:none;"></div>
   </div>
 </div>
-
 <script>
-  let selectedStars = 5;
-  function setStars(n) {
-    selectedStars = n;
-    document.querySelectorAll('.star-btn').forEach((b,i) => b.classList.toggle('active', i < n));
+(function(){
+  var SB_URL='https://wxjudojlwksivhzjnmim.supabase.co', SB_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  var sb=null, BIZ=null, ME=null, MYREVIEW=null, selectedStars=5;
+  var CATS={restoran:{i:'🍽️',l:'Restoran'},hukuk:{i:'⚖️',l:'Avukat'},saglik:{i:'🏥',l:'Doktor'},berber:{i:'✂️',l:'Berber'},market:{i:'🛒',l:'Market'},usta:{i:'🏗️',l:'Usta'},nakliyat:{i:'📦',l:'Nakliyat'},egitim:{i:'📚',l:'Eğitim'},diger:{i:'🏢',l:'Diğer'}};
+  var COLORS=['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function qid(){return new URLSearchParams(location.search).get('id');}
+  function initials(ff,ll){return ((ff||'?').charAt(0)+(ll||'').charAt(0)).toUpperCase();}
+  function timeago(iso){var d=new Date(iso),s=(Date.now()-d.getTime())/1000;if(s<60)return 'az önce';var m=s/60;if(m<60)return Math.floor(m)+' dk önce';var h=m/60;if(h<24)return Math.floor(h)+' saat önce';var dd=h/24;if(dd<30)return Math.floor(dd)+' gün önce';return d.toLocaleDateString('tr-TR');}
+  function normUrl(u){return /^https?:/i.test(u)?u:('https://'+u);}
+  function setStarsInit(n){selectedStars=n;document.querySelectorAll('.star-btn').forEach(function(b,i){b.classList.toggle('active',i<n);});}
+
+  window.setStars=function(n){setStarsInit(n);};
+  window.toggleReviewForm=function(){if(!ME){location.href='login.html';return;}var frm=document.getElementById('review-form');frm.classList.toggle('open');if(frm.classList.contains('open'))frm.scrollIntoView({behavior:'smooth',block:'nearest'});};
+  window.shareBiz=function(){if(navigator.clipboard)navigator.clipboard.writeText(location.href);alert('Bağlantı kopyalandı!');};
+  window.directions=function(){if(BIZ&&BIZ.address)window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(BIZ.address+' '+(BIZ.city||'')),'_blank');};
+  window.reportBiz=function(){if(!BIZ)return;var subj=encodeURIComponent('İşletme bildirimi: '+BIZ.name);var body=encodeURIComponent('İşletme: '+BIZ.name+'\nID: '+BIZ.id+'\nURL: '+location.href+'\n\nSorun / düzeltme:\n');location.href='mailto:support@bizdenbize.com?subject='+subj+'&body='+body;};
+  window.claimBiz=async function(){
+    if(!ME){location.href='login.html';return;}
+    try{var res=await sb.rpc('claim_business',{p_business_id:BIZ.id});
+      if(res.error)throw res.error;
+      if(res.data==='ok'){alert('Talebin alındı. Ekip doğruladıktan sonra profilinde "işletme sahibi" olarak görüneceksin.');BIZ.claim_status='pending';renderOwner();}
+      else if(res.data==='already_claimed')alert('Bu işletme zaten sahiplenilmiş ya da doğrulama bekliyor.');
+      else alert('İşlem tamamlanamadı.');
+    }catch(e){console.error(e);alert('Bir hata oluştu.');}
+  };
+  window.submitReview=async function(){
+    var msg=document.getElementById('rev-msg'), btn=document.getElementById('submit-review-btn');
+    var text=document.getElementById('review-text').value.trim();
+    if(!ME){location.href='login.html';return;}
+    if(BIZ&&ME===BIZ.owner_id){msg.className='rev-msg err';msg.textContent='Kendi işletmeni puanlayamazsın.';return;}
+    if(!text){msg.className='rev-msg err';msg.textContent='Lütfen birkaç kelime yaz.';return;}
+    btn.disabled=true;btn.textContent='Gönderiliyor…';
+    try{
+      var payload={business_id:BIZ.id,author_id:ME,rating:selectedStars,content:text};
+      var res=await sb.from('business_reviews').upsert(payload,{onConflict:'business_id,author_id'});
+      if(res.error)throw res.error;
+      msg.className='rev-msg ok';msg.textContent=MYREVIEW?'Yorumun güncellendi.':'Teşekkürler! Yorumun eklendi.';
+      await loadReviews();
+      setTimeout(function(){document.getElementById('review-form').classList.remove('open');msg.className='rev-msg';msg.textContent='';},1500);
+    }catch(e){console.error(e);msg.className='rev-msg err';msg.textContent='Bir hata oluştu. Lütfen tekrar dene.';}
+    finally{btn.disabled=false;btn.textContent='Yorumu Gönder';}
+  };
+
+  function renderBiz(){
+    var c=CATS[BIZ.category]||CATS.diger;
+    document.getElementById('page-title').textContent='BizdenBize — '+BIZ.name;
+    document.getElementById('bc-name').textContent=BIZ.name;
+    document.getElementById('bh-name').textContent=BIZ.name;
+    document.getElementById('hero-emoji').textContent=c.i;
+    document.getElementById('hero-logo').innerHTML=BIZ.logo_url?('<img src="'+esc(BIZ.logo_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'):c.i;
+    document.getElementById('bh-cat').textContent=c.i+' '+c.l+(BIZ.city?(' · '+BIZ.city):'');
+    var tags=[];
+    if(BIZ.is_verified)tags.push('<span class="bh-tag featured">✓ Doğrulandı</span>');
+    else if(BIZ.source==='public'||BIZ.source==='official')tags.push('<span class="bh-tag">ⓘ Doğrulanmadı</span>');
+    if(BIZ.is_featured)tags.push('<span class="bh-tag featured">⭐ Öne Çıkan</span>');
+    document.getElementById('bh-tags').innerHTML=tags.join('');
+    function row(ic,label,v){return '<div class="info-row"><div class="ir-icon">'+ic+'</div><div><div class="ir-label">'+label+'</div><div class="ir-val">'+v+'</div></div></div>';}
+    var rows='';
+    if(BIZ.address)rows+=row('📍','Adres',esc(BIZ.address)+(BIZ.city?(', '+esc(BIZ.city)):''));
+    if(BIZ.phone)rows+=row('📞','Telefon','<a href="tel:'+esc(BIZ.phone)+'">'+esc(BIZ.phone)+'</a>');
+    if(BIZ.email)rows+=row('✉️','E-posta','<a href="mailto:'+esc(BIZ.email)+'">'+esc(BIZ.email)+'</a>');
+    if(BIZ.website)rows+=row('🌐','Website','<a href="'+esc(normUrl(BIZ.website))+'" target="_blank" rel="noopener">'+esc(BIZ.website.replace(/^https?:\/\//i,''))+'</a>');
+    if(BIZ.hours)rows+=row('🕐','Çalışma Saatleri',esc(BIZ.hours));
+    if(BIZ.languages&&BIZ.languages.length)rows+=row('🗣️','Diller',esc(BIZ.languages.join(' · ')));
+    if(BIZ.description)rows+=row('📝','Hakkında',esc(BIZ.description));
+    document.getElementById('info-rows').innerHTML=rows||'<div class="ir-val" style="color:var(--muted);font-size:13px;">Ek bilgi eklenmemiş.</div>';
+    var prov=document.getElementById('provenance');
+    if(BIZ.is_verified){prov.className='prov-note ok';prov.innerHTML='✓ Bu işletme sahibi tarafından doğrulandı.';}
+    else if(BIZ.source==='public'||BIZ.source==='official'){prov.className='prov-note warn';prov.innerHTML='ⓘ Bu bilgiler herkese açık bir kaynaktan alınmıştır ve işletme tarafından henüz doğrulanmamıştır.'+(BIZ.source_url?(' Kaynak: <a href="'+esc(BIZ.source_url)+'" target="_blank" rel="noopener">'+esc(BIZ.source_name||'bağlantı')+'</a>.'):'')+'<br><button class="prov-report" onclick="reportBiz()">⚠️ Yanlış bir şey mi var? Bildir</button>';}
+    else {prov.className='prov-note';prov.innerHTML='Bu işletmeyi bir topluluk üyesi ekledi. <button class="prov-report" onclick="reportBiz()">⚠️ Bildir</button>';}
+    var ab='';
+    if(BIZ.phone)ab+='<button class="action-btn primary" onclick="window.location=\'tel:'+esc(BIZ.phone)+'\'">📞 Hemen Ara</button>';
+    if(BIZ.address)ab+='<button class="action-btn green" onclick="directions()">🗺️ Yol Tarifi Al</button>';
+    if(BIZ.website)ab+='<button class="action-btn secondary" onclick="window.open(\''+esc(normUrl(BIZ.website))+'\',\'_blank\')">🌐 Web Sitesi</button>';
+    ab+='<button class="action-btn secondary" onclick="reportBiz()">⚠️ Bildir</button>';
+    document.getElementById('action-btns').innerHTML=ab;
+    renderOwner();
   }
-  function toggleReviewForm() {
-    const form = document.getElementById('review-form');
-    form.classList.toggle('open');
-    if (form.classList.contains('open')) form.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  function renderOwner(){
+    var el=document.getElementById('owner-card'); el.style.display='block';
+    if(BIZ.is_verified&&BIZ._owner){
+      var o=BIZ._owner, nm=((o.first_name||'')+' '+(o.last_name||'')).trim()||'İşletme sahibi';
+      var av=o.avatar_url?('<img src="'+esc(o.avatar_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'):esc(initials(o.first_name,o.last_name));
+      el.innerHTML='<div class="ow-label">İşletme Sahibi</div><div class="ow-row"><div class="ow-avatar">'+av+'</div><div><div class="ow-name">'+esc(nm)+'</div><div class="ow-verified">✓ Doğrulanmış sahip</div></div></div><button class="ow-btn" onclick="window.location=\'messages.html\'">💬 Sahibiyle Konuş</button>';
+    } else if(BIZ.claim_status==='pending'){
+      el.innerHTML='<div class="ow-label">Sahiplik</div><div style="font-size:13px;color:var(--muted);line-height:1.5;">Bir üye bu işletmeyi sahiplendi, doğrulama bekleniyor.</div>';
+    } else {
+      el.innerHTML='<div class="ow-label">Bu işletme senin mi?</div><div style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">Sahiplen; doğrulandıktan sonra profilinde "işletme sahibi" olarak görünür ve bilgileri güncelleyebilirsin.</div><button class="ow-btn" onclick="claimBiz()">🏷️ Bu işletme benim</button>';
+    }
   }
-  function submitReview() {
-    const text = document.getElementById('review-text').value.trim();
-    if (!text) return;
-    const container = document.querySelector('.reviews-card');
-    const stars = '★'.repeat(selectedStars) + '☆'.repeat(5-selectedStars);
-    const div = document.createElement('div');
-    div.className = 'review';
-    div.innerHTML = `<div class="rev-avatar" style="background:var(--red)">AY</div>
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span class="rev-name">Ayşe Yılmaz</span>
-          <span class="rev-stars">${stars}</span>
-          <span class="rev-date">Şimdi</span>
-        </div>
-        <div class="rev-text">${text}</div>
-        <button class="rev-useful">Faydalı (0)</button>
-      </div>`;
-    document.getElementById('review-form').before(div);
-    document.getElementById('review-text').value = '';
-    document.getElementById('review-form').classList.remove('open');
+
+  async function loadReviews(){
+    var res=await sb.from('business_reviews').select('id,rating,content,helpful_count,created_at,author_id').eq('business_id',BIZ.id).order('created_at',{ascending:false});
+    var revs=res.data||[];
+    var ids=revs.map(function(r){return r.author_id;}).filter(function(v,i,a){return v&&a.indexOf(v)===i;});
+    var pmap={};
+    if(ids.length){var pr=await sb.from('profiles').select('id,first_name,last_name,avatar_url').in('id',ids);(pr.data||[]).forEach(function(p){pmap[p.id]=p;});}
+    MYREVIEW=ME?revs.find(function(r){return r.author_id===ME;}):null;
+    var cnt=revs.length, avg=cnt?(revs.reduce(function(a,r){return a+r.rating;},0)/cnt):0; avg=Math.round(avg*10)/10;
+    var full=Math.round(avg);
+    document.getElementById('rc-title').textContent='⭐ Yorumlar ('+cnt+')';
+    document.getElementById('bh-rating').innerHTML=cnt?('<span class="stars">'+'★'.repeat(full)+'☆'.repeat(5-full)+'</span><span class="rating-val">'+avg+'</span><span class="rating-count">· '+cnt+' yorum · BizdenBize topluluğundan</span>'):'<span class="rating-val" style="font-size:15px;color:var(--muted);">Henüz değerlendirilmedi</span>';
+    var c=CATS[BIZ.category]||CATS.diger, durum=BIZ.is_verified?'Doğrulandı':'Doğrulanmadı';
+    document.getElementById('bh-stats').innerHTML=
+      '<div class="bs-item"><div class="bs-val">'+cnt+'</div><div class="bs-label">Yorum</div></div>'+
+      '<div class="bs-item"><div class="bs-val">'+(cnt?avg:'—')+'</div><div class="bs-label">Puan</div></div>'+
+      '<div class="bs-item"><div class="bs-val">'+c.i+'</div><div class="bs-label">'+c.l+'</div></div>'+
+      '<div class="bs-item"><div class="bs-val" style="font-size:12px;">'+durum+'</div><div class="bs-label">Durum</div></div>';
+    var bars=document.getElementById('rating-bars');
+    if(!cnt){bars.innerHTML='<div style="font-size:13px;color:var(--muted);padding:4px 0;">Henüz yorum yok — ilk yorumu sen yaz.</div>';}
+    else{var dist=[0,0,0,0,0];revs.forEach(function(r){if(r.rating>=1&&r.rating<=5)dist[r.rating-1]++;});var h='';for(var st=5;st>=1;st--){var n=dist[st-1],pct=Math.round(n/cnt*100);h+='<div class="rb-row"><span class="rb-label">'+st+'</span><div class="rb-bar"><div class="rb-fill" style="width:'+pct+'%"></div></div><span class="rb-count">'+n+'</span></div>';}bars.innerHTML=h;}
+    var list=document.getElementById('reviews-list');
+    list.innerHTML=cnt?revs.map(function(r,i){
+      var p=pmap[r.author_id]||{}, nm=((p.first_name||'')+' '+(p.last_name||'')).trim()||'Üye', col=COLORS[i%COLORS.length];
+      var av=p.avatar_url?('<img src="'+esc(p.avatar_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'):esc(initials(p.first_name,p.last_name));
+      var mine=(ME&&r.author_id===ME)?' <span class="rev-mine">· senin yorumun</span>':'';
+      return '<div class="review"><div class="rev-avatar" style="background:'+col+'">'+av+'</div><div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="rev-name">'+esc(nm)+'</span><span class="rev-stars">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span><span class="rev-date">'+timeago(r.created_at)+'</span>'+mine+'</div><div class="rev-text">'+esc(r.content)+'</div></div></div>';
+    }).join(''):'';
+    var wbtn=document.querySelector('.write-review-btn');
+    if(ME&&BIZ.owner_id===ME){if(wbtn)wbtn.style.display='none';}
+    else if(MYREVIEW){if(wbtn)wbtn.textContent='✏️ Yorumunu düzenle';document.getElementById('review-text').value=MYREVIEW.content||'';setStarsInit(MYREVIEW.rating);}
   }
-  function toggleSaveBiz() {
-    const btn = document.getElementById('save-biz');
-    btn.textContent = btn.textContent === '🤍' ? '🧡' : '🤍';
+
+  async function init(){
+    var id=qid();
+    var mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    sb=mod.createClient(SB_URL,SB_KEY);
+    var u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
+    if(!id){document.getElementById('bh-name').textContent='İşletme bulunamadı';return;}
+    var res=await sb.from('businesses').select('*').eq('id',id).maybeSingle();
+    if(res.error||!res.data){document.getElementById('bh-name').textContent='İşletme bulunamadı';document.getElementById('bh-cat').textContent='Bu işletme kaldırılmış veya erişilemiyor olabilir.';return;}
+    BIZ=res.data;
+    if(BIZ.owner_id){var o=await sb.from('profiles').select('id,first_name,last_name,avatar_url').eq('id',BIZ.owner_id).maybeSingle();BIZ._owner=o.data||null;}
+    renderBiz();
+    await loadReviews();
   }
-  function shareBiz() {
-    navigator.clipboard?.writeText(window.location.href);
-    alert('Bağlantı kopyalandı!');
-  }
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
 </script>
 <script>
   // Mobile menu
