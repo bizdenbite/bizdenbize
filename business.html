@@ -1016,6 +1016,7 @@
     <div class="abz-field"><label>Adres</label><input id="ab-address" type="text" maxlength="160" placeholder="Cadde, no"></div>
     <div class="abz-field"><label>Telefon</label><input id="ab-phone" type="tel" maxlength="40" placeholder="+49 …"></div>
     <div class="abz-field"><label>Web sitesi</label><input id="ab-website" type="url" maxlength="160" placeholder="https://…"></div>
+    <div class="abz-field"><label>Fotoğraf (opsiyonel)</label><input id="ab-photo" type="file" accept="image/*"><div style="font-size:11px;color:var(--muted);margin-top:4px;">Yalnızca işletmeye ait gerçek bir fotoğraf yükle. İnternetten alınan görseller kullanılmaz.</div></div>
     <div class="abz-field"><label>Kısa açıklama</label><textarea id="ab-desc" maxlength="400" placeholder="Ne sunuyor, neden öneriyorsun?"></textarea></div>
     <div class="abz-msg" id="abz-msg"></div>
     <div class="abz-actions">
@@ -1058,9 +1059,10 @@
     var meta=[b.address?'<span>📍 '+esc(b.address)+'</span>':'', b.hours?'<span>🕗 '+esc(b.hours)+'</span>':''].filter(Boolean).join('');
     var src='';
     if(!b.is_verified&&(b.source==='public'||b.source==='official')&&b.source_url) src='<div class="biz-src">Kaynak: <a href="'+esc(b.source_url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(b.source_name||'bağlantı')+'</a></div>';
+    var cover=b.image_url?('<img src="'+esc(b.image_url)+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">'):'';
     var logo=b.logo_url?'<img src="'+esc(b.logo_url)+'" style="width:100%;height:100%;object-fit:cover;">':c.icon;
     return '<div class="biz-card" onclick="openBiz(\''+b.id+'\')">'
-      +'<div class="biz-cover '+c.c+'">'+badge+'<div class="biz-logo">'+logo+'</div></div>'
+      +'<div class="biz-cover '+c.c+'">'+cover+badge+'<div class="biz-logo">'+logo+'</div></div>'
       +'<div class="biz-body"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-cat">'+catline+'</div>'+rate+'<div class="biz-meta">'+meta+'</div>'+src+'</div>'
       +'<div class="biz-footer">'
       +'<button class="biz-btn" onclick="event.stopPropagation();openBiz(\''+b.id+'\')">💬 Yorum</button>'
@@ -1121,10 +1123,24 @@
     btn.disabled=true;btn.textContent='Gönderiliyor…';
     try{
       var payload={owner_id:ME,name:name,category:val('ab-cat')||'diger',city:val('ab-city')||null,address:val('ab-address')||null,phone:val('ab-phone')||null,website:val('ab-website')||null,description:val('ab-desc')||null,source:'member',status:'pending'};
-      var res=await sb.from('businesses').insert(payload);
+      var res=await sb.from('businesses').insert(payload).select('id').single();
       if(res.error){throw res.error;}
+      var newId=res.data&&res.data.id;
+      var pf=document.getElementById('ab-photo');
+      if(newId&&pf&&pf.files&&pf.files[0]){
+        try{
+          var file=pf.files[0], ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+          var path=newId+'.'+ext;
+          var up=await sb.storage.from('business-photos').upload(path,file,{upsert:true,contentType:file.type});
+          if(!up.error){
+            var pub=sb.storage.from('business-photos').getPublicUrl(path);
+            var url=pub&&pub.data&&pub.data.publicUrl;
+            if(url){ await sb.from('businesses').update({image_url:url}).eq('id',newId); }
+          }
+        }catch(pe){ console.warn('foto yüklenemedi',pe); }
+      }
       m.className='abz-msg ok';m.textContent='Teşekkürler! Başvurun alındı. Ekip onayından sonra yayında olacak.';
-      ['ab-name','ab-city','ab-address','ab-phone','ab-website','ab-desc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+      ['ab-name','ab-city','ab-address','ab-phone','ab-website','ab-desc','ab-photo'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
       setTimeout(closeAddBiz,2200);
     }catch(e){
       console.error(e);m.className='abz-msg err';m.textContent='Bir hata oluştu. Lütfen tekrar dene.';

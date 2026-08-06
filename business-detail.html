@@ -716,8 +716,10 @@
     <div class="biz-hero" id="biz-hero">
       <div class="biz-hero-emoji" id="hero-emoji">🏢</div>
       <div class="hero-actions">
+        <span id="hero-owner-actions"></span>
         <button class="hero-btn" onclick="shareBiz()" title="Paylaş">↗</button>
       </div>
+      <input type="file" id="biz-photo-input" accept="image/*" style="display:none" onchange="onBizPhoto()">
       <div class="biz-logo-wrap" id="hero-logo">🏢</div>
     </div>
 
@@ -786,6 +788,20 @@
   window.setStars=function(n){setStarsInit(n);};
   window.toggleReviewForm=function(){if(!ME){location.href='login.html';return;}var frm=document.getElementById('review-form');frm.classList.toggle('open');if(frm.classList.contains('open'))frm.scrollIntoView({behavior:'smooth',block:'nearest'});};
   window.shareBiz=function(){if(navigator.clipboard)navigator.clipboard.writeText(location.href);alert('Bağlantı kopyalandı!');};
+  window.pickBizPhoto=function(){var i=document.getElementById('biz-photo-input');if(i)i.click();};
+  window.onBizPhoto=async function(){
+    var inp=document.getElementById('biz-photo-input');
+    if(!inp||!inp.files||!inp.files[0]||!BIZ)return;
+    var file=inp.files[0], ext=(file.name.split('.').pop()||'jpg').toLowerCase(), path=BIZ.id+'.'+ext;
+    try{
+      var up=await sb.storage.from('business-photos').upload(path,file,{upsert:true,contentType:file.type});
+      if(up.error)throw up.error;
+      var pub=sb.storage.from('business-photos').getPublicUrl(path);
+      var url=(pub&&pub.data&&pub.data.publicUrl)?pub.data.publicUrl+'?t='+Date.now():null;
+      if(url){ var r=await sb.from('businesses').update({image_url:url}).eq('id',BIZ.id); if(r.error)throw r.error; BIZ.image_url=url; renderBiz(); alert('Fotoğraf güncellendi.'); }
+    }catch(e){ console.error(e); alert('Fotoğraf yüklenemedi. Lütfen tekrar dene.'); }
+    finally{ inp.value=''; }
+  };
   window.directions=function(){if(BIZ&&BIZ.address)window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(BIZ.address+' '+(BIZ.city||'')),'_blank');};
   window.reportBiz=function(){if(!BIZ)return;var subj=encodeURIComponent('İşletme bildirimi: '+BIZ.name);var body=encodeURIComponent('İşletme: '+BIZ.name+'\nID: '+BIZ.id+'\nURL: '+location.href+'\n\nSorun / düzeltme:\n');location.href='mailto:support@bizdenbize.com?subject='+subj+'&body='+body;};
   window.claimBiz=async function(){
@@ -822,6 +838,10 @@
     document.getElementById('bh-name').textContent=BIZ.name;
     document.getElementById('hero-emoji').textContent=c.i;
     document.getElementById('hero-logo').innerHTML=BIZ.logo_url?('<img src="'+esc(BIZ.logo_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'):c.i;
+    var _hero=document.getElementById('biz-hero');
+    if(BIZ.image_url){_hero.style.backgroundImage='url("'+String(BIZ.image_url).replace(/["]/g,'')+'")';_hero.style.backgroundSize='cover';_hero.style.backgroundPosition='center';document.getElementById('hero-emoji').style.display='none';}
+    else{_hero.style.backgroundImage='';document.getElementById('hero-emoji').style.display='';}
+    var _oa=document.getElementById('hero-owner-actions'); if(_oa) _oa.innerHTML=(ME&&BIZ.owner_id===ME)?'<button class="hero-btn" onclick="pickBizPhoto()" title="Fotoğraf ekle/değiştir">📷</button>':'';
     document.getElementById('bh-cat').textContent=c.i+' '+c.l+(BIZ.city?(' · '+BIZ.city):'');
     var tags=[];
     if(BIZ.is_verified)tags.push('<span class="bh-tag featured">✓ Doğrulandı</span>');
