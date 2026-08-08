@@ -267,6 +267,9 @@
     <button class="nav-item" onclick="showSection('businesses', this)">
       🏪 İşletmeler <span class="nav-badge" id="badge-businesses">—</span>
     </button>
+    <button class="nav-item" onclick="showSection('jobs', this)">
+      💼 İş İlanları <span class="nav-badge" id="badge-jobs">—</span>
+    </button>
     <button class="nav-item" onclick="showSection('content', this)">
       📋 İçerik
     </button>
@@ -309,6 +312,7 @@
       <option value="events">📅 Etkinlikler</option>
       <option value="videos">🎬 Videothek</option>
       <option value="businesses">🏪 İşletmeler</option>
+      <option value="jobs">💼 İş İlanları</option>
       <option value="messages">💬 Mesajlar</option>
       <option value="notifications">🔔 Bildirimler</option>
       <option value="reports">🚩 Şikayetler</option>
@@ -591,6 +595,14 @@
       <div id="biz-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <div class="section" id="section-jobs">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="jobsAdminTab('pending',this)">⏳ Onay Bekleyen <span id="job-pending-count"></span></button>
+        <button class="tab-btn" onclick="jobsAdminTab('approved',this)">✓ Yayında</button>
+      </div>
+      <div id="jobs-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
+    </div>
+
     <div class="section" id="section-reports">
       <div class="card">
         <div class="card-head">
@@ -702,7 +714,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları'
   };
   window.toggleAdminSidebar = function() {
     const sb = document.querySelector('.sidebar');
@@ -725,6 +737,7 @@
     if (id === 'content') loadContent();
     if (id === 'events') loadEvents();
     if (id === 'businesses') loadBusinesses();
+    if (id === 'jobs') loadJobs();
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
     if (id === 'reports') loadReports();
@@ -1474,6 +1487,71 @@ function escapeHtml(x){ return String(x==null?'':x).replace(/[&<>"']/g, function
   window.bizVerifyClaim = async function(id, approve){
     if(!approve && !confirm('Sahiplik talebini reddet?')) return;
     try{ await sb('rpc/verify_business_claim', { method:'POST', headers:{...hdrs(token),'Content-Type':'application/json'}, body:JSON.stringify({p_business_id:id, p_approve:approve}) }); toast(approve?'Sahiplik onaylandı ✓':'Talep reddedildi'); loadBusinesses(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+
+  // ── İş İlanları (jobs board) moderation ──
+  let jobsAdminFilter = 'pending';
+  const JOB_TYPE = { hizmet:'⚡ Hizmet', is_ilani:'💼 İş İlanı', is_ariyorum:'👤 İş Arıyorum' };
+  const JOB_CATS = { gastronomi:'🍽️ Gastronomi', satis:'🛍️ Satış', nakliye:'🚚 Nakliye', insaat:'🏗️ İnşaat', ev:'🧹 Ev İşleri', bakim:'🏥 Hasta Bakımı', berber:'💈 Berber', temizlik:'🧽 Temizlik', lojistik:'📦 Lojistik', uretim:'🏭 Üretim', diger:'📦 Diğer' };
+  function jobEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  window.jobsAdminTab = function(fl, btn){
+    jobsAdminFilter = fl;
+    document.querySelectorAll('#section-jobs .tab-btn').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    loadJobs();
+  };
+  async function loadJobs(){
+    const list = document.getElementById('jobs-admin-list');
+    list.innerHTML = '<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
+    try{
+      const st = jobsAdminFilter==='approved' ? 'approved' : 'pending';
+      const rows = await sb('jobs?status=eq.'+st+'&select=id,listing_type,title,company,contact_name,category,city,salary,description,website,email,whatsapp,author_id,created_at&order=created_at.desc');
+      const pc=document.getElementById('job-pending-count');
+      if(pc) pc.textContent = (jobsAdminFilter==='pending' && rows.length)?('('+rows.length+')'):'';
+      const nb=document.getElementById('badge-jobs'); if(nb && jobsAdminFilter==='pending') nb.textContent = rows.length||'—';
+      // author names
+      let names={};
+      const ids=[...new Set((rows||[]).map(r=>r.author_id).filter(Boolean))];
+      if(ids.length){ try{ const ps=await sb('profiles?id=in.('+ids.join(',')+')&select=id,first_name,last_name'); ps.forEach(p=>{names[p.id]=((p.first_name||'')+' '+(p.last_name||'')).trim()||'Üye';}); }catch(_){} }
+      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">'+(jobsAdminFilter==='approved'?'Yayında ilan yok.':'Onay bekleyen ilan yok.')+'</p>'; return; }
+      list.innerHTML = rows.map(r=>jobRow(r,names)).join('');
+    }catch(e){ console.error(e); list.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+jobEsc(e.message)+'</p>'; }
+  }
+  function jobRow(r, names){
+    const meta = [JOB_TYPE[r.listing_type]||r.listing_type, JOB_CATS[r.category]||r.category, r.city||''].filter(Boolean).join(' · ');
+    const poster = r.listing_type==='is_ilani' ? (r.company || r.contact_name || names[r.author_id] || 'Üye') : (names[r.author_id] || 'Üye');
+    const contact = r.listing_type==='is_ilani'
+      ? [r.email?('✉️ '+jobEsc(r.email)):'', r.whatsapp?('💬 '+jobEsc(r.whatsapp)):'', r.website?('🌐 '+jobEsc(r.website)):''].filter(Boolean).join(' · ')
+      : '🔒 Uygulama içi mesaj';
+    let actions;
+    if(jobsAdminFilter==='pending'){
+      actions='<button class="btn btn-sm btn-green" onclick="jobApprove(\''+r.id+'\')">✅ Onayla</button>'
+        +'<button class="btn btn-sm btn-red" onclick="jobReject(\''+r.id+'\')">✗ Reddet</button>';
+    } else {
+      actions='<button class="btn btn-sm btn-muted" onclick="jobHide(\''+r.id+'\')">🙈 Gizle</button>';
+    }
+    return '<div class="card" style="margin-bottom:10px;">'
+      +'<div style="font-weight:700;color:var(--ink);">'+jobEsc(r.title)+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+jobEsc(meta)+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">İlan sahibi: <strong>'+jobEsc(poster)+'</strong></div>'
+      +(r.salary?'<div style="font-size:12px;color:var(--muted);margin-top:2px;">💰 '+jobEsc(r.salary)+'</div>':'')
+      +(r.description?'<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+jobEsc(r.description).slice(0,220)+'</div>':'')
+      +'<div style="font-size:11px;color:var(--muted);margin-top:4px;">'+contact+'</div>'
+      +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</div></div>';
+  }
+  window.jobApprove = async function(id){
+    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'approved'}) }); toast('İlan onaylandı ✓'); loadJobs(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+  window.jobReject = async function(id){
+    if(!confirm('Bu ilanı reddet? (yayınlanmaz)')) return;
+    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'removed'}) }); toast('Reddedildi'); loadJobs(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+  window.jobHide = async function(id){
+    if(!confirm('Bu ilanı yayından gizle?')) return;
+    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadJobs(); }
     catch(e){ toast('Hata: '+e.message,false); }
   };
 
