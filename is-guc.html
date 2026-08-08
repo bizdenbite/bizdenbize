@@ -544,7 +544,6 @@
       <button class="hero-tab" onclick="setMode('job',this)">💼 İş İlanları</button>
       <button class="hero-tab" onclick="setMode('gig',this)">⚡ Freelance & Gig</button>
       <button class="hero-tab" onclick="setMode('seeker',this)">👤 İş Arayanlar</button>
-      <button class="hero-tab" onclick="setMode('migration',this)" style="border:1px solid rgba(212,43,43,.3);">✈️ Avrupa'ya Göç</button>
     </div>
     <h1>İş <em>Ver</em> & <em>Bul</em></h1>
     <p class="hero-sub">Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.<br>İş ver, iş bul — güvenilir insanlarla.</p>
@@ -654,7 +653,8 @@
         <label class="field-label">İlan Türü</label>
         <div class="type-toggle">
           <button class="type-btn active job" data-type="job" onclick="selectPostType('job',this)">💼 İş İlanı</button>
-          <button class="type-btn gig" data-type="gig" onclick="selectPostType('gig',this)">⚡ Freelance / Gig</button>
+          <button class="type-btn gig" data-type="gig" onclick="selectPostType('gig',this)">⚡ Hizmet / Freelance</button>
+          <button class="type-btn" data-type="seeker" onclick="selectPostType('seeker',this)">👤 İş Arıyorum</button>
         </div>
       </div>
       <!-- Title -->
@@ -708,7 +708,7 @@
         <input class="field-input" id="p-contact" type="text" placeholder="isim@email.com veya +49...">
       </div>
       <!-- Featured upsell -->
-      <div id="featured-section">
+      <div id="featured-section" style="display:none">
         <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— isteğe bağlı</span></label>
         <div style="display:flex;flex-direction:column;gap:6px;" id="bundle-options">
           <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-none-wrap">
@@ -802,6 +802,15 @@
     if (!r.ok) throw new Error('DB error: ' + r.status);
     return r.json();
   }
+  async function sbGetAuth(table, params) {
+    const session = window._currentSession;
+    const headers = session
+      ? { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token }
+      : _SB_H;
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
   async function sbPost(table, data) {
     const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
     if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
@@ -830,27 +839,7 @@
   window._dbListings = [];
 
   // ── MIGRATION DATA (hardcoded — no DB table) ──
-  const listings = [
-    // ── AVRUPA'YA GÖÇ ──
-    { id:9,  type:"migration", title:"Almanya İş Vizesi Danışmanlığı",         company:null,                    author:"Ahmet Yıldız",     location:"Frankfurt, 🇩🇪 / Remote",  cat:"migration", worktype:"remote",  price:"€150/başvuru", desc:"Almanya Fachkräfteeinwanderungsgesetz kapsamında iş vizesi başvurusu. Diploma denkliği, iş arama ve vize desteği. 12 yıllık deneyim.", featured:true,  time:"1 gün önce",  contact:"ahmet@yildiz-beratung.de",  verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:10, type:"migration", title:"Hemşire & Bakıcı — Almanya Yerleştirme", company:"Pflege Connect GmbH",   author:"Pflege Connect",   location:"München, 🇩🇪",              cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Almanya bakım sektöründe hemşire ve yaşlı bakıcıları işverenlerle buluşturuyoruz. Dil kursu ve vize desteği dahil. Sizden ücret almıyoruz.", featured:true,  time:"2 gün önce",  contact:"info@pflege-connect.de",    verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:11, type:"migration", title:"İnşaat & Usta — Almanya İş Fırsatları",  company:"Bau Türk GmbH",        author:"Bau Türk",         location:"Berlin, 🇩🇪",               cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Almanya inşaat firmalarıyla doğrudan bağlantı. Elektrikçi, tesisatçı, boyacı, kaynakçı. Dil şartı yok, Türkçe konuşan ekip mevcut.", featured:false, time:"3 gün önce",  contact:"info@bauturk.de",           verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:12, type:"migration", title:"Hollanda Lojistik & Depo İşleri",        company:"NL Werk Bemiddeling",  author:"NL Werk",          location:"Rotterdam, 🇳🇱",            cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Hollanda lojistik merkezlerinde depo, forklift ve sevkiyat pozisyonları. İngilizce yeterli, Hollandaca şartı yok. BSN yardımı.", featured:true,  time:"1 gün önce",  contact:"info@nlwerk.nl",            verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:13, type:"migration", title:"Hollanda Tarım & Sera İşleri",            company:"AgriConnect NL",       author:"AgriConnect",      location:"Westland, 🇳🇱",             cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Hollanda sera ve tarım sektöründe sezonluk ve kalıcı pozisyonlar. Westland ve Venlo bölgeleri. Ulaşım ve konaklama sağlanır.", featured:false, time:"2 gün önce",  contact:"info@agriconnect.nl",       verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:14, type:"migration", title:"Hollanda MVV Vizesi Danışmanlığı",        company:null,                   author:"Leyla V.",         location:"Amsterdam, 🇳🇱 / Remote",  cat:"migration", worktype:"remote",  price:"€120/başvuru", desc:"Hollanda çalışma amaçlı MVV vizesi. IND süreçleri, gerekli belgeler ve işveren sözleşmesi hazırlığı. Türkçe danışmanlık.", featured:false, time:"3 gün önce",  contact:"leyla@nlvisa.nl",           verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:15, type:"migration", title:"Belçika Bakım & Sağlık Sektörü İşleri",  company:"BelgaCare Recruitment", author:"BelgaCare",       location:"Brüksel, 🇧🇪",              cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Belçika bakım evleri ve hastanelerde bakıcı, temizlik ve mutfak personeli. Fransızca veya Hollandaca A2 yeterli. Vize desteği.", featured:true,  time:"1 gün önce",  contact:"info@belgacare.be",         verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:16, type:"migration", title:"Belçika Gıda Fabrikası İşleri",           company:"Food Jobs Belgium",    author:"Food Jobs",        location:"Gent, 🇧🇪",                 cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Belçika gıda işleme tesislerinde üretim hattı operatörü. Dil şartı yok. Haftada 40 saat, vardiyalı çalışma. Konaklama yardımı.", featured:false, time:"2 gün önce",  contact:"info@foodjobs.be",          verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:17, type:"migration", title:"Belçika Single Permit Danışmanlığı",      company:null,                   author:"Murat K.",         location:"Antwerp, 🇧🇪 / Remote",    cat:"migration", worktype:"remote",  price:"€100/başvuru", desc:"Belçika tek çalışma izni başvurusu. Hem Flaman hem Valon bölgesi deneyimi. İşveren bulma desteği de sunulmaktadır.", featured:false, time:"3 gün önce",  contact:"murat@belgiumvisa.be",      verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:18, type:"migration", title:"Avusturya Otel & Turizm İşleri",         company:"Austria Hospitality",  author:"AHJ Recruitment",  location:"Viyana, 🇦🇹",               cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Avusturya 5 yıldızlı otelleri için aşçı, garson, kat hizmetleri ve resepsiyon personeli. Almanca A2 yeterli. Sezonluk ve kalıcı.", featured:true,  time:"1 gün önce",  contact:"info@ahj.at",               verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:19, type:"migration", title:"Avusturya Rot-Weiß-Rot Karte",           company:null,                   author:"Selin A.",         location:"Graz, 🇦🇹 / Remote",       cat:"migration", worktype:"remote",  price:"€130/başvuru", desc:"Avusturya nitelikli işçi vizesi. Puan hesaplama, belge hazırlığı ve işveren eşleştirme hizmeti. Türkçe destek.", featured:false, time:"2 gün önce",  contact:"selin@austria-visa.at",     verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:20, type:"migration", title:"Avusturya Temizlik & Facility İşleri",   company:"Clean Austria GmbH",   author:"Clean Austria",    location:"Salzburg, 🇦🇹",             cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Avusturya otel, ofis ve hastanelerinde temizlik personeli. Almanca şartı yok. Haftada 30-40 saat, çalışma izni desteği.", featured:false, time:"3 gün önce",  contact:"info@cleanaustria.at",      verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:21, type:"migration", title:"İngiltere Skilled Worker Visa",           company:null,                   author:"Berk T.",          location:"Londra, 🇬🇧 / Remote",     cat:"migration", worktype:"remote",  price:"£150/başvuru", desc:"Brexit sonrası İngiltere Skilled Worker Visa. Sponsor işveren bulma, puan hesaplama ve vize süreci. Türkçe danışmanlık.", featured:true,  time:"1 gün önce",  contact:"berk@ukvisa.co.uk",         verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:22, type:"migration", title:"İngiltere NHS & Sağlık İşleri",          company:"UK Health Recruit",    author:"UK Health Recruit", location:"Manchester, 🇬🇧",           cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"NHS ve özel sağlık kurumları için hemşire, hasta bakıcısı ve destek personeli. IELTS 6.5+ gerekli. NMC kayıt desteği.", featured:false, time:"2 gün önce",  contact:"info@ukhealthrecruit.co.uk",verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:23, type:"migration", title:"İngiltere İnşaat — CSCS Desteği",        company:"Build UK Placement",   author:"Build UK",         location:"Birmingham, 🇬🇧",           cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"İngiltere inşaat projelerinde elektrikçi, tesisatçı ve boyacı. CSCS kartı çıkarma desteği. Haftalık 600-900 sterlin ücret.", featured:false, time:"3 gün önce",  contact:"info@builduk.co.uk",        verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:24, type:"migration", title:"Fransa Tarım & Hasat İşleri",            company:"France Agri Jobs",     author:"France Agri",      location:"Bordeaux, 🇫🇷",             cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Fransa bağ bozumu, meyve ve sebze hasatlarında sezonluk işçi. Fransızca şartı yok. Konaklama ve yemek dahil. Temmuz-Ekim.", featured:true,  time:"1 gün önce",  contact:"info@franceagri.fr",        verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:25, type:"migration", title:"Fransa Otel & Restoran İşleri",          company:"Hospitality France",   author:"Hospitality FR",   location:"Paris, 🇫🇷",                cat:"migration", worktype:"onsite",  price:"Ücretsiz",     desc:"Paris ve Cote d Azur bölgesindeki 4-5 yıldızlı otellerde aşçı, garson ve oda hizmetleri. Fransızca A2 yeterli.", featured:false, time:"2 gün önce",  contact:"info@hospitalityfrance.fr", verified:true, badge:"✅ Doğrulanmış Danışman" },
-    { id:26, type:"migration", title:"Fransa Talent Visa Danışmanlığı",        company:null,                   author:"Elif S.",          location:"Lyon, 🇫🇷 / Remote",        cat:"migration", worktype:"remote",  price:"€120/başvuru", desc:"Fransa Talent Passport ve çalışma vizesi. Campus France süreçleri, işveren eşleştirme ve vize hazırlığı. Türkçe destek.", featured:false, time:"3 gün önce",  contact:"elif@francevisa.fr",        verified:true, badge:"✅ Doğrulanmış Danışman" },
-  ];
+  const listings = [];
 
   let activeMode = 'all';
   let activeCat = 'all';
@@ -860,44 +849,8 @@
   function setMode(mode, btn) {
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const sidebar = document.querySelector('.sidebar');
-    const catPills = document.getElementById('cat-pills');
-    const pageBody = document.querySelector('.page-body');
-    const migrationCountryBar = document.getElementById('migration-country-bar');
-
-    if (mode === 'migration' || mode === 'seeker') {
-      if (sidebar) sidebar.style.display = 'none';
-      if (catPills) catPills.style.display = 'none';
-      if (pageBody) pageBody.style.gridTemplateColumns = '1fr';
-    } else {
-      if (sidebar) sidebar.style.display = '';
-      if (catPills) catPills.style.display = '';
-      if (pageBody) pageBody.style.gridTemplateColumns = '';
-      activeMigrationCountry = 'all';
-    }
-
-    if (mode === 'seeker') {
-      // Swap post button to "İş Arıyorum İlanı Ver"
-      const postBtn = document.querySelector('.post-btn');
-      if (postBtn) { postBtn.textContent = '+ İş Arıyorum İlanı Ver'; postBtn.onclick = openSeekerPostModal; }
-      renderSeekers();
-    } else {
-      const postBtn = document.querySelector('.post-btn');
-      if (postBtn) { postBtn.textContent = '+ İlan Ver'; postBtn.onclick = openPostModal; }
-      if (mode === 'migration') {
-        renderListings();
-      } else {
-        fetchListings();
-      }
-    }
-
-    // Reset country bar
-    document.querySelectorAll('.cbar-btn').forEach(b => {
-      b.style.borderColor = ''; b.style.background = ''; b.style.color = '';
-    });
-    const allBtn = document.querySelector('.cbar-btn');
-    if (allBtn) allBtn.classList.add('active');
+    if (btn) btn.classList.add('active');
+    renderListings();
   }
 
   function setCat(cat, btn) {
@@ -928,14 +881,7 @@
   const catColor = { tech:'#185FA5', translate:'#1E7B4B', legal:'#8a6d00', design:'#a83270', finance:'#1E7B4B', care:'#D42B2B', trade:'#6B5E4E', other:'#6B5E4E', migration:'#185FA5' };
   const catBg    = { tech:'rgba(24,95,165,.1)', translate:'rgba(30,123,75,.1)', legal:'rgba(201,168,76,.12)', design:'rgba(168,50,112,.1)', finance:'rgba(30,123,75,.1)', care:'rgba(212,43,43,.08)', trade:'rgba(107,94,78,.1)', other:'rgba(107,94,78,.1)', migration:'rgba(24,95,165,.1)' };
 
-  const seekers = [
-    { id:101, name:"Ahmet Yılmaz", title:"Elektrikçi & Tesisat Ustası", location:"Berlin, 🇩🇪", workAuth:"Çalışma izni var", availability:"Hemen müsait", salary:"€18-22/saat", worktype:"onsite", skills:["Elektrik tesisatı","Pano montajı","Bakım-onarım"], lang:"TR / DE", exp:"8 yıl", desc:"Türkiye'de 8 yıl deneyimli elektrik ustası. Almanya'da çalışma iznine sahibim. Usta işleri ve bakım projelerinde çalışmak istiyorum.", avatar:"AY", verified:true, time:"2 gün önce", contact:"+49 176 123 4567" },
-    { id:102, name:"Fatma Kaya", title:"Hemşire — Yaşlı Bakımı", location:"Frankfurt, 🇩🇪", workAuth:"Çalışma izni var", availability:"1 ay içinde", salary:"€2.800-3.200/ay", worktype:"onsite", skills:["Yaşlı bakımı","Tıbbi kayıt","İlaç yönetimi"], lang:"TR / DE / EN", exp:"5 yıl", desc:"Türkiye'den gelen deneyimli hemşire. Diploma denkliği sürecindeyim, Almanca B2 seviyesindeyim. Tam zamanlı bakım pozisyonu arıyorum.", avatar:"FK", verified:true, time:"1 gün önce", contact:"fatma.kaya@email.de" },
-    { id:103, name:"Mehmet Demir", title:"Yazılım Geliştirici — Full Stack", location:"München, 🇩🇪 / Remote", workAuth:"AB vatandaşı", availability:"2 ay içinde", salary:"€4.500-5.500/ay", worktype:"hybrid", skills:["React","Node.js","Python","PostgreSQL"], lang:"TR / DE / EN", exp:"6 yıl", desc:"Türk kökenli yazılım geliştirici. 6 yıl kurumsal deneyim. React ve Node.js uzmanı. Hibrit veya remote pozisyonlara açığım.", avatar:"MD", verified:true, time:"3 gün önce", contact:"mehmet@dev.de" },
-    { id:104, name:"Zeynep Arslan", title:"Muhasebeci & Vergi Uzmanı", location:"Köln, 🇩🇪", workAuth:"Çalışma izni var", availability:"Hemen müsait", salary:"€3.000-3.800/ay", worktype:"onsite", skills:["Almanya vergi sistemi","DATEV","Bilanço","Maaş bordrosu"], lang:"TR / DE", exp:"10 yıl", desc:"Almanya'da 10 yıldır muhasebe alanında çalışıyorum. DATEV ve Alman vergi sistemi konusunda deneyimliyim.", avatar:"ZA", verified:true, time:"4 gün önce", contact:"+49 221 987 6543" },
-    { id:105, name:"Hasan Öztürk", title:"Kamyon Şoförü — CE Ehliyet", location:"Hamburg, 🇩🇪", workAuth:"Çalışma izni var", availability:"Hemen müsait", salary:"€2.600-3.200/ay", worktype:"onsite", skills:["CE ehliyet","ADR belgesi","Dijital takoğraf","Lojistik"], lang:"TR / DE", exp:"12 yıl", desc:"12 yıllık CE ehliyetli şoför. ADR tehlikeli madde sertifikam var. Almanya'da uluslararası taşıma deneyimim bulunuyor.", avatar:"HÖ", verified:false, time:"5 gün önce", contact:"+49 40 555 1234" },
-    { id:106, name:"Selin Çelik", title:"Pazarlama Uzmanı & İçerik Üretici", location:"Berlin, 🇩🇪 / Remote", workAuth:"AB vatandaşı", availability:"1 ay içinde", salary:"€3.200-4.000/ay", worktype:"remote", skills:["Sosyal medya","SEO","Türk pazarı","İçerik stratejisi"], lang:"TR / DE / EN / FR", exp:"4 yıl", desc:"4 dil bilen pazarlama uzmanı. Türk ve Alman pazarlarında deneyimim var.", avatar:"SÇ", verified:true, time:"1 hafta önce", contact:"selin@marketing.de" },
-  ];
+  const seekers = [];
 
   const authColor = { "Çalışma izni var":"var(--green)", "AB vatandaşı":"var(--blue)" };
   const authBg = { "Çalışma izni var":"rgba(30,123,75,.08)", "AB vatandaşı":"rgba(24,95,165,.08)" };
@@ -1034,18 +980,18 @@
 
     const container = document.getElementById('listings');
 
-    const scamWarning = activeMode === 'migration' ? `
+    const scamWarning = `
       <div style="background:rgba(212,43,43,.06);border:1.5px solid rgba(212,43,43,.2);border-radius:14px;padding:16px 20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠️ Dolandırıcılığa Dikkat!</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.7;">
           Hiçbir meşru işveren veya danışman sizden <strong>önceden para talep etmez.</strong> Para isteyen kişilerden uzak durun.<br>
-          Yalnızca <strong>✅ Doğrulanmış Danışman</strong> rozetli kişilerle çalışın.
+          Şüpheli bir teklifle karşılaşırsan <strong>uzaklaş</strong> ve durumu bize bildir.
         </div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
           <a href="abibot.html" style="font-size:12px;font-weight:600;color:var(--red);text-decoration:none;padding:5px 12px;border:1.5px solid rgba(212,43,43,.3);border-radius:20px;">🤖 AbiBOT'a sor</a>
           <button onclick="alert('Şikayet formu yakında!')" style="font-size:12px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--sand);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;">🚨 Dolandırıcı Bildir</button>
         </div>
-      </div>` : '';
+      </div>`;
 
     if (!sorted.length) {
       if (activeMode === 'migration') {
@@ -1072,7 +1018,7 @@
           </div>
           ${(l.description||l.desc) ? `<div class="listing-desc">${l.description||l.desc}</div><div onclick="event.stopPropagation()">${mhTranslateMenuHtml('.listing-desc')}</div>` : ''}
           <div class="listing-footer">
-            <span class="listing-tag ${l.type === 'migration' ? 'tag-job' : l.type === 'job' ? 'tag-job' : 'tag-gig'}">${l.type === 'migration' ? "✈️ Avrupa'ya Göç" : l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
+            <span class="listing-tag ${l.type === 'job' ? 'tag-job' : l.type === 'seeker' ? 'tag-job' : 'tag-gig'}">${l.type === 'job' ? '💼 İş İlanı' : l.type === 'seeker' ? '👤 İş Arıyorum' : '⚡ Hizmet'}</span>
             <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
             <span class="listing-time">${l.created_at ? timeAgo(l.created_at) : (l.time||'')}</span>
           </div>
@@ -1260,6 +1206,8 @@
   let _pendingPost = null;
 
   async function submitPost() {
+    const session = window._currentSession;
+    if (!session) { window.location.href = 'login.html?redirect=is-guc.html'; return; }
     const title = document.getElementById('p-title').value.trim();
     const desc  = document.getElementById('p-desc').value.trim();
     const err   = document.getElementById('p-error');
@@ -1268,39 +1216,29 @@
       err.style.display = 'block'; return;
     }
     err.style.display = 'none';
-
-    _pendingPost = {
-      type:        selectedPostType,
+    const typeMap = { job:'is_ilani', gig:'hizmet', seeker:'is_ariyorum' };
+    const payload = {
+      author_id:    session.user.id,
+      listing_type: typeMap[selectedPostType] || 'hizmet',
       title,
-      company:     null,
-      author:      'Anonim',
-      location:    document.getElementById('p-location').value.trim() || 'Almanya',
-      category:    document.getElementById('p-cat').value,
-      worktype:    document.getElementById('p-worktype').value,
-      price:       document.getElementById('p-price').value.trim() || null,
-      description: desc,
-      contact:     document.getElementById('p-contact').value.trim() || null,
-      active:      true,
-      country:     'de',
+      category:     document.getElementById('p-cat').value,
+      worktype:     document.getElementById('p-worktype').value,
+      city:         document.getElementById('p-location').value.trim() || null,
+      country:      'DE',
+      salary:       document.getElementById('p-price').value.trim() || null,
+      description:  desc,
+      contact:      document.getElementById('p-contact').value.trim() || null,
+      status:       'pending'
     };
-
-    if (selectedBundle === 'none') {
-      _pendingPost.featured = false;
-      try { await sbPost('listings', _pendingPost); } catch(e) { console.error('Listing insert error:', e); }
-      showSuccess(false);
-      setTimeout(() => fetchListings(), 3600);
-    } else {
-      // Paid — show payment step
-      document.getElementById('post-form-body').style.display = 'none';
-      document.getElementById('post-footer').style.display = 'none';
-      const b = bundleDetails[selectedBundle];
-      document.getElementById('order-desc').textContent = b.desc;
-      document.getElementById('order-price').textContent = b.price;
-      document.getElementById('order-sub').textContent = b.sub;
-      document.getElementById('payment-step').style.display = 'flex';
-      document.getElementById('payment-step').style.flexDirection = 'column';
-      document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💳 Ödeme';
+    try {
+      await sbPostAuth('jobs', payload);
+    } catch(e) {
+      console.error('Job insert error:', e);
+      err.textContent = 'İlan kaydedilemedi, lütfen tekrar deneyin.';
+      err.style.display = 'block'; return;
     }
+    showSuccess(false);
+    setTimeout(() => fetchListings(), 1500);
   }
 
   function goBackToForm() {
@@ -1343,10 +1281,8 @@
     document.getElementById('post-footer').style.display = 'none';
     document.getElementById('payment-step').style.display = 'none';
     document.getElementById('post-success').style.display = 'block';
-    document.getElementById('success-title').textContent = featured ? '⭐ İlanın öne çıkarıldı!' : '🎉 İlanın yayınlandı!';
-    document.getElementById('success-sub').innerHTML = featured
-      ? 'İlanın listenin en üstünde görünüyor.<br>60 gün boyunca aktif kalacak!'
-      : 'Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!';
+    document.getElementById('success-title').textContent = 'İlanın alındı!';
+    document.getElementById('success-sub').innerHTML = 'Ekip onayından sonra yayında olacak.<br>Teşekkürler!';
     __jobDraft.clear();
     setTimeout(() => closePostModal(), 3500);
   }
@@ -1361,16 +1297,38 @@
     el.value = v;
   }
 
+  const _TYPE_MAP = { is_ilani:'job', hizmet:'gig', is_ariyorum:'seeker' };
+  function normJob(r, nameMap) {
+    return {
+      id: r.id, author_id: r.author_id,
+      type: _TYPE_MAP[r.listing_type] || 'gig',
+      title: r.title, company: r.company || null,
+      author: nameMap[r.author_id] || 'Üye',
+      location: [r.city, (r.country==='DE'?'🇩🇪':null)].filter(Boolean).join(' '),
+      category: r.category || 'other', cat: r.category || 'other',
+      worktype: r.worktype || 'onsite', price: r.salary || '',
+      description: r.description || '', desc: r.description || '',
+      featured: !!r.is_featured, badge: null, time: '',
+      created_at: r.created_at, contact: r.contact || null
+    };
+  }
   async function fetchListings() {
-    if (activeMode !== 'migration' && activeMode !== 'seeker') {
-      const container = document.getElementById('listings');
-      if (container) container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
-    }
+    const container = document.getElementById('listings');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
     try {
-      const data = await sbGet('listings', 'active=eq.true&order=featured.desc,created_at.desc');
-      window._dbListings = data;
+      await (window._authReady || Promise.resolve());
+      const rows = await sbGetAuth('jobs', 'status=eq.approved&order=is_featured.desc,created_at.desc');
+      let nameMap = {};
+      const ids = [...new Set((rows||[]).map(r => r.author_id).filter(Boolean))];
+      if (ids.length) {
+        try {
+          const profs = await sbGetAuth('profiles', 'id=in.(' + ids.join(',') + ')&select=id,first_name,last_name');
+          (profs||[]).forEach(p => { nameMap[p.id] = ((p.first_name||'')+' '+(p.last_name||'')).trim() || 'Üye'; });
+        } catch(_) {}
+      }
+      window._dbListings = (rows||[]).map(r => normJob(r, nameMap));
     } catch(e) {
-      console.error('Listings fetch error:', e);
+      console.error('Jobs fetch error:', e);
       window._dbListings = [];
     }
     renderListings();
@@ -1440,10 +1398,7 @@
     </div>
     <div class="modal-footer" style="display:flex;gap:8px;">
       <a id="detail-contact-btn" href="#" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'">✉️ E-posta Gönder</a>
-      <a id="detail-whatsapp-btn" href="#" target="_blank" style="flex:1;padding:13px;background:#25D366;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s;" onmouseover="this.style.background='#1ebe5d'" onmouseout="this.style.background='#25D366'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp
-      </a>
+      
       <button onclick="closeDetailModal()" style="padding:13px 20px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;">Kapat</button>
     </div>
   </div>
@@ -1466,7 +1421,7 @@
 
     const tags = document.getElementById('detail-tags');
     tags.innerHTML = `
-      <span class="listing-tag ${l.type === 'job' ? 'tag-job' : 'tag-gig'}" style="font-size:12px;padding:4px 12px;">${l.type === 'job' ? '💼 İş İlanı' : '⚡ Freelance'}</span>
+      <span class="listing-tag ${l.type === 'job' ? 'tag-job' : l.type === 'seeker' ? 'tag-job' : 'tag-gig'}" style="font-size:12px;padding:4px 12px;">${l.type === 'job' ? '💼 İş İlanı' : l.type === 'seeker' ? '👤 İş Arıyorum' : '⚡ Hizmet'}</span>
       <span class="listing-tag tag-remote" style="font-size:12px;padding:4px 12px;">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
       <span class="listing-tag tag-cat" style="font-size:12px;padding:4px 12px;">${catEmoji[lcat]} ${document.querySelector('[data-cat="'+lcat+'"]')?.textContent || lcat}</span>
       ${l.featured ? '<span class="listing-tag" style="background:rgba(201,168,76,.15);color:#8a6d00;font-size:12px;padding:4px 12px;">⭐ Öne Çıkan</span>' : ''}
@@ -1483,19 +1438,13 @@
       </div>
     `;
 
-    // Contact buttons
+    // Contact — on-platform messaging only (no personal email/phone/WhatsApp)
     const contactBtn = document.getElementById('detail-contact-btn');
     const waBtn = document.getElementById('detail-whatsapp-btn');
-    const isEmail = l.contact.includes('@');
-    const isPhone = l.contact.startsWith('+');
-    const phoneClean = l.contact.replace(/\s+/g, '').replace('+', '');
-
-    const mailSubject = encodeURIComponent(`BizdenBize'deki "${l.title}" ilanı hakkında`);
-    contactBtn.href = isEmail ? `mailto:${l.contact}?subject=${mailSubject}` : isPhone ? `tel:${l.contact}` : '#';
-    contactBtn.innerHTML = isEmail ? '✉️ E-posta Gönder' : '📞 Ara';
-
-    waBtn.href = isPhone ? `https://wa.me/${phoneClean}?text=${encodeURIComponent(`Merhaba, BizdenBize'deki "${l.title}" ilanınızla ilgili bilgi almak istiyorum.`)}` : isEmail ? `https://wa.me/?text=Merhaba, BizdenBize'deki "${l.title}" ilanınızla ilgili bilgi almak istiyorum.` : '#';
-    waBtn.target = '_blank';
+    contactBtn.href = 'messages.html?with=' + (l.author_id || '');
+    contactBtn.target = '';
+    contactBtn.innerHTML = '💬 Mesaj Gönder';
+    if (waBtn) waBtn.style.display = 'none';
 
     document.getElementById('detail-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
