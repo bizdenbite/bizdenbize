@@ -581,14 +581,17 @@
   <aside class="sidebar">
     <div class="filter-box">
       <div class="filter-box-title">Kategori</div>
-      <div class="filter-opt"><input type="checkbox" id="f-tech" onchange="renderListings()"><label for="f-tech">💻 Teknoloji</label><span id="c-tech"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-translate" onchange="renderListings()"><label for="f-translate">🌐 Tercüme</label><span id="c-translate"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-legal" onchange="renderListings()"><label for="f-legal">⚖️ Hukuki</label><span id="c-legal"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-design" onchange="renderListings()"><label for="f-design">🎨 Tasarım</label><span id="c-design"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-finance" onchange="renderListings()"><label for="f-finance">💶 Finans</label><span id="c-finance"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-care" onchange="renderListings()"><label for="f-care">❤️ Bakım</label><span id="c-care"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-trade" onchange="renderListings()"><label for="f-trade">🔧 Usta işleri</label><span id="c-trade"></span></div>
-      <div class="filter-opt"><input type="checkbox" id="f-other" onchange="renderListings()"><label for="f-other">📦 Diğer</label><span id="c-other"></span></div>
+      <div class="filter-opt"><input type="checkbox" id="f-gastronomi" onchange="renderListings()"><label for="f-gastronomi">🍽️ Gastronomi</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-satis" onchange="renderListings()"><label for="f-satis">🛍️ Satış & Pazarlama</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-nakliye" onchange="renderListings()"><label for="f-nakliye">🚚 Nakliye</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-insaat" onchange="renderListings()"><label for="f-insaat">🏗️ İnşaat</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-ev" onchange="renderListings()"><label for="f-ev">🧹 Ev İşleri</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-bakim" onchange="renderListings()"><label for="f-bakim">🏥 Hasta Bakımı</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-berber" onchange="renderListings()"><label for="f-berber">💈 Berber & Kuaför</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-temizlik" onchange="renderListings()"><label for="f-temizlik">🧽 Temizlik</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-lojistik" onchange="renderListings()"><label for="f-lojistik">📦 Lojistik & Depo</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-uretim" onchange="renderListings()"><label for="f-uretim">🏭 Üretim & Fabrika</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-diger" onchange="renderListings()"><label for="f-diger">📦 Diğer</label></div>
     </div>
 
     <div class="filter-box">
@@ -617,13 +620,17 @@
 
     <div class="cat-pills" id="cat-pills">
       <button class="cat-pill active" data-cat="all" onclick="setCat('all',this)">Tümü</button>
-      <button class="cat-pill" data-cat="tech" onclick="setCat('tech',this)">💻 Teknoloji</button>
-      <button class="cat-pill" data-cat="translate" onclick="setCat('translate',this)">🌐 Tercüme</button>
-      <button class="cat-pill" data-cat="legal" onclick="setCat('legal',this)">⚖️ Hukuki</button>
-      <button class="cat-pill" data-cat="design" onclick="setCat('design',this)">🎨 Tasarım</button>
-      <button class="cat-pill" data-cat="finance" onclick="setCat('finance',this)">💶 Finans</button>
-      <button class="cat-pill" data-cat="care" onclick="setCat('care',this)">❤️ Bakım</button>
-      <button class="cat-pill" data-cat="trade" onclick="setCat('trade',this)">🔧 Usta işleri</button>
+      <button class="cat-pill" data-cat="gastronomi" onclick="setCat('gastronomi',this)">🍽️ Gastronomi</button>
+      <button class="cat-pill" data-cat="satis" onclick="setCat('satis',this)">🛍️ Satış & Pazarlama</button>
+      <button class="cat-pill" data-cat="nakliye" onclick="setCat('nakliye',this)">🚚 Nakliye</button>
+      <button class="cat-pill" data-cat="insaat" onclick="setCat('insaat',this)">🏗️ İnşaat</button>
+      <button class="cat-pill" data-cat="ev" onclick="setCat('ev',this)">🧹 Ev İşleri</button>
+      <button class="cat-pill" data-cat="bakim" onclick="setCat('bakim',this)">🏥 Hasta Bakımı</button>
+      <button class="cat-pill" data-cat="berber" onclick="setCat('berber',this)">💈 Berber & Kuaför</button>
+      <button class="cat-pill" data-cat="temizlik" onclick="setCat('temizlik',this)">🧽 Temizlik</button>
+      <button class="cat-pill" data-cat="lojistik" onclick="setCat('lojistik',this)">📦 Lojistik & Depo</button>
+      <button class="cat-pill" data-cat="uretim" onclick="setCat('uretim',this)">🏭 Üretim & Fabrika</button>
+      <button class="cat-pill" data-cat="diger" onclick="setCat('diger',this)">📦 Diğer</button>
     </div>
 
     <div class="toolbar">
@@ -667,14 +674,17 @@
         <div>
           <label class="field-label">Kategori</label>
           <select class="field-input" id="p-cat">
-            <option value="tech">💻 Teknoloji</option>
-            <option value="translate">🌐 Tercüme</option>
-            <option value="legal">⚖️ Hukuki</option>
-            <option value="design">🎨 Tasarım</option>
-            <option value="finance">💶 Finans</option>
-            <option value="care">❤️ Bakım</option>
-            <option value="trade">🔧 Usta işleri</option>
-            <option value="other">📦 Diğer</option>
+            <option value="gastronomi">🍽️ Gastronomi</option>
+            <option value="satis">🛍️ Satış & Pazarlama</option>
+            <option value="nakliye">🚚 Nakliye</option>
+            <option value="insaat">🏗️ İnşaat</option>
+            <option value="ev">🧹 Ev İşleri</option>
+            <option value="bakim">🏥 Hasta Bakımı</option>
+            <option value="berber">💈 Berber & Kuaför</option>
+            <option value="temizlik">🧽 Temizlik</option>
+            <option value="lojistik">📦 Lojistik & Depo</option>
+            <option value="uretim">🏭 Üretim & Fabrika</option>
+            <option value="diger">📦 Diğer</option>
           </select>
         </div>
         <div>
@@ -702,11 +712,25 @@
         <label class="field-label">Açıklama *</label>
         <textarea class="field-input" id="p-desc" rows="4" placeholder="Aranan profil, gereksinimler ve detaylar..."></textarea>
       </div>
-      <!-- Contact -->
+      <!-- İlan sahibi / şirket adı -->
       <div>
-        <label class="field-label">İletişim (e-posta veya WhatsApp)</label>
-        <input class="field-input" id="p-contact" type="text" placeholder="isim@email.com veya +49...">
+        <label class="field-label">İlan sahibi / Şirket adı</label>
+        <input class="field-input" id="p-name" type="text" placeholder="Örn: Nalan Kiosk / Ad Soyad">
       </div>
+      <!-- Web sitesi -->
+      <div>
+        <label class="field-label">Web sitesi (opsiyonel)</label>
+        <input class="field-input" id="p-website" type="url" placeholder="https://...">
+      </div>
+      <!-- İşveren iletişim (yalnızca İş İlanı türünde) -->
+      <div id="employer-contact" style="display:none;">
+        <label class="field-label">İletişim <span style="font-weight:400;color:var(--muted);font-size:11px;">(yalnızca işveren ilanlarında herkese açık gösterilir)</span></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input class="field-input" id="p-email" type="email" placeholder="E-posta" style="flex:1;min-width:140px;">
+          <input class="field-input" id="p-whatsapp" type="tel" placeholder="WhatsApp (+49...)" style="flex:1;min-width:140px;">
+        </div>
+      </div>
+      <div id="individual-contact-note" style="font-size:12px;color:var(--muted);line-height:1.5;">🔒 Bireysel ilanlarda iletişim, güvenlik için yalnızca uygulama içi mesajla sağlanır.</div>
       <!-- Featured upsell -->
       <div id="featured-section" style="display:none">
         <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— isteğe bağlı</span></label>
@@ -862,7 +886,7 @@
 
   function getFiltered() {
     const q = document.getElementById('search-input').value.toLowerCase().trim();
-    const checkedCats = ['tech','translate','legal','design','finance','care','trade','other'].filter(c => document.getElementById('f-'+c)?.checked);
+    const checkedCats = ['gastronomi','satis','nakliye','insaat','ev','bakim','berber','temizlik','lojistik','uretim','diger'].filter(c => document.getElementById('f-'+c)?.checked);
     const checkedWork = ['remote','onsite','hybrid'].filter(w => document.getElementById('f-'+w)?.checked);
     const dbItems = window._dbListings || [];
 
@@ -877,9 +901,9 @@
     });
   }
 
-  const catEmoji = { tech:'💻', translate:'🌐', legal:'⚖️', design:'🎨', finance:'💶', care:'❤️', trade:'🔧', other:'📦', migration:'✈️' };
-  const catColor = { tech:'#185FA5', translate:'#1E7B4B', legal:'#8a6d00', design:'#a83270', finance:'#1E7B4B', care:'#D42B2B', trade:'#6B5E4E', other:'#6B5E4E', migration:'#185FA5' };
-  const catBg    = { tech:'rgba(24,95,165,.1)', translate:'rgba(30,123,75,.1)', legal:'rgba(201,168,76,.12)', design:'rgba(168,50,112,.1)', finance:'rgba(30,123,75,.1)', care:'rgba(212,43,43,.08)', trade:'rgba(107,94,78,.1)', other:'rgba(107,94,78,.1)', migration:'rgba(24,95,165,.1)' };
+  const catEmoji = { gastronomi:'🍽️', satis:'🛍️', nakliye:'🚚', insaat:'🏗️', ev:'🧹', bakim:'🏥', berber:'💈', temizlik:'🧽', lojistik:'📦', uretim:'🏭', diger:'📦' };
+  const catColor = { gastronomi:'#D42B2B', satis:'#a83270', nakliye:'#185FA5', insaat:'#8a6d00', ev:'#1E7B4B', bakim:'#D42B2B', berber:'#a83270', temizlik:'#1E7B4B', lojistik:'#6B5E4E', uretim:'#185FA5', diger:'#6B5E4E' };
+  const catBg    = { gastronomi:'rgba(212,43,43,.1)', satis:'rgba(168,50,112,.1)', nakliye:'rgba(24,95,165,.1)', insaat:'rgba(201,168,76,.12)', ev:'rgba(30,123,75,.1)', bakim:'rgba(212,43,43,.08)', berber:'rgba(168,50,112,.1)', temizlik:'rgba(30,123,75,.1)', lojistik:'rgba(107,94,78,.1)', uretim:'rgba(24,95,165,.1)', diger:'rgba(107,94,78,.1)' };
 
   const seekers = [];
 
@@ -1004,7 +1028,7 @@
     container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
       <div class="listing-card ${l.featured ? 'featured' : ''}" data-listing-id="${l.id}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
         ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
-        <div class="listing-avatar" style="background:${catBg[l.category||l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.category||l.cat]||'#185FA5'}">${catEmoji[l.category||l.cat]||'✈️'}</div>
+        <div class="listing-avatar" style="background:${catBg[l.category||l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.category||l.cat]||'#185FA5'}">${catEmoji[l.category||l.cat]||'📦'}</div>
         <div class="listing-body">
           ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
           <div class="listing-top">
@@ -1179,6 +1203,7 @@
     document.getElementById('post-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
     __jobDraft.restore();
+    syncContactFields(selectedPostType);
   }
 
   function closePostModal() {
@@ -1198,8 +1223,15 @@
   function selectPostType(type, btn) {
     selectedPostType = type;
     document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
     document.getElementById('price-label').textContent = type === 'gig' ? 'Fiyat' : 'Ücret / Bütçe';
+    syncContactFields(type);
+  }
+  function syncContactFields(type) {
+    var emp = document.getElementById('employer-contact');
+    var note = document.getElementById('individual-contact-note');
+    if (emp)  emp.style.display  = (type === 'job') ? '' : 'none';
+    if (note) note.style.display = (type === 'job') ? 'none' : '';
   }
 
   // Pending post stored between form → payment steps
@@ -1217,17 +1249,23 @@
     }
     err.style.display = 'none';
     const typeMap = { job:'is_ilani', gig:'hizmet', seeker:'is_ariyorum' };
+    const isEmp = selectedPostType === 'job';
+    const nm = (document.getElementById('p-name')?.value || '').trim();
     const payload = {
       author_id:    session.user.id,
       listing_type: typeMap[selectedPostType] || 'hizmet',
       title,
+      company:      isEmp ? (nm || null) : null,
+      contact_name: nm || null,
       category:     document.getElementById('p-cat').value,
       worktype:     document.getElementById('p-worktype').value,
       city:         document.getElementById('p-location').value.trim() || null,
       country:      'DE',
       salary:       document.getElementById('p-price').value.trim() || null,
       description:  desc,
-      contact:      document.getElementById('p-contact').value.trim() || null,
+      website:      (document.getElementById('p-website')?.value || '').trim() || null,
+      email:        isEmp ? ((document.getElementById('p-email')?.value || '').trim() || null) : null,
+      whatsapp:     isEmp ? ((document.getElementById('p-whatsapp')?.value || '').trim() || null) : null,
       status:       'pending'
     };
     try {
@@ -1305,11 +1343,13 @@
       title: r.title, company: r.company || null,
       author: nameMap[r.author_id] || 'Üye',
       location: [r.city, (r.country==='DE'?'🇩🇪':null)].filter(Boolean).join(' '),
-      category: r.category || 'other', cat: r.category || 'other',
+      category: r.category || 'diger', cat: r.category || 'diger',
       worktype: r.worktype || 'onsite', price: r.salary || '',
       description: r.description || '', desc: r.description || '',
       featured: !!r.is_featured, badge: null, time: '',
-      created_at: r.created_at, contact: r.contact || null
+      created_at: r.created_at,
+      website: r.website || null, email: r.email || null,
+      whatsapp: r.whatsapp || null, contact_name: r.contact_name || null
     };
   }
   async function fetchListings() {
@@ -1438,13 +1478,19 @@
       </div>
     `;
 
-    // Contact — on-platform messaging only (no personal email/phone/WhatsApp)
+    // Contact — in-app message for everyone; employer listings also expose public links
+    document.querySelectorAll('.detail-extra-contact').forEach(e => e.remove());
     const contactBtn = document.getElementById('detail-contact-btn');
-    const waBtn = document.getElementById('detail-whatsapp-btn');
     contactBtn.href = 'messages.html?with=' + (l.author_id || '');
     contactBtn.target = '';
     contactBtn.innerHTML = '💬 Mesaj Gönder';
-    if (waBtn) waBtn.style.display = 'none';
+    const _footer = contactBtn.parentElement;
+    const _mk = (href, label, bg) => { const a = document.createElement('a'); a.className = 'detail-extra-contact'; a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label; a.style.cssText = 'flex:1;padding:13px;background:' + bg + ';color:#fff;border-radius:9px;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;'; return a; };
+    if (l.website) { const w = /^https?:/i.test(l.website) ? l.website : ('https://' + l.website); _footer.insertBefore(_mk(w, '🌐 Web', 'var(--muted)'), _footer.lastElementChild); }
+    if (l.type === 'job') {
+      if (l.email) _footer.insertBefore(_mk('mailto:' + l.email + '?subject=' + encodeURIComponent('BizdenBize: ' + l.title), '✉️ E-posta', '#185FA5'), _footer.lastElementChild);
+      if (l.whatsapp) { const wn = (l.whatsapp || '').replace(/[^0-9]/g, ''); if (wn) _footer.insertBefore(_mk('https://wa.me/' + wn, '💬 WhatsApp', '#25D366'), _footer.lastElementChild); }
+    }
 
     document.getElementById('detail-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
