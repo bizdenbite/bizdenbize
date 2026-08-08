@@ -1489,7 +1489,7 @@
     if (l.website) { const w = /^https?:/i.test(l.website) ? l.website : ('https://' + l.website); _footer.insertBefore(_mk(w, '🌐 Web', 'var(--muted)'), _footer.lastElementChild); }
     if (l.type === 'job') {
       if (l.email) _footer.insertBefore(_mk('mailto:' + l.email + '?subject=' + encodeURIComponent('BizdenBize: ' + l.title), '✉️ E-posta', '#185FA5'), _footer.lastElementChild);
-      if (l.whatsapp) { const wn = (l.whatsapp || '').replace(/[^0-9]/g, ''); if (wn) _footer.insertBefore(_mk('https://wa.me/' + wn, '💬 WhatsApp', '#25D366'), _footer.lastElementChild); }
+      if (l.whatsapp) { const wn = (l.whatsapp || '').replace(/[^0-9]/g, ''); if (wn) _footer.insertBefore(_mk('https://wa.me/' + wn + '?text=' + encodeURIComponent('Merhaba, BizdenBize\u2019deki 「' + (l.title || '') + '」 iş ilanı hakkında bilgi almak istiyorum.'), '💬 WhatsApp', '#25D366'), _footer.lastElementChild); }
     }
 
     document.getElementById('detail-modal').classList.add('open');
