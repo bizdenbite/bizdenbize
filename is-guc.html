@@ -1481,7 +1481,7 @@
     // Contact — in-app message for everyone; employer listings also expose public links
     document.querySelectorAll('.detail-extra-contact').forEach(e => e.remove());
     const contactBtn = document.getElementById('detail-contact-btn');
-    contactBtn.href = 'messages.html?with=' + (l.author_id || '');
+    contactBtn.href = 'messages.html?with=' + encodeURIComponent(l.author_id || '') + '&ref=' + encodeURIComponent('「' + (l.title || '') + '」 iş ilanı hakkında: ');
     contactBtn.target = '';
     contactBtn.innerHTML = '💬 Mesaj Gönder';
     const _footer = contactBtn.parentElement;
