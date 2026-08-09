@@ -532,6 +532,24 @@ function formatDate(d, t){
   const p=String(d).split('-'); if(p.length<3) return (t?(' '+t):'');
   const mo=_MONTHS[parseInt(p[1],10)]||''; return parseInt(p[2],10)+' '+mo+(t?(' · '+t):'');
 }
+function formatWebinarDesc(txt){
+  if(!txt) return '';
+  var t=String(txt).replace(/\r/g,'').trim();
+  t=t.replace(/\s+([A-ZÇĞİÖŞÜ][A-Za-zÇĞİÖŞÜçğıöşü'’\- ]{3,60}\?)(\s+|$)/g, '\n\n$1\n\n');
+  t=t.replace(/([.!?])\s+([A-ZÇĞİÖŞÜ][A-Za-zÇĞİÖŞÜçğıöşü'’\- ]{2,45}:)\s+/g, '$1\n\n$2 ');
+  t=t.replace(/\n{3,}/g,'\n\n');
+  var blocks=t.split(/\n{2,}/).map(function(x){return x.trim();}).filter(Boolean);
+  return blocks.map(function(b){
+    if(b.length<80 && /^[A-ZÇĞİÖŞÜ][^.!]{2,}\?$/.test(b)){
+      return '<div style="font-weight:700;color:var(--ink);font-size:14px;margin:14px 0 6px;">'+esc(b)+'</div>';
+    }
+    var m=b.match(/^([A-ZÇĞİÖŞÜ][A-Za-zÇĞİÖŞÜçğıöşü'’\- ]{1,45}):\s*([\s\S]*)$/);
+    if(m && m[2]){
+      return '<div style="margin:7px 0;line-height:1.6;"><span style="font-weight:600;color:var(--ink);">'+esc(m[1])+':</span> <span style="color:var(--muted);">'+esc(m[2])+'</span></div>';
+    }
+    return '<p style="margin:8px 0;color:var(--ink);line-height:1.7;">'+esc(b).replace(/\n/g,'<br>')+'</p>';
+  }).join('');
+}
 
 function setFilter(fl, btn){
   activeFilter = fl;
@@ -639,7 +657,7 @@ async function openRegister(id){
     +'<div class="info-box"><div class="info-box-label">Süre</div><div class="info-box-val">⏱️ '+esc(w.duration)+'</div></div>'
     +'<div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">'+(w.price==='free'?'✓ Ücretsiz':'€'+w.priceVal)+'</div></div>'
     +'<div class="info-box"><div class="info-box-label">'+(w.type==='upcoming'?'Kalan Yer':'Durum')+'</div><div class="info-box-val">'+spotVal+'</div></div>';
-  document.getElementById('reg-desc-box').innerHTML='<div style="font-size:13px;color:var(--ink);line-height:1.7;">'+esc(w.desc)+'</div>';
+  document.getElementById('reg-desc-box').innerHTML='<div style="border-top:1px solid var(--sand,#ece7df);margin-top:8px;padding-top:14px;font-size:13px;">'+formatWebinarDesc(w.desc)+'</div>';
   ['reg-name','reg-email'].forEach(function(id){var el=document.getElementById(id); if(el&&el.closest('div')) el.closest('div').style.display='none';});
   const errB=document.getElementById('reg-error'); if(errB){errB.style.display='none';}
   const linkBox=document.getElementById('reg-link-box'); linkBox.style.display='none'; linkBox.innerHTML='';
