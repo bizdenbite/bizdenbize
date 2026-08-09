@@ -412,6 +412,7 @@
     <div class="modal-body" id="reg-body">
       <div class="info-grid" id="reg-info"></div>
       <div id="reg-desc-box"></div>
+      <div id="reg-link-box" style="display:none;"></div>
       <div>
         <label class="field-label">Adınız *</label>
         <input class="field-input" id="reg-name" type="text" placeholder="Ayşe Yılmaz">
@@ -485,6 +486,10 @@
           <option>2 saat</option>
         </select>
       </div>
+      <div class="field-row">
+        <div><label class="field-label">Kontenjan</label><input class="field-input" id="h-capacity" type="number" min="1" placeholder="Örn: 50"></div>
+        <div><label class="field-label">Katılım Bağlantısı</label><input class="field-input" id="h-link" type="url" placeholder="Zoom / Meet linki"></div>
+      </div>
       <div>
         <label class="field-label">Açıklama *</label>
         <textarea class="field-input" id="h-desc" rows="3" placeholder="Webinarda ne öğrenecekler? Kime yönelik?"></textarea>
@@ -507,153 +512,230 @@
 </div>
 
 <script>
-const webinars = [
-  { id:1, title:"Almanya'da Kira Sözleşmesi: Haklarınız ve Tuzaklar", topic:"⚖️ Hukuk", host:"Av. Selin Kaya", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-06-14", time:"19:00", duration:"60 dk", spots:48, spotsLeft:12, desc:"Mietvertrag'ı imzalamadan önce bilmeniz gerekenler. Depozito, Nebenkosten, tahliye hakları ve sık yapılan hatalar.", featured:true, lang:"TR" },
-  { id:2, title:"Kindergeld ve Elterngeld: Başvuru Rehberi", topic:"💶 Finans", host:"BizdenBize Uzman Ekibi", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-06-21", time:"20:00", duration:"45 dk", spots:100, spotsLeft:67, desc:"Almanya'da çocuk parası ve doğum yardımı için adım adım başvuru rehberi. Belgeler, süreçler ve sık sorulan sorular.", featured:true, lang:"TR" },
-  { id:3, title:"Hollanda'da İş Kurma: KVK Kayıt ve ZZP", topic:"💼 Kariyer", host:"Murat Demir", hostType:"community", type:"upcoming", price:"paid", priceVal:15, date:"2025-06-28", time:"19:30", duration:"90 dk", spots:30, spotsLeft:8, desc:"Hollanda'da serbest çalışmak veya şirket kurmak isteyenler için kapsamlı rehber. KVK kaydı, vergi numarası, BTW.", featured:false, lang:"TR" },
-  { id:4, title:"Almanca B1 Sınavına Hazırlık: Pratik Taktikler", topic:"🗣️ Dil", host:"Zeynep Arslan", hostType:"community", type:"recorded", price:"free", priceVal:0, date:"2025-05-10", time:"18:00", duration:"60 dk", spots:200, spotsLeft:0, desc:"B1 sınavını geçmek için en etkili çalışma yöntemleri. Dinleme, okuma, yazma ve konuşma bölümleri için ipuçları.", featured:false, lang:"TR" },
-  { id:5, title:"Almanya'da Sağlık Sistemi: Krankenkasse Seçimi", topic:"🏥 Sağlık", host:"Dr. Ahmet Yıldız", hostType:"bizdenbize", type:"recorded", price:"free", priceVal:0, date:"2025-05-03", time:"19:00", duration:"60 dk", spots:150, spotsLeft:0, desc:"GKV vs PKV, hangi kasaya üye olmalı, ek sigortalar, diş hekimi kapsamı ve Türkiye'ye giderken sigorta.", featured:false, lang:"TR" },
-  { id:6, title:"Almanya Vatandaşlığı: 2024 Yeni Kanun Rehberi", topic:"🛂 Vize", host:"Av. Fatma Öz", hostType:"community", type:"upcoming", price:"paid", priceVal:20, date:"2025-07-05", time:"20:00", duration:"90 dk", spots:40, spotsLeft:22, desc:"Ocak 2024'te yürürlüğe giren yeni vatandaşlık kanunu: çifte vatandaşlık, başvuru koşulları ve dikkat edilmesi gerekenler.", featured:false, lang:"TR" },
-  { id:7, title:"Ev Satın Almak: Finanzierung ve Notar Süreci", topic:"🏠 Emlak", host:"BizdenBize Uzman Ekibi", hostType:"bizdenbize", type:"upcoming", price:"free", priceVal:0, date:"2025-07-12", time:"19:00", duration:"60 dk", spots:60, spotsLeft:41, desc:"Almanya'da ev satın alma süreci: banka kredisi, noterde imza, Grundbuch kaydı ve dikkat edilmesi gerekenler.", featured:false, lang:"TR" },
-  { id:8, title:"LinkedIn ile İş Bulma: Türkler için Taktikler", topic:"💼 Kariyer", host:"Hasan Bozkurt", hostType:"community", type:"recorded", price:"paid", priceVal:10, date:"2025-04-20", time:"18:30", duration:"60 dk", spots:80, spotsLeft:0, desc:"Almanya iş piyasasında LinkedIn profilini nasıl optimize edersin, işveren nasıl bulursun, Alman şirketlerine nasıl başvurursun.", featured:false, lang:"TR" },
-];
-
+let sb = null, ME = null, MY_NAME = '';
+let webinars = [];
 let activeFilter = 'all';
-
-function setFilter(f, btn) {
-  activeFilter = f;
-  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
+let currentWebinar = null;
+const _MONTHS = ['','Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function formatDate(d, t){
+  if(!d) return t||'';
+  const p=String(d).split('-'); if(p.length<3) return (t?(' '+t):'');
+  const mo=_MONTHS[parseInt(p[1],10)]||''; return parseInt(p[2],10)+' '+mo+(t?(' · '+t):'');
 }
 
-function getFiltered() {
-  return webinars.filter(w => {
-    if (activeFilter === 'all') return true;
-    if (activeFilter === 'upcoming') return w.type === 'upcoming';
-    if (activeFilter === 'recorded') return w.type === 'recorded';
-    if (activeFilter === 'free') return w.price === 'free';
-    if (activeFilter === 'bizdenbize') return w.hostType === 'bizdenbize';
+function setFilter(fl, btn){
+  activeFilter = fl;
+  document.querySelectorAll('.filter-tab').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  render();
+}
+function getFiltered(){
+  return webinars.filter(function(w){
+    if(activeFilter==='all') return true;
+    if(activeFilter==='upcoming') return w.type==='upcoming';
+    if(activeFilter==='recorded') return w.type==='recorded';
+    if(activeFilter==='free') return w.price==='free';
+    if(activeFilter==='bizdenbize') return w.hostType==='bizdenbize';
     return true;
   });
 }
 
-function formatDate(d, t) {
-  const [y,m,day] = d.split('-');
-  const months = ['','Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-  return `${day} ${months[parseInt(m)]} ${y}${t ? ' · ' + t : ''}`;
-}
+function render(){
+  const filtered=getFiltered();
+  document.getElementById('stat-total').textContent=webinars.length;
+  document.getElementById('stat-free').textContent=webinars.filter(function(w){return w.price==='free';}).length;
+  document.getElementById('stat-upcoming').textContent=webinars.filter(function(w){return w.type==='upcoming';}).length;
+  document.getElementById('results-count').innerHTML='<strong>'+filtered.length+'</strong> webinar bulundu';
 
-function render() {
-  const filtered = getFiltered();
-  const freeCount = webinars.filter(w => w.price === 'free').length;
-  const upcomingCount = webinars.filter(w => w.type === 'upcoming').length;
-  document.getElementById('stat-total').textContent = webinars.length;
-  document.getElementById('stat-free').textContent = freeCount;
-  document.getElementById('stat-upcoming').textContent = upcomingCount;
-  document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> webinar bulundu`;
+  const featured=webinars.filter(function(w){return w.featured && w.type==='upcoming';});
+  const fsec=document.getElementById('featured-section');
+  fsec.style.display=((activeFilter==='all'||activeFilter==='upcoming') && featured.length)?'block':'none';
+  document.getElementById('featured-grid').innerHTML=featured.map(function(w){
+    const spots=(w.spotsLeft!=null)?(w.spotsLeft+' yer kaldı'):'Kontenjan açık';
+    return '<div class="featured-card" onclick="openRegister(\''+w.id+'\')">'
+      +'<div class="featured-card-price">'+(w.price==='free'?'✓ Ücretsiz':'€'+w.priceVal)+'</div>'
+      +'<div class="featured-card-tag">'+esc(w.topic)+'</div>'
+      +'<div class="featured-card-title">'+esc(w.title)+'</div>'
+      +'<div class="featured-card-host">👤 '+esc(w.host)+'</div>'
+      +'<div class="featured-card-meta"><span class="featured-meta-item">📅 '+formatDate(w.date,w.time)+'</span>'
+      +'<span class="featured-meta-item">⏱️ '+esc(w.duration)+'</span>'
+      +'<span class="featured-meta-item">🪑 '+spots+'</span></div>'
+      +'<button class="featured-card-btn">'+(w.registered?'Detay →':'Hemen Kayıt Ol →')+'</button></div>';
+  }).join('');
 
-  // Featured
-  const featured = webinars.filter(w => w.featured && w.type === 'upcoming');
-  const featuredSection = document.getElementById('featured-section');
-  featuredSection.style.display = (activeFilter === 'all' || activeFilter === 'upcoming') && featured.length ? 'block' : 'none';
-  document.getElementById('featured-grid').innerHTML = featured.map(w => `
-    <div class="featured-card" onclick="openRegister(${w.id})">
-      <div class="featured-card-price">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</div>
-      <div class="featured-card-tag">${w.topic}</div>
-      <div class="featured-card-title">${w.title}</div>
-      <div class="featured-card-host">👤 ${w.host}</div>
-      <div class="featured-card-meta">
-        <span class="featured-meta-item">📅 ${formatDate(w.date, w.time)}</span>
-        <span class="featured-meta-item">⏱️ ${w.duration}</span>
-        <span class="featured-meta-item">🪑 ${w.spotsLeft} yer kaldı</span>
-      </div>
-      <button class="featured-card-btn">Hemen Kayıt Ol →</button>
-    </div>`).join('');
-
-  // Main grid
-  const grid = document.getElementById('webinar-grid');
-  if (!filtered.length) {
-    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🎥</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div></div>`;
+  const grid=document.getElementById('webinar-grid');
+  if(!filtered.length){
+    grid.innerHTML='<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🎥</div><div style="font-family:\'Playfair Display\',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz webinar yok</div><p style="font-size:13px;margin-bottom:16px">İlk eğitimi sen öner!</p><button onclick="openHostModal()" style="padding:10px 24px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">🎥 Webinar Öner</button></div>';
     return;
   }
-  grid.innerHTML = filtered.map(w => `
-    <div class="webinar-card ${w.hostType === 'bizdenbize' ? 'bizdenbize' : ''}" onclick="openRegister(${w.id})">
-      <div class="card-header">
-        <span class="card-host-badge ${w.hostType === 'bizdenbize' ? 'badge-bb' : 'badge-community'}">${w.hostType === 'bizdenbize' ? '⭐ BizdenBize' : '👥 Topluluk'}</span>
-        <span class="card-price-badge ${w.price === 'paid' ? 'paid' : ''}">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</span>
-      </div>
-      <div class="card-body">
-        <div class="card-topic">${w.topic}</div>
-        <div class="card-title">${w.title}</div>
-        <div class="card-host">👤 ${w.host}</div>
-        <div class="card-desc">${w.desc}</div>
-        <div class="card-meta-row">
-          <span class="card-meta-tag">${w.type === 'upcoming' ? '📅' : '▶️'} ${w.type === 'upcoming' ? formatDate(w.date, w.time) : 'Kayıtlı'}</span>
-          <span class="card-meta-tag">⏱️ ${w.duration}</span>
-          <span class="card-meta-tag">🌐 ${w.lang}</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="card-spots">${w.type === 'upcoming' && w.spotsLeft > 0 ? `<span>${w.spotsLeft}</span> yer kaldı` : w.type === 'recorded' ? '▶️ Hemen izle' : '❌ Dolu'}</div>
-        <button class="card-register-btn ${w.price === 'free' ? 'free' : ''}" onclick="event.stopPropagation();openRegister(${w.id})">${w.type === 'recorded' ? 'İzle' : 'Kayıt Ol'}</button>
-      </div>
-    </div>`).join('');
+  grid.innerHTML=filtered.map(function(w){
+    const badge=w.hostType==='bizdenbize'?'⭐ BizdenBize':'👥 Topluluk';
+    const badgeCls=w.hostType==='bizdenbize'?'badge-bb':'badge-community';
+    const price=w.price==='free'?'✓ Ücretsiz':'€'+w.priceVal;
+    const dateLabel=w.type==='upcoming'?('📅 '+formatDate(w.date,w.time)):'▶️ Kayıtlı';
+    const foot=w.type==='recorded'
+      ? '<button class="card-register-btn free">▶️ İzle</button>'
+      : (w.registered ? '<button class="card-register-btn">✓ Kayıtlısın · Bağlantı</button>'
+                      : (w.spotsLeft===0 ? '<button class="card-register-btn" style="background:var(--muted);cursor:default;">Kontenjan dolu</button>'
+                                         : '<button class="card-register-btn '+(w.price==='free'?'free':'')+'">Kayıt Ol →</button>'));
+    const spotLine=w.type==='upcoming'?('<span class="card-meta-tag">🪑 '+((w.spotsLeft!=null)?(w.spotsLeft+' yer'):'açık')+'</span>'):'';
+    return '<div class="webinar-card '+(w.hostType==='bizdenbize'?'bizdenbize':'')+'" onclick="openRegister(\''+w.id+'\')">'
+      +'<div class="card-header"><span class="card-host-badge '+badgeCls+'">'+badge+'</span>'
+      +'<span class="card-price-badge '+(w.price==='paid'?'paid':'')+'">'+price+'</span></div>'
+      +'<div class="card-body"><div class="card-topic">'+esc(w.topic)+'</div>'
+      +'<div class="card-title">'+esc(w.title)+'</div><div class="card-host">👤 '+esc(w.host)+'</div>'
+      +'<div class="card-desc">'+esc(w.desc)+'</div>'
+      +'<div class="card-meta-row"><span class="card-meta-tag">'+dateLabel+'</span>'
+      +'<span class="card-meta-tag">⏱️ '+esc(w.duration)+'</span>'+spotLine+'</div>'
+      +'<div style="margin-top:12px;">'+foot+'</div></div></div>';
+  }).join('');
 }
 
-let currentWebinar = null;
+async function loadWebinars(){
+  try{
+    const wres=await sb.from('webinars').select('*').eq('status','approved').order('event_date',{ascending:true});
+    if(wres.error) throw wres.error;
+    const cres=await sb.from('webinar_reg_counts').select('webinar_id,reg_count');
+    const cmap={}; (cres.data||[]).forEach(function(c){cmap[c.webinar_id]=c.reg_count;});
+    let regSet=new Set();
+    if(ME){ const rr=await sb.from('webinar_registrations').select('webinar_id').eq('user_id',ME); (rr.data||[]).forEach(function(r){regSet.add(r.webinar_id);}); }
+    webinars=(wres.data||[]).map(function(r){
+      const cnt=cmap[r.id]||0;
+      return { id:r.id, title:r.title, topic:r.topic||'📦 Diğer', host:r.host_name||'BizdenBize',
+        hostType:r.host_type||'community', type:r.kind, price:r.price||'free', priceVal:r.price_val||0,
+        date:r.event_date, time:r.event_time, duration:r.duration||'', capacity:r.capacity, regCount:cnt,
+        spotsLeft:(r.capacity!=null?Math.max(0,r.capacity-cnt):null), desc:r.description||'',
+        featured:!!r.is_featured, lang:r.language||'TR', recording_url:r.recording_url||null, registered:regSet.has(r.id) };
+    });
+    render();
+  }catch(e){ console.error('Webinarlar yüklenemedi',e); render(); }
+}
 
-function openRegister(id) {
-  currentWebinar = webinars.find(w => w.id === id);
-  if (!currentWebinar) return;
-  const w = currentWebinar;
-  document.getElementById('reg-topic').textContent = w.topic;
-  document.getElementById('reg-title').textContent = w.title;
-  document.getElementById('reg-host').textContent = '👤 ' + w.host;
-  document.getElementById('reg-info').innerHTML = `
-    <div class="info-box"><div class="info-box-label">${w.type === 'recorded' ? 'Kayıt Tarihi' : 'Tarih & Saat'}</div><div class="info-box-val">${formatDate(w.date, w.time)}</div></div>
-    <div class="info-box"><div class="info-box-label">Süre</div><div class="info-box-val">⏱️ ${w.duration}</div></div>
-    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${w.price === 'free' ? '✓ Ücretsiz' : '€' + w.priceVal}</div></div>
-    <div class="info-box"><div class="info-box-label">${w.type === 'upcoming' ? 'Kalan Yer' : 'Durum'}</div><div class="info-box-val">${w.type === 'upcoming' ? w.spotsLeft + ' yer' : '▶️ Kayıtlı'}</div></div>`;
-  document.getElementById('reg-desc-box').innerHTML = `<div style="font-size:13px;color:var(--ink);line-height:1.7;">${w.desc}</div>`;
-  document.getElementById('reg-price-box').style.display = w.price === 'paid' ? 'block' : 'none';
-  document.getElementById('reg-submit-btn').textContent = w.type === 'recorded' ? (w.price === 'free' ? 'Hemen İzle →' : 'Satın Al →') : (w.price === 'free' ? 'Ücretsiz Kayıt Ol →' : `€${w.priceVal} Öde & Kayıt Ol →`);
+async function revealLink(wid){
+  try{ const {data}=await sb.from('webinar_links').select('meeting_link').eq('webinar_id',wid).maybeSingle(); return (data&&data.meeting_link)||null; }
+  catch(e){ return null; }
+}
+
+async function openRegister(id){
+  currentWebinar=webinars.find(function(w){return String(w.id)===String(id);});
+  if(!currentWebinar) return;
+  const w=currentWebinar;
+  document.getElementById('reg-topic').textContent=w.topic;
+  document.getElementById('reg-title').textContent=w.title;
+  document.getElementById('reg-host').textContent='👤 '+w.host;
+  const spotVal=w.type==='upcoming'?((w.spotsLeft!=null)?(w.spotsLeft+' yer kaldı'):'Kontenjan açık'):(w.recording_url?'Kayıt hazır':'Yakında');
+  document.getElementById('reg-info').innerHTML=
+    '<div class="info-box"><div class="info-box-label">'+(w.type==='recorded'?'Kayıt Tarihi':'Tarih & Saat')+'</div><div class="info-box-val">📅 '+formatDate(w.date,w.time)+'</div></div>'
+    +'<div class="info-box"><div class="info-box-label">Süre</div><div class="info-box-val">⏱️ '+esc(w.duration)+'</div></div>'
+    +'<div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">'+(w.price==='free'?'✓ Ücretsiz':'€'+w.priceVal)+'</div></div>'
+    +'<div class="info-box"><div class="info-box-label">'+(w.type==='upcoming'?'Kalan Yer':'Durum')+'</div><div class="info-box-val">'+spotVal+'</div></div>';
+  document.getElementById('reg-desc-box').innerHTML='<div style="font-size:13px;color:var(--ink);line-height:1.7;">'+esc(w.desc)+'</div>';
+  ['reg-name','reg-email'].forEach(function(id){var el=document.getElementById(id); if(el&&el.closest('div')) el.closest('div').style.display='none';});
+  const errB=document.getElementById('reg-error'); if(errB){errB.style.display='none';}
+  const linkBox=document.getElementById('reg-link-box'); linkBox.style.display='none'; linkBox.innerHTML='';
+  document.getElementById('reg-success').style.display='none';
+  document.getElementById('reg-body').style.display='';
+  document.getElementById('reg-footer').style.display='';
+  const btn=document.getElementById('reg-submit-btn'); btn.disabled=false; btn.style.display='';
+
+  if(w.type==='recorded'){
+    document.getElementById('reg-footer').style.display='none';
+    if(w.recording_url){ linkBox.style.display='block'; linkBox.innerHTML='<a href="'+esc(w.recording_url)+'" target="_blank" rel="noopener" class="btn-purple" style="display:block;text-align:center;text-decoration:none;">▶️ İzle</a>'; }
+    else { linkBox.style.display='block'; linkBox.innerHTML='<div style="font-size:13px;color:var(--muted);">Kayıt yakında yüklenecek.</div>'; }
+  } else if(w.registered){
+    btn.style.display='none';
+    const link=await revealLink(w.id);
+    linkBox.style.display='block';
+    linkBox.innerHTML='<div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:8px;">✓ Kayıtlısın</div>'
+      +(link?('<a href="'+esc(link)+'" target="_blank" rel="noopener" class="btn-purple" style="display:block;text-align:center;text-decoration:none;">🔗 Webinara Katıl</a>')
+            :'<div style="font-size:13px;color:var(--muted);">Katılım bağlantısı yakında paylaşılacak.</div>');
+  } else if(w.spotsLeft===0){
+    btn.disabled=true; btn.textContent='Kontenjan dolu';
+  } else {
+    btn.textContent='Kayıt Ol →';
+  }
   document.getElementById('register-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
-function closeRegisterModal() {
+function closeRegisterModal(){
   document.getElementById('register-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  document.getElementById('reg-success').style.display = 'none';
-  document.getElementById('reg-body').style.display = 'flex';
-  document.getElementById('reg-footer').style.display = 'flex';
-  document.getElementById('reg-error').style.display = 'none';
-}
-function submitRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  if (!name || !email) { document.getElementById('reg-error').textContent = 'Lütfen adınızı ve e-postanızı girin.'; document.getElementById('reg-error').style.display = 'block'; return; }
-  document.getElementById('reg-body').style.display = 'none';
-  document.getElementById('reg-footer').style.display = 'none';
-  document.getElementById('reg-success').style.display = 'block';
-  const w = currentWebinar;
-  document.getElementById('reg-success-msg').textContent = w.type === 'recorded' ? 'Webinar bağlantısı e-postanıza gönderildi. İyi seyirler!' : 'Webinar bağlantısı başlamadan önce e-postanıza gönderilecek. Görüşmek üzere!';
-  setTimeout(() => closeRegisterModal(), 3500);
-}
-function openHostModal() { document.getElementById('host-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeHostModal() { document.getElementById('host-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('host-success').style.display = 'none'; document.getElementById('host-body').style.display = 'flex'; document.getElementById('host-footer').style.display = 'flex'; document.getElementById('h-error').style.display = 'none'; }
-function submitHost() {
-  const title = document.getElementById('h-title').value.trim();
-  const desc = document.getElementById('h-desc').value.trim();
-  const date = document.getElementById('h-date').value;
-  if (!title || !desc || !date) { document.getElementById('h-error').textContent = 'Lütfen zorunlu alanları doldurun.'; document.getElementById('h-error').style.display = 'block'; return; }
-  document.getElementById('host-body').style.display = 'none';
-  document.getElementById('host-footer').style.display = 'none';
-  document.getElementById('host-success').style.display = 'block';
-  setTimeout(() => closeHostModal(), 3000);
+  document.body.style.overflow='';
+  document.getElementById('reg-success').style.display='none';
 }
 
-render();
+async function submitRegister(){
+  const w=currentWebinar; if(!w) return;
+  if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
+  const err=document.getElementById('reg-error'), btn=document.getElementById('reg-submit-btn');
+  btn.disabled=true; btn.textContent='Kaydediliyor…';
+  try{
+    const {data,error}=await sb.rpc('register_webinar',{p_webinar_id:w.id});
+    if(error) throw error;
+    if(data==='full'){ err.textContent='Kontenjan dolu.'; err.style.display='block'; btn.disabled=false; btn.textContent='Kayıt Ol →'; return; }
+    if(data==='not_available'){ err.textContent='Bu webinar şu anda kayıda kapalı.'; err.style.display='block'; btn.disabled=false; btn.textContent='Kayıt Ol →'; return; }
+    if(data==='auth_required'){ window.location.href='login.html?redirect=webinar.html'; return; }
+    w.registered=true; w.regCount=(w.regCount||0)+1; if(w.spotsLeft!=null) w.spotsLeft=Math.max(0,w.spotsLeft-1);
+    const link=await revealLink(w.id);
+    document.getElementById('reg-body').style.display='none';
+    document.getElementById('reg-footer').style.display='none';
+    const succ=document.getElementById('reg-success'); succ.style.display='block';
+    document.getElementById('reg-success-msg').innerHTML=link
+      ? 'Yerin ayrıldı! Katılım bağlantısı: <a href="'+esc(link)+'" target="_blank" rel="noopener">🔗 Webinara Katıl</a>'
+      : 'Yerin ayrıldı! Katılım bağlantısı webinar öncesi burada ve e-postanda paylaşılacak.';
+    render();
+  }catch(e){ console.error(e); err.textContent='Kayıt yapılamadı, lütfen tekrar dene.'; err.style.display='block'; btn.disabled=false; btn.textContent='Kayıt Ol →'; }
+}
+
+function openHostModal(){
+  if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
+  document.getElementById('host-modal').classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeHostModal(){
+  document.getElementById('host-modal').classList.remove('open'); document.body.style.overflow='';
+  const hs=document.getElementById('host-success'); if(hs) hs.style.display='none';
+  const hb=document.getElementById('host-body'); if(hb) hb.style.display='';
+  const hf=document.getElementById('host-footer'); if(hf) hf.style.display='';
+}
+async function submitHost(){
+  if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
+  const title=document.getElementById('h-title').value.trim();
+  const desc=document.getElementById('h-desc').value.trim();
+  const date=document.getElementById('h-date').value;
+  const err=document.getElementById('h-error');
+  if(!title||!desc||!date){ err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
+  err.style.display='none';
+  const capRaw=document.getElementById('h-capacity').value;
+  const durSel=document.getElementById('h-duration').value;
+  const payload={
+    created_by: ME, title:title, topic:document.getElementById('h-topic').value,
+    description:desc, host_name:(document.getElementById('h-host').value.trim()||MY_NAME||'Topluluk üyesi'),
+    host_type:'community', kind:'upcoming', event_date:date, event_time:document.getElementById('h-time').value||null,
+    duration:durSel, capacity:(capRaw?parseInt(capRaw,10):null), price:document.getElementById('h-price').value,
+    price_val:0, language:'TR', status:'pending'
+  };
+  try{
+    const ins=await sb.from('webinars').insert(payload).select('id').single();
+    if(ins.error) throw ins.error;
+    const link=document.getElementById('h-link').value.trim();
+    if(link && ins.data && ins.data.id){ await sb.from('webinar_links').insert({webinar_id:ins.data.id, meeting_link:link}); }
+    document.getElementById('host-body').style.display='none';
+    document.getElementById('host-footer').style.display='none';
+    document.getElementById('host-success').style.display='block';
+    setTimeout(closeHostModal, 3000);
+  }catch(e){ console.error(e); err.textContent='Webinar kaydedilemedi, lütfen tekrar dene.'; err.style.display='block'; }
+}
+
+async function initWebinars(){
+  const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  sb=mod.createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+  const u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
+  if(ME){ try{ const p=await sb.from('profiles').select('first_name,last_name').eq('id',ME).maybeSingle(); if(p.data) MY_NAME=((p.data.first_name||'')+' '+(p.data.last_name||'')).trim(); }catch(_){} }
+  await loadWebinars();
+}
+window.setFilter=setFilter; window.openRegister=openRegister; window.closeRegisterModal=closeRegisterModal;
+window.submitRegister=submitRegister; window.openHostModal=openHostModal; window.closeHostModal=closeHostModal; window.submitHost=submitHost;
+if(document.readyState!=='loading') initWebinars(); else document.addEventListener('DOMContentLoaded', initWebinars);
 </script>
 <!-- SITE FOOTER -->
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">

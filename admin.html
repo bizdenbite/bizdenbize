@@ -270,6 +270,9 @@
     <button class="nav-item" onclick="showSection('jobs', this)">
       💼 İş İlanları <span class="nav-badge" id="badge-jobs">—</span>
     </button>
+    <button class="nav-item" onclick="showSection('webinars', this)">
+      🎥 Webinarlar <span class="nav-badge" id="badge-webinars">—</span>
+    </button>
     <button class="nav-item" onclick="showSection('content', this)">
       📋 İçerik
     </button>
@@ -313,6 +316,7 @@
       <option value="videos">🎬 Videothek</option>
       <option value="businesses">🏪 İşletmeler</option>
       <option value="jobs">💼 İş İlanları</option>
+      <option value="webinars">🎥 Webinarlar</option>
       <option value="messages">💬 Mesajlar</option>
       <option value="notifications">🔔 Bildirimler</option>
       <option value="reports">🚩 Şikayetler</option>
@@ -603,6 +607,14 @@
       <div id="jobs-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <div class="section" id="section-webinars">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="webAdminTab('pending',this)">⏳ Onay Bekleyen <span id="web-pending-count"></span></button>
+        <button class="tab-btn" onclick="webAdminTab('approved',this)">✓ Yayında</button>
+      </div>
+      <div id="web-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
+    </div>
+
     <div class="section" id="section-reports">
       <div class="card">
         <div class="card-head">
@@ -714,7 +726,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
   };
   window.toggleAdminSidebar = function() {
     const sb = document.querySelector('.sidebar');
@@ -738,6 +750,7 @@
     if (id === 'events') loadEvents();
     if (id === 'businesses') loadBusinesses();
     if (id === 'jobs') loadJobs();
+    if (id === 'webinars') loadWebinarsAdmin();
     if (id === 'messages') loadMessages();
     if (id === 'notifications') loadNotifHistory();
     if (id === 'reports') loadReports();
@@ -1552,6 +1565,62 @@ function escapeHtml(x){ return String(x==null?'':x).replace(/[&<>"']/g, function
   window.jobHide = async function(id){
     if(!confirm('Bu ilanı yayından gizle?')) return;
     try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadJobs(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+
+  // ── Webinarlar moderation ──
+  let webAdminFilter = 'pending';
+  function webEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  window.webAdminTab = function(fl, btn){
+    webAdminFilter = fl;
+    document.querySelectorAll('#section-webinars .tab-btn').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    loadWebinarsAdmin();
+  };
+  async function loadWebinarsAdmin(){
+    const list = document.getElementById('web-admin-list');
+    list.innerHTML = '<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
+    try{
+      const st = webAdminFilter==='approved' ? 'approved' : 'pending';
+      const rows = await sb('webinars?status=eq.'+st+'&select=id,title,topic,host_name,host_type,kind,event_date,event_time,duration,capacity,price,description,created_by,created_at&order=created_at.desc');
+      const pc=document.getElementById('web-pending-count');
+      if(pc) pc.textContent = (webAdminFilter==='pending' && rows.length)?('('+rows.length+')'):'';
+      const nb=document.getElementById('badge-webinars'); if(nb && webAdminFilter==='pending') nb.textContent = rows.length||'—';
+      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">'+(webAdminFilter==='approved'?'Yayında webinar yok.':'Onay bekleyen webinar yok.')+'</p>'; return; }
+      list.innerHTML = rows.map(webRow).join('');
+    }catch(e){ console.error(e); list.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+webEsc(e.message)+'</p>'; }
+  }
+  function webRow(r){
+    const kind = r.kind==='recorded' ? '▶️ Kayıtlı' : '📅 Yaklaşan';
+    const host = (r.host_type==='bizdenbize'?'⭐ ':'👥 ') + (r.host_name||'—');
+    const when = [r.event_date, r.event_time].filter(Boolean).join(' · ');
+    const meta = [kind, webEsc(r.topic||''), when, r.duration||'', (r.capacity!=null?('🪑 '+r.capacity+' kişi'):''), (r.price==='paid'?'€ Ücretli':'Ücretsiz')].filter(Boolean).join(' · ');
+    let actions;
+    if(webAdminFilter==='pending'){
+      actions='<button class="btn btn-sm btn-green" onclick="webApprove(\''+r.id+'\')">✅ Onayla</button>'
+        +'<button class="btn btn-sm btn-red" onclick="webReject(\''+r.id+'\')">✗ Reddet</button>';
+    } else {
+      actions='<button class="btn btn-sm btn-muted" onclick="webHide(\''+r.id+'\')">🙈 Gizle</button>';
+    }
+    return '<div class="card" style="margin-bottom:10px;">'
+      +'<div style="font-weight:700;color:var(--ink);">'+webEsc(r.title)+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+webEsc(host)+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+meta+'</div>'
+      +(r.description?'<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+webEsc(r.description).slice(0,220)+'</div>':'')
+      +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</div></div>';
+  }
+  window.webApprove = async function(id){
+    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'approved'}) }); toast('Webinar onaylandı ✓'); loadWebinarsAdmin(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+  window.webReject = async function(id){
+    if(!confirm('Bu webinarı reddet? (yayınlanmaz)')) return;
+    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'removed'}) }); toast('Reddedildi'); loadWebinarsAdmin(); }
+    catch(e){ toast('Hata: '+e.message,false); }
+  };
+  window.webHide = async function(id){
+    if(!confirm('Bu webinarı yayından gizle?')) return;
+    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadWebinarsAdmin(); }
     catch(e){ toast('Hata: '+e.message,false); }
   };
 
