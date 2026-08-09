@@ -393,7 +393,14 @@
 <div class="page-body">
   <div class="toolbar">
     <div class="results-count" id="results-count"><strong>—</strong> webinar bulundu</div>
-    <button class="host-btn" onclick="openHostModal()">🎥 Webinar Düzenle</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="host-btn" id="my-webinars-btn" onclick="toggleMyWebinars()" style="display:none;">📚 Webinarlarım</button>
+      <button class="host-btn" onclick="openHostModal()">🎥 Webinar Öner</button>
+    </div>
+  </div>
+  <div id="my-webinars-section" style="display:none;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:12px;">📚 Webinarlarım</div>
+    <div class="webinar-grid" id="my-webinars-list"></div>
   </div>
   <div class="webinar-grid" id="webinar-grid"></div>
 </div>
@@ -442,7 +449,7 @@
 <div class="modal-overlay" id="host-modal" onclick="if(event.target===this)closeHostModal()">
   <div class="modal">
     <div class="modal-header">
-      <div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🎥 Webinar Düzenle</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Topluluğa yönelik webinarını yayınla</div></div>
+      <div><div id="host-modal-title" style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🎥 Webinar Öner</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Topluluğa yönelik webinarını yayınla</div></div>
       <button class="modal-close" onclick="closeHostModal()">×</button>
     </div>
     <div class="modal-body" id="host-body">
@@ -516,6 +523,8 @@ let sb = null, ME = null, MY_NAME = '';
 let webinars = [];
 let activeFilter = 'all';
 let currentWebinar = null;
+let editingId = null;
+let myWebinars = [];
 const _MONTHS = ['','Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
 function formatDate(d, t){
@@ -687,9 +696,76 @@ async function submitRegister(){
   }catch(e){ console.error(e); err.textContent='Kayıt yapılamadı, lütfen tekrar dene.'; err.style.display='block'; btn.disabled=false; btn.textContent='Kayıt Ol →'; }
 }
 
+function resetHostForm(){
+  ['h-title','h-desc','h-date','h-capacity','h-link','h-host'].forEach(function(id){var e=document.getElementById(id); if(e)e.value='';});
+  var t=document.getElementById('h-time'); if(t)t.value='19:00';
+  var tp=document.getElementById('h-topic'); if(tp)tp.selectedIndex=0;
+  var pr=document.getElementById('h-price'); if(pr)pr.value='free';
+  var du=document.getElementById('h-duration'); if(du)du.value='60 dakika';
+}
 function openHostModal(){
   if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
+  editingId=null; resetHostForm();
+  var mt=document.getElementById('host-modal-title'); if(mt)mt.textContent='🎥 Webinar Öner';
+  document.getElementById('host-success').style.display='none';
+  document.getElementById('host-body').style.display='';
+  document.getElementById('host-footer').style.display='';
+  document.getElementById('h-error').style.display='none';
   document.getElementById('host-modal').classList.add('open'); document.body.style.overflow='hidden';
+}
+async function openEditWebinar(id){
+  if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
+  var w=myWebinars.find(function(x){return String(x.id)===String(id);}); if(!w) return;
+  editingId=id;
+  document.getElementById('h-title').value=w.title||'';
+  document.getElementById('h-desc').value=w.description||'';
+  document.getElementById('h-date').value=w.event_date||'';
+  document.getElementById('h-time').value=w.event_time||'19:00';
+  var tp=document.getElementById('h-topic'); if(tp && w.topic) tp.value=w.topic;
+  var pr=document.getElementById('h-price'); if(pr) pr.value=w.price||'free';
+  var du=document.getElementById('h-duration'); if(du && w.duration) du.value=w.duration;
+  document.getElementById('h-capacity').value=(w.capacity!=null?w.capacity:'');
+  document.getElementById('h-host').value=w.host_name||'';
+  var link=''; try{ var lr=await sb.from('webinar_links').select('meeting_link').eq('webinar_id',id).maybeSingle(); link=(lr.data&&lr.data.meeting_link)||''; }catch(_){}
+  document.getElementById('h-link').value=link;
+  var mt=document.getElementById('host-modal-title'); if(mt)mt.textContent='✏️ Webinar Düzenle';
+  document.getElementById('host-success').style.display='none';
+  document.getElementById('host-body').style.display='';
+  document.getElementById('host-footer').style.display='';
+  document.getElementById('h-error').style.display='none';
+  document.getElementById('host-modal').classList.add('open'); document.body.style.overflow='hidden';
+}
+async function cancelWebinar(id){
+  if(!confirm('Bu webinarı iptal etmek istediğine emin misin?')) return;
+  try{ var r=await sb.from('webinars').update({status:'removed'}).eq('id',id); if(r.error) throw r.error; await loadMyWebinars(); await loadWebinars(); }
+  catch(e){ console.error(e); alert('İptal edilemedi, lütfen tekrar dene.'); }
+}
+function toggleMyWebinars(){
+  var sec=document.getElementById('my-webinars-section');
+  if(sec){ var open=(sec.style.display!=='none' && sec.style.display!==''); sec.style.display=open?'none':'block'; if(!open) sec.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+async function loadMyWebinars(){
+  if(!ME){ return; }
+  try{ var r=await sb.from('webinars').select('*').eq('created_by',ME).neq('status','removed').order('created_at',{ascending:false}); myWebinars=r.data||[]; }
+  catch(e){ myWebinars=[]; }
+  renderMyWebinars();
+}
+function renderMyWebinars(){
+  var btn=document.getElementById('my-webinars-btn'), sec=document.getElementById('my-webinars-section'), list=document.getElementById('my-webinars-list');
+  if(!myWebinars.length){ if(btn)btn.style.display='none'; if(sec)sec.style.display='none'; return; }
+  if(btn) btn.style.display='';
+  var STLBL={pending:'⏳ Onay bekliyor',approved:'✓ Yayında',hidden:'🙈 Gizli'};
+  list.innerHTML=myWebinars.map(function(w){
+    var st=STLBL[w.status]||w.status;
+    return '<div class="webinar-card" style="cursor:default;"><div class="card-body">'
+      +'<div class="card-topic">'+esc(w.topic||'')+' · '+st+'</div>'
+      +'<div class="card-title">'+esc(w.title)+'</div>'
+      +'<div class="card-host">📅 '+formatDate(w.event_date,w.event_time)+' · ⏱️ '+esc(w.duration||'')+'</div>'
+      +'<div style="margin-top:12px;display:flex;gap:8px;">'
+      +'<button class="card-register-btn" onclick="openEditWebinar(\''+w.id+'\')">✏️ Düzenle</button>'
+      +'<button class="card-register-btn" style="background:var(--red);" onclick="cancelWebinar(\''+w.id+'\')">✗ İptal Et</button>'
+      +'</div></div></div>';
+  }).join('');
 }
 function closeHostModal(){
   document.getElementById('host-modal').classList.remove('open'); document.body.style.overflow='';
@@ -706,24 +782,35 @@ async function submitHost(){
   if(!title||!desc||!date){ err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   err.style.display='none';
   const capRaw=document.getElementById('h-capacity').value;
-  const durSel=document.getElementById('h-duration').value;
-  const payload={
-    created_by: ME, title:title, topic:document.getElementById('h-topic').value,
-    description:desc, host_name:(document.getElementById('h-host').value.trim()||MY_NAME||'Topluluk üyesi'),
-    host_type:'community', kind:'upcoming', event_date:date, event_time:document.getElementById('h-time').value||null,
-    duration:durSel, capacity:(capRaw?parseInt(capRaw,10):null), price:document.getElementById('h-price').value,
-    price_val:0, language:'TR', status:'pending'
+  const fields={
+    title:title, topic:document.getElementById('h-topic').value, description:desc,
+    host_name:(document.getElementById('h-host').value.trim()||MY_NAME||'Topluluk üyesi'),
+    event_date:date, event_time:document.getElementById('h-time').value||null,
+    duration:document.getElementById('h-duration').value,
+    capacity:(capRaw?parseInt(capRaw,10):null), price:document.getElementById('h-price').value
   };
+  const link=document.getElementById('h-link').value.trim();
   try{
-    const ins=await sb.from('webinars').insert(payload).select('id').single();
-    if(ins.error) throw ins.error;
-    const link=document.getElementById('h-link').value.trim();
-    if(link && ins.data && ins.data.id){ await sb.from('webinar_links').insert({webinar_id:ins.data.id, meeting_link:link}); }
+    let wid;
+    if(editingId){
+      const up=await sb.from('webinars').update(fields).eq('id',editingId);
+      if(up.error) throw up.error; wid=editingId;
+    } else {
+      const payload=Object.assign({created_by:ME, host_type:'community', kind:'upcoming', price_val:0, language:'TR', status:'pending'}, fields);
+      const ins=await sb.from('webinars').insert(payload).select('id').single();
+      if(ins.error) throw ins.error; wid=ins.data&&ins.data.id;
+    }
+    if(wid && link){ await sb.from('webinar_links').upsert({webinar_id:wid, meeting_link:link},{onConflict:'webinar_id'}); }
     document.getElementById('host-body').style.display='none';
     document.getElementById('host-footer').style.display='none';
-    document.getElementById('host-success').style.display='block';
-    setTimeout(closeHostModal, 3000);
-  }catch(e){ console.error(e); err.textContent='Webinar kaydedilemedi, lütfen tekrar dene.'; err.style.display='block'; }
+    var hs=document.getElementById('host-success');
+    var h3=hs.querySelector('h3'), pp=hs.querySelector('p');
+    if(h3) h3.textContent=editingId?'Webinarın güncellendi!':'Webinarın gönderildi!';
+    if(pp) pp.textContent=editingId?'Değişiklikler kaydedildi.':'Ekibimiz inceleyip onayladıktan sonra topluluk görebilecek.';
+    hs.style.display='block';
+    await loadMyWebinars(); await loadWebinars();
+    setTimeout(closeHostModal, 2500);
+  }catch(e){ console.error(e); err.textContent='Kaydedilemedi, lütfen tekrar dene.'; err.style.display='block'; }
 }
 
 async function initWebinars(){
@@ -732,9 +819,11 @@ async function initWebinars(){
   const u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
   if(ME){ try{ const p=await sb.from('profiles').select('first_name,last_name').eq('id',ME).maybeSingle(); if(p.data) MY_NAME=((p.data.first_name||'')+' '+(p.data.last_name||'')).trim(); }catch(_){} }
   await loadWebinars();
+  await loadMyWebinars();
 }
 window.setFilter=setFilter; window.openRegister=openRegister; window.closeRegisterModal=closeRegisterModal;
 window.submitRegister=submitRegister; window.openHostModal=openHostModal; window.closeHostModal=closeHostModal; window.submitHost=submitHost;
+window.openEditWebinar=openEditWebinar; window.cancelWebinar=cancelWebinar; window.toggleMyWebinars=toggleMyWebinars;
 if(document.readyState!=='loading') initWebinars(); else document.addEventListener('DOMContentLoaded', initWebinars);
 </script>
 <!-- SITE FOOTER -->
