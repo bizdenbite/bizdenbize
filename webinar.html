@@ -575,7 +575,7 @@ function render(){
 
   const grid=document.getElementById('webinar-grid');
   if(!filtered.length){
-    grid.innerHTML='<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🎥</div><div style="font-family:\'Playfair Display\',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz webinar yok</div><p style="font-size:13px;margin-bottom:16px">İlk eğitimi sen öner!</p><button onclick="openHostModal()" style="padding:10px 24px;background:var(--purple);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">🎥 Webinar Öner</button></div>';
+    grid.innerHTML='<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🎥</div><div style="font-family:\'Playfair Display\',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz webinar yok</div><p style="font-size:13px;">İlk eğitimi sen öner! Yukarıdaki <strong>🎥 Webinar Öner</strong> düğmesini kullan.</p></div>';
     return;
   }
   grid.innerHTML=filtered.map(function(w){
