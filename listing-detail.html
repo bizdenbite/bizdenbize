@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — İlan</title>
   <meta name="description" content="BizdenBize'de ilanlar, ikinci el eşya ve daha fazlası. İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz.">
-  <!-- Social sharing preview (OpenGraph / Twitter) -->
   <meta property="og:site_name" content="BizdenBize">
   <meta property="og:type" content="website">
   <meta property="og:title" content="BizdenBize — İlan">
@@ -36,7 +35,6 @@
     .nav-right{display:flex;align-items:center;gap:10px;}
     .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
 
-    /* Breadcrumb */
     .breadcrumb{padding:72px 40px 0;max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
     .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
     .breadcrumb a:hover{color:var(--navy);}
@@ -44,8 +42,6 @@
 
     .page{padding:16px 40px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
 
-    /* ── LEFT ── */
-    /* Image gallery */
     .gallery{margin-bottom:20px;}
     .main-img{height:380px;background:var(--warm);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden;cursor:pointer;margin-bottom:10px;border:1px solid var(--sand);}
     .img-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
@@ -58,399 +54,49 @@
     .thumb.active{border-color:var(--navy);}
     .thumb:hover{border-color:var(--sand);}
 
-    /* Listing info */
     .listing-info{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:24px;margin-bottom:16px;}
-    .li-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
-    .li-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(30,123,75,.1);color:var(--green);}
-    .save-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--sand);background:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-    .save-btn:hover{border-color:var(--red);color:var(--red);}
     .li-price{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;}
     .li-title{font-size:20px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-    .li-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-    .li-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);background:var(--warm);padding:4px 10px;border-radius:20px;}
-    .li-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
-    .li-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-top:1px solid var(--warm);padding-top:16px;}
-    .ls-item{text-align:center;}
-    .ls-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);}
-    .ls-label{font-size:11px;color:var(--muted);margin-top:2px;}
 
-    /* Details table */
-    .details-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;margin-bottom:16px;}
-    .dc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
-    .details-table{width:100%;border-collapse:collapse;}
-    .details-table tr:nth-child(odd) td{background:rgba(250,247,242,.6);}
-    .details-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--warm);}
-    .details-table td:first-child{color:var(--muted);font-weight:500;width:40%;}
-    .details-table td:last-child{color:var(--ink);}
-    .details-table tr:last-child td{border-bottom:none;}
-
-    /* Similar listings */
-    .similar-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
-    .sc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;}
-    .similar-list{display:flex;flex-direction:column;gap:10px;}
-    .sim-item{display:flex;gap:12px;cursor:pointer;padding:8px;border-radius:10px;transition:background .15s;}
-    .sim-item:hover{background:var(--warm);}
-    .sim-thumb{width:60px;height:50px;border-radius:8px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-    .sim-price{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);}
-    .sim-title{font-size:12px;color:var(--muted);margin-top:1px;}
-
-    /* ── RIGHT ── */
     .right-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px;}
-
-    /* Seller card */
     .seller-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
-    .seller-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-    .seller-avatar{width:52px;height:52px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
-    .seller-name{font-size:15px;font-weight:600;color:var(--ink);}
-    .seller-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-    .seller-verified{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:rgba(30,123,75,.1);color:var(--green);margin-top:4px;}
-    .seller-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
-    .ss-item{text-align:center;padding:8px 4px;background:var(--cream);border-radius:8px;}
-    .ss-val{font-size:16px;font-weight:700;color:var(--ink);}
-    .ss-label{font-size:10px;color:var(--muted);margin-top:1px;}
-    .contact-btns{display:flex;flex-direction:column;gap:8px;}
-    .contact-btn{width:100%;padding:12px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;border:none;}
-    .contact-btn.primary{background:var(--navy);color:var(--white);}
-    .contact-btn.primary:hover{background:var(--navy2);}
-    .contact-btn.secondary{background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);}
-    .contact-btn.secondary:hover{border-color:var(--navy);}
-    .contact-btn.danger{background:none;color:var(--red);border:1.5px solid rgba(212,43,43,.2);}
-    .contact-btn.danger:hover{background:rgba(212,43,43,.05);}
 
-    /* Price offer */
-    .offer-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:20px;}
-    .oc-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
-    .oc-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
-    .offer-input-wrap{display:flex;gap:8px;}
-    .offer-input{flex:1;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:'Instrument Sans',sans-serif;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
-    .offer-input:focus{border-color:var(--navy);}
-    .offer-btn{padding:10px 16px;background:var(--gold);color:var(--ink);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;white-space:nowrap;}
-    .offer-btn:hover{opacity:.9;}
-
-    /* Safety tips */
-    .safety-card{background:rgba(27,58,140,.04);border:1px solid rgba(27,58,140,.15);border-radius:14px;padding:16px;}
-    .safety-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-    .safety-tips{display:flex;flex-direction:column;gap:5px;}
-    .safety-tip{font-size:11px;color:var(--muted);display:flex;gap:6px;line-height:1.4;}
-    .safety-tip::before{content:'✓';color:var(--navy);font-weight:700;flex-shrink:0;}
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:28px;max-width:420px;width:90%;position:relative;animation:slideUp .3s ease;text-align:center;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 
     @media(max-width:900px){
       .page{grid-template-columns:1fr;padding:16px 20px 60px;}
       .right-col{position:static;}
       .breadcrumb{padding:72px 20px 0;}
     }
-  
-    /* ── MOBILE NAV ── */
-    .hamburger {
-      display: none; flex-direction: column; gap: 5px;
-      background: none; border: none; cursor: pointer;
-      padding: 6px; border-radius: 8px; transition: background .15s;
-      flex-shrink: 0;
-    }
-    .hamburger:hover { background: var(--warm, #F0EAE0); }
-    .hamburger span {
-      display: block; width: 22px; height: 2px;
-      background: var(--ink, #1A1208); border-radius: 2px;
-      transition: transform .3s, opacity .3s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    .mobile-menu {
-      display: none; position: fixed;
-      top: 58px; left: 0; right: 0; bottom: 0;
-      background: var(--white, #fff); z-index: 99;
-      flex-direction: column; overflow-y: auto;
-      border-top: 1px solid rgba(212,197,169,.4);
-      animation: slideDown .2s ease;
-    }
-    .mobile-menu.open { display: flex; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .mm-user {
-      display: flex; align-items: center; gap: 14px;
-      padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
-    }
-    .mm-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: var(--red, #D42B2B); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: 700; flex-shrink: 0;
-    }
-    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
-    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
-    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
-    .mm-link {
-      display: flex; align-items: center; gap: 14px;
-      padding: 13px 12px; border-radius: 10px;
-      font-size: 15px; font-weight: 500;
-      color: var(--ink, #1A1208); text-decoration: none;
-      transition: background .15s; cursor: pointer;
-    }
-    .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
-    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
-    .mm-badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px;
-      background: var(--red, #D42B2B); color: #fff;
-    }
-    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
-    .mm-section-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .09em;
-      text-transform: uppercase; color: var(--muted, #6B5E4E);
-      padding: 8px 24px 4px;
-    }
-    .mm-footer {
-      padding: 16px 24px 32px;
-      border-top: 1px solid rgba(212,197,169,.25);
-    }
-    .mm-logout {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 14px; color: var(--red, #D42B2B);
-      background: none; border: none; cursor: pointer;
-      font-family: inherit; font-weight: 500; padding: 8px 0;
-    }
-
-    @media (max-width: 768px) {
-      .nav-tabs { display: none !important; }
-      .hamburger { display: flex !important; }
-      .nav-search { max-width: 160px !important; }
-    }
-    @media (max-width: 480px) {
-      .nav-search { display: none !important; }
-    }
-
-  
-  /* ── COOKIE CONSENT BANNER ── */
-  #cookie-banner {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: var(--ink, #1A1208);
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding: 20px 32px;
-    display: none;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
-    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
-  }
-  #cookie-banner.visible { display: flex; }
-  @keyframes slideUpBanner {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
-  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
-  .cb-text { flex: 1; min-width: 240px; }
-  .cb-title {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 14px; font-weight: 600;
-    color: #fff; margin-bottom: 4px;
-  }
-  .cb-desc {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 12px; color: rgba(255,255,255,.5);
-    line-height: 1.55;
-  }
-  .cb-desc a {
-    color: rgba(255,255,255,.7);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .cb-desc a:hover { color: #fff; }
-  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
-  .cb-btn {
-    padding: 10px 20px; border-radius: 8px;
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; border: none;
-    transition: all .15s; white-space: nowrap;
-  }
-  .cb-accept {
-    background: #D42B2B; color: #fff;
-  }
-  .cb-accept:hover { background: #E8393A; }
-  .cb-essential {
-    background: rgba(255,255,255,.1);
-    color: rgba(255,255,255,.8);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
-  .cb-manage {
-    background: none; color: rgba(255,255,255,.5);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
-
-  /* Cookie preferences modal */
-  #cookie-modal {
-    position: fixed; inset: 0; z-index: 10000;
-    background: rgba(26,18,8,.7);
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  #cookie-modal.open { display: flex; }
-  .cm-box {
-    background: #fff; border-radius: 20px;
-    padding: 0; max-width: 520px; width: 90%;
-    max-height: 85vh; overflow-y: auto;
-    animation: popIn .3s cubic-bezier(.16,1,.3,1);
-    font-family: 'Instrument Sans', sans-serif;
-  }
-  @keyframes popIn {
-    from { transform: scale(.95); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-  .cm-header {
-    padding: 24px 24px 0;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .cm-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; color: #1A1208;
-  }
-  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
-  .cm-close {
-    background: none; border: none; font-size: 22px;
-    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
-    margin: -4px -4px 0 12px; line-height: 1;
-  }
-  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
-  .cm-cat {
-    border: 1px solid #F0EAE0; border-radius: 12px;
-    overflow: hidden;
-  }
-  .cm-cat-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px; cursor: pointer;
-    background: #FAF7F2; transition: background .15s;
-    user-select: none;
-  }
-  .cm-cat-header:hover { background: #F0EAE0; }
-  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
-  .cm-cat-info { flex: 1; }
-  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
-  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
-  /* Toggle switch */
-  .cm-toggle {
-    width: 40px; height: 22px; border-radius: 11px;
-    background: #D4C5A9; position: relative; flex-shrink: 0;
-    cursor: pointer; transition: background .2s; border: none;
-  }
-  .cm-toggle.on { background: #1B3A8C; }
-  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
-  .cm-toggle::after {
-    content: ''; position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #fff; transition: transform .2s;
-  }
-  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
-  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
-  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
-  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
-  .cm-cat.open .cm-cat-body { display: block; }
-  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
-  .cm-cat-detail strong { color: #1A1208; }
-
-  .cm-footer {
-    padding: 20px 24px 24px; display: flex; gap: 8px;
-    border-top: 1px solid #F0EAE0; margin-top: 16px;
-  }
-  .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-save:hover { background: #2348A8; }
-  .cm-accept-all {
-    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-accept-all:hover { background: #E8393A; }
-    @media (max-width: 900px) { }
-  
-    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
-
-    /* ── SIMPLIFIED PRIMARY NAV ── */
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
     .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
-    .nav-primary a,.nav-kesfet-btn{
-      display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
-      font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;
-      background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
-    }
+    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
     .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
     .nav-primary a.active{background:var(--warm);color:var(--red);}
 
-    /* ── KEŞFET PANEL (desktop) ── */
-    .kesfet-panel{
-      display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);
-      background:#fff;border:1px solid var(--sand);border-radius:14px;
-      box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;
-    }
+    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
     .kesfet-panel.open{display:block;}
     .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;
-      padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);
-      font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
     .kesfet-tile:hover{background:var(--warm);}
     .kesfet-tile .e{font-size:22px;}
 
-    /* ── UTILITY: messages icon (matches existing notif-bell styling) ── */
-    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
-      padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
     .nav-msg:hover{background:var(--warm);}
 
-    /* ── BOTTOM TAB BAR (mobile only) ── */
-    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
-      background:#fff;border-top:1px solid var(--sand);
-      padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
-    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-      font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;
-      background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
     .bt-item.active{color:var(--red);}
     .bt-icon{font-size:20px;}
 
-    /* ── KEŞFET SHEET (mobile) ── */
-    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
-    .kesfet-sheet-overlay.open{display:block;}
-    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;
-      border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));
-      z-index:351;max-height:75vh;overflow-y:auto;}
-    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
-    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-</style>
+    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
+  </style>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="BizdenBize">
-  <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
-  <meta name="msapplication-TileImage" content="icons/icon-144.png">
-  <!-- Apple touch icons -->
-  <link rel="apple-touch-icon" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
-  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
-  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
-  <link rel="shortcut icon" href="icons/icon-96.png">
   <script src="i18n.js"></script>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -499,120 +145,11 @@
     function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
     document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
     async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
-
-    // Populate the nav avatar with the real logged-in user's initials/photo,
-    // reusing the existing session promise this page already sets up above
-    // (window._authReady / window._currentSession) — same visual logic as
-    // mahallem.html's avatar, for consistency.
-    // NOTE: window._authReady is created inside a deferred module script, which
-    // browsers DEFER until after all regular scripts run. Checking for it
-    // directly here would always find it undefined and silently skip — which is
-    // exactly the bug this replaces. Poll briefly for the session instead, so
-    // this doesn't depend on script execution order at all.
-    (function initNavAvatar() {
-      let waited = 0;
-      const timer = setInterval(async () => {
-        waited += 100;
-        const session = window._currentSession;
-        if (!session) {
-          if (waited >= 5000) clearInterval(timer); // give up quietly (e.g. logged out)
-          return;
-        }
-        clearInterval(timer);
-        const navAvatar = document.getElementById('nav-avatar');
-        if (!navAvatar) return;
-        try {
-          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
-            headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
-          });
-          const rows = await r.json();
-          const p = rows[0] || {};
-          // Use ONLY the BizdenBize profile record — deliberately NOT the auth
-          // provider's metadata (e.g. a Google account picture/name), which can
-          // differ from the member's actual BizdenBize identity and would show
-          // a different avatar here than on mahallem/abibot/profile.
-          if (p.avatar_url) {
-            navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-          } else {
-            const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
-            const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
-            navAvatar.textContent = initials;
-            navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
-          }
-        } catch(e) { console.error('Nav avatar load error:', e); }
-      }, 100);
-    })();
   </script>
 </nav>
 
-<!-- KEŞFET SHEET (mobile) -->
-<div class="kesfet-sheet-overlay" id="kesfet-sheet-overlay" onclick="closeKesfetSheet()"></div>
-<div class="kesfet-sheet" id="kesfet-sheet" style="display:none;">
-  <div class="kesfet-sheet-header">
-    <div class="kesfet-sheet-title">Keşfet</div>
-    <button onclick="closeKesfetSheet()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
-  </div>
-  <div class="kesfet-sheet-grid">
-    <a class="kesfet-tile" href="is-guc.html"><span class="e">💼</span>İş İlanları</a>
-    <a class="kesfet-tile" href="business.html"><span class="e">🏢</span>İşletmeler</a>
-    <a class="kesfet-tile" href="uzmanlar.html"><span class="e">👨‍⚖️</span>Uzmanlar</a>
-    <a class="kesfet-tile" href="ogrenim.html"><span class="e">🎓</span>Öğrenim</a>
-    <a class="kesfet-tile" href="nachhilfe.html"><span class="e">✏️</span>Nachhilfe</a>
-    <a class="kesfet-tile" href="webinar.html"><span class="e">🎥</span>Webinarlar</a>
-    <a class="kesfet-tile" href="saglik.html"><span class="e">🏥</span>Sağlık</a>
-    <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
-    <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
-    <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgi & Belge</a>
-      <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
-    <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
-    <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
-  </div>
-</div>
-
-<!-- BOTTOM TAB BAR (mobile) -->
-<div class="bottom-tabbar" id="bottom-tabbar">
-  <a class="bt-item" href="mahallem.html" id="bt-mahallem"><span class="bt-icon">🏘️</span>Mahallem</a>
-  <a class="bt-item" href="abibot.html" id="bt-abibot"><span class="bt-icon">🤖</span>AbiBOT</a>
-  <a class="bt-item" href="classifieds.html" id="bt-ilanlar"><span class="bt-icon">🛍️</span>İlanlar</a>
-  <button class="bt-item" onclick="openKesfetSheet()" id="bt-kesfet"><span class="bt-icon">🔍</span>Keşfet</button>
-  <a class="bt-item" href="profile.html" id="bt-profil"><span class="bt-icon">👤</span>Profil</a>
-</div>
-
-<script>
-  function toggleKesfet(e) {
-    e.stopPropagation();
-    document.getElementById('kesfet-panel').classList.toggle('open');
-  }
-  document.addEventListener('click', function(e) {
-    const panel = document.getElementById('kesfet-panel');
-    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') {
-      panel.classList.remove('open');
-    }
-  });
-  function openKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.add('open');
-    document.getElementById('kesfet-sheet').style.display = 'block';
-  }
-  function closeKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.remove('open');
-    document.getElementById('kesfet-sheet').style.display = 'none';
-  }
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
-    const map = { 'mahallem.html': 'mahallem', 'abibot.html': 'abibot', 'classifieds.html': 'ilanlar', 'profile.html': 'profil' };
-    const key = map[page];
-    if (key) {
-      const npEl = document.getElementById('np-' + key);
-      const btEl = document.getElementById('bt-' + key);
-      if (npEl) npEl.classList.add('active');
-      if (btEl) btEl.classList.add('active');
-    }
-  })();
-</script>
-
-
 <div class="breadcrumb" style="flex-direction:column;align-items:flex-start;gap:10px;">
-  <button onclick="bbGoBack('classifieds.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Geri</button>
+  <button onclick="bbGoBack('classifieds.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">← Geri</button>
   <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
     <a href="mahallem.html">Ana Sayfa</a><span>/</span>
     <a href="classifieds.html">İlanlar</a><span>/</span>
@@ -633,275 +170,59 @@
   <div style="text-align:center;padding:60px;color:var(--muted);">İlan yükleniyor…</div>
 </div>
 
+<!-- SHARE EMAIL CHOICE MODAL -->
+<div class="modal-overlay" id="share-email-modal" onclick="if(event.target===this)closeShareModal()">
+  <div class="modal">
+    <div style="font-size:36px;margin-bottom:8px;">✉️</div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;">İlanı Paylaş</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Bu ilanı e-posta ile arkadaşlarınıza gönderin</div>
+
+    <button onclick="copyShareText()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;font-family:inherit;">
+      📋 İlan Metnini & Bağlantısını Kopyala
+    </button>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">(Gmail, WhatsApp, Messenger vb. yapıştırmak için)</div>
+
+    <button onclick="openShareMailApp()" style="width:100%;padding:11px;background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px;font-family:inherit;">
+      ✉️ E-posta Uygulamasında Aç
+    </button>
+
+    <button onclick="closeShareModal()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;">Kapat</button>
+  </div>
+</div>
+
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
-
-    <!-- Top row -->
     <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
-
-      <!-- Brand -->
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
-        <!-- Social -->
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
-          <a href="https://tiktok.com/@bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="TikTok">🎵</a>
-          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
-          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
-        </div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
       </div>
-
-      <!-- Platform -->
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
-          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
-          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
-          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
-          <a href="is-guc.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
-          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
-          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgi & Belge</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
         </div>
       </div>
-
-      <!-- Destek -->
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
-          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
-          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
-          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">support@bizdenbize.com</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
         </div>
       </div>
-
-      <!-- Yasal -->
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
-          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
-          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
-          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">KVKK / GDPR</a>
-          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Impressum</a>
-          <a href="ilan-kurallari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
+          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
+          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
         </div>
       </div>
-
     </div>
-
-    
-
-    <!-- Bottom bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
-      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
-    </div>
-
   </div>
-
-  <style>
-    @media (max-width: 768px) {
-      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
-      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
-    }
-    @media (max-width: 480px) {
-      footer > div > div:first-child { grid-template-columns: 1fr !important; }
-    }
-  </style>
 </footer>
 
-
-<script>
-  const emojis = ['🚗','🪟','🛞','💺','🔧'];
-  let current = 0;
-  function setImg(i) {
-    current = i;
-    document.getElementById('main-emoji').textContent = emojis[i];
-    document.getElementById('img-counter').textContent = (i+1)+' / '+emojis.length;
-    document.querySelectorAll('.thumb').forEach((t,idx) => t.classList.toggle('active', idx===i));
-  }
-  function changeImg(dir) { setImg((current + dir + emojis.length) % emojis.length); }
-  function toggleSave() {
-    const btn = document.getElementById('save-btn');
-    const saved = btn.textContent === '🧡';
-    btn.textContent = saved ? '🤍' : '🧡';
-  }
-  function sendOffer() {
-    const val = document.getElementById('offer-val').value;
-    if (!val) return;
-    alert(`€${val} teklifiniz satıcıya iletildi!`);
-    document.getElementById('offer-val').value = '';
-  }
-</script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
-          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
-          .catch(err => console.warn('[BizdenBize] SW failed:', err));
-      });
-    }
-  </script>
-
-  <!-- PWA install banner -->
-  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
-    display:none;align-items:center;gap:14px;
-    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
-    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
-    <div style="flex:1;">
-      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
-      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
-    </div>
-    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
-      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
-      font-family:inherit;white-space:nowrap;">Yükle</button>
-    <button onclick="localStorage.setItem('bb_pwa_dismissed','1');document.getElementById('pwa-banner').style.display='none'"
-      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
-      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
-  </div>
-  <script>
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (localStorage.getItem('bb_pwa_dismissed')) return;
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'flex';
-    });
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        const banner = document.getElementById('pwa-banner');
-        if (banner) banner.style.display = 'none';
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('[BizdenBize] PWA install:', outcome);
-        deferredPrompt = null;
-      });
-    }
-    window.addEventListener('appinstalled', () => {
-      localStorage.setItem('bb_pwa_dismissed','1');
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'none';
-      deferredPrompt = null;
-    });
-  </script>
-<script>
-  // ══ COOKIE CONSENT LOGIC ══
-  (function() {
-    var STORAGE_KEY = 'bb_cookie_consent';
-    var consent = null;
-    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
-
-    // Show banner if no consent yet
-    if (!consent) {
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var b = document.getElementById('cookie-banner');
-          if (b) b.classList.add('visible');
-        }, 800);
-      });
-    } else {
-      applyConsent(consent);
-    }
-
-    window.acceptAll = function() {
-      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-    };
-
-    window.acceptEssential = function() {
-      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-    };
-
-    window.savePreferences = function() {
-      var c = {
-        essential: true,
-        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
-        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
-        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
-        ts: Date.now()
-      };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-      showToast('✓ Çerez tercihleriniz kaydedildi.');
-    };
-
-    function saveConsent(c) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
-      applyConsent(c);
-    }
-
-    function applyConsent(c) {
-      // Analytics: load only if consented
-      if (c.analytics) {
-        // Plausible or similar would load here
-        // e.g. loadScript('https://plausible.io/js/plausible.js')
-        console.log('[BizdenBize] Analytics enabled');
-      }
-      // Marketing
-      if (c.marketing) {
-        console.log('[BizdenBize] Marketing enabled');
-      }
-    }
-
-    function hideBanner() {
-      var b = document.getElementById('cookie-banner');
-      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
-    }
-
-    window.openCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    };
-
-    window.closeCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.remove('open');
-      document.body.style.overflow = '';
-    };
-
-    // Close modal on backdrop click
-    document.addEventListener('click', function(e) {
-      var m = document.getElementById('cookie-modal');
-      if (m && e.target === m) closeCookieModal();
-    });
-
-    window.toggleCat = function(cat) {
-      var el = document.getElementById('cat-' + cat);
-      if (el) el.classList.toggle('open');
-    };
-
-    window.toggleCookie = function(e, cat) {
-      e.stopPropagation();
-      var btn = document.getElementById('toggle-' + cat);
-      if (btn) btn.classList.toggle('on');
-    };
-
-    function showToast(msg) {
-      var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(function(){ t.remove(); }, 2500);
-    }
-  })();
-
-  </script>
 <script>
   const _LD_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _LD_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
@@ -927,7 +248,6 @@
       document.getElementById('bc-title').textContent=l.title;
       document.title='BizdenBize — '+l.title;
 
-      // gallery
       const photos=(l.photos&&l.photos.length)?l.photos:[];
       let gallery;
       if(photos.length){
@@ -941,7 +261,7 @@
       }
 
       const cond=l.condition?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Durum</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_COND[l.condition]||l.condition)+'</td></tr>'):'';
-    const deliv=l.delivery?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Teslimat</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_DELIV[l.delivery]||l.delivery)+'</td></tr>'):'';
+      const deliv=l.delivery?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Teslimat</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_DELIV[l.delivery]||l.delivery)+'</td></tr>'):'';
       const loc=[l.location,l.city].filter(Boolean).join(', ');
 
       const shareHtml = `<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--sand);"><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Bu İlanı Paylaş</div><div style="display:flex;gap:8px;"><button onclick="ldShareWhatsApp()" style="flex:1;background:#1E7B4B;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3A2.8 2.8 0 0 0 6 8.9a4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.9.5 2.2.5a2.4 2.4 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c0-.2-.2-.2-.4-.3z"/></svg>WhatsApp</button><button onclick="ldShareEmail()" style="flex:1;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">✉️ E-posta</button></div></div>`;
@@ -953,7 +273,7 @@
         + '<div class="li-price">'+ldPrice(l)+'</div>'
         + '<div class="li-title">'+ldEsc(l.title)+'</div>'
         + '<div style="color:var(--muted);font-size:14px;margin:8px 0 20px;">'+cat.e+' '+ldEsc(cat.l)+(loc?' · 📍 '+ldEsc(loc):'')+'</div>'
-        + (l.description?'<div id="ld-description" style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:8px;white-space:pre-line;">'+ldEsc(l.description)+'</div><div style="margin-bottom:20px;">'+mhTranslateMenuHtml('#ld-description')+'</div>':'')
+        + (l.description?'<div id="ld-description" style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:8px;white-space:pre-line;">'+ldEsc(l.description)+'</div>':'')
         + ((cond||deliv)?'<table style="width:auto;font-size:14px;border-collapse:collapse;"><tbody>'+cond+deliv+'</tbody></table>':'')
         + '</div>'
         + '<div class="right-col"><div class="seller-card">'
@@ -967,37 +287,72 @@
       window.__ldListing=l;
     }catch(e){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="classifieds.html">← İlanlara dön</a></div>'; }
   }
+
   window.ldSwap=function(url){ const m=document.getElementById('ld-main'); if(m) m.style.backgroundImage='url(\''+url+'\')'; };
   window.ldContact=async function(sellerId){
     await (window._authReady||Promise.resolve());
     const session=window._currentSession;
     if(!session){ alert('Mesaj göndermek için giriş yapmalısın.'); location.href='login.html'; return; }
     if(session.user.id===sellerId){ alert('Bu senin kendi ilanın.'); return; }
-    // hand off to messages with the seller preselected
     const ref=encodeURIComponent('"'+(window.__ldListing?window.__ldListing.title:'İlan')+'" ilanı hakkında:');
     location.href='messages.html?with='+sellerId+'&ref='+ref+'&listing='+(window.__ldListing?window.__ldListing.id:'');
   };
+
   function ldShareData(){
     const l=window.__ldListing||{};
     const url=location.origin+location.pathname+'?id='+encodeURIComponent(l.id||'');
     return { url:url, price:ldPrice(l), title:l.title||'İlan' };
   }
+
   window.ldShareWhatsApp=function(){
     const s=ldShareData();
     const text='"'+s.title+'" · '+s.price+'\n\nBu ilanı BizdenBize\'de gör:\n'+s.url;
     window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
   };
-  window.ldShareEmail=function(){
-    const s=ldShareData();
-    const subject='BizdenBize\'de bir ilan: '+s.title;
-    const body='Merhaba,\n\nBu ilanı BizdenBize\'de gördüm, ilgini çekebilir:\n\n"'+s.title+'" · '+s.price+'\n\n'+s.url+'\n\nBizdenBize — İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz.';
-    location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+
+  // ── SMART SHARE MODAL (OPTION B) ──
+  let shareSubject = '';
+  let shareBody = '';
+
+  window.ldShareEmail = function() {
+    const s = ldShareData();
+    shareSubject = 'BizdenBize\'de bir ilan: ' + s.title;
+    shareBody = 'Merhaba,\n\nBu ilanı BizdenBize\'de gördüm, ilgini çekebilir:\n\n"' + s.title + '" · ' + s.price + '\n\n' + s.url + '\n\nBizdenBize — İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz.';
+    
+    document.getElementById('share-email-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
   };
+
+  window.closeShareModal = function() {
+    document.getElementById('share-email-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.copyShareText = function() {
+    navigator.clipboard.writeText(shareBody).then(() => {
+      closeShareModal();
+      toastMsg('📋 İlan metni ve bağlantısı kopyalandı!');
+    });
+  };
+
+  window.openShareMailApp = function() {
+    closeShareModal();
+    location.href = 'mailto:?subject=' + encodeURIComponent(shareSubject) + '&body=' + encodeURIComponent(shareBody);
+  };
+
+  function toastMsg(msg) {
+    let t = document.getElementById('share-toast');
+    if (t) t.remove();
+    t = document.createElement('div');
+    t.id = 'share-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E7B4B;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);';
+    t.textContent = msg;
+    document.body.appendChild(tip);
+    setTimeout(() => t.remove(), 3500);
+  }
+
   loadListing();
-</script>  <script src="translate-widget.js"></script>
-  <script type="module" src="nav-msg-badge.js"></script>
-  <script src="smart-email.js"></script>
-</body>
-</html>
+</script>
+<script type="module" src="nav-msg-badge.js"></script>
 </body>
 </html>
