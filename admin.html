@@ -16,7 +16,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); display: flex; min-height: 100vh; }
 
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     .sidebar {
       width: var(--sidebar-w); background: var(--ink); position: fixed;
       top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
@@ -52,9 +52,7 @@
     .sidebar-footer {
       margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,.08);
     }
-    .sidebar-user {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; }
     .sidebar-avatar {
       width: 32px; height: 32px; border-radius: 50%; background: var(--red);
       display: flex; align-items: center; justify-content: center;
@@ -68,7 +66,7 @@
     }
     .sidebar-back:hover { color: rgba(255,255,255,.7); }
 
-    /* ── MAIN ── */
+    /* MAIN */
     .main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
     .topbar {
       background: var(--white); border-bottom: 1px solid var(--sand);
@@ -82,11 +80,9 @@
     .topbar-time { font-size: 12px; color: var(--muted); }
     .content { padding: 28px; }
 
-    /* ── SECTION VISIBILITY ── */
     .section { display: none; }
     .section.active { display: block; }
 
-    /* ── STATS GRID ── */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
     .stat-card {
       background: var(--white); border: 1px solid var(--sand); border-radius: 14px;
@@ -103,7 +99,6 @@
     .stat-label { font-size: 12px; color: var(--muted); }
     .stat-sub { font-size: 11px; color: var(--sand); margin-top: 2px; }
 
-    /* ── TABLE ── */
     .card {
       background: var(--white); border: 1px solid var(--sand); border-radius: 14px;
       overflow: hidden; margin-bottom: 20px;
@@ -129,7 +124,6 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: rgba(240,234,224,.4); }
 
-    /* ── BADGES ── */
     .badge {
       display: inline-flex; align-items: center; gap: 4px;
       font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 10px;
@@ -140,7 +134,6 @@
     .badge-navy { background: rgba(27,58,140,.1); color: var(--navy); }
     .badge-muted { background: var(--warm); color: var(--muted); }
 
-    /* ── BUTTONS ── */
     .btn {
       padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
       cursor: pointer; border: none; font-family: 'Instrument Sans', sans-serif;
@@ -156,9 +149,10 @@
     .btn-gold { background: rgba(201,168,76,.1); color: #8B6914; border: 1px solid rgba(201,168,76,.25); }
     .btn-gold:hover { background: var(--gold); color: #fff; }
     .btn-muted { background: var(--warm); color: var(--muted); border: 1px solid var(--sand); }
+    .btn-navy { background: rgba(27,58,140,.1); color: var(--navy); border: 1px solid rgba(27,58,140,.2); }
+    .btn-navy:hover { background: var(--navy); color: #fff; }
     .actions { display: flex; gap: 4px; flex-wrap: wrap; }
 
-    /* ── AVATAR ── */
     .mini-avatar {
       width: 30px; height: 30px; border-radius: 50%; display: inline-flex;
       align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
@@ -166,7 +160,6 @@
     }
     .user-cell { display: flex; align-items: center; gap: 10px; }
 
-    /* ── TABS ── */
     .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--sand); padding-bottom: 0; }
     .tab-btn {
       padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--muted);
@@ -177,7 +170,6 @@
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
-    /* ── NOTIFICATION FORM ── */
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
     .form-input {
@@ -187,9 +179,7 @@
     }
     .form-input:focus { border-color: var(--ink); }
     .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B5E4E' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
 
-    /* ── MESSAGE CARD ── */
     .msg-card {
       background: var(--white); border: 1px solid var(--sand); border-radius: 12px;
       padding: 16px 18px; margin-bottom: 10px; transition: box-shadow .15s;
@@ -202,15 +192,11 @@
     .msg-body-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
     .msg-date { font-size: 11px; color: var(--sand); margin-top: 8px; }
 
-    /* ── EMPTY STATE ── */
     .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
     .empty-icon { font-size: 36px; margin-bottom: 10px; }
     .empty-text { font-size: 14px; }
-
-    /* ── LOADING ── */
     .loading-row td { text-align: center; color: var(--muted); font-size: 13px; padding: 32px; }
 
-    /* ── TOAST ── */
     #toast {
       position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff;
       padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
@@ -236,7 +222,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <a href="mahallem.html" class="sidebar-logo">
     Bizden<span>Bize</span>
@@ -303,7 +288,6 @@
 </aside>
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleAdminSidebar()"></div>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <button class="admin-menu-btn" onclick="toggleAdminSidebar()" aria-label="Menü">☰</button>
@@ -330,7 +314,7 @@
 
   <div class="content">
 
-    <!-- ── DASHBOARD ── -->
+    <!-- DASHBOARD -->
     <div class="section active" id="section-dashboard">
       <div class="stats-grid" id="dashboard-stats">
         <div class="stat-card navy">
@@ -371,7 +355,6 @@
         </div>
       </div>
 
-      <!-- Recent signups -->
       <div class="card">
         <div class="card-head">
           <div class="card-title">🆕 Son Kayıt Olan Kullanıcılar</div>
@@ -385,7 +368,7 @@
       </div>
     </div>
 
-    <!-- ── USERS ── -->
+    <!-- USERS -->
     <div class="section" id="section-users">
       <div class="card">
         <div class="card-head">
@@ -405,13 +388,13 @@
             </tr>
           </thead>
           <tbody id="users-tbody">
-            <tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr>
+            <tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── EXPERTS ── -->
+    <!-- EXPERTS -->
     <div class="section" id="section-experts">
       <div class="card" style="margin-bottom:20px;">
         <div class="card-head">
@@ -455,7 +438,7 @@
       </div>
     </div>
 
-    <!-- ── CONTENT ── -->
+    <!-- CONTENT -->
     <div class="section" id="section-content">
       <div class="tab-bar">
         <button class="tab-btn active" onclick="showTab('listings', this)">📋 İlanlar</button>
@@ -499,14 +482,14 @@
       <div class="tab-pane" id="tab-tutors">
         <div class="card">
           <table>
-            <thead><tr><th>Ad</th><th>Ders</th><th>Şehir</th><th>Fiyat</th><th>İşlem</th></tr></thead>
-            <tbody id="tutors-tbody"><tr class="loading-row"><td colspan="5">Yükleniyor...</td></tr></tbody>
+            <thead><tr><th>Öğretmen / İletişim</th><th>Ders</th><th>Şehir</th><th>Fiyat</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <tbody id="tutors-tbody"><tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── MESSAGES ── -->
+    <!-- MESSAGES -->
     <div class="section" id="section-messages">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">📬 İletişim Mesajları</h2>
@@ -516,18 +499,18 @@
       </div>
     </div>
 
-    <!-- ── NOTIFICATIONS ── -->
+    <!-- VIDEOS & NOTIFICATIONS -->
     <div class="section" id="section-videos">
       <div style="max-width:640px;">
         <h3 style="font-family:'Playfair Display',serif;margin-bottom:4px;">Yeni Video Ekle</h3>
-        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">YouTube bağlantısını yapıştır — video ID otomatik çıkarılır. Videolar <a href="videolar.html" target="_blank" style="color:var(--navy,#1B3A8C);">videolar.html</a> sayfasında yayınlanır.</p>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">YouTube bağlantısını yapıştır — video ID otomatik çıkarılır.</p>
         <div style="display:grid;gap:10px;background:#fff;border:1px solid #e0d8cc;border-radius:12px;padding:18px;">
           <input id="vid-url" placeholder="YouTube bağlantısı — https://youtube.com/watch?v=..." style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
           <input id="vid-title" placeholder="Başlık *" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
           <textarea id="vid-desc" placeholder="Açıklama (isteğe bağlı)" rows="2" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
           <input id="vid-category" placeholder="Kategori" value="Tanıtım" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-welcome"> Bu, "Hoş geldin" videosu olsun (onboarding'de gösterilir)</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-vertical"> Dikey video (Shorts / portre — dar çerçevede gösterilir)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-welcome"> Bu, "Hoş geldin" videosu olsun</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-vertical"> Dikey video (Shorts)</label>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="vid-published" checked> Yayında</label>
           <div id="vid-err" style="color:var(--red);font-size:13px;display:none;"></div>
           <button onclick="addVideo()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;">＋ Video Ekle</button>
@@ -579,8 +562,7 @@
       </div>
     </div>
 
-    <!-- ── REPORTS ── -->
-    <!-- ── EVENTS ── -->
+    <!-- EVENTS -->
     <div class="section" id="section-events">
       <div class="tab-bar">
         <button class="tab-btn active" onclick="evAdminTab('pending',this)">⏳ Onay Bekleyen <span id="ev-pending-count"></span></button>
@@ -590,6 +572,7 @@
       <div id="events-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <!-- BUSINESSES -->
     <div class="section" id="section-businesses">
       <div class="tab-bar">
         <button class="tab-btn active" onclick="bizAdminTab('pending',this)">⏳ Onay Bekleyen <span id="biz-pending-count"></span></button>
@@ -599,6 +582,7 @@
       <div id="biz-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <!-- JOBS -->
     <div class="section" id="section-jobs">
       <div class="tab-bar">
         <button class="tab-btn active" onclick="jobsAdminTab('pending',this)">⏳ Onay Bekleyen <span id="job-pending-count"></span></button>
@@ -607,6 +591,7 @@
       <div id="jobs-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <!-- WEBINARS -->
     <div class="section" id="section-webinars">
       <div class="tab-bar">
         <button class="tab-btn active" onclick="webAdminTab('pending',this)">⏳ Onay Bekleyen <span id="web-pending-count"></span></button>
@@ -615,6 +600,7 @@
       <div id="web-admin-list"><p style="color:var(--muted);padding:20px;">Yükleniyor…</p></div>
     </div>
 
+    <!-- REPORTS -->
     <div class="section" id="section-reports">
       <div class="card">
         <div class="card-head">
@@ -645,7 +631,7 @@
       </div>
     </div>
 
-    <!-- ── DELETIONS ── -->
+    <!-- DELETIONS -->
     <div class="section" id="section-deletions">
       <div class="card">
         <div class="card-head">
@@ -670,10 +656,9 @@
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
@@ -721,19 +706,20 @@
     return new Date(d).toLocaleDateString('tr-TR', { day:'2-digit', month:'short', year:'numeric' });
   }
 
-  // ── NAV ──
   const sectionTitles = {
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
     reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
   };
+
   window.toggleAdminSidebar = function() {
     const sb = document.querySelector('.sidebar');
     const bd = document.getElementById('sidebar-backdrop');
     const open = sb.classList.toggle('open');
     if (bd) bd.classList.toggle('show', open);
   };
+
   function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -764,15 +750,12 @@
     btn.classList.add('active');
   }
 
-  // ── AUTH GUARD ──
   async function init() {
-    // Update clock
     setInterval(() => {
       document.getElementById('topbar-time').textContent =
         new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
     }, 1000);
 
-    // Get live session from Supabase SDK (not localStorage — see profile.html fix)
     const { supabase } = await import('./bizdenbize-client.js');
     const { data: { session } } = await supabase.auth.getSession();
     token = session?.access_token || null;
@@ -783,7 +766,6 @@
     currentUser = user;
     currentUserId = user.id;
 
-    // Check is_admin
     const profiles = await sb(`profiles?select=*&id=eq.${currentUser.id}`);
     const profile = profiles?.[0];
     if (!profile?.is_admin) {
@@ -792,7 +774,6 @@
       return;
     }
 
-    // Set admin info in sidebar
     const firstName = profile.first_name || 'Admin';
     const lastName  = profile.last_name  || '';
     document.getElementById('admin-name').textContent = `${firstName} ${lastName}`.trim();
@@ -802,7 +783,6 @@
     loadDashboard();
   }
 
-  // ── DASHBOARD ──
   async function loadDashboard() {
     try {
       const [users, experts, reviews, listings, messages, ratings] = await Promise.all([
@@ -836,12 +816,10 @@
       document.getElementById('stat-messages-count').textContent = messages.length;
       document.getElementById('stat-avg-rating').textContent = avgRating !== '—' ? avgRating + ' ★' : '—';
 
-      // Badges
       document.getElementById('badge-users').textContent = users.length;
       document.getElementById('badge-experts').textContent = experts.length;
       document.getElementById('badge-messages').textContent = messages.length;
 
-      // Recent users
       const recent = users.slice(0, 8);
       document.getElementById('recent-users-tbody').innerHTML = recent.map(u => `
         <tr>
@@ -857,40 +835,25 @@
         </tr>`).join('');
 
       allUsers = users;
-    } catch(e) {
-      console.error('Dashboard load error:', e);
-    }
+    } catch(e) { console.error('Dashboard error:', e); }
   }
 
-  // ── USERS ──
-  // allUsersLoaded flag prevents using stale dashboard data (which has no email)
   let allUsersLoaded = false;
-
   async function loadUsers() {
     if (!allUsersLoaded) {
-      document.getElementById('users-tbody').innerHTML =
-        `<tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>`;
+      document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>`;
       try {
         const res = await fetch(`${SB_URL}/rest/v1/rpc/get_admin_user_list`, {
           method: 'POST',
-          headers: {
-            'apikey': SB_ANON,
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: '{}'
         });
-        if (!res.ok) throw new Error(`RPC failed: ${res.status} ${await res.text()}`);
+        if (!res.ok) throw new Error(`RPC failed: ${res.status}`);
         const users = await res.json();
-        allUsers = Array.isArray(users)
-          ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
-          : [];
+        allUsers = Array.isArray(users) ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
         allUsersLoaded = true;
       } catch(e) {
-        console.error('loadUsers error:', e);
-        document.getElementById('users-tbody').innerHTML =
-          `<tr class="loading-row"><td colspan="7">Kullanıcılar yüklenemedi: ${e.message}</td></tr>`;
+        document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="7">Yüklenemedi: ${e.message}</td></tr>`;
         return;
       }
     }
@@ -898,18 +861,11 @@
   }
 
   function filterUsers(q) {
-    const filtered = q
-      ? allUsers.filter(u => {
-          const n = `${u.first_name||''} ${u.last_name||''} ${u.city||''} ${u.username||''} ${u.email||''}`.toLowerCase();
-          return n.includes(q.toLowerCase());
-        })
-      : allUsers;
+    const filtered = q ? allUsers.filter(u => `${u.first_name||''} ${u.last_name||''} ${u.city||''} ${u.username||''} ${u.email||''}`.toLowerCase().includes(q.toLowerCase())) : allUsers;
     renderUsers(filtered);
   }
 
-  function copyText(text) {
-    navigator.clipboard.writeText(text).then(() => toast('📋 Kopyalandı!'));
-  }
+  function copyText(text) { navigator.clipboard.writeText(text).then(() => toast('📋 Kopyalandı!')); }
 
   function renderUsers(users) {
     document.getElementById('users-tbody').innerHTML = users.length ? users.map(u => `
@@ -918,45 +874,20 @@
           <div>
             <div style="font-weight:600;">${u.first_name||''} ${u.last_name||''}</div>
             <div style="font-size:11px;color:var(--muted);">@${u.username||'—'}</div>
-            <button onclick="toggleDetail('${u.id}')" style="margin-top:3px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;color:var(--navy,#1B3A8C);font-weight:600;">📋 Başvuru &amp; detay ▾</button>
-            <div id="detail-${u.id}" style="display:none;margin-top:6px;padding:10px 12px;background:rgba(201,168,76,.10);border-left:3px solid rgba(201,168,76,.55);border-radius:4px;font-size:11px;line-height:1.6;max-width:340px;white-space:normal;">
-              ${u.join_challenges ? `<div><b>Zorluklar:</b> ${escapeHtml(u.join_challenges)}</div>` : ''}
-              ${u.join_reason ? `<div><b>Neden katılmak istiyor:</b> ${escapeHtml(u.join_reason)}</div>` : ''}
-              ${u.join_source ? `<div><b>Nereden duydu:</b> ${escapeHtml(u.join_source)}</div>` : ''}
-              <div style="margin-top:4px;"><b>🔗 Bağlantılar:</b> ${u.following_count||0} takip · ${u.follower_count||0} takipçi${u.connections ? ` — ${escapeHtml(u.connections)}` : ''}</div>
-            </div>
           </div>
         </div></td>
-        <td>
-          <div style="font-size:13px;color:var(--ink);">${u.email||'—'}</div>
-          <button onclick="copyText('${u.email||''}')" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--muted);padding:0;margin-top:2px;" title="Kopyala">📋 Kopyala</button>
-        </td>
-        <td style="font-size:12px;color:var(--muted);">${u.city||'—'}${u.country ? ', '+u.country : ''}</td>
-        <td style="font-weight:600;">${u.abibot_credits||0} <span style="font-size:10px;color:var(--muted);">kredi</span></td>
+        <td>${u.email||'—'} <button onclick="copyText('${u.email||''}')" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--muted);" title="Kopyala">📋</button></td>
+        <td style="font-size:12px;color:var(--muted);">${u.city||'—'}</td>
+        <td style="font-weight:600;">${u.abibot_credits||0}</td>
         <td>
           ${u.is_admin ? '<span class="badge badge-red">Admin</span> ' : ''}
           ${u.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-muted">Standart</span>'}
-          ${u.is_verified ? ' <span class="badge badge-green">✓</span>' : ''}
-          ${u.status === 'banned' ? ' <span class="badge" style="background:rgba(212,43,43,.15);color:var(--red);border:1px solid rgba(212,43,43,.3);">🚫 Engelli</span>' : ''}
-          ${u.status === 'pending' ? ' <span class="badge" style="background:rgba(201,168,76,.18);color:#8a6d1f;border:1px solid rgba(201,168,76,.45);">⏳ Onay bekliyor</span>' : ''}
-          ${u.status === 'deactivated' ? ' <span class="badge badge-muted">💤 Dondurulmuş</span>' : ''}
         </td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(u.created_at)}</td>
         <td>
           <div class="actions">
-            ${u.status === 'pending' ? `<button class="btn btn-sm btn-green" onclick="approveUser('${u.id}')">✅ Onayla</button>` : ''}
-            <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">
-              ${u.is_premium ? 'Premium Kaldır' : '⭐ Premium Yap'}
-            </button>
-            <button class="btn btn-sm ${u.is_admin ? 'btn-muted' : 'btn-red'}" onclick="toggleAdmin('${u.id}', ${u.is_admin})">
-              ${u.is_admin ? 'Admin Kaldır' : '🛡️ Admin Yap'}
-            </button>
-            <button class="btn btn-sm ${u.status === 'banned' ? 'btn-green' : 'btn-red'}" onclick="toggleBan('${u.id}', '${u.status||'approved'}')">
-              ${u.status === 'banned' ? '✅ Engeli Kaldır' : '🚫 Engelle'}
-            </button>
-            <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}', '${(`${u.first_name||''} ${u.last_name||''}`.trim()||u.username||u.email||u.id).replace(/'/g, '')}')">
-              🗑️ Sil
-            </button>
+            <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">${u.is_premium ? 'Premium Kaldır' : '⭐ Premium'}</button>
+            <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}', '${(`${u.first_name||''} ${u.last_name||''}`).trim()}')">🗑️ Sil</button>
           </div>
         </td>
       </tr>`).join('') : `<tr class="loading-row"><td colspan="7">Kullanıcı bulunamadı.</td></tr>`;
@@ -965,72 +896,19 @@
   async function togglePremium(id, current) {
     try {
       await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ is_premium: !current }) });
-      const u = allUsers.find(u => u.id === id);
-      if (u) u.is_premium = !current;
-      renderUsers(allUsers);
-      toast(current ? 'Premium kaldırıldı.' : '⭐ Premium yapıldı!');
-    } catch(e) { console.error('togglePremium error:', e); toast('Hata: ' + e.message, false); }
-  }
-
-  async function toggleAdmin(id, current) {
-    if (!current && !confirm('Bu kullanıcıyı admin yapmak istediğinizden emin misiniz?')) return;
-    try {
-      await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ is_admin: !current }) });
-      const u = allUsers.find(u => u.id === id);
-      if (u) u.is_admin = !current;
-      renderUsers(allUsers);
-      toast(current ? 'Admin yetkisi kaldırıldı.' : '🛡️ Admin yapıldı!');
-    } catch(e) { console.error('toggleAdmin error:', e); toast('Hata: ' + e.message, false); }
-  }
-
-  async function approveUser(id) {
-    const u = allUsers.find(u => u.id === id);
-    const who = (`${u?.first_name||''} ${u?.last_name||''}`).trim() || u?.email || 'Bu kullanıcı';
-    if (!confirm(`${who} onaylansın mı? Onayladıktan sonra platforma giriş yapabilecek.`)) return;
-    try {
-      await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ status: 'approved' }) });
-      if (u) u.status = 'approved';
-      // Send the welcome email now that they're approved.
-      try {
-        await fetch(`${SB_URL}/functions/v1/notify-user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ type: 'welcome', user_id: id })
-        });
-      } catch (e) { console.warn('welcome email failed:', e); }
-      renderUsers(allUsers);
-      toast('✅ Kullanıcı onaylandı.');
-    } catch(e) { console.error('approveUser error:', e); toast('Hata: ' + e.message, false); }
-  }
-
-  async function toggleBan(id, currentStatus) {
-    const isBanned = currentStatus === 'banned';
-    const msg = isBanned
-      ? 'Bu kullanıcının engelini kaldırmak istiyor musunuz?'
-      : 'Bu kullanıcıyı engellemek istediğinizden emin misiniz? Kullanıcı platforma erişemeyecek.';
-    if (!confirm(msg)) return;
-    try {
-      const newStatus = isBanned ? 'approved' : 'banned';
-      await sb(`profiles?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ status: newStatus }) });
-      const u = allUsers.find(u => u.id === id);
-      if (u) u.status = newStatus;
-      renderUsers(allUsers);
-      toast(isBanned ? '✅ Engel kaldırıldı.' : '🚫 Kullanıcı engellendi.');
-    } catch(e) { console.error('toggleBan error:', e); toast('Hata: ' + e.message, false); }
+      const u = allUsers.find(u => u.id === id); if (u) u.is_premium = !current;
+      renderUsers(allUsers); toast(current ? 'Premium kaldırıldı.' : '⭐ Premium yapıldı!');
+    } catch(e) { toast('Hata: ' + e.message, false); }
   }
 
   function confirmDirectDelete(id, name) {
     if (id === currentUserId) { toast('Kendi hesabınızı silemezsiniz.', false); return; }
-    if (!confirm(`⚠️ DİKKAT: "${name}" kullanıcısını kalıcı olarak silmek üzeresiniz.\n\nBu işlem GERİ ALINAMAZ. Tüm verileri silinecek.\n\nDevam etmek istiyor musunuz?`)) return;
-    if (!confirm(`Son onay: "${name}" hesabı kalıcı olarak silinecek. Emin misiniz?`)) return;
+    if (!confirm(`"${name}" kullanıcısını kalıcı olarak silmek üzeresiniz. Emin misiniz?`)) return;
     executeDirectDelete(id);
   }
 
   async function executeDirectDelete(userId) {
     try {
-      // Delete via a SECURITY DEFINER SQL function (raw SQL delete works;
-      // the GoTrue auth-admin API returns a generic "Database error deleting
-      // user", so we bypass it). The function verifies the caller is an admin.
       const res = await fetch(`${SB_URL}/rest/v1/rpc/admin_delete_user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
@@ -1038,114 +916,56 @@
       });
       if (!res.ok) throw new Error(await res.text());
       allUsers = allUsers.filter(u => u.id !== userId);
-      renderUsers(allUsers);
-      toast('🗑️ Kullanıcı kalıcı olarak silindi.');
+      renderUsers(allUsers); toast('🗑️ Kullanıcı kalıcı olarak silindi.');
     } catch(e) { toast('Silme hatası: ' + e.message, false); }
   }
 
-  // ── EXPERTS ──
   async function loadExperts() {
     try {
       const experts = await sb('expert_rating_summary?select=*');
-      document.getElementById('experts-tbody').innerHTML = experts.length ? experts.map(e => {
-        const name = `${e.first_name||''} ${e.last_name||''}`.trim() || 'Uzman';
-        const cats = (e.categories||[]).slice(0,2).join(', ');
-        const avg = e.avg_rating ? parseFloat(e.avg_rating).toFixed(1) + ' ★' : '—';
-        return `
+      document.getElementById('experts-tbody').innerHTML = experts.length ? experts.map(e => `
         <tr>
-          <td><div class="user-cell">${avatar(e.first_name, e.last_name)}
-            <div>
-              <div style="font-weight:600;">${name}</div>
-              <div style="font-size:11px;color:var(--muted);">${e.title||''}</div>
-            </div>
-          </div></td>
-          <td style="font-size:12px;color:var(--muted);">${cats||'—'}</td>
-          <td style="color:var(--gold);font-weight:700;">${avg}</td>
+          <td><div class="user-cell">${avatar(e.first_name, e.last_name)}<div><div style="font-weight:600;">${e.first_name||''} ${e.last_name||''}</div><div style="font-size:11px;color:var(--muted);">${e.title||''}</div></div></div></td>
+          <td style="font-size:12px;color:var(--muted);">${(e.categories||[]).slice(0,2).join(', ')||'—'}</td>
+          <td style="color:var(--gold);font-weight:700;">${e.avg_rating ? parseFloat(e.avg_rating).toFixed(1) + ' ★' : '—'}</td>
           <td>${e.total_responses||0}</td>
-          <td>
-            ${e.is_active ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-red">Pasif</span>'}
-            ${e.is_verified ? ' <span class="badge badge-navy">✓ Doğrulandı</span>' : ''}
-          </td>
-          <td>
-            <div class="actions">
-              <button class="btn btn-sm ${e.is_active ? 'btn-red' : 'btn-green'}" onclick="toggleExpert('${e.expert_id}', ${e.is_active}, 'is_active')">
-                ${e.is_active ? 'Deaktif Et' : '✓ Aktif Et'}
-              </button>
-              <button class="btn btn-sm ${e.is_verified ? 'btn-muted' : 'btn-navy'}" onclick="toggleExpert('${e.expert_id}', ${e.is_verified}, 'is_verified')">
-                ${e.is_verified ? 'Doğrulamayı Kaldır' : '✓ Doğrula'}
-              </button>
-            </div>
-          </td>
-        </tr>`;
-      }).join('') : `<tr class="loading-row"><td colspan="6">Uzman bulunamadı.</td></tr>`;
+          <td>${e.is_active ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-red">Pasif</span>'}</td>
+          <td><button class="btn btn-sm ${e.is_active ? 'btn-red' : 'btn-green'}" onclick="toggleExpert('${e.expert_id}', ${e.is_active}, 'is_active')">${e.is_active ? 'Deaktif Et' : '✓ Aktif Et'}</button></td>
+        </tr>`).join('') : `<tr class="loading-row"><td colspan="6">Uzman bulunamadı.</td></tr>`;
     } catch(e) { console.error(e); }
   }
 
   async function toggleExpert(id, current, field) {
-    try {
-      await sb(`experts?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ [field]: !current }) });
-      loadExperts();
-      toast('Uzman güncellendi.');
-    } catch(e) { toast('Hata oluştu.', false); }
+    try { await sb(`experts?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ [field]: !current }) }); loadExperts(); toast('Uzman güncellendi.'); }
+    catch(e) { toast('Hata oluştu.', false); }
   }
-
-  const CAT_LABELS = { legal:'Hukuki', visa:'Vize & Oturma', medical:'Tıbbi', tax:'Vergi & Finans', housing:'Konut & Kira', employment:'İş & Çalışma', school:'Okul & Yardımlar', insurance:'Sigorta & Araç', migration:"Avrupa'ya Göç" };
 
   async function loadExpertApplications() {
     try {
       const apps = await sb('experts?select=id,profile_id,title,bio,categories,created_at,profiles!profile_id(first_name,last_name)&status=eq.pending&order=created_at.asc');
       document.getElementById('badge-expert-apps').textContent = apps.length || '0';
-      document.getElementById('expert-apps-tbody').innerHTML = apps.length ? apps.map(a => {
-        const name = `${a.profiles?.first_name||''} ${a.profiles?.last_name||''}`.trim() || 'Kullanıcı';
-        const cats = (a.categories||[]).map(c => CAT_LABELS[c] || c).join(', ');
-        const bioShort = (a.bio||'').length > 80 ? a.bio.substring(0,80) + '…' : (a.bio||'—');
-        return `
+      document.getElementById('expert-apps-tbody').innerHTML = apps.length ? apps.map(a => `
         <tr>
-          <td><div class="user-cell">${avatar(a.profiles?.first_name, a.profiles?.last_name)}<div style="font-weight:600;">${name}</div></div></td>
+          <td><div class="user-cell">${avatar(a.profiles?.first_name, a.profiles?.last_name)}<div style="font-weight:600;">${a.profiles?.first_name||''} ${a.profiles?.last_name||''}</div></div></td>
           <td>${a.title||'—'}</td>
-          <td style="font-size:12px;color:var(--muted);max-width:160px;">${cats||'—'}</td>
-          <td style="font-size:12px;color:var(--muted);max-width:220px;">${bioShort}</td>
+          <td style="font-size:12px;color:var(--muted);">${(a.categories||[]).join(', ')||'—'}</td>
+          <td style="font-size:12px;color:var(--muted);">${a.bio ? a.bio.substring(0,60)+'…' : '—'}</td>
           <td style="font-size:12px;color:var(--muted);">${fmtDate(a.created_at)}</td>
           <td>
-            <div class="actions">
-              <button class="btn btn-sm btn-green" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'approved')">✓ Onayla</button>
-              <button class="btn btn-sm btn-red" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'rejected')">✗ Reddet</button>
-            </div>
+            <button class="btn btn-sm btn-green" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'approved')">✓ Onayla</button>
+            <button class="btn btn-sm btn-red" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'rejected')">✗ Reddet</button>
           </td>
-        </tr>`;
-      }).join('') : `<tr class="loading-row"><td colspan="6">Bekleyen başvuru yok.</td></tr>`;
+        </tr>`).join('') : `<tr class="loading-row"><td colspan="6">Bekleyen başvuru yok.</td></tr>`;
     } catch(e) { console.error(e); }
   }
 
   async function reviewExpertApplication(id, profileId, decision) {
     try {
-      await sb(`experts?id=eq.${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(decision === 'approved' ? { status: 'approved', is_active: true } : { status: 'rejected' })
-      });
-
-      try {
-        await sb('notifications', {
-          method: 'POST',
-          body: JSON.stringify({
-            user_id: profileId,
-            type: 'admin',
-            title: decision === 'approved' ? 'Uzman başvurunuz onaylandı! 🎉' : 'Uzman başvurunuz hakkında',
-            body: decision === 'approved'
-              ? 'Tebrikler! Uzman başvurunuz onaylandı. Profiliniz artık yayında.'
-              : 'Uzman başvurunuz bu aşamada onaylanmadı. Sorularınız için bizimle iletişime geçebilirsiniz.',
-            link: decision === 'approved' ? '/profil.html' : '/iletisim.html'
-          })
-        });
-      } catch(e) { console.error('applicant notification failed:', e); }
-
-      loadExpertApplications();
-      loadExperts();
-      toast(decision === 'approved' ? '✓ Başvuru onaylandı.' : '✗ Başvuru reddedildi.');
+      await sb(`experts?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(decision === 'approved' ? { status: 'approved', is_active: true } : { status: 'rejected' }) });
+      loadExpertApplications(); loadExperts(); toast(decision === 'approved' ? '✓ Başvuru onaylandı.' : '✗ Başvuru reddedildi.');
     } catch(e) { toast('Hata oluştu.', false); }
   }
 
-  // ── CONTENT ──
   async function loadContent() {
     try {
       const [listings, swaps, reviews, doctors, tutors] = await Promise.all([
@@ -1158,92 +978,87 @@
 
       document.getElementById('listings-tbody').innerHTML = listings.length ? listings.map(l => `
         <tr>
-          <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.title||'—'}</td>
-          <td><span class="badge badge-navy">${l.category||l.type||'—'}</span></td>
+          <td style="font-weight:600;">${l.title||'—'}</td>
+          <td><span class="badge badge-navy">${l.category||'—'}</span></td>
           <td>${l.location||'—'}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(l.created_at)}</td>
           <td><button class="btn btn-sm btn-red" onclick="deleteContent('listings','${l.id}')">🗑 Sil</button></td>
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`;
 
       document.getElementById('swaps-tbody').innerHTML = swaps.length ? swaps.map(s => `
-        <tr>
-          <td style="font-weight:600;">${s.city||'—'} → ${s.destination||'—'}</td>
-          <td>${s.city||'—'}</td>
-          <td>${s.rooms||'—'}</td>
-          <td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td>
-          <td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td>
-        </tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+        <tr><td>${s.city||'—'} → ${s.destination||'—'}</td><td>${s.city||'—'}</td><td>${s.rooms||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
       document.getElementById('reviews-tbody').innerHTML = reviews.length ? reviews.map(r => `
-        <tr>
-          <td style="font-size:11px;color:var(--muted);">${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td>
-          <td style="font-size:11px;color:var(--muted);">${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td>
-          <td style="color:var(--gold);white-space:nowrap;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
-          <td style="font-size:12px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.comment||'—'}</td>
-          <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>
-          <td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td>
-        </tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
+        <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${r.comment||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
 
       document.getElementById('doctors-tbody').innerHTML = doctors.length ? doctors.map(d => `
-        <tr>
-          <td style="font-weight:600;">${d.name||'—'}</td>
-          <td style="font-size:12px;">${d.specialty||'—'}</td>
-          <td>${d.city||'—'}</td>
-          <td style="font-size:12px;">${(d.languages||[]).join(', ')||'—'}</td>
-          <td><button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td>
-        </tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+        <tr><td style="font-weight:600;">${d.name||'—'}</td><td>${d.specialty||'—'}</td><td>${d.city||'—'}</td><td>${(d.languages||[]).join(', ')||'—'}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
-      document.getElementById('tutors-tbody').innerHTML = tutors.length ? tutors.map(t => `
+      document.getElementById('tutors-tbody').innerHTML = tutors.length ? tutors.map(t => {
+        const isApproved = t.active === true || t.status === 'approved';
+        const statusBadge = isApproved 
+          ? '<span class="badge badge-green">✓ Yayında</span>' 
+          : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>';
+        
+        return `
         <tr>
-          <td style="font-weight:600;">${t.name||'—'}</td>
+          <td>
+            <div style="font-weight:600;">${t.name||'—'}</div>
+            <div style="font-size:11px;color:var(--muted);">${t.contact||''}</div>
+          </td>
           <td style="font-size:12px;">${t.subject||'—'}</td>
           <td>${t.city||'—'}</td>
           <td>${t.price_label||'—'}</td>
-          <td><button class="btn btn-sm btn-red" onclick="deleteContent('tutors','${t.id}')">🗑 Sil</button></td>
-        </tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+          <td>${statusBadge}</td>
+          <td>
+            <div class="actions">
+              ${!isApproved 
+                ? `<button class="btn btn-sm btn-green" onclick="approveTutor('${t.id}')">✅ Onayla</button>` 
+                : `<button class="btn btn-sm btn-muted" onclick="unapproveTutor('${t.id}')">🙈 Gizle</button>`}
+              <button class="btn btn-sm btn-red" onclick="deleteContent('tutors','${t.id}')">🗑 Sil</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('') : `<tr class="loading-row"><td colspan="6">Kayıt bulunamadı.</td></tr>`;
 
     } catch(e) { console.error('Content load error:', e); }
   }
 
   async function deleteContent(table, id) {
     if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
-    try {
-      await sb(`${table}?id=eq.${id}`, { method:'DELETE' });
-      loadContent();
-      toast('Kayıt silindi.');
-    } catch(e) { toast('Silme hatası.', false); }
+    try { await sb(`${table}?id=eq.${id}`, { method:'DELETE' }); loadContent(); toast('Kayıt silindi.'); }
+    catch(e) { toast('Silme hatası.', false); }
   }
 
-  // ── MESSAGES ──
+  window.approveTutor = async function(id) {
+    try {
+      await sb(`tutors?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: true, status: 'approved' }) });
+      toast('Öğretmen ilanı onaylandı ve yayına alındı! ✓');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
+  window.unapproveTutor = async function(id) {
+    if (!confirm('Bu ders ilanını yayından kaldırmak istediğinizden emin misiniz?')) return;
+    try {
+      await sb(`tutors?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: false, status: 'pending' }) });
+      toast('İlan yayından kaldırıldı.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
   async function loadMessages() {
     try {
       const messages = await sb('contact_messages?select=*&order=created_at.desc');
       const el = document.getElementById('messages-list');
-      if (!messages.length) {
-        el.innerHTML = `<div class="empty-state"><div class="empty-icon">📬</div><div class="empty-text">Henüz mesaj yok.</div></div>`;
-        return;
-      }
+      if (!messages.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">📬</div><div class="empty-text">Henüz mesaj yok.</div></div>`; return; }
       el.innerHTML = messages.map(m => `
         <div class="msg-card">
-          <div class="msg-head">
-            <div>
-              <div class="msg-from">${m.name||'—'}</div>
-              <div class="msg-email">${m.email||'—'}</div>
-            </div>
-            <span class="badge badge-navy">${m.subject||'Genel'}</span>
-          </div>
-          ${m.subject ? `<div class="msg-subject">${m.subject}</div>` : ''}
-          <div class="msg-body-text">${m.message||'—'}</div>
-          <div class="msg-date">${fmtDate(m.created_at)}</div>
+          <div class="msg-head"><div><div class="msg-from">${m.name||'—'}</div><div class="msg-email">${m.email||'—'}</div></div><span class="badge badge-navy">${m.subject||'Genel'}</span></div>
+          <div class="msg-body-text">${m.message||'—'}</div><div class="msg-date">${fmtDate(m.created_at)}</div>
         </div>`).join('');
     } catch(e) { console.error(e); }
   }
-
-  // ── NOTIFICATIONS ──
-  document.getElementById('notif-target').addEventListener('change', function() {
-    document.getElementById('notif-user-group').style.display =
-      this.value === 'specific' ? 'block' : 'none';
-  });
 
   async function sendNotification() {
     const target = document.getElementById('notif-target').value;
@@ -1257,120 +1072,66 @@
     try {
       if (target === 'specific') {
         if (!userId) { toast('Kullanıcı ID giriniz.', false); return; }
-        await sb('notifications', {
-          method: 'POST',
-          body: JSON.stringify({ user_id: userId, type: 'admin', title, body, link })
-        });
+        await sb('notifications', { method: 'POST', body: JSON.stringify({ user_id: userId, type: 'admin', title, body, link }) });
         toast(`✅ Bildirim gönderildi.`);
       } else {
         const filter = target === 'premium' ? '&is_premium=eq.true' : '';
         const users = await sb(`profiles?select=id${filter}`);
         for (const u of users) {
-          await sb('notifications', {
-            method: 'POST',
-            body: JSON.stringify({ user_id: u.id, type: 'admin', title, body, link })
-          });
+          await sb('notifications', { method: 'POST', body: JSON.stringify({ user_id: u.id, type: 'admin', title, body, link }) });
         }
         toast(`✅ ${users.length} kullanıcıya gönderildi.`);
       }
-      document.getElementById('notif-title').value = '';
-      document.getElementById('notif-body').value = '';
-      document.getElementById('notif-link').value = '';
+      document.getElementById('notif-title').value = ''; document.getElementById('notif-body').value = '';
       loadNotifHistory();
-    } catch(e) { toast('Gönderme hatası.', false); console.error(e); }
+    } catch(e) { toast('Gönderme hatası.', false); }
   }
 
   async function loadNotifHistory() {
     try {
       const notifs = await sb('notifications?select=*&type=eq.admin&order=created_at.desc&limit=8');
       const el = document.getElementById('notif-history');
-      if (!notifs.length) {
-        el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">Henüz bildirim gönderilmedi.</div></div>`;
-        return;
-      }
-      el.innerHTML = notifs.map(n => `
-        <div style="padding:12px 0;border-bottom:1px solid var(--warm);">
-          <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">${n.title}</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">${n.body}</div>
-          <div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div>
-        </div>`).join('');
+      if (!notifs.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">Henüz bildirim gönderilmedi.</div></div>`; return; }
+      el.innerHTML = notifs.map(n => `<div style="padding:12px 0;border-bottom:1px solid var(--warm);"><div style="font-size:13px;font-weight:600;color:var(--ink);">${n.title}</div><div style="font-size:12px;color:var(--muted);">${n.body}</div><div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div></div>`).join('');
     } catch(e) {}
   }
 
-  // ── REPORTS ──
-  const REPORT_REASONS = { spam:'📢 Spam', harassment:'😡 Taciz', fake:'🎭 Sahte', inappropriate:'🚫 Uygunsuz', scam:'💸 Dolandırıcılık', suspicious:'🕵️ Şüpheli Davranış', other:'📝 Diğer' };
-  let allReports = [];
-  let _reportFilter = 'pending';
-
-  window.toggleDetail = function(id) {
-  const el = document.getElementById('detail-' + id);
-  if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
-};
-function ytId(url) {
-  const m = String(url).match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
-  if (m) return m[1];
-  const t = String(url).trim();
-  return /^[A-Za-z0-9_-]{11}$/.test(t) ? t : null;
-}
-async function loadVideos() {
-  const list = document.getElementById('videos-list');
-  try {
-    const vids = await sb('videos?select=*&order=category.asc,sort_order.asc,created_at.desc');
-    if (!vids.length) { list.innerHTML = '<p style="color:var(--muted);">Henüz video yok.</p>'; return; }
-    list.innerHTML = vids.map(v => `
-      <div style="display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #e0d8cc;border-radius:10px;padding:10px 12px;margin-bottom:8px;">
-        <img src="https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg" style="width:92px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#000;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:600;font-size:14px;">${escapeHtml(v.title)}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${escapeHtml(v.category||'')}${v.is_welcome?' · ⭐ Hoş geldin':''}${v.is_vertical?' · 📱 dikey':''}${v.is_published?'':' · 🚫 Taslak'}</div>
-        </div>
-        <button onclick="deleteVideo('${v.id}')" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;flex-shrink:0;">Sil</button>
-      </div>`).join('');
-  } catch(e) { list.innerHTML = '<p style="color:var(--red);">Yüklenemedi: ' + escapeHtml(e.message) + '</p>'; }
-}
-async function addVideo() {
-  const url = document.getElementById('vid-url').value.trim();
-  const title = document.getElementById('vid-title').value.trim();
-  const desc = document.getElementById('vid-desc').value.trim();
-  const category = document.getElementById('vid-category').value.trim() || 'Genel';
-  const welcome = document.getElementById('vid-welcome').checked;
-  const vertical = document.getElementById('vid-vertical').checked;
-  const published = document.getElementById('vid-published').checked;
-  const err = document.getElementById('vid-err');
-  const id = ytId(url);
-  if (!id) { err.textContent = 'Geçerli bir YouTube bağlantısı gir.'; err.style.display = 'block'; return; }
-  if (!title) { err.textContent = 'Başlık gerekli.'; err.style.display = 'block'; return; }
-  err.style.display = 'none';
-  try {
-    if (welcome) { await sb('videos?is_welcome=eq.true', { method: 'PATCH', body: JSON.stringify({ is_welcome: false }) }); }
-    await sb('videos', { method: 'POST', body: JSON.stringify({ title, description: desc || null, youtube_id: id, category, is_welcome: welcome, is_vertical: vertical, is_published: published }) });
-    document.getElementById('vid-url').value = ''; document.getElementById('vid-title').value = '';
-    document.getElementById('vid-desc').value = ''; document.getElementById('vid-welcome').checked = false; document.getElementById('vid-vertical').checked = false;
-    toast('🎬 Video eklendi.');
-    loadVideos();
-  } catch(e) { err.textContent = 'Hata: ' + e.message; err.style.display = 'block'; }
-}
-async function deleteVideo(id) {
-  if (!confirm('Bu video silinsin mi?')) return;
-  try { await sb('videos?id=eq.' + id, { method: 'DELETE' }); toast('🗑️ Video silindi.'); loadVideos(); }
-  catch(e) { toast('Silme hatası: ' + e.message, false); }
-}
-window.addVideo = addVideo; window.deleteVideo = deleteVideo;
-
-function escapeHtml(x){ return String(x==null?'':x).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-
-  // ── EVENTS MANAGEMENT ──
-  let evAdminFilter = 'pending';
-  const EV_CATS = {muzik:'🎵 Müzik',is:'💼 İş',genel:'🎉 Buluşma',yemek:'🍽️ Yemek',spor:'⚽ Spor',aile:'👶 Aile'};
-  const EV_TYPES = {external:'🔗 Dış bağlantı',hosted_free:'🎟️ Ücretsiz',hosted_paid:'💳 Ücretli'};
-
-  function evAdminTab(f, btn){
-    evAdminFilter=f;
-    document.querySelectorAll('#section-events .tab-btn').forEach(b=>b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    loadEvents();
+  async function loadVideos() {
+    const list = document.getElementById('videos-list');
+    try {
+      const vids = await sb('videos?select=*&order=category.asc,sort_order.asc,created_at.desc');
+      if (!vids.length) { list.innerHTML = '<p style="color:var(--muted);">Henüz video yok.</p>'; return; }
+      list.innerHTML = vids.map(v => `<div style="display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #e0d8cc;border-radius:10px;padding:10px 12px;margin-bottom:8px;"><img src="https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg" style="width:92px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#000;"><div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">${v.title}</div><div style="font-size:11px;color:var(--muted);">${v.category||''}</div></div><button onclick="deleteVideo('${v.id}')" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;">Sil</button></div>`).join('');
+    } catch(e) { list.innerHTML = '<p style="color:var(--red);">Yüklenemedi.</p>'; }
   }
 
+  async function addVideo() {
+    const url = document.getElementById('vid-url').value.trim();
+    const title = document.getElementById('vid-title').value.trim();
+    const desc = document.getElementById('vid-desc').value.trim();
+    const category = document.getElementById('vid-category').value.trim() || 'Genel';
+    const welcome = document.getElementById('vid-welcome').checked;
+    const vertical = document.getElementById('vid-vertical').checked;
+    const published = document.getElementById('vid-published').checked;
+    const err = document.getElementById('vid-err');
+    const m = String(url).match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+    const id = m ? m[1] : url;
+    if (!id || !title) { err.textContent = 'Bağlantı ve başlık gereklidir.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    try {
+      await sb('videos', { method: 'POST', body: JSON.stringify({ title, description: desc || null, youtube_id: id, category, is_welcome: welcome, is_vertical: vertical, is_published: published }) });
+      document.getElementById('vid-url').value = ''; document.getElementById('vid-title').value = ''; loadVideos(); toast('🎬 Video eklendi.');
+    } catch(e) { err.textContent = 'Hata: ' + e.message; err.style.display = 'block'; }
+  }
+
+  async function deleteVideo(id) {
+    if (!confirm('Video silinsin mi?')) return;
+    try { await sb('videos?id=eq.' + id, { method: 'DELETE' }); toast('🗑️ Video silindi.'); loadVideos(); }
+    catch(e) { toast('Silme hatası.', false); }
+  }
+
+  let evAdminFilter = 'pending';
+  function evAdminTab(f, btn){ evAdminFilter=f; document.querySelectorAll('#section-events .tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); loadEvents(); }
   async function loadEvents(){
     const box=document.getElementById('events-admin-list');
     box.innerHTML='<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
@@ -1379,459 +1140,77 @@ function escapeHtml(x){ return String(x==null?'':x).replace(/[&<>"']/g, function
       if(evAdminFilter==='pending') q='events?status=eq.pending&select=*&order=created_at.desc';
       else if(evAdminFilter==='approved') q='events?status=eq.approved&select=*&order=event_date.asc';
       const rows=await sb(q);
-      // pending badge
-      const pend = evAdminFilter==='pending' ? rows.length : (await sb('events?status=eq.pending&select=id')).length;
-      const badge=document.getElementById('badge-events'); if(badge) badge.textContent=pend;
-      const pc=document.getElementById('ev-pending-count'); if(pc) pc.textContent=evAdminFilter==='pending'&&rows.length?('('+rows.length+')'):'';
-      if(!rows.length){ box.innerHTML='<p style="color:var(--muted);padding:20px;">Bu filtrede etkinlik yok.</p>'; return; }
-      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tür</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>'
-        + rows.map(evAdminRow).join('') + '</tbody></table>';
-    }catch(e){ box.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+e.message+'</p>'; }
+      if(!rows.length){ box.innerHTML='<p style="color:var(--muted);padding:20px;">Etkinlik yok.</p>'; return; }
+      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>' + rows.map(e=>`<tr><td><strong>${e.title}</strong><br><span style="font-size:12px;color:var(--muted);">${e.city||''}</span></td><td>${e.event_date||'—'}</td><td>${e.status}</td><td><button class="btn btn-sm btn-red" onclick="evDelete('${e.id}')">🗑️ Sil</button></td></tr>`).join('') + '</tbody></table>';
+    }catch(e){ box.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
+  async function evDelete(id){ if(confirm('Silinsin mi?')){ await sb('events?id=eq.'+id,{method:'DELETE'}); loadEvents(); toast('Etkinlik silindi'); } }
 
-  function evAdminRow(e){
-    const statusBadge = e.status==='approved' ? '<span class="badge badge-green">Yayında</span>'
-      : e.status==='pending' ? '<span class="badge badge-red">Bekliyor</span>'
-      : '<span class="badge badge-muted">'+e.status+'</span>';
-    const price = e.price!=null ? (' · €'+Number(e.price).toFixed(0)) : '';
-    let actions='';
-    if(e.status==='pending'){
-      actions += '<button class="btn btn-sm btn-green" onclick="evApprove(\''+e.id+'\')">✓ Onayla</button> ';
-      actions += '<button class="btn btn-sm btn-red" onclick="evReject(\''+e.id+'\')">✗ Reddet</button> ';
-    } else if(e.status==='approved'){
-      actions += '<button class="btn btn-sm btn-muted" onclick="evReject(\''+e.id+'\')">Yayından Kaldır</button> ';
-    }
-    actions += '<button class="btn btn-sm" onclick="evEdit(\''+e.id+'\')">✏️ Düzenle</button> ';
-    actions += '<button class="btn btn-sm btn-red" onclick="evDelete(\''+e.id+'\')">🗑️</button>';
-    return '<tr><td><strong>'+escapeHtml(e.title)+'</strong><br><span style="font-size:12px;color:var(--muted);">'+(EV_CATS[e.category]||e.category||'')+' · '+escapeHtml(e.city||'')+price+'</span></td>'
-      + '<td style="font-size:12px;">'+(EV_TYPES[e.event_type]||e.event_type||'')+'</td>'
-      + '<td style="font-size:12px;">'+(e.event_date||'—')+'</td>'
-      + '<td>'+statusBadge+'</td>'
-      + '<td style="white-space:nowrap;">'+actions+'</td></tr>';
-  }
-
-  async function evSetStatus(id, status){
-    try{
-      await sb('events?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status}) });
-      toast(status==='approved'?'Etkinlik onaylandı ✓':'Durum güncellendi');
-      loadEvents();
-    }catch(e){ toast('Hata: '+e.message,false); }
-  }
-  window.evApprove = id => evSetStatus(id,'approved');
-  window.evReject  = id => { if(confirm('Bu etkinliği yayından kaldır / reddet?')) evSetStatus(id,'rejected'); };
-
-  // ── İşletme (business directory) moderation ──
   let bizAdminFilter = 'pending';
-  const BIZ_CATS = {restoran:'🍽️ Restoran',hukuk:'⚖️ Avukat',saglik:'🏥 Doktor',berber:'✂️ Berber',market:'🛒 Market',usta:'🏗️ Usta',nakliyat:'📦 Nakliyat',egitim:'📚 Eğitim',diger:'🏢 Diğer'};
-  function bizEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-  window.bizAdminTab = function(fl, btn){
-    bizAdminFilter = fl;
-    document.querySelectorAll('#section-businesses .tab-btn').forEach(b=>b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    loadBusinesses();
-  };
+  function bizAdminTab(fl, btn){ bizAdminFilter=fl; document.querySelectorAll('#section-businesses .tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); loadBusinesses(); }
   async function loadBusinesses(){
     const list = document.getElementById('biz-admin-list');
     list.innerHTML = '<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
-    try{
-      let q;
-      if(bizAdminFilter==='claims') q='businesses?claim_status=eq.pending&select=id,name,category,city,claimed_by,source,source_name,is_verified,created_at&order=updated_at.desc';
-      else if(bizAdminFilter==='approved') q='businesses?status=eq.approved&select=id,name,category,city,source,source_name,is_verified,claim_status,created_at&order=created_at.desc';
-      else q='businesses?status=eq.pending&select=id,name,category,city,phone,website,description,source,source_name,is_verified,created_at&order=created_at.desc';
-      const rows = await sb(q);
-      const pc=document.getElementById('biz-pending-count');
-      if(pc) pc.textContent = (bizAdminFilter==='pending' && rows.length)?('('+rows.length+')'):'';
-      if(bizAdminFilter==='pending'){ const nb=document.getElementById('badge-businesses'); if(nb) nb.textContent = rows.length||'—'; }
-      let names={};
-      if(bizAdminFilter==='claims' && rows.length){
-        const ids=[...new Set(rows.map(r=>r.claimed_by).filter(Boolean))];
-        if(ids.length){ const ps=await sb('profiles?id=in.('+ids.join(',')+')&select=id,first_name,last_name'); ps.forEach(p=>{names[p.id]=((p.first_name||'')+' '+(p.last_name||'')).trim()||'Üye';}); }
-      }
-      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">'+(bizAdminFilter==='claims'?'Bekleyen sahiplik talebi yok.':bizAdminFilter==='approved'?'Yayında işletme yok.':'Onay bekleyen işletme yok.')+'</p>'; return; }
-      list.innerHTML = rows.map(b=>bizRow(b,names)).join('');
-    }catch(e){ console.error(e); list.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+bizEsc(e.message)+'</p>'; }
+    try {
+      const rows = await sb('businesses?status=eq.'+(bizAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
+      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">İşletme yok.</p>'; return; }
+      list.innerHTML = rows.map(b => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${b.name}</div><div style="font-size:12px;color:var(--muted);">${b.city||''}</div><button class="btn btn-sm btn-green" onclick="bizApprove('${b.id}')">✅ Onayla</button></div>`).join('');
+    } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
-  function bizSrcBadge(b){
-    if(b.is_verified) return '<span class="badge badge-green">✓ Doğrulandı</span>';
-    if(b.source==='public'||b.source==='official') return '<span class="badge">ⓘ '+bizEsc(b.source_name?('Kaynak: '+b.source_name):'Doğrulanmadı')+'</span>';
-    return '<span class="badge">Üye ekledi</span>';
-  }
-  function bizRow(b, names){
-    const cat = BIZ_CATS[b.category]||'🏢 Diğer';
-    const meta = [cat, b.city||''].filter(Boolean).join(' · ');
-    let actions='';
-    if(bizAdminFilter==='pending'){
-      const extra=[b.phone?('📞 '+bizEsc(b.phone)):'', b.website?('🌐 '+bizEsc(b.website)):''].filter(Boolean).join(' · ');
-      actions=(extra?('<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+extra+'</div>'):'')
-        +(b.description?('<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+bizEsc(b.description)+'</div>'):'')
-        +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'
-        +'<button class="btn btn-sm btn-green" onclick="bizApprove(\''+b.id+'\')">✅ Onayla</button>'
-        +'<button class="btn btn-sm btn-red" onclick="bizReject(\''+b.id+'\')">✗ Reddet</button>'
-        +'<a class="btn btn-sm btn-muted" href="business-detail.html?id='+b.id+'" target="_blank">👁 Gör</a></div>';
-    } else if(bizAdminFilter==='claims'){
-      actions='<div style="font-size:12px;color:var(--muted);margin-top:4px;">Talep eden: <strong>'+bizEsc(names[b.claimed_by]||'Üye')+'</strong></div>'
-        +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'
-        +'<button class="btn btn-sm btn-green" onclick="bizVerifyClaim(\''+b.id+'\',true)">✓ Sahipliği Onayla</button>'
-        +'<button class="btn btn-sm btn-red" onclick="bizVerifyClaim(\''+b.id+'\',false)">✗ Reddet</button>'
-        +'<a class="btn btn-sm btn-muted" href="business-detail.html?id='+b.id+'" target="_blank">👁 Gör</a></div>';
-    } else {
-      actions='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'
-        +'<button class="btn btn-sm btn-muted" onclick="bizHide(\''+b.id+'\')">🙈 Gizle</button>'
-        +'<a class="btn btn-sm btn-muted" href="business-detail.html?id='+b.id+'" target="_blank">👁 Gör</a></div>';
-    }
-    return '<div class="card" style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">'
-      +'<div><div style="font-weight:700;color:var(--ink);">'+bizEsc(b.name)+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">'+bizEsc(meta)+'</div></div>'
-      +'<div>'+bizSrcBadge(b)+'</div></div>'+actions+'</div>';
-  }
-  window.bizApprove = async function(id){
-    try{ await sb('businesses?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'approved'}) }); toast('İşletme onaylandı ✓'); loadBusinesses(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.bizReject = async function(id){
-    if(!confirm('Bu işletme başvurusunu reddet? (yayınlanmaz)')) return;
-    try{ await sb('businesses?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'removed'}) }); toast('Reddedildi'); loadBusinesses(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.bizHide = async function(id){
-    if(!confirm('Bu işletmeyi yayından gizle?')) return;
-    try{ await sb('businesses?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadBusinesses(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.bizVerifyClaim = async function(id, approve){
-    if(!approve && !confirm('Sahiplik talebini reddet?')) return;
-    try{ await sb('rpc/verify_business_claim', { method:'POST', headers:{...hdrs(token),'Content-Type':'application/json'}, body:JSON.stringify({p_business_id:id, p_approve:approve}) }); toast(approve?'Sahiplik onaylandı ✓':'Talep reddedildi'); loadBusinesses(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
+  async function bizApprove(id){ await sb('businesses?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Onaylandı ✓'); loadBusinesses(); }
 
-  // ── İş İlanları (jobs board) moderation ──
   let jobsAdminFilter = 'pending';
-  const JOB_TYPE = { hizmet:'⚡ Hizmet', is_ilani:'💼 İş İlanı', is_ariyorum:'👤 İş Arıyorum' };
-  const JOB_CATS = { gastronomi:'🍽️ Gastronomi', satis:'🛍️ Satış', nakliye:'🚚 Nakliye', insaat:'🏗️ İnşaat', ev:'🧹 Ev İşleri', bakim:'🏥 Hasta Bakımı', berber:'💈 Berber', temizlik:'🧽 Temizlik', lojistik:'📦 Lojistik', uretim:'🏭 Üretim', diger:'📦 Diğer' };
-  function jobEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-  window.jobsAdminTab = function(fl, btn){
-    jobsAdminFilter = fl;
-    document.querySelectorAll('#section-jobs .tab-btn').forEach(b=>b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    loadJobs();
-  };
+  function jobsAdminTab(fl, btn){ jobsAdminFilter=fl; document.querySelectorAll('#section-jobs .tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); loadJobs(); }
   async function loadJobs(){
     const list = document.getElementById('jobs-admin-list');
     list.innerHTML = '<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
-    try{
-      const st = jobsAdminFilter==='approved' ? 'approved' : 'pending';
-      const rows = await sb('jobs?status=eq.'+st+'&select=id,listing_type,title,company,contact_name,category,city,salary,description,website,email,whatsapp,author_id,created_at&order=created_at.desc');
-      const pc=document.getElementById('job-pending-count');
-      if(pc) pc.textContent = (jobsAdminFilter==='pending' && rows.length)?('('+rows.length+')'):'';
-      const nb=document.getElementById('badge-jobs'); if(nb && jobsAdminFilter==='pending') nb.textContent = rows.length||'—';
-      // author names
-      let names={};
-      const ids=[...new Set((rows||[]).map(r=>r.author_id).filter(Boolean))];
-      if(ids.length){ try{ const ps=await sb('profiles?id=in.('+ids.join(',')+')&select=id,first_name,last_name'); ps.forEach(p=>{names[p.id]=((p.first_name||'')+' '+(p.last_name||'')).trim()||'Üye';}); }catch(_){} }
-      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">'+(jobsAdminFilter==='approved'?'Yayında ilan yok.':'Onay bekleyen ilan yok.')+'</p>'; return; }
-      list.innerHTML = rows.map(r=>jobRow(r,names)).join('');
-    }catch(e){ console.error(e); list.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+jobEsc(e.message)+'</p>'; }
+    try {
+      const rows = await sb('jobs?status=eq.'+(jobsAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
+      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">İlan yok.</p>'; return; }
+      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${r.title}</div><button class="btn btn-sm btn-green" onclick="jobApprove('${r.id}')">✅ Onayla</button></div>`).join('');
+    } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
-  function jobRow(r, names){
-    const meta = [JOB_TYPE[r.listing_type]||r.listing_type, JOB_CATS[r.category]||r.category, r.city||''].filter(Boolean).join(' · ');
-    const poster = r.listing_type==='is_ilani' ? (r.company || r.contact_name || names[r.author_id] || 'Üye') : (names[r.author_id] || 'Üye');
-    const contact = r.listing_type==='is_ilani'
-      ? [r.email?('✉️ '+jobEsc(r.email)):'', r.whatsapp?('💬 '+jobEsc(r.whatsapp)):'', r.website?('🌐 '+jobEsc(r.website)):''].filter(Boolean).join(' · ')
-      : '🔒 Uygulama içi mesaj';
-    let actions;
-    if(jobsAdminFilter==='pending'){
-      actions='<button class="btn btn-sm btn-green" onclick="jobApprove(\''+r.id+'\')">✅ Onayla</button>'
-        +'<button class="btn btn-sm btn-red" onclick="jobReject(\''+r.id+'\')">✗ Reddet</button>';
-    } else {
-      actions='<button class="btn btn-sm btn-muted" onclick="jobHide(\''+r.id+'\')">🙈 Gizle</button>';
-    }
-    return '<div class="card" style="margin-bottom:10px;">'
-      +'<div style="font-weight:700;color:var(--ink);">'+jobEsc(r.title)+'</div>'
-      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+jobEsc(meta)+'</div>'
-      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">İlan sahibi: <strong>'+jobEsc(poster)+'</strong></div>'
-      +(r.salary?'<div style="font-size:12px;color:var(--muted);margin-top:2px;">💰 '+jobEsc(r.salary)+'</div>':'')
-      +(r.description?'<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+jobEsc(r.description).slice(0,220)+'</div>':'')
-      +'<div style="font-size:11px;color:var(--muted);margin-top:4px;">'+contact+'</div>'
-      +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</div></div>';
-  }
-  window.jobApprove = async function(id){
-    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'approved'}) }); toast('İlan onaylandı ✓'); loadJobs(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.jobReject = async function(id){
-    if(!confirm('Bu ilanı reddet? (yayınlanmaz)')) return;
-    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'removed'}) }); toast('Reddedildi'); loadJobs(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.jobHide = async function(id){
-    if(!confirm('Bu ilanı yayından gizle?')) return;
-    try{ await sb('jobs?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadJobs(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
+  async function jobApprove(id){ await sb('jobs?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('İlan onaylandı ✓'); loadJobs(); }
 
-  // ── Webinarlar moderation ──
   let webAdminFilter = 'pending';
-  function webEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-  window.webAdminTab = function(fl, btn){
-    webAdminFilter = fl;
-    document.querySelectorAll('#section-webinars .tab-btn').forEach(b=>b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    loadWebinarsAdmin();
-  };
+  function webAdminTab(fl, btn){ webAdminFilter=fl; document.querySelectorAll('#section-webinars .tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); loadWebinarsAdmin(); }
   async function loadWebinarsAdmin(){
     const list = document.getElementById('web-admin-list');
     list.innerHTML = '<p style="color:var(--muted);padding:20px;">Yükleniyor…</p>';
-    try{
-      const st = webAdminFilter==='approved' ? 'approved' : 'pending';
-      const rows = await sb('webinars?status=eq.'+st+'&select=id,title,topic,host_name,host_type,kind,event_date,event_time,duration,capacity,price,description,created_by,created_at&order=created_at.desc');
-      const pc=document.getElementById('web-pending-count');
-      if(pc) pc.textContent = (webAdminFilter==='pending' && rows.length)?('('+rows.length+')'):'';
-      const nb=document.getElementById('badge-webinars'); if(nb && webAdminFilter==='pending') nb.textContent = rows.length||'—';
-      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">'+(webAdminFilter==='approved'?'Yayında webinar yok.':'Onay bekleyen webinar yok.')+'</p>'; return; }
-      list.innerHTML = rows.map(webRow).join('');
-    }catch(e){ console.error(e); list.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi: '+webEsc(e.message)+'</p>'; }
+    try {
+      const rows = await sb('webinars?status=eq.'+(webAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
+      if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">Webinar yok.</p>'; return; }
+      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${r.title}</div><button class="btn btn-sm btn-green" onclick="webApprove('${r.id}')">✅ Onayla</button></div>`).join('');
+    } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
-  function webRow(r){
-    const kind = r.kind==='recorded' ? '▶️ Kayıtlı' : '📅 Yaklaşan';
-    const host = (r.host_type==='bizdenbize'?'⭐ ':'👥 ') + (r.host_name||'—');
-    const when = [r.event_date, r.event_time].filter(Boolean).join(' · ');
-    const meta = [kind, webEsc(r.topic||''), when, r.duration||'', (r.capacity!=null?('🪑 '+r.capacity+' kişi'):''), (r.price==='paid'?'€ Ücretli':'Ücretsiz')].filter(Boolean).join(' · ');
-    let actions;
-    if(webAdminFilter==='pending'){
-      actions='<button class="btn btn-sm btn-green" onclick="webApprove(\''+r.id+'\')">✅ Onayla</button>'
-        +'<button class="btn btn-sm btn-red" onclick="webReject(\''+r.id+'\')">✗ Reddet</button>';
-    } else {
-      actions='<button class="btn btn-sm btn-muted" onclick="webHide(\''+r.id+'\')">🙈 Gizle</button>';
-    }
-    return '<div class="card" style="margin-bottom:10px;">'
-      +'<div style="font-weight:700;color:var(--ink);">'+webEsc(r.title)+'</div>'
-      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+webEsc(host)+'</div>'
-      +'<div style="font-size:12px;color:var(--muted);margin-top:2px;">'+meta+'</div>'
-      +(r.description?'<div style="font-size:12px;color:var(--muted);margin-top:4px;">'+webEsc(r.description).slice(0,220)+'</div>':'')
-      +'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</div></div>';
-  }
-  window.webApprove = async function(id){
-    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'approved'}) }); toast('Webinar onaylandı ✓'); loadWebinarsAdmin(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.webReject = async function(id){
-    if(!confirm('Bu webinarı reddet? (yayınlanmaz)')) return;
-    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'removed'}) }); toast('Reddedildi'); loadWebinarsAdmin(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
-  window.webHide = async function(id){
-    if(!confirm('Bu webinarı yayından gizle?')) return;
-    try{ await sb('webinars?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({status:'hidden'}) }); toast('Gizlendi'); loadWebinarsAdmin(); }
-    catch(e){ toast('Hata: '+e.message,false); }
-  };
+  async function webApprove(id){ await sb('webinars?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Webinar onaylandı ✓'); loadWebinarsAdmin(); }
 
-  window.evDelete = async function(id){
-    if(!confirm('Bu etkinliği KALICI olarak sil? Geri alınamaz.')) return;
-    try{
-      await sb('events?id=eq.'+id, { method:'DELETE', headers:{...hdrs(token),'Prefer':'return=minimal'} });
-      toast('Etkinlik silindi');
-      loadEvents();
-    }catch(e){ toast('Hata: '+e.message,false); }
-  };
-
-  window.evEdit = async function(id){
-    let ev;
-    try{ const rows=await sb('events?id=eq.'+id+'&select=*'); ev=rows[0]; }catch(e){ toast('Yüklenemedi',false); return; }
-    if(!ev){ toast('Bulunamadı',false); return; }
-    const title=prompt('Başlık:', ev.title); if(title===null) return;
-    const city=prompt('Şehir:', ev.city||''); if(city===null) return;
-    const date=prompt('Tarih (YYYY-MM-DD):', ev.event_date||''); if(date===null) return;
-    const desc=prompt('Açıklama:', ev.description||''); if(desc===null) return;
-    try{
-      await sb('events?id=eq.'+id, { method:'PATCH', headers:{...hdrs(token),'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({title:title.trim(), city:city.trim()||null, event_date:date.trim()||null, description:desc.trim()||null}) });
-      toast('Etkinlik güncellendi ✓');
-      loadEvents();
-    }catch(e){ toast('Hata: '+e.message,false); }
-  };
-
+  let allReports = []; let _reportFilter = 'pending';
   async function loadReports() {
     try {
-      const data = await sb('reports?select=*&order=created_at.desc');
-      allReports = data;
-      const pending = data.filter(r => r.status === 'pending').length;
-      document.getElementById('badge-reports').textContent = pending || '0';
-      filterReports(_reportFilter);
-    } catch(e) { console.error('loadReports error:', e); }
+      const data = await sb('reports?select=*&order=created_at.desc'); allReports = data; filterReports(_reportFilter);
+    } catch(e) {}
   }
-
   function filterReports(filter) {
-    _reportFilter = filter;
-    document.querySelectorAll('[onclick^="filterReports"]').forEach(b => b.style.borderColor = '');
-    document.querySelector(`[onclick="filterReports('${filter}')"]`).style.borderColor = 'var(--ink)';
-    const filtered = filter === 'all' ? allReports : allReports.filter(r => r.status === filter);
-    renderReports(filtered);
+    _reportFilter = filter; const filtered = filter === 'all' ? allReports : allReports.filter(r => r.status === filter);
+    document.getElementById('reports-tbody').innerHTML = filtered.length ? filtered.map(r => `<tr><td>${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td><td>${r.type}</td><td>${r.reason}</td><td>${r.details||'—'}</td><td>${fmtDate(r.created_at)}</td><td>${r.status}</td><td><button class="btn btn-sm btn-green" onclick="updateReport('${r.id}','reviewed')">✓ İncele</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="7">Şikayet bulunamadı.</td></tr>`;
   }
-
-  function renderReports(reports) {
-    const REASON_BADGE = { spam:'badge-gold', harassment:'badge-red', fake:'badge-red', inappropriate:'badge-red', scam:'badge-red', suspicious:'badge-red', other:'badge-muted' };
-    document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
-      const target = r.reported_comment_id
-        ? (r.reported_post_id
-            ? `<a href="mahallem.html?post=${r.reported_post_id}&mod=1" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">💬 Yorum (gönderiye git)</a>`
-            : `<span style="font-size:12px;color:var(--muted);">💬 Yorum</span>`)
-        : r.reported_post_id
-          ? `<a href="mahallem.html?post=${r.reported_post_id}&mod=1" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">📝 Gönderi</a>`
-          : r.reported_listing_id
-            ? `<a href="ev-takasi.html?listing=${r.reported_listing_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🏠 İlan #${r.reported_listing_id}</a>`
-            : r.reported_user_id
-              ? `<a href="profil.html?id=${r.reported_user_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">👤 Kullanıcı</a>`
-              : r.reported_expert_id
-                ? `<a href="expert-profile.html?id=${r.reported_expert_id}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:12px;">🛡️ Uzman</a>`
-                : '—';
-      const statusBadge = r.status === 'pending'
-        ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
-        : r.status === 'actioned'
-          ? '<span class="badge badge-red">⚡ İşlem Yapıldı</span>'
-          : r.status === 'dismissed'
-            ? '<span class="badge badge-muted">✗ Reddedildi</span>'
-            : '<span class="badge badge-green">✓ İncelendi</span>';
-      return `<tr>
-        <td style="font-size:11px;color:var(--muted);">${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td>
-        <td>${target}</td>
-        <td><span class="badge badge-navy">${r.type === 'expert' ? '🛡️ Uzman' : r.type === 'listing' ? '🏠 İlan' : r.type === 'post' ? '📝 Gönderi' : r.type === 'comment' ? '💬 Yorum' : '👤 Kullanıcı'}</span></td>
-        <td><span class="badge ${REASON_BADGE[r.reason]||'badge-muted'}">${REPORT_REASONS[r.reason]||r.reason}</span></td>
-        <td style="font-size:12px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.details||'—'}</td>
-        <td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td>
-        <td>${statusBadge}</td>
-        <td>
-          <div class="actions">
-            ${r.status === 'pending' ? `
-              <button class="btn btn-sm btn-green" onclick="updateReport('${r.id}','reviewed')">✓ İncele</button>
-              <button class="btn btn-sm btn-red" onclick="updateReport('${r.id}','actioned')">⚡ İşlem Yap</button>
-              <button class="btn btn-sm btn-muted" onclick="updateReport('${r.id}','dismissed')">✗ Reddet</button>
-            ` : `<button class="btn btn-sm btn-muted" onclick="updateReport('${r.id}','pending')">↩ Geri Al</button>`}
-          </div>
-        </td>
-      </tr>`;
-    }).join('') : `<tr class="loading-row"><td colspan="8">Şikayet bulunamadı.</td></tr>`;
-  }
-
-  const REPORT_NOTIF = {
-    reviewed:  { title: 'Şikayetiniz incelendi', body: 'Gönderdiğiniz şikayet ekibimiz tarafından incelendi.' },
-    actioned:  { title: 'Şikayetiniz için işlem yapıldı', body: 'Gönderdiğiniz şikayet üzerine gerekli işlem yapılmıştır. Desteğiniz için teşekkür ederiz.' },
-    dismissed: { title: 'Şikayetiniz değerlendirildi', body: 'Gönderdiğiniz şikayet incelendi; bu aşamada ek bir işlem yapılmasına gerek görülmedi.' }
-  };
-
   async function updateReport(id, status) {
-    try {
-      await sb(`reports?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status, reviewed_at: new Date().toISOString() }) });
-      const r = allReports.find(r => r.id === id);
-      if (r) r.status = status;
-
-      // Notify the reporter in-app when their complaint is resolved (not on revert-to-pending)
-      if (r && r.reporter_id && REPORT_NOTIF[status]) {
-        try {
-          await sb('notifications', {
-            method: 'POST',
-            body: JSON.stringify({
-              user_id: r.reporter_id,
-              type: 'admin',
-              title: REPORT_NOTIF[status].title,
-              body: REPORT_NOTIF[status].body,
-              link: null
-            })
-          });
-        } catch(notifErr) { console.error('reporter notification failed:', notifErr); }
-      }
-
-      filterReports(_reportFilter);
-      const pending = allReports.filter(r => r.status === 'pending').length;
-      document.getElementById('badge-reports').textContent = pending || '0';
-      toast(status === 'actioned' ? '⚡ İşlem yapıldı.' : status === 'dismissed' ? '✗ Şikayet reddedildi.' : '✓ İncelendi olarak işaretlendi.');
-    } catch(e) { toast('Hata: ' + e.message, false); }
+    try { await sb(`reports?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status, reviewed_at: new Date().toISOString() }) }); loadReports(); toast('İncelendi.'); }
+    catch(e) { toast('Hata.', false); }
   }
 
-  // ── DELETION REQUESTS ──
   let allDeletions = [];
-
   async function loadDeletions() {
     try {
-      const data = await sb('deletion_requests?select=*&order=created_at.desc');
-      allDeletions = data;
-      const pending = data.filter(d => d.status === 'pending').length;
-      document.getElementById('badge-deletions').textContent = pending || '0';
-      renderDeletions(data);
-    } catch(e) { console.error('loadDeletions error:', e); }
+      const data = await sb('deletion_requests?select=*&order=created_at.desc'); allDeletions = data;
+      document.getElementById('deletions-tbody').innerHTML = data.length ? data.map(d => `<tr><td>${d.user_id?.slice(0,8)+'…'}</td><td>${d.reason||'—'}</td><td>${fmtDate(d.created_at)}</td><td>${d.status}</td><td><button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Talep bulunamadı.</td></tr>`;
+    } catch(e) {}
   }
-
-  function renderDeletions(items) {
-    document.getElementById('deletions-tbody').innerHTML = items.length ? items.map(d => {
-      const user = allUsers.find(u => u.id === d.user_id);
-      const name = user ? `${user.first_name||''} ${user.last_name||''}`.trim() || user.username || '—' : d.user_id?.slice(0,8)+'…';
-      const email = user?.email || '—';
-      const statusBadge = d.status === 'pending'
-        ? '<span class="badge badge-gold">⏳ Bekliyor</span>'
-        : d.status === 'approved'
-          ? '<span class="badge badge-red">✓ Onaylandı</span>'
-          : '<span class="badge badge-muted">✗ Reddedildi</span>';
-      return `<tr>
-        <td style="font-weight:600;">${name}</td>
-        <td style="font-size:12px;color:var(--muted);">${email}</td>
-        <td style="font-size:12px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.reason || '—'}</td>
-        <td style="font-size:11px;color:var(--muted);">${fmtDate(d.created_at)}</td>
-        <td>${statusBadge}</td>
-        <td>
-          <div class="actions">
-            ${d.status === 'pending' ? `
-              <button class="btn btn-sm btn-red" onclick="confirmDeleteUser('${d.id}','${d.user_id}','${name}')">🗑️ Sil</button>
-              <button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button>
-            ` : `<span style="font-size:11px;color:var(--muted);">İşlem tamamlandı</span>`}
-          </div>
-        </td>
-      </tr>`;
-    }).join('') : `<tr class="loading-row"><td colspan="6">Silme talebi bulunamadı.</td></tr>`;
-  }
-
   async function rejectDeletion(id) {
-    try {
-      await sb(`deletion_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'rejected', reviewed_at: new Date().toISOString() }) });
-      const d = allDeletions.find(d => d.id === id);
-      if (d) d.status = 'rejected';
-      renderDeletions(allDeletions);
-      const pending = allDeletions.filter(d => d.status === 'pending').length;
-      document.getElementById('badge-deletions').textContent = pending || '0';
-      toast('✗ Silme talebi reddedildi.');
-    } catch(e) { toast('Hata: ' + e.message, false); }
+    try { await sb(`deletion_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'rejected' }) }); loadDeletions(); toast('Reddedildi.'); }
+    catch(e) { toast('Hata.', false); }
   }
-
-  function confirmDeleteUser(requestId, userId, name) {
-    if (!confirm(`⚠️ DİKKAT: "${name}" kullanıcısını kalıcı olarak silmek üzeresiniz.\n\nBu işlem GERİ ALINAMAZ. Tüm verileri silinecek.\n\nDevam etmek istiyor musunuz?`)) return;
-    executeDeleteUser(requestId, userId);
-  }
-
-  async function executeDeleteUser(requestId, userId) {
-    try {
-      const res = await fetch(`${SB_URL}/functions/v1/delete-user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
-        body: JSON.stringify({ user_id: userId })
-      });
-      if (!res.ok) throw new Error(await res.text());
-
-      // Mark request as approved
-      await sb(`deletion_requests?id=eq.${requestId}`, { method: 'PATCH', body: JSON.stringify({ status: 'approved', reviewed_at: new Date().toISOString() }) });
-
-      // Remove from local lists
-      allUsers = allUsers.filter(u => u.id !== userId);
-      allUsersLoaded = false;
-      const d = allDeletions.find(d => d.id === requestId);
-      if (d) d.status = 'approved';
-      renderDeletions(allDeletions);
-      const pending = allDeletions.filter(d => d.status === 'pending').length;
-      document.getElementById('badge-deletions').textContent = pending || '0';
-      toast('🗑️ Kullanıcı kalıcı olarak silindi.');
-    } catch(e) { toast('Silme hatası: ' + e.message, false); }
-  }
-
-  // ── btn-navy style ──
-  document.head.insertAdjacentHTML('beforeend',
-    `<style>.btn-navy{background:rgba(27,58,140,.1);color:var(--navy);border:1px solid rgba(27,58,140,.2);}
-     .btn-navy:hover{background:var(--navy);color:#fff;}</style>`);
 
   init();
 </script>
