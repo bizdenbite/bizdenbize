@@ -8,9 +8,9 @@
 
     const modalHtml = `
       <div class="modal-overlay" id="ec-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(26,18,8,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-        <div class="modal" style="max-width:420px;padding:28px;text-align:center;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:'Instrument Sans',sans-serif;">
+        <div class="modal" style="max-width:420px;padding:28px;text-align:center;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:'Instrument Sans',sans-serif,system-ui;">
           <div style="font-size:36px;margin-bottom:8px;">✉️</div>
-          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink,#1A1208);margin-bottom:4px;">E-posta İletişim Seçeneği</div>
+          <div style="font-family:'Playfair Display',serif,Georgia;font-size:20px;font-weight:700;color:var(--ink,#1A1208);margin-bottom:4px;">E-posta İletişim Seçeneği</div>
           <div style="font-size:13px;color:var(--indigo,#4338CA);font-weight:600;margin-bottom:20px;word-break:break-all;" id="ec-email-text">user@example.com</div>
 
           <button id="ec-btn-copy" style="width:100%;padding:12px;background:var(--indigo,#4338CA);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;font-family:inherit;">
@@ -83,11 +83,41 @@
     setTimeout(() => tip.remove(), 3500);
   }
 
-  // Intercept all mailto links automatically
+  // Universal click interception for mailto links and JS email buttons
   document.addEventListener('click', function (e) {
-    const a = e.target.closest('a[href^="mailto:"]');
-    if (a) {
+    // 1. Check for mailto: href links
+    const mailtoLink = e.target.closest('a[href^="mailto:"]');
+    if (mailtoLink) {
       e.preventDefault();
-      const href = a.getAttribute('href');
+      e.stopPropagation();
+      const href = mailtoLink.getAttribute('href');
       const email = href.replace('mailto:', '').split('?')[0];
-      const urlParams = new URLSearchParams(href.split(
+      const urlParams = new URLSearchParams(href.split('?')[1] || '');
+      const subject = urlParams.get('subject') || '';
+      window.showEmailModal(email, subject);
+      return;
+    }
+
+    // 2. Check for JS buttons or elements with email attributes or mailto in onclick
+    const btn = e.target.closest('button, a, [onclick], [data-email]');
+    if (btn) {
+      const onclickAttr = btn.getAttribute('onclick') || '';
+      const hrefAttr = btn.getAttribute('href') || '';
+      const dataEmail = btn.getAttribute('data-email') || '';
+      const combined = onclickAttr + ' ' + hrefAttr + ' ' + dataEmail;
+      
+      const match = combined.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (match && match[0]) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.showEmailModal(match[0], 'BizdenBize İlan Hakkında');
+      }
+    }
+  }, true);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectModal);
+  } else {
+    injectModal();
+  }
+})();
