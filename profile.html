@@ -111,6 +111,12 @@
       .form-row{grid-template-columns:1fr;}
     }
   </style>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb=_authSb;
+    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+  </script>
 </head>
 <body>
 
@@ -311,11 +317,7 @@
   let selectedLangs = [];
   let selectedInterests = [];
 
-  async function doLogout() {
-    try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      await supabase.auth.signOut();
-    } catch(e) {}
+  function doLogout() {
     localStorage.removeItem('bb_auth_token');
     localStorage.removeItem('bb_user');
     Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
@@ -347,34 +349,43 @@
 
   async function init() {
     try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      const { data: { session } } = await supabase.auth.getSession();
-      token = session?.access_token || null;
-      if (!token) { window.location.replace('login.html'); return; }
+      // Poll briefly for window._authReady / window._currentSession set up by top head script
+      for (let i = 0; i < 150 && !window._authReady; i++) {
+        await new Promise(r => setTimeout(r, 20));
+      }
+      await (window._authReady || Promise.resolve());
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { window.location.replace('login.html'); return; }
-      currentUser = user;
+      const session = window._currentSession;
+      if (!session || !session.user) {
+        window.location.replace('login.html');
+        return;
+      }
+
+      token = session.access_token;
+      currentUser = session.user;
 
       const data = await sb(`profiles?id=eq.${currentUser.id}`);
       profile = data?.[0];
-      if (!profile) { window.location.replace('login.html'); return; }
+      if (!profile) {
+        window.location.replace('login.html');
+        return;
+      }
 
       renderProfile();
       loadStats();
       loadActivity();
       loadMyListings();
-    } catch(e) {
+    } catch (e) {
       console.error('Init error:', e);
     }
   }
 
   function renderProfile() {
-    if (!profile) return;
+    if (!profile || !currentUser) return;
     const first = profile.first_name || '';
     const last  = profile.last_name  || '';
-    const name  = `${first} ${last}`.trim() || currentUser.email.split('@')[0];
-    const ini   = ((first[0]||'')+(last[0]||'')).toUpperCase() || '?';
+    const name  = `${first} ${last}`.trim() || (currentUser.email ? currentUser.email.split('@')[0] : 'Kullanıcı');
+    const ini   = ((first[0]||'')+(last[0]||'')).toUpperCase() || name[0]?.toUpperCase() || '?';
     const color = COLORS[ini.charCodeAt(0) % COLORS.length];
 
     const av = document.getElementById('avatar-display');
@@ -386,7 +397,7 @@
         av.style.background = color;
       }
     }
-    
+
     const navAv = document.getElementById('nav-avatar');
     if (navAv) {
       if (profile.avatar_url) {
@@ -397,31 +408,21 @@
       }
     }
 
-    const nameEl = document.getElementById('disp-name');
-    if (nameEl) nameEl.textContent = name;
-
-    const userEl = document.getElementById('disp-username');
-    if (userEl) userEl.textContent = `@${profile.username || '—'}`;
-
-    const cityEl = document.getElementById('disp-city');
-    if (cityEl) cityEl.textContent = profile.city ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
+    const nameEl = document.getElementById('disp-name'); if (nameEl) nameEl.textContent = name;
+    const userEl = document.getElementById('disp-username'); if (userEl) userEl.textContent = `@${profile.username || '—'}`;
+    const cityEl = document.getElementById('disp-city'); if (cityEl) cityEl.textContent = profile.city ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
 
     const badges = [];
     if (profile.is_premium) badges.push('<span class="badge badge-premium">⭐ Premium</span>');
     if (profile.is_verified) badges.push('<span class="badge badge-verified">✓ Doğrulandı</span>');
     if (profile.is_admin) badges.push('<span class="badge badge-admin">🛡️ Admin</span>');
-    const badgesEl = document.getElementById('disp-badges');
-    if (badgesEl) badgesEl.innerHTML = badges.join('');
+    const badgesEl = document.getElementById('disp-badges'); if (badgesEl) badgesEl.innerHTML = badges.join('');
 
-    const abiCredEl = document.getElementById('disp-abibot-credits');
-    if (abiCredEl) abiCredEl.textContent = profile.abibot_credits || 0;
-
-    const expCredEl = document.getElementById('disp-expert-credits');
-    if (expCredEl) expCredEl.textContent = profile.expert_credits || 0;
+    const abiCredEl = document.getElementById('disp-abibot-credits'); if (abiCredEl) abiCredEl.textContent = profile.abibot_credits || 0;
+    const expCredEl = document.getElementById('disp-expert-credits'); if (expCredEl) expCredEl.textContent = profile.expert_credits || 0;
 
     const since = profile.created_at ? new Date(profile.created_at).getFullYear() : '—';
-    const sinceEl = document.getElementById('stat-since');
-    if (sinceEl) sinceEl.textContent = since;
+    const sinceEl = document.getElementById('stat-since'); if (sinceEl) sinceEl.textContent = since;
 
     const fNameInp = document.getElementById('inp-first-name'); if (fNameInp) fNameInp.value = profile.first_name || '';
     const lNameInp = document.getElementById('inp-last-name'); if (lNameInp) lNameInp.value  = profile.last_name  || '';
@@ -436,8 +437,7 @@
     selectedInterests = profile.interests || [];
     document.querySelectorAll('#interest-tags .tag-pill').forEach(p => p.classList.toggle('selected', selectedInterests.includes(p.dataset.val)));
 
-    const pubBtn = document.getElementById('view-public-btn');
-    if (pubBtn) pubBtn.href = `profil.html?id=${currentUser.id}`;
+    const pubBtn = document.getElementById('view-public-btn'); if (pubBtn) pubBtn.href = `profil.html?id=${currentUser.id}`;
   }
 
   async function loadStats() {
@@ -602,3 +602,93 @@
     el.innerHTML = reviews.map(r => {
       const date = new Date(r.created_at).toLocaleDateString('tr-TR', {day:'2-digit',month:'short',year:'numeric'});
       const statusLabel = r.status === 'answered' ? '✅ Yanıtlandı' : r.status === 'pending' ? '⏳ Bekliyor' : '🔍 İnceleniyor';
+      return `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:var(--warm);">${CAT_ICONS[r.category]||'❓'}</div>
+          <div>
+            <div class="activity-text">${statusLabel} — ${r.category} sorusu</div>
+            <div class="activity-time">${date}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleTag(el, field) {
+    el.classList.toggle('selected');
+    if (field === 'languages') {
+      selectedLangs = [...document.querySelectorAll('#lang-tags .tag-pill.selected')].map(p => p.dataset.val);
+    } else {
+      selectedInterests = [...document.querySelectorAll('#interest-tags .tag-pill.selected')].map(p => p.dataset.val);
+    }
+  }
+
+  async function saveProfile() {
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+    try {
+      const payload = {
+        first_name: document.getElementById('inp-first-name').value.trim(),
+        last_name:  document.getElementById('inp-last-name').value.trim(),
+        username:   document.getElementById('inp-username').value.trim().replace('@',''),
+        city:       document.getElementById('inp-city').value.trim(),
+        country:    document.getElementById('inp-country').value.trim(),
+        bio:        document.getElementById('inp-bio').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+      await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify(payload) });
+      Object.assign(profile, payload);
+      renderProfile();
+      toast('✅ Profil kaydedildi!');
+    } catch(e) { toast('Hata oluştu.', false); }
+    btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';
+  }
+
+  async function saveTags() {
+    try {
+      await sb(`profiles?id=eq.${currentUser.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ languages: selectedLangs, interests: selectedInterests, updated_at: new Date().toISOString() })
+      });
+      profile.languages = selectedLangs;
+      profile.interests = selectedInterests;
+      toast('✅ Tercihler kaydedildi!');
+    } catch(e) { toast('Hata oluştu.', false); }
+  }
+
+  async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast('Dosya 2MB\'dan küçük olmalı.', false); return; }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      const avDisplay = document.getElementById('avatar-display');
+      if (avDisplay) avDisplay.innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
+
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `avatars/${currentUser.id}.${ext}`;
+        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`, {
+          method: 'POST',
+          headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': file.type, 'x-upsert': 'true' },
+          body: file
+        });
+        if (uploadRes.ok) {
+          const publicUrl = `${SB_URL}/storage/v1/object/public/avatars/${path}`;
+          await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify({ avatar_url: publicUrl }) });
+          profile.avatar_url = publicUrl;
+          toast('✅ Fotoğraf güncellendi!');
+        } else {
+          toast('Fotoğraf yüklenemedi.', false);
+        }
+      } catch(e) { toast('Yükleme hatası.', false); }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  init();
+</script>
+<script type="module" src="nav-msg-badge.js"></script>
+</body>
+</html>
