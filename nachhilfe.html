@@ -29,94 +29,42 @@
     /* NAV */
     nav{position:sticky;top:0;z-index:200;background:rgba(250,247,242,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;}
     .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
-    .nav-menu{display:flex;gap:2px;flex:1;align-items:center;}
-    .nav-item{position:relative;}
-    .nav-item-btn{display:flex;align-items:center;gap:5px;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s;white-space:nowrap;}
-    .nav-item-btn:hover,.nav-item-btn.open{background:var(--warm);color:var(--ink);}
-    .nav-item-btn.active{background:var(--red);color:#fff;}
-    .nav-item-btn .chevron{font-size:9px;opacity:.5;transition:transform .2s;}
-    .nav-item-btn.open .chevron{transform:rotate(180deg);}
-    .nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;}
-    .nav-dropdown.open{display:block;animation:dropIn .15s ease;}
-    @keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-    .nav-dropdown a{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;transition:background .12s;white-space:nowrap;}
-    .nav-dropdown a:hover{background:var(--warm);}
-    .nav-dropdown a.active{color:var(--red);font-weight:600;}
-    .nav-dropdown hr{border:none;border-top:1px solid var(--warm);margin:4px 0;}
-    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
-    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
-    .hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red);border:none;cursor:pointer;border-radius:8px;flex-shrink:0;}
-    .hamburger span{display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s;}
-    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-    .hamburger.open span:nth-child(2){opacity:0;}
-    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-    .mobile-menu{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto;}
-    .mobile-menu.open{display:flex;}
-    .mm-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm);height:58px;flex-shrink:0;}
-    .mm-section{padding:12px 20px 4px;}
-    .mm-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;}
-    .mm-link{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;transition:background .15s;}
-    .mm-link:hover{background:var(--warm);}
-    .mm-link.active{background:rgba(212,43,43,.07);color:var(--red);font-weight:600;}
-    .mm-link-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
-    .mm-footer{padding:16px 20px 32px;border-top:1px solid var(--warm);margin-top:auto;}
-    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
-
-    /* ── SIMPLIFIED PRIMARY NAV ── */
     .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
-    .nav-primary a,.nav-kesfet-btn{
-      display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
-      font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;
-      background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
-    }
+    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
     .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
     .nav-primary a.active{background:var(--warm);color:var(--red);}
 
-    /* ── KEŞFET PANEL (desktop) ── */
-    .kesfet-panel{
-      display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);
-      background:#fff;border:1px solid var(--sand);border-radius:14px;
-      box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;
-    }
+    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
     .kesfet-panel.open{display:block;}
     .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;
-      padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);
-      font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
     .kesfet-tile:hover{background:var(--warm);}
     .kesfet-tile .e{font-size:22px;}
 
-    /* ── UTILITY ── */
-    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
-      padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
     .nav-msg:hover{background:var(--warm);}
 
-    /* ── BOTTOM TAB BAR (mobile) ── */
-    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
-      background:#fff;border-top:1px solid var(--sand);
-      padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
-    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-      font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;
-      background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
     .bt-item.active{color:var(--red);}
     .bt-icon{font-size:20px;}
 
-    /* ── KEŞFET SHEET (mobile) ── */
     .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
     .kesfet-sheet-overlay.open{display:block;}
-    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;
-      border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));
-      z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));z-index:351;max-height:75vh;overflow-y:auto;}
     .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
     .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
     .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+
+    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
 
     /* COUNTRY BAR */
     .cbar-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
     .cbar-btn:hover{border-color:rgba(255,255,255,.5);color:#fff;}
     .cbar-btn.active{border-color:var(--red);background:var(--red);color:#fff;}
     .cbar-soon{opacity:.45;cursor:default!important;}
-    .cbar-soon:hover{border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.6)!important;}
     .cbar-soon-badge{font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600;}
 
     /* HERO */
@@ -201,7 +149,6 @@
     .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
 
-    /* PAGE TABS */
     .page-tab{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);transition:all .2s;}
     .page-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 2px 8px rgba(0,0,0,.08);}
     .seeker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
@@ -256,41 +203,6 @@
       <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
     </div>
   </div>
-  <script>
-    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
-    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
-    async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
-
-    (function initNavAvatar() {
-      let waited = 0;
-      const timer = setInterval(async () => {
-        waited += 100;
-        const session = window._currentSession;
-        if (!session) {
-          if (waited >= 5000) clearInterval(timer);
-          return;
-        }
-        clearInterval(timer);
-        const navAvatar = document.getElementById('nav-avatar');
-        if (!navAvatar) return;
-        try {
-          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
-            headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
-          });
-          const rows = await r.json();
-          const p = rows[0] || {};
-          if (p.avatar_url) {
-            navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-          } else {
-            const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
-            const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
-            navAvatar.textContent = initials;
-            navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
-          }
-        } catch(e) { console.error('Nav avatar load error:', e); }
-      }, 100);
-    })();
-  </script>
 </nav>
 
 <!-- KEŞFET SHEET (mobile) -->
@@ -327,24 +239,13 @@
 </div>
 
 <script>
-  function toggleKesfet(e) {
-    e.stopPropagation();
-    document.getElementById('kesfet-panel').classList.toggle('open');
-  }
+  function toggleKesfet(e) { e.stopPropagation(); document.getElementById('kesfet-panel').classList.toggle('open'); }
   document.addEventListener('click', function(e) {
     const panel = document.getElementById('kesfet-panel');
-    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') {
-      panel.classList.remove('open');
-    }
+    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') { panel.classList.remove('open'); }
   });
-  function openKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.add('open');
-    document.getElementById('kesfet-sheet').style.display = 'block';
-  }
-  function closeKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.remove('open');
-    document.getElementById('kesfet-sheet').style.display = 'none';
-  }
+  function openKesfetSheet() { document.getElementById('kesfet-sheet-overlay').classList.add('open'); document.getElementById('kesfet-sheet').style.display = 'block'; }
+  function closeKesfetSheet() { document.getElementById('kesfet-sheet-overlay').classList.remove('open'); document.getElementById('kesfet-sheet').style.display = 'none'; }
   (function() {
     const page = window.location.pathname.split('/').pop() || 'mahallem.html';
     const map = { 'mahallem.html': 'mahallem', 'abibot.html': 'abibot', 'classifieds.html': 'ilanlar', 'profile.html': 'profil' };
@@ -418,10 +319,9 @@
     <button class="fbar-pill" id="pill-free" onclick="togglePill('free',this)">✓ Ücretsiz</button>
   </div>
 </div>
-<script src="smart-email.js"></script>
+
 <!-- BODY -->
 <div class="page-body">
-  <!-- TUTOR VIEW -->
   <div id="view-tutors">
     <div class="toolbar">
       <div class="results-count" id="results-count"><strong>—</strong> öğretmen bulundu</div>
@@ -433,7 +333,6 @@
     <div class="tutor-grid" id="tutor-grid"></div>
   </div>
 
-  <!-- SEEKER VIEW -->
   <div id="view-seekers" style="display:none;">
     <div class="toolbar">
       <div class="results-count" id="seeker-count"><strong>—</strong> özel öğretmen arayan bulundu</div>
@@ -463,6 +362,26 @@
       <button class="btn-indigo" id="dm-contact-btn">✉️ İletişim</button>
       <button class="btn-green" id="dm-wa-btn">💬 WhatsApp</button>
     </div>
+  </div>
+</div>
+
+<!-- SMART EMAIL CHOICE MODAL (OPTION B) -->
+<div class="modal-overlay" id="ec-modal" onclick="if(event.target===this)closeEcModal()">
+  <div class="modal" style="max-width:420px;padding:28px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:8px;">✉️</div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;">E-posta İletişim Seçeneği</div>
+    <div style="font-size:13px;color:var(--indigo);font-weight:600;margin-bottom:20px;word-break:break-all;" id="ec-email-text">user@example.com</div>
+
+    <button onclick="copyEcEmail()" style="width:100%;padding:12px;background:var(--indigo);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='var(--indigo2)'" onmouseout="this.style.background='var(--indigo)'">
+      📋 E-posta Adresini Kopyala
+    </button>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">(Gmail, Hotmail, Yahoo vb. yapıştırmak için)</div>
+
+    <button onclick="openEcMailApp()" style="width:100%;padding:11px;background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px;">
+      ✉️ E-posta Uygulamasında Aç
+    </button>
+
+    <button onclick="closeEcModal()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;">Kapat</button>
   </div>
 </div>
 
@@ -504,7 +423,7 @@
         </div>
       </div>
       <div id="tm-price-input-wrap" style="display:none;"><label class="field-label">Saatlik Ücret</label><input class="field-input" id="tm-price" type="text" placeholder="€15/saat"></div>
-      <div><label class="field-label">Kendinizi Tanıtın *</label><textarea class="field-input" id="tm-desc" rows="3" placeholder="Deneyim, eğitim geçmişi, öğretim tarzınız..."></textarea></div>
+      <div><label class="field-label">Kendinizi Tanıtın *</label><textarea class="field-input" id="tm-desc" rows="3" placeholder="Deneyim, eğitim geçmişi..."></textarea></div>
       <div><label class="field-label">İletişim *</label><input class="field-input" id="tm-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
       <div id="tm-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
@@ -517,7 +436,7 @@
   </div>
 </div>
 
-<!-- SEEK MODAL (family looking for tutor) -->
+<!-- SEEK MODAL -->
 <div class="modal-overlay" id="seek-modal" onclick="if(event.target===this)closeSeekModal()">
   <div class="modal">
     <div class="modal-header"><div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🔍 Öğretmen Arıyorum</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">İhtiyacınızı paylaşın, öğretmenler size ulaşsın.</div></div><button class="modal-close" onclick="closeSeekModal()">×</button></div>
@@ -529,24 +448,21 @@
       <div class="field-row">
         <div><label class="field-label">Hangi Ders? *</label>
           <select class="field-input" id="sk-subject">
-            <option>Mathematik</option><option>Deutsch</option><option>Englisch</option>
-            <option>Physik</option><option>Chemie</option><option>Biologie</option><option>Türkçe</option><option>Diğer</option>
+            <option>Mathematik</option><option>Deutsch</option><option>Englisch</option><option>Physik</option><option>Chemie</option><option>Biologie</option><option>Türkçe</option><option>Diğer</option>
           </select>
         </div>
         <div><label class="field-label">Sınıf / Seviye</label>
           <select class="field-input" id="sk-level">
-            <option>Grundschule (1-4)</option><option>Hauptschule</option>
-            <option>Realschule</option><option>Gymnasium</option><option>Abitur</option>
+            <option>Grundschule (1-4)</option><option>Hauptschule</option><option>Realschule</option><option>Gymnasium</option><option>Abitur</option>
           </select>
         </div>
       </div>
       <div><label class="field-label">Bütçe</label>
         <select class="field-input" id="sk-budget">
-          <option>Ücretsiz tercih edilir</option><option>€10-15/saat</option>
-          <option>€15-25/saat</option><option>€25+/saat</option><option>Bütçe esnek</option>
+          <option>Ücretsiz tercih edilir</option><option>€10-15/saat</option><option>€15-25/saat</option><option>€25+/saat</option><option>Bütçe esnek</option>
         </select>
       </div>
-      <div><label class="field-label">Ek Bilgi</label><textarea class="field-input" id="sk-desc" rows="2" placeholder="Çocuğun yaşı, hangi konuda zorlanıyor, müsaitlik..."></textarea></div>
+      <div><label class="field-label">Ek Bilgi</label><textarea class="field-input" id="sk-desc" rows="2" placeholder="Çocuğun yaşı, hangi konuda zorlanıyor..."></textarea></div>
       <div><label class="field-label">İletişim *</label><input class="field-input" id="sk-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
       <div id="sk-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
@@ -668,10 +584,19 @@ function openDetail(id) {
   document.getElementById('dm-tags').innerHTML = `
     ${t.turkish ? '<span class="ctag ctag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe ders</span>' : ''}
     <span class="ctag ctag-level" style="font-size:11px;padding:3px 10px;">${t.subject}</span>`;
+  
   const isEmail = t.contact.includes('@');
-  const tutorMailSubject = encodeURIComponent(`BizdenBize'deki "${t.name}" özel ders ilanı hakkında`);
-  document.getElementById('dm-contact-btn').onclick = () => window.location.href = isEmail ? `mailto:${t.contact}?subject=${tutorMailSubject}` : `tel:${t.contact}`;
+  const tutorMailSubject = `BizdenBize'deki "${t.name}" özel ders ilanı hakkında`;
+  
+  document.getElementById('dm-contact-btn').onclick = () => {
+    if (isEmail) {
+      showEmailModal(t.contact, tutorMailSubject);
+    } else {
+      window.location.href = `tel:${t.contact}`;
+    }
+  };
   document.getElementById('dm-contact-btn').textContent = isEmail ? '✉️ E-posta' : '📞 Ara';
+  
   const dmWaBtn = document.getElementById('dm-wa-btn');
   if (isEmail) {
     dmWaBtn.style.display = 'none';
@@ -683,6 +608,52 @@ function openDetail(id) {
   document.body.style.overflow = 'hidden';
 }
 function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+// ── SELF-CONTAINED OPTION B EMAIL HANDLERS ──
+let ecCurrentEmail = '';
+let ecCurrentSubject = '';
+
+function showEmailModal(email, subject = '') {
+  ecCurrentEmail = email;
+  ecCurrentSubject = subject;
+  const emailEl = document.getElementById('ec-email-text');
+  const modalEl = document.getElementById('ec-modal');
+  if (emailEl) emailEl.textContent = email;
+  if (modalEl) modalEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEcModal() {
+  const modalEl = document.getElementById('ec-modal');
+  if (modalEl) modalEl.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function copyEcEmail() {
+  if (!ecCurrentEmail) return;
+  navigator.clipboard.writeText(ecCurrentEmail).then(() => {
+    closeEcModal();
+    toastMsg(`📋 E-posta kopyalandı! (Gmail veya Webmail'e yapıştırabilirsiniz)`);
+  });
+}
+
+function openEcMailApp() {
+  if (!ecCurrentEmail) return;
+  const sub = ecCurrentSubject ? `?subject=${encodeURIComponent(ecCurrentSubject)}` : '';
+  closeEcModal();
+  window.location.href = `mailto:${ecCurrentEmail}${sub}`;
+}
+
+function toastMsg(msg) {
+  let t = document.getElementById('ec-toast');
+  if (t) t.remove();
+  t = document.createElement('div');
+  t.id = 'ec-toast';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E7B4B;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
 
 function openTutorModal() { document.getElementById('tutor-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeTutorModal() { document.getElementById('tutor-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('tm-success').style.display='none'; document.getElementById('tm-body').style.display='flex'; document.getElementById('tm-footer').style.display='flex'; document.getElementById('tm-error').style.display='none'; }
@@ -795,7 +766,7 @@ function contactSeekerRequest(btn) {
   const contact = btn.dataset.contact || '';
   const subject = btn.dataset.subject || '';
   if (contact.includes('@')) {
-    window.location.href = `mailto:${contact}?subject=${encodeURIComponent(`BizdenBize'deki ${subject} özel ders talebiniz hakkında`)}`;
+    showEmailModal(contact, `BizdenBize'deki ${subject} özel ders talebiniz hakkında`);
   } else {
     window.location.href = `tel:${contact}`;
   }
@@ -868,54 +839,30 @@ renderTutors();
     <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" title="Instagram">📸</a>
-          <a href="https://twitter.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" title="X / Twitter">𝕏</a>
-          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" title="Facebook">👤</a>
-          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" title="WhatsApp">💬</a>
-        </div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
       </div>
-
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
           <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
           <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
-          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🎉 Etkinlikler</a>
-          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏢 İşletmeler</a>
-          <a href="is-ver-bul.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">💼 İş Ver & Bul</a>
-          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🎓 Öğrenim</a>
-          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">📚 Bilgi & Belge</a>
           <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
         </div>
       </div>
-
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
           <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
-          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">SSS</a>
           <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
-          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">support@bizdenbize.com</a>
         </div>
       </div>
-
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
           <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
           <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
-          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Çerez Politikası</a>
-          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">KVKK / GDPR</a>
-          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Impressum</a>
         </div>
       </div>
-    </div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
-      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
     </div>
   </div>
 </footer>
