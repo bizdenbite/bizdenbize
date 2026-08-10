@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Profilim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -327,39 +327,50 @@
   }
 
   async function sb(path, opts = {}) {
-    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
-    const t = await r.text();
-    return t ? JSON.parse(t) : [];
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
+      if (!r.ok) return [];
+      const t = await r.text();
+      return t ? JSON.parse(t) : [];
+    } catch(e) {
+      return [];
+    }
   }
 
   function toast(msg, ok = true) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.textContent = msg;
     t.className = ok ? 'show' : 'show error';
     setTimeout(() => t.className = '', 3000);
   }
 
   async function init() {
-    const { supabase } = await import('./bizdenbize-client.js');
-    const { data: { session } } = await supabase.auth.getSession();
-    token = session?.access_token || null;
-    if (!token) { window.location.replace('login.html'); return; }
+    try {
+      const { supabase } = await import('./bizdenbize-client.js');
+      const { data: { session } } = await supabase.auth.getSession();
+      token = session?.access_token || null;
+      if (!token) { window.location.replace('login.html'); return; }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { window.location.replace('login.html'); return; }
-    currentUser = user;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.replace('login.html'); return; }
+      currentUser = user;
 
-    const data = await sb(`profiles?id=eq.${currentUser.id}`);
-    profile = data?.[0];
-    if (!profile) { window.location.replace('login.html'); return; }
+      const data = await sb(`profiles?id=eq.${currentUser.id}`);
+      profile = data?.[0];
+      if (!profile) { window.location.replace('login.html'); return; }
 
-    renderProfile();
-    loadStats();
-    loadActivity();
-    loadMyListings();
+      renderProfile();
+      loadStats();
+      loadActivity();
+      loadMyListings();
+    } catch(e) {
+      console.error('Init error:', e);
+    }
   }
 
   function renderProfile() {
+    if (!profile) return;
     const first = profile.first_name || '';
     const last  = profile.last_name  || '';
     const name  = `${first} ${last}`.trim() || currentUser.email.split('@')[0];
@@ -367,35 +378,57 @@
     const color = COLORS[ini.charCodeAt(0) % COLORS.length];
 
     const av = document.getElementById('avatar-display');
-    if (profile.avatar_url) {
-      av.innerHTML = `<img src="${profile.avatar_url}" alt="${name}">`;
-    } else {
-      av.textContent = ini;
-      av.style.background = color;
+    if (av) {
+      if (profile.avatar_url) {
+        av.innerHTML = `<img src="${profile.avatar_url}" alt="${name}">`;
+      } else {
+        av.textContent = ini;
+        av.style.background = color;
+      }
+    }
+    
+    const navAv = document.getElementById('nav-avatar');
+    if (navAv) {
+      if (profile.avatar_url) {
+        navAv.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      } else {
+        navAv.textContent = ini;
+        navAv.style.background = color;
+      }
     }
 
-    document.getElementById('disp-name').textContent = name;
-    document.getElementById('disp-username').textContent = `@${profile.username || '—'}`;
-    document.getElementById('disp-city').textContent = profile.city ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
+    const nameEl = document.getElementById('disp-name');
+    if (nameEl) nameEl.textContent = name;
+
+    const userEl = document.getElementById('disp-username');
+    if (userEl) userEl.textContent = `@${profile.username || '—'}`;
+
+    const cityEl = document.getElementById('disp-city');
+    if (cityEl) cityEl.textContent = profile.city ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
 
     const badges = [];
     if (profile.is_premium) badges.push('<span class="badge badge-premium">⭐ Premium</span>');
     if (profile.is_verified) badges.push('<span class="badge badge-verified">✓ Doğrulandı</span>');
     if (profile.is_admin) badges.push('<span class="badge badge-admin">🛡️ Admin</span>');
-    document.getElementById('disp-badges').innerHTML = badges.join('');
+    const badgesEl = document.getElementById('disp-badges');
+    if (badgesEl) badgesEl.innerHTML = badges.join('');
 
-    document.getElementById('disp-abibot-credits').textContent = profile.abibot_credits || 0;
-    document.getElementById('disp-expert-credits').textContent = profile.expert_credits || 0;
+    const abiCredEl = document.getElementById('disp-abibot-credits');
+    if (abiCredEl) abiCredEl.textContent = profile.abibot_credits || 0;
+
+    const expCredEl = document.getElementById('disp-expert-credits');
+    if (expCredEl) expCredEl.textContent = profile.expert_credits || 0;
 
     const since = profile.created_at ? new Date(profile.created_at).getFullYear() : '—';
-    document.getElementById('stat-since').textContent = since;
+    const sinceEl = document.getElementById('stat-since');
+    if (sinceEl) sinceEl.textContent = since;
 
-    document.getElementById('inp-first-name').value = profile.first_name || '';
-    document.getElementById('inp-last-name').value  = profile.last_name  || '';
-    document.getElementById('inp-username').value   = profile.username   || '';
-    document.getElementById('inp-city').value       = profile.city       || '';
-    document.getElementById('inp-country').value    = profile.country    || '';
-    document.getElementById('inp-bio').value        = profile.bio        || '';
+    const fNameInp = document.getElementById('inp-first-name'); if (fNameInp) fNameInp.value = profile.first_name || '';
+    const lNameInp = document.getElementById('inp-last-name'); if (lNameInp) lNameInp.value  = profile.last_name  || '';
+    const uNameInp = document.getElementById('inp-username'); if (uNameInp) uNameInp.value   = profile.username   || '';
+    const cityInp = document.getElementById('inp-city'); if (cityInp) cityInp.value       = profile.city       || '';
+    const countryInp = document.getElementById('inp-country'); if (countryInp) countryInp.value = profile.country || '';
+    const bioInp = document.getElementById('inp-bio'); if (bioInp) bioInp.value           = profile.bio        || '';
 
     selectedLangs = profile.languages || [];
     document.querySelectorAll('#lang-tags .tag-pill').forEach(p => p.classList.toggle('selected', selectedLangs.includes(p.dataset.val)));
@@ -403,21 +436,24 @@
     selectedInterests = profile.interests || [];
     document.querySelectorAll('#interest-tags .tag-pill').forEach(p => p.classList.toggle('selected', selectedInterests.includes(p.dataset.val)));
 
-    document.getElementById('view-public-btn').href = `profil.html?id=${currentUser.id}`;
+    const pubBtn = document.getElementById('view-public-btn');
+    if (pubBtn) pubBtn.href = `profil.html?id=${currentUser.id}`;
   }
 
   async function loadStats() {
-    const [questions, reviews, followers] = await Promise.all([
-      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`).catch(() => []),
-      sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`).catch(() => []),
-      sb(`follows?select=id&following_id=eq.${currentUser.id}`).catch(() => [])
-    ]);
-    document.getElementById('stat-questions').textContent = questions.length || 0;
-    document.getElementById('stat-reviews').textContent = reviews.length || 0;
-    document.getElementById('stat-followers').textContent = followers.length || 0;
+    try {
+      const [questions, reviews, followers] = await Promise.all([
+        sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`).catch(() => []),
+        sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`).catch(() => []),
+        sb(`follows?select=id&following_id=eq.${currentUser.id}`).catch(() => [])
+      ]);
+      const qEl = document.getElementById('stat-questions'); if (qEl) qEl.textContent = questions.length || 0;
+      const rEl = document.getElementById('stat-reviews'); if (rEl) rEl.textContent = reviews.length || 0;
+      const fEl = document.getElementById('stat-followers'); if (fEl) fEl.textContent = followers.length || 0;
+    } catch(e) {}
   }
 
-  // ── MULTI-SEARCH LISTINGS & PENDING ITEMS ──
+  // ── LOAD USER'S SUBMITTED LISTINGS ──
   async function loadMyListings() {
     const container = document.getElementById('my-listings-list');
     if (!container) return;
@@ -425,27 +461,32 @@
     try {
       const userEmail = currentUser.email || '';
       const username = profile.username || '';
-      const nameFirst = profile.first_name || '';
-
-      // Create multi-field query for tutors table
-      let tutorFilters = `user_id.eq.${currentUser.id}`;
-      if (userEmail) tutorFilters += `,contact.ilike.*${userEmail}*`;
-      if (nameFirst) tutorFilters += `,name.ilike.*${nameFirst}*`;
-
-      let listingFilters = `author.eq.${currentUser.id},created_by.eq.${currentUser.id}`;
-      if (username) listingFilters += `,author.eq.${username}`;
 
       const [tutors, listings, jobs, swaps, webinars] = await Promise.all([
-        sb(`tutors?select=*&or=(${tutorFilters})`).catch(() => []),
-        sb(`listings?select=*&or=(${listingFilters})`).catch(() => []),
+        sb(`tutors?select=*&order=created_at.desc`).catch(() => []),
+        sb(`listings?select=*&order=created_at.desc`).catch(() => []),
         sb(`jobs?select=*&author_id=eq.${currentUser.id}`).catch(() => []),
         sb(`swap_offers?select=*&user_id=eq.${currentUser.id}`).catch(() => []),
         sb(`webinars?select=*&created_by=eq.${currentUser.id}`).catch(() => [])
       ]);
 
+      const myTutors = (tutors || []).filter(t => {
+        if (t.user_id && t.user_id === currentUser.id) return true;
+        if (userEmail && t.contact && t.contact.toLowerCase().includes(userEmail.toLowerCase())) return true;
+        if (profile.first_name && t.name && t.name.toLowerCase().includes(profile.first_name.toLowerCase())) return true;
+        return false;
+      });
+
+      const myListings = (listings || []).filter(l => {
+        if (l.created_by && l.created_by === currentUser.id) return true;
+        if (username && l.author === username) return true;
+        if (l.author === currentUser.id) return true;
+        return false;
+      });
+
       const allItems = [];
 
-      (tutors || []).forEach(t => allItems.push({
+      myTutors.forEach(t => allItems.push({
         id: t.id,
         title: `${t.name} — ${t.subject}`,
         typeLabel: '✏️ Nachhilfe',
@@ -454,7 +495,7 @@
         table: 'tutors'
       }));
 
-      (listings || []).forEach(l => allItems.push({
+      myListings.forEach(l => allItems.push({
         id: l.id,
         title: l.title || 'İlan',
         typeLabel: '🛍️ İlan',
@@ -503,7 +544,6 @@
 
       uniqueItems.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      // Update the "İlanım" box counter on the left card!
       const statEl = document.getElementById('stat-listings');
       if (statEl) statEl.textContent = uniqueItems.length;
 
@@ -535,6 +575,7 @@
 
     } catch (e) {
       console.error('loadMyListings error:', e);
+      container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">İlanlar yüklenirken bir hata oluştu.</div>`;
     }
   }
 
@@ -553,6 +594,7 @@
     const reviews = await sb(`expert_reviews?select=category,status,created_at,rating&user_id=eq.${currentUser.id}&order=created_at.desc&limit=6`).catch(() => []);
     const CAT_ICONS = {legal:'⚖️',visa:'🛂',medical:'🏥',tax:'💶',housing:'🏠',employment:'💼',school:'🎓',insurance:'🚗',migration:'✈️'};
     const el = document.getElementById('activity-list');
+    if (!el) return;
     if (!reviews.length) {
       el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Henüz aktivite yok.</div>`;
       return;
@@ -560,70 +602,3 @@
     el.innerHTML = reviews.map(r => {
       const date = new Date(r.created_at).toLocaleDateString('tr-TR', {day:'2-digit',month:'short',year:'numeric'});
       const statusLabel = r.status === 'answered' ? '✅ Yanıtlandı' : r.status === 'pending' ? '⏳ Bekliyor' : '🔍 İnceleniyor';
-      return `
-        <div class="activity-item">
-          <div class="activity-icon" style="background:var(--warm);">${CAT_ICONS[r.category]||'❓'}</div>
-          <div>
-            <div class="activity-text">${statusLabel} — ${r.category} sorusu</div>
-            <div class="activity-time">${date}</div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  function toggleTag(el, field) {
-    el.classList.toggle('selected');
-    if (field === 'languages') {
-      selectedLangs = [...document.querySelectorAll('#lang-tags .tag-pill.selected')].map(p => p.dataset.val);
-    } else {
-      selectedInterests = [...document.querySelectorAll('#interest-tags .tag-pill.selected')].map(p => p.dataset.val);
-    }
-  }
-
-  async function saveProfile() {
-    const btn = document.querySelector('.btn-save');
-    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
-    try {
-      const payload = {
-        first_name: document.getElementById('inp-first-name').value.trim(),
-        last_name:  document.getElementById('inp-last-name').value.trim(),
-        username:   document.getElementById('inp-username').value.trim().replace('@',''),
-        city:       document.getElementById('inp-city').value.trim(),
-        country:    document.getElementById('inp-country').value.trim(),
-        bio:        document.getElementById('inp-bio').value.trim(),
-        updated_at: new Date().toISOString()
-      };
-      await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify(payload) });
-      Object.assign(profile, payload);
-      renderProfile();
-      toast('✅ Profil kaydedildi!');
-    } catch(e) { toast('Hata oluştu.', false); }
-    btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';
-  }
-
-  async function saveTags() {
-    try {
-      await sb(`profiles?id=eq.${currentUser.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ languages: selectedLangs, interests: selectedInterests, updated_at: new Date().toISOString() })
-      });
-      profile.languages = selectedLangs;
-      profile.interests = selectedInterests;
-      toast('✅ Tercihler kaydedildi!');
-    } catch(e) { toast('Hata oluştu.', false); }
-  }
-
-  async function handleAvatarUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { toast('Dosya 2MB\'dan küçük olmalı.', false); return; }
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const dataUrl = e.target.result;
-      document.getElementById('avatar-display').innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
-
-      try {
-        const ext = file.name.split('.').pop();
-        const path = `avatars/${currentUser.id}.${ext}`;
-        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`
