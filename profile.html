@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Profilim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -13,11 +13,35 @@
 
     /* NAV */
     nav{position:sticky;top:0;z-index:200;background:rgba(250,247,242,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;}
-    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);text-decoration:none;}
-    .nav-logo span{color:var(--red);}
-    .nav-right{display:flex;align-items:center;gap:12px;}
-    .nav-link{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
-    .nav-link:hover{color:#fff;background:rgba(255,255,255,.08);}
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
+    .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
+    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
+    .nav-primary a.active{background:var(--warm);color:var(--red);}
+
+    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
+    .kesfet-panel.open{display:block;}
+    .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile:hover{background:var(--warm);}
+    .kesfet-tile .e{font-size:22px;}
+
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg:hover{background:var(--warm);}
+
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bt-item.active{color:var(--red);}
+    .bt-icon{font-size:20px;}
+
+    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
+    .kesfet-sheet-overlay.open{display:block;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
+    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
     /* LAYOUT */
     .page{padding:24px 24px 60px;max-width:920px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
@@ -71,14 +95,12 @@
     .btn-save:hover{background:#176040;}
     .btn-save:disabled{background:var(--sand);cursor:not-allowed;}
 
-    /* ACTIVITY */
     .activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--warm);}
     .activity-item:last-child{border-bottom:none;}
     .activity-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
     .activity-text{font-size:13px;color:var(--ink);line-height:1.5;}
     .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
-    /* TOAST */
     #toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
     #toast.show{opacity:1;transform:translateY(0);}
     #toast.error{background:var(--red);}
@@ -88,34 +110,6 @@
       .profile-card{position:static;}
       .form-row{grid-template-columns:1fr;}
     }
-
-    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
-    .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
-    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
-    .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
-    .nav-primary a.active{background:var(--warm);color:var(--red);}
-
-    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
-    .kesfet-panel.open{display:block;}
-    .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
-    .kesfet-tile:hover{background:var(--warm);}
-    .kesfet-tile .e{font-size:22px;}
-
-    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
-    .nav-msg:hover{background:var(--warm);}
-
-    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
-    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
-    .bt-item.active{color:var(--red);}
-    .bt-icon{font-size:20px;}
-
-    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
-    .kesfet-sheet-overlay.open{display:block;}
-    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));z-index:351;max-height:75vh;overflow-y:auto;}
-    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
-    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
   </style>
 </head>
 <body>
@@ -155,39 +149,6 @@
     </div>
   </div>
 </nav>
-
-<!-- KEŞFET SHEET (mobile) -->
-<div class="kesfet-sheet-overlay" id="kesfet-sheet-overlay" onclick="closeKesfetSheet()"></div>
-<div class="kesfet-sheet" id="kesfet-sheet" style="display:none;">
-  <div class="kesfet-sheet-header">
-    <div class="kesfet-sheet-title">Keşfet</div>
-    <button onclick="closeKesfetSheet()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
-  </div>
-  <div class="kesfet-sheet-grid">
-    <a class="kesfet-tile" href="is-guc.html"><span class="e">💼</span>İş İlanları</a>
-    <a class="kesfet-tile" href="business.html"><span class="e">🏢</span>İşletmeler</a>
-    <a class="kesfet-tile" href="uzmanlar.html"><span class="e">👨‍⚖️</span>Uzmanlar</a>
-    <a class="kesfet-tile" href="ogrenim.html"><span class="e">🎓</span>Öğrenim</a>
-    <a class="kesfet-tile" href="nachhilfe.html"><span class="e">✏️</span>Nachhilfe</a>
-    <a class="kesfet-tile" href="webinar.html"><span class="e">🎥</span>Webinarlar</a>
-    <a class="kesfet-tile" href="saglik.html"><span class="e">🏥</span>Sağlık</a>
-    <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
-    <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
-    <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgi & Belge</a>
-    <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
-    <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
-    <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
-  </div>
-</div>
-
-<!-- BOTTOM TAB BAR (mobile) -->
-<div class="bottom-tabbar" id="bottom-tabbar">
-  <a class="bt-item" href="mahallem.html" id="bt-mahallem"><span class="bt-icon">🏘️</span>Mahallem</a>
-  <a class="bt-item" href="abibot.html" id="bt-abibot"><span class="bt-icon">🤖</span>AbiBOT</a>
-  <a class="bt-item" href="classifieds.html" id="bt-ilanlar"><span class="bt-icon">🛍️</span>İlanlar</a>
-  <button class="bt-item" onclick="openKesfetSheet()" id="bt-kesfet"><span class="bt-icon">🔍</span>Keşfet</button>
-  <a class="bt-item" href="profile.html" id="bt-profil"><span class="bt-icon">👤</span>Profil</a>
-</div>
 
 <div class="page" id="page">
   <!-- LEFT -->
@@ -250,7 +211,7 @@
 
   <!-- RIGHT -->
   <div>
-    <!-- My Listings & Activity Section (NEW) -->
+    <!-- My Listings & Activity Section -->
     <div class="edit-section">
       <div class="section-title">📌 İlanlarım & Gönderilerim</div>
       <div id="my-listings-list">
@@ -261,13 +222,6 @@
     <!-- Personal Info -->
     <div class="edit-section">
       <div class="section-title">👤 Kişisel Bilgiler</div>
-      <div id="profile-draft-banner" style="display:none;margin-bottom:14px;padding:10px 14px;background:var(--warm);border:1px solid var(--sand);border-radius:9px;font-size:12.5px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <span>💾 Kaydedilmemiş değişiklikleriniz var.</span>
-        <span style="display:flex;gap:8px;">
-          <button type="button" onclick="__profileDraftRestore()" style="background:var(--navy);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Geri Yükle</button>
-          <button type="button" onclick="__profileDraftDismiss()" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:'Instrument Sans',sans-serif;">Yoksay</button>
-        </span>
-      </div>
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">Ad</label>
@@ -341,92 +295,6 @@
         <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
       </div>
     </div>
-
-    <!-- Become an Expert -->
-    <div class="edit-section" style="border:1px solid var(--sand);border-radius:14px;padding:20px;background:var(--warm);">
-      <div class="section-title">🎓 Uzman Ol</div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Hukuki, mali, tıbbi veya başka bir alanda uzmanlığınız mı var? BizdenBize topluluğuna uzman olarak katılın, sorulara yanıt verin ve deneyiminizi paylaşın.</p>
-      <a href="uzman-basvuru.html" style="display:inline-block;padding:10px 20px;background:var(--red);border-radius:9px;font-size:13px;font-weight:600;color:#fff;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;">🎓 Uzman Olarak Başvur</a>
-    </div>
-
-    <!-- Deactivate Account -->
-    <div class="edit-section" style="border:1px solid var(--sand);border-radius:14px;padding:20px;background:var(--warm);">
-      <div class="section-title">😴 Hesabımı Deaktive Et</div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Bir süreliğine ara vermek mi istiyorsunuz? Hesabınızı deaktive edin — profiliniz ve ilanlarınız görünmez olur.</p>
-      <button onclick="openDeactivateModal()" style="padding:10px 20px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;">😴 Hesabımı Deaktive Et</button>
-    </div>
-
-    <!-- Danger Zone -->
-    <div class="edit-section" style="border:1px solid rgba(212,43,43,.2);border-radius:14px;padding:20px;background:rgba(212,43,43,.02);">
-      <div class="section-title" style="color:var(--red);">⚠️ Tehlikeli Bölge</div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px;">Hesabınızı kalıcı olarak silmek istiyorsanız bir silme talebi oluşturabilirsiniz.</p>
-      <button onclick="openDeleteRequestModal()" style="padding:10px 20px;background:none;border:1.5px solid rgba(212,43,43,.4);border-radius:9px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;font-family:'Instrument Sans',sans-serif;">🗑️ Hesap Silme Talebi Oluştur</button>
-      <div id="delete-request-status" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:8px;font-size:13px;color:var(--muted);">
-        ⏳ Silme talebiniz inceleniyor. Ekibimiz en kısa sürede sizinle iletişime geçecek.
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
-  <div style="max-width:1100px;margin:0 auto;">
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
-          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
-          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
-          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- MODALS -->
-<div id="deactivate-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.55);align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-  <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;padding:28px;">
-    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;">😴 Hesabımı Deaktive Et</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Hesabınız gizlenecek ve oturumunuz kapatılacak.</div>
-    <button onclick="confirmDeactivate()" id="deactivate-confirm-btn" style="width:100%;padding:11px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Deaktive Et</button>
-    <button onclick="closeDeactivateModal()" style="width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;">İptal</button>
-  </div>
-</div>
-
-<div id="delete-req-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.55);align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-  <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;padding:28px;">
-    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;">🗑️ Hesap Silme Talebi</div>
-    <textarea id="delete-req-reason" placeholder="Silme sebebi..." style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-size:14px;margin-bottom:14px;"></textarea>
-    <button onclick="submitDeleteRequest()" id="delete-req-submit" style="width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Talebi Gönder</button>
-    <button onclick="closeDeleteRequestModal()" style="width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;">İptal</button>
-  </div>
-</div>
-
-<div id="followers-modal" onclick="if(event.target===this)closeFollowersModal()" style="display:none;position:fixed;inset:0;background:rgba(26,18,8,.45);z-index:600;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;width:92%;max-width:420px;max-height:78vh;display:flex;flex-direction:column;overflow:hidden;">
-    <div style="padding:18px 20px;border-bottom:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;">
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);">Takipçilerim</div>
-      <button onclick="closeFollowersModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
-    </div>
-    <div id="followers-list" style="overflow-y:auto;padding:8px;"><div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">Yükleniyor...</div></div>
   </div>
 </div>
 
@@ -488,7 +356,7 @@
     renderProfile();
     loadStats();
     loadActivity();
-    loadMyListings(); // NEW: Load user's posts & pending items
+    loadMyListings();
   }
 
   function renderProfile() {
@@ -504,15 +372,6 @@
     } else {
       av.textContent = ini;
       av.style.background = color;
-    }
-    const navAv = document.getElementById('nav-avatar');
-    if (navAv) {
-      if (profile.avatar_url) {
-        navAv.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-      } else {
-        navAv.textContent = ini;
-        navAv.style.background = color;
-      }
     }
 
     document.getElementById('disp-name').textContent = name;
@@ -548,30 +407,37 @@
   }
 
   async function loadStats() {
-    const [listings, questions, reviews, followers] = await Promise.all([
-      sb(`listings?select=id&author=eq.${profile.username || currentUser.id}`).catch(() => []),
+    const [questions, reviews, followers] = await Promise.all([
       sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`).catch(() => []),
       sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`).catch(() => []),
       sb(`follows?select=id&following_id=eq.${currentUser.id}`).catch(() => [])
     ]);
-    document.getElementById('stat-listings').textContent = listings.length || 0;
     document.getElementById('stat-questions').textContent = questions.length || 0;
     document.getElementById('stat-reviews').textContent = reviews.length || 0;
     document.getElementById('stat-followers').textContent = followers.length || 0;
   }
 
-  // ── LOAD USER'S SUBMITTED LISTINGS & PENDING ITEMS ──
+  // ── MULTI-SEARCH LISTINGS & PENDING ITEMS ──
   async function loadMyListings() {
     const container = document.getElementById('my-listings-list');
     if (!container) return;
 
     try {
       const userEmail = currentUser.email || '';
-      const username = profile.username || currentUser.id;
+      const username = profile.username || '';
+      const nameFirst = profile.first_name || '';
+
+      // Create multi-field query for tutors table
+      let tutorFilters = `user_id.eq.${currentUser.id}`;
+      if (userEmail) tutorFilters += `,contact.ilike.*${userEmail}*`;
+      if (nameFirst) tutorFilters += `,name.ilike.*${nameFirst}*`;
+
+      let listingFilters = `author.eq.${currentUser.id},created_by.eq.${currentUser.id}`;
+      if (username) listingFilters += `,author.eq.${username}`;
 
       const [tutors, listings, jobs, swaps, webinars] = await Promise.all([
-        sb(`tutors?select=*&contact=ilike.*${userEmail}*`).catch(() => []),
-        sb(`listings?select=*&author=eq.${username}`).catch(() => []),
+        sb(`tutors?select=*&or=(${tutorFilters})`).catch(() => []),
+        sb(`listings?select=*&or=(${listingFilters})`).catch(() => []),
         sb(`jobs?select=*&author_id=eq.${currentUser.id}`).catch(() => []),
         sb(`swap_offers?select=*&user_id=eq.${currentUser.id}`).catch(() => []),
         sb(`webinars?select=*&created_by=eq.${currentUser.id}`).catch(() => [])
@@ -624,14 +490,29 @@
         table: 'webinars'
       }));
 
-      allItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+      // Deduplicate items
+      const uniqueItems = [];
+      const seen = new Set();
+      allItems.forEach(item => {
+        const key = `${item.table}_${item.id}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueItems.push(item);
+        }
+      });
 
-      if (!allItems.length) {
+      uniqueItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Update the "İlanım" box counter on the left card!
+      const statEl = document.getElementById('stat-listings');
+      if (statEl) statEl.textContent = uniqueItems.length;
+
+      if (!uniqueItems.length) {
         container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Henüz yayınlanmış veya bekleyen ilanınız bulunmuyor.</div>`;
         return;
       }
 
-      container.innerHTML = allItems.map(item => {
+      container.innerHTML = uniqueItems.map(item => {
         const isApproved = item.status === 'approved';
         const badgeHtml = isApproved 
           ? '<span class="badge badge-green">✓ Yayında</span>' 
@@ -654,7 +535,6 @@
 
     } catch (e) {
       console.error('loadMyListings error:', e);
-      container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">İlanlar yüklenirken bir hata oluştu.</div>`;
     }
   }
 
@@ -746,59 +626,4 @@
       try {
         const ext = file.name.split('.').pop();
         const path = `avatars/${currentUser.id}.${ext}`;
-        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`, {
-          method: 'POST',
-          headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': file.type, 'x-upsert': 'true' },
-          body: file
-        });
-        if (uploadRes.ok) {
-          const publicUrl = `${SB_URL}/storage/v1/object/public/avatars/${path}`;
-          await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify({ avatar_url: publicUrl }) });
-          profile.avatar_url = publicUrl;
-          toast('✅ Fotoğraf güncellendi!');
-        } else {
-          toast('Fotoğraf yüklenemedi.', false);
-        }
-      } catch(e) { toast('Yükleme hatası.', false); }
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function openDeleteRequestModal() { document.getElementById('delete-req-modal').style.display = 'flex'; }
-  function closeDeleteRequestModal() { document.getElementById('delete-req-modal').style.display = 'none'; }
-
-  async function submitDeleteRequest() {
-    const reason = document.getElementById('delete-req-reason').value.trim();
-    const btn = document.getElementById('delete-req-submit');
-    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
-    try {
-      const res = await fetch(`${SB_URL}/rest/v1/deletion_requests`, {
-        method: 'POST',
-        headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ user_id: currentUser.id, reason: reason || null, status: 'pending' })
-      });
-      if (!res.ok) throw new Error(await res.text());
-      closeDeleteRequestModal();
-      document.getElementById('delete-request-status').style.display = 'block';
-      toast('✅ Silme talebiniz alındı.');
-    } catch(e) {
-      btn.disabled = false; btn.textContent = 'Talebi Gönder';
-      toast('Hata: ' + e.message, false);
-    }
-  }
-
-  function openDeactivateModal() { document.getElementById('deactivate-modal').style.display = 'flex'; }
-  function closeDeactivateModal() { document.getElementById('deactivate-modal').style.display = 'none'; }
-
-  async function confirmDeactivate() {
-    try {
-      await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${currentUser.id}`, { method: 'PATCH', headers: hdrs(), body: JSON.stringify({ status: 'deactivated' }) });
-      await doLogout();
-    } catch(e) { toast('Hata.', false); }
-  }
-
-  init();
-</script>
-<script type="module" src="nav-msg-badge.js"></script>
-</body>
-</html>
+        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`
