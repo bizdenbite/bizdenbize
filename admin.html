@@ -995,7 +995,7 @@
         <tr><td style="font-weight:600;">${d.name||'—'}</td><td>${d.specialty||'—'}</td><td>${d.city||'—'}</td><td>${(d.languages||[]).join(', ')||'—'}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
       document.getElementById('tutors-tbody').innerHTML = tutors.length ? tutors.map(t => {
-        const isApproved = t.active === true || t.status === 'approved';
+        const isApproved = t.status === 'approved' || (t.active === true && t.status !== 'pending');
         const statusBadge = isApproved 
           ? '<span class="badge badge-green">✓ Yayında</span>' 
           : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>';
