@@ -10,7 +10,7 @@
   <meta property="og:image" content="https://bizdenbize.com/logo.png">
   <meta property="og:url" content="https://bizdenbize.com/nachhilfe.html">
   <meta property="og:type" content="website">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
   function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
@@ -60,7 +60,7 @@
     .mm-link.active{background:rgba(212,43,43,.07);color:var(--red);font-weight:600;}
     .mm-link-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
     .mm-footer{padding:16px 20px 32px;border-top:1px solid var(--warm);margin-top:auto;}
-        @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
+    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
 
     /* ── SIMPLIFIED PRIMARY NAV ── */
     .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
@@ -86,12 +86,12 @@
     .kesfet-tile:hover{background:var(--warm);}
     .kesfet-tile .e{font-size:22px;}
 
-    /* ── UTILITY: messages icon (matches existing notif-bell styling) ── */
+    /* ── UTILITY ── */
     .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
       padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
     .nav-msg:hover{background:var(--warm);}
 
-    /* ── BOTTOM TAB BAR (mobile only) ── */
+    /* ── BOTTOM TAB BAR (mobile) ── */
     .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
       background:#fff;border-top:1px solid var(--sand);
       padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
@@ -127,11 +127,6 @@
     .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
     .hero h1 em{color:var(--gold);font-style:normal;}
     .hero-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px;}
-    .hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
-    .btn-gold{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none;}
-    .btn-gold:hover{background:#d4a93c;transform:translateY(-1px);}
-    .btn-ghost-white{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none;}
-    .btn-ghost-white:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
     .hero-stats{display:flex;justify-content:center;gap:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
     .hstat-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;}
     .hstat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
@@ -152,8 +147,6 @@
     .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
     .results-count{font-size:13px;color:var(--muted);}
     .results-count strong{color:var(--ink);}
-    .seek-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--indigo);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
-    .seek-btn:hover{background:var(--indigo2);}
 
     /* TUTOR CARDS */
     .tutor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
@@ -172,7 +165,6 @@
     .ctag-level{background:rgba(67,56,202,.07);color:var(--indigo);}
     .ctag-online{background:rgba(30,123,75,.08);color:var(--green);}
     .ctag-inperson{background:rgba(201,168,76,.1);color:#8a6d00;}
-    .ctag-free{background:rgba(30,123,75,.1);color:var(--green);font-weight:700;}
     .card-desc{padding:0 18px 12px;font-size:12px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .card-rating{padding:0 18px 10px;display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
     .card-footer{padding:10px 18px;border-top:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
@@ -209,11 +201,9 @@
     .success-screen h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;}
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
 
-    /* ── PAGE TABS ── */
-    .page-tabs{display:flex;gap:4px;background:var(--warm);border-radius:12px;padding:4px;margin-bottom:20px;width:fit-content;}
+    /* PAGE TABS */
     .page-tab{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);transition:all .2s;}
     .page-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 2px 8px rgba(0,0,0,.08);}
-    /* Seeker cards */
     .seeker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
     .seeker-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all .2s;}
     .seeker-card:hover{border-color:var(--indigo);box-shadow:0 4px 14px rgba(67,56,202,.08);}
@@ -222,7 +212,6 @@
     .seeker-desc{font-size:12px;color:var(--muted);line-height:1.55;}
     .seeker-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--warm);}
     .contact-seeker-btn{padding:7px 14px;background:var(--indigo);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
-
   </style>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -272,18 +261,13 @@
     document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
     async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
 
-    // NOTE: window._authReady is created inside a deferred module script, which
-    // browsers DEFER until after all regular scripts run. Checking for it
-    // directly here would always find it undefined and silently skip — which is
-    // exactly the bug this replaces. Poll briefly for the session instead, so
-    // this doesn't depend on script execution order at all.
     (function initNavAvatar() {
       let waited = 0;
       const timer = setInterval(async () => {
         waited += 100;
         const session = window._currentSession;
         if (!session) {
-          if (waited >= 5000) clearInterval(timer); // give up quietly (e.g. logged out)
+          if (waited >= 5000) clearInterval(timer);
           return;
         }
         clearInterval(timer);
@@ -295,10 +279,6 @@
           });
           const rows = await r.json();
           const p = rows[0] || {};
-          // Use ONLY the BizdenBize profile record — deliberately NOT the auth
-          // provider's metadata (e.g. a Google account picture/name), which can
-          // differ from the member's actual BizdenBize identity and would show
-          // a different avatar here than on mahallem/abibot/profile.
           if (p.avatar_url) {
             navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
           } else {
@@ -331,7 +311,7 @@
     <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
     <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
     <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgi & Belge</a>
-      <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
+    <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
     <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
     <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
   </div>
@@ -384,7 +364,6 @@
     <div class="hero-tag">✏️ Türkçe Konuşan Öğretmenler</div>
     <h1>Nachhilfe & <em>Özel Ders</em></h1>
     <p class="hero-sub">Çocuğunuz için güvenilir, Türkçe konuşan özel öğretmen bulun — ya da kendi derslerinizi listeleyin.</p>
-    <!-- Tabs in hero -->
     <div style="display:flex;gap:4px;background:rgba(255,255,255,.12);border-radius:12px;padding:4px;justify-content:center;margin-bottom:16px;">
       <button class="page-tab active" id="tab-tutors-hero" onclick="switchTab('tutors')" style="color:#fff;background:rgba(255,255,255,.2);padding:10px 24px;font-size:14px;">✏️ Özel Ders Verenler</button>
       <button class="page-tab" id="tab-seekers-hero" onclick="switchTab('seekers')" style="color:rgba(255,255,255,.65);padding:10px 24px;font-size:14px;">🔍 Özel Öğretmen Arayanlar</button>
@@ -530,7 +509,11 @@
       <div id="tm-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
     <div class="modal-footer" id="tm-footer"><button class="btn-indigo" onclick="submitTutor()">İlanı Yayınla →</button></div>
-    <div class="success-screen" id="tm-success">   <div style="font-size:48px;">⏳</div>   <h3>İlanınız Alındı!</h3>   <p>Talebiniz yönetici onayına gönderildi. Onaylandıktan sonra platformda yayınlanacaktır.</p> </div>
+    <div class="success-screen" id="tm-success">
+      <div style="font-size:48px;">⏳</div>
+      <h3>İlanınız Alındı!</h3>
+      <p>Talebiniz yönetici onayına gönderildi. Onaylandıktan sonra platformda yayınlanacaktır.</p>
+    </div>
   </div>
 </div>
 
@@ -573,7 +556,6 @@
 </div>
 
 <script>
-  // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
@@ -705,30 +687,51 @@ function closeDetailModal() { document.getElementById('detail-modal').classList.
 function openTutorModal() { document.getElementById('tutor-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeTutorModal() { document.getElementById('tutor-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('tm-success').style.display='none'; document.getElementById('tm-body').style.display='flex'; document.getElementById('tm-footer').style.display='flex'; document.getElementById('tm-error').style.display='none'; }
 function togglePriceInput(v) { document.getElementById('tm-price-input-wrap').style.display = v === 'paid' ? 'block' : 'none'; }
+
 async function submitTutor() {
   const name    = document.getElementById('tm-name').value.trim();
   const desc    = document.getElementById('tm-desc').value.trim();
   const contact = document.getElementById('tm-contact').value.trim();
   const err     = document.getElementById('tm-error');
-  if (!name || !desc || !contact) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
-  err.style.display='none';
+
+  if (!name || !desc || !contact) { 
+    err.textContent = 'Lütfen zorunlu alanları (*) doldurun.'; 
+    err.style.display = 'block'; 
+    return; 
+  }
+  err.style.display = 'none';
+
+  const btn = document.querySelector('#tm-footer button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
   try {
     await sbPost('tutors', {
-      name, description: desc, contact,
-      subject:    document.getElementById('tm-subject').value,
-      levels:     [document.getElementById('tm-level').value],
-      city:       document.getElementById('tm-city').value.trim(),
-      format:     document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
+      name, 
+      description: desc, 
+      contact,
+      subject:     document.getElementById('tm-subject').value,
+      levels:      [document.getElementById('tm-level').value],
+      city:        document.getElementById('tm-city').value.trim(),
+      format:      document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
       price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
-      price_label: document.getElementById('tm-price').value.trim() || null,
+      price_label: document.getElementById('tm-price-type').value === 'paid' ? (document.getElementById('tm-price').value.trim() || null) : 'Ücretsiz',
+      active:      false,
+      status:      'pending'
     });
-  } catch(e) { console.error('Tutor submit error:', e); }
-  document.getElementById('tm-body').style.display='none';
-  document.getElementById('tm-footer').style.display='none';
-  document.getElementById('tm-success').style.display='block';
-  setTimeout(() => closeTutorModal(), 3000);
-}
 
+    document.getElementById('tm-body').style.display = 'none';
+    document.getElementById('tm-footer').style.display = 'none';
+    document.getElementById('tm-success').style.display = 'block';
+    setTimeout(() => closeTutorModal(), 3500);
+
+  } catch(e) {
+    console.error('Tutor submit error:', e);
+    err.textContent = 'İlan kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.';
+    err.style.display = 'block';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'İlanı Yayınla →'; }
+  }
+}
 
 let activeTab = 'tutors';
 
@@ -743,7 +746,6 @@ function switchTab(tab) {
   if (activeEl) { activeEl.classList.add('active'); activeEl.style.background='rgba(255,255,255,.2)'; activeEl.style.color='#fff'; }
   document.getElementById('view-tutors').style.display  = tab === 'tutors'  ? 'block' : 'none';
   document.getElementById('view-seekers').style.display = tab === 'seekers' ? 'block' : 'none';
-  // Also show/hide filter bar
   const fbar = document.querySelector('.filter-bar');
   if (fbar) fbar.style.display = tab === 'tutors' ? 'block' : 'none';
   if (tab === 'seekers') renderSeekers();
@@ -771,7 +773,7 @@ async function renderSeekers() {
     <div class="seeker-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
         <div>
-          <div class="seeker-name">👨‍👩‍👧 ${r.parent_name}</div>
+          <div class="seeker-name">👨‍gsub👨‍👧 ${r.parent_name}</div>
           <div class="seeker-subject">${r.subject}${r.level ? ' · ' + r.level : ''}</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${r.city || 'Belirtilmemiş'}</div>
         </div>
@@ -801,12 +803,22 @@ function contactSeekerRequest(btn) {
 
 function openSeekModal() { document.getElementById('seek-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeSeekModal() { document.getElementById('seek-modal').classList.remove('open'); document.body.style.overflow=''; document.getElementById('sk-success').style.display='none'; document.getElementById('sk-body').style.display='flex'; document.getElementById('sk-footer').style.display='flex'; document.getElementById('sk-error').style.display='none'; }
+
 async function submitSeek() {
   const name    = document.getElementById('sk-name').value.trim();
   const contact = document.getElementById('sk-contact').value.trim();
   const err     = document.getElementById('sk-error');
-  if (!name || !contact) { err.textContent='Lütfen adınızı ve iletişim bilgisini girin.'; err.style.display='block'; return; }
-  err.style.display='none';
+
+  if (!name || !contact) { 
+    err.textContent = 'Lütfen adınızı ve iletişim bilgisini girin.'; 
+    err.style.display = 'block'; 
+    return; 
+  }
+  err.style.display = 'none';
+
+  const btn = document.querySelector('#sk-footer button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
   try {
     await sbPost('seeker_requests', {
       parent_name: name,
@@ -818,112 +830,6 @@ async function submitSeek() {
       contact:     contact,
       active:      true
     });
-  } catch(e) { console.error('Seeker submit error:', e); }
-  document.getElementById('sk-body').style.display='none';
-  document.getElementById('sk-footer').style.display='none';
-  document.getElementById('sk-success').style.display='block';
-  setTimeout(() => { closeSeekModal(); if (activeTab === 'seekers') renderSeekers(); }, 2500);
-}
 
-function setCbarCountry(c, btn) {
-  document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTutors();
-}
-function showYakinda() {
-  if (document.getElementById('yakinda-toast')) return;
-  const tip = document.createElement('div');
-  tip.id = 'yakinda-toast';
-  tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-  tip.textContent = 'Bu ülke yakında ekleniyor!';
-  document.body.appendChild(tip);
-  setTimeout(() => tip.remove(), 2500);
-}
-
-renderTutors();
-</script>
-<!-- SITE FOOTER -->
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
-  <div style="max-width:1100px;margin:0 auto;">
-
-    <!-- Top row -->
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
-
-      <!-- Brand -->
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
-        <!-- Social -->
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
-          <a href="https://twitter.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="X / Twitter">𝕏</a>
-          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
-          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
-        </div>
-      </div>
-
-      <!-- Platform -->
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
-          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
-          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
-          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
-          <a href="is-ver-bul.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
-          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
-          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgi & Belge</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
-        </div>
-      </div>
-
-      <!-- Destek -->
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
-          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
-          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
-          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">support@bizdenbize.com</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
-        </div>
-      </div>
-
-      <!-- Yasal -->
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
-          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
-          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
-          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">KVKK / GDPR</a>
-          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Impressum</a>
-          <a href="ilan-kurallari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
-        </div>
-      </div>
-
-    </div>
-
-    
-
-    <!-- Bottom bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
-      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
-    </div>
-
-  </div>
-
-  <style>
-    @media (max-width: 768px) {
-      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
-      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
-    }
-    @media (max-width: 480px) {
-      footer > div > div:first-child { grid-template-columns: 1fr !important; }
-    }
-  </style>
-</footer>
-  <script type="module" src="nav-msg-badge.js"></script>
-</body>
-</html>
+    document.getElementById('sk-body').style.display = 'none';
+    document.getElementById('sk-footer').
