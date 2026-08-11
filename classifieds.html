@@ -320,6 +320,18 @@
 </footer>
 
 <script>
+  function toggleKesfet(e) {
+    if (e) e.stopPropagation();
+    const panel = document.getElementById('kesfet-panel');
+    if (panel) panel.classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    const panel = document.getElementById('kesfet-panel');
+    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') {
+      panel.classList.remove('open');
+    }
+  });
+
   const _CL_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _CL_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _CL_H={'apikey':_CL_KEY,'Authorization':'Bearer '+_CL_KEY};
