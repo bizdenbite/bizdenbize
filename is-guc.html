@@ -369,6 +369,10 @@
   
 
   </script>
+  <!-- Loaded here, not at the end of <body>: renderListings() calls
+       mhTranslateMenuHtml() as soon as the jobs fetch resolves, which can
+       beat a bottom-of-page script and throw. -->
+  <script src="translate-widget.js"></script>
 </head>
 <body>
 <!-- NAV -->
@@ -1340,6 +1344,7 @@
   function normJob(r, nameMap) {
     return {
       id: r.id, author_id: r.author_id,
+      city: r.city || null,
       type: _TYPE_MAP[r.listing_type] || 'gig',
       title: r.title, company: r.company || null,
       author: nameMap[r.author_id] || 'Üye',
@@ -1658,7 +1663,6 @@
   </div>
 </div>
 
-  <script src="translate-widget.js"></script>
   <script type="module" src="nav-msg-badge.js"></script>
   <script src="smart-email.js"></script>
 </body>
