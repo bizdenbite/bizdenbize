@@ -418,4 +418,31 @@
 </div>
 
 <!-- SEEK MODAL -->
-<div class="modal-overlay" id="seek-modal" onclick="if(event.target===this)closeSeekM
+<div class="modal-overlay" id="seek-modal" onclick="if(event.target===this)closeSeekModal()">
+  <div class="modal">
+    <div class="modal-header"><div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">🔍 Öğretmen Arıyorum</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">İhtiyacınızı paylaşın, öğretmenler size ulaşsın.</div></div><button class="modal-close" onclick="closeSeekModal()">×</button></div>
+    <div class="modal-body" id="sk-body">
+      <div class="field-row">
+        <div><label class="field-label">Ebeveyn Adı *</label><input class="field-input" id="sk-name" type="text" placeholder="Mehmet Yılmaz"></div>
+        <div><label class="field-label">Şehir</label><input class="field-input" id="sk-city" type="text" placeholder="Frankfurt"></div>
+      </div>
+      <div class="field-row">
+        <div><label class="field-label">Hangi Ders? *</label>
+          <select class="field-input" id="sk-subject">
+            <option>Mathematik</option><option>Deutsch</option><option>Englisch</option><option>Physik</option><option>Chemie</option><option>Biologie</option><option>Türkçe</option><option>Diğer</option>
+          </select>
+        </div>
+        <div><label class="field-label">Sınıf / Seviye</label>
+          <select class="field-input" id="sk-level">
+            <option>Grundschule (1-4)</option><option>Hauptschule</option><option>Realschule</option><option>Gymnasium</option><option>Abitur</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="field-label">Bütçe</label>
+        <select class="field-input" id="sk-budget">
+          <option>Ücretsiz tercih edilir</option><option>€10-15/saat</option><option>€15-25/saat</option><option>€25+/saat</option><option>Bütçe esnek</option>
+        </select>
+      </div>
+      <div><label class="field-label">Ek Bilgi</label><textarea class="field-input" id="sk-desc" rows="2" placeholder="Çocuğun yaşı, hangi konuda zorlanıyor..."></textarea></div>
+      <div><label class="field-label">İletişim *</label><input class="field-input" id="sk-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
+      <div id="sk-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:
