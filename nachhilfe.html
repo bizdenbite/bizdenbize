@@ -445,4 +445,449 @@
       </div>
       <div><label class="field-label">Ek Bilgi</label><textarea class="field-input" id="sk-desc" rows="2" placeholder="Çocuğun yaşı, hangi konuda zorlanıyor..."></textarea></div>
       <div><label class="field-label">İletişim *</label><input class="field-input" id="sk-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
-      <div id="sk-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:
+      <div id="sk-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="sk-footer"><button class="btn-gold" style="flex:1;border:none;font-family:inherit;cursor:pointer;border-radius:9px;font-size:14px;font-weight:600;" onclick="submitSeek()">İlanı Gönder →</button></div>
+    <div class="success-screen" id="sk-success"><div style="font-size:48px;">🔍</div><h3>İsteğiniz yayınlandı!</h3><p>Size uygun öğretmenler doğrudan iletişime geçecek.</p></div>
+  </div>
+</div>
+
+<script>
+  const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error: ' + r.status);
+  }
+
+const avatarColors = ['#4338CA','#0891B2','#D42B2B','#1E7B4B','#C9A84C','#6B3FA0','#D97706'];
+const LEVEL_LABELS = { Grundschule:'Grundschule (1-4)', Hauptschule:'Hauptschule', Realschule:'Realschule', Gymnasium:'Gymnasium', Abitur:'Abitur / Lise Son' };
+
+let activePills = { online: false, inperson: false, free: false };
+
+function togglePill(type, btn) {
+  activePills[type] = !activePills[type];
+  btn.classList.toggle('active');
+  renderTutors();
+}
+
+async function renderTutors() {
+  const grid = document.getElementById('tutor-grid');
+  if (grid) grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
+
+  let allTutors = [];
+  try {
+    let params = 'active=eq.true&order=verified.desc,rating.desc';
+    if (activePills.free) params += '&price_type=eq.free';
+    if (activePills.online) params += '&format=in.(online,both)';
+    if (activePills.inperson) params += '&format=in.(inperson,both)';
+    allTutors = await sbGet('tutors', params);
+  } catch(e) { console.error('Tutor fetch error:', e); }
+
+  window._tutors = allTutors;
+  document.getElementById('stat-total').textContent = allTutors.length;
+  document.getElementById('stat-free').textContent = allTutors.filter(t => t.price_type === 'free').length;
+
+  filterAndRender();
+}
+
+function filterAndRender() {
+  const q = (document.getElementById('f-search').value || '').toLowerCase();
+  const subj = document.getElementById('f-subject').value;
+  const level = document.getElementById('f-level').value;
+  const allTutors = window._tutors || [];
+
+  const filtered = allTutors.filter(t => {
+    const nameStr = (t.name || '').toLowerCase();
+    const subjStr = (t.subject || '').toLowerCase();
+    const descStr = (t.description || '').toLowerCase();
+    
+    if (q && !nameStr.includes(q) && !subjStr.includes(q) && !descStr.includes(q)) return false;
+    if (subj !== 'all' && t.subject !== subj) return false;
+    if (level !== 'all' && !(t.levels || []).includes(level)) return false;
+    return true;
+  });
+
+  const countEl = document.getElementById('results-count');
+  if (countEl) countEl.innerHTML = `<strong>${filtered.length}</strong> öğretmen bulundu`;
+
+  const grid = document.getElementById('tutor-grid');
+  if (!grid) return;
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px;">Farklı filtreler deneyin ya da yukarıdaki butonları kullanın.</p></div>`;
+    return;
+  }
+
+  const isFree = t => t.price_type === 'free';
+  grid.innerHTML = filtered.map((t, i) => {
+    const tutorName = t.name || 'Öğretmen';
+    const initials = tutorName.split(' ').map(n => n[0] || '').join('').slice(0, 2) || '?';
+    const tutorLevels = Array.isArray(t.levels) ? t.levels : [];
+
+    return `
+      <div class="tutor-card ${isFree(t) ? 'free-card' : ''}" onclick="openDetail(${t.id})">
+        <div class="card-top">
+          <div class="tutor-avatar" style="background:${avatarColors[i % avatarColors.length]}">${initials}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="tutor-name">${tutorName}</div>
+            <div class="tutor-subject">${t.subject || ''}</div>
+            <div class="tutor-loc">📍 ${t.city || '—'}</div>
+          </div>
+          ${isFree(t) ? '<div style="font-size:11px;font-weight:700;color:var(--green);background:rgba(30,123,75,.08);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;">Ücretsiz</div>' : ''}
+        </div>
+        <div class="card-tags">
+          ${t.turkish ? '<span class="ctag ctag-turkish">🇹🇷 Türkçe</span>' : ''}
+          ${tutorLevels.slice(0,2).map(l => `<span class="ctag ctag-level">${LEVEL_LABELS[l] || l}</span>`).join('')}
+          ${t.format === 'online' || t.format === 'both' ? '<span class="ctag ctag-online">🌍 Online</span>' : ''}
+          ${t.format === 'inperson' || t.format === 'both' ? '<span class="ctag ctag-inperson">📍 Yüz yüze</span>' : ''}
+        </div>
+        <div class="card-desc">${t.description || ''}</div>
+        <div class="card-rating">⭐ ${t.rating || '—'} <span style="color:var(--sand);">(${t.review_count || 0} değerlendirme)</span></div>
+        <div class="card-footer">
+          <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${t.price_label || ''}</span>
+          <button class="card-contact-btn ${isFree(t) ? 'free' : 'paid'}" onclick="event.stopPropagation();openDetail(${t.id})">İletişim →</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openDetail(id) {
+  const allTutors = window._tutors || [];
+  const t = allTutors.find(x => x.id === id);
+  if (!t) return;
+  const i = allTutors.indexOf(t);
+  const tutorName = t.name || 'Öğretmen';
+  const initials = tutorName.split(' ').map(n => n[0] || '').join('').slice(0, 2) || '?';
+  const tutorLevels = Array.isArray(t.levels) ? t.levels : [];
+
+  document.getElementById('dm-avatar').style.background = avatarColors[i % avatarColors.length];
+  document.getElementById('dm-avatar').textContent = initials;
+  document.getElementById('dm-name').textContent = tutorName;
+  document.getElementById('dm-subject').textContent = (t.subject || '') + ' · ' + (t.city || '');
+  document.getElementById('dm-desc').textContent = t.description || '';
+  document.getElementById('dm-info').innerHTML = `
+    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.price_label || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : t.format === 'inperson' ? '📍 Yüz yüze' : t.format || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating || '—'} (${t.review_count || 0})</div></div>
+    <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${tutorLevels.map(l => LEVEL_LABELS[l] || l).join(', ')}</div></div>`;
+  document.getElementById('dm-tags').innerHTML = `
+    ${t.turkish ? '<span class="ctag ctag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe ders</span>' : ''}
+    <span class="ctag ctag-level" style="font-size:11px;padding:3px 10px;">${t.subject || ''}</span>`;
+  
+  const contactStr = t.contact || '';
+  const isEmail = contactStr.includes('@');
+  const tutorMailSubject = `BizdenBize'deki "${tutorName}" özel ders ilanı hakkında`;
+  
+  const contactBtn = document.getElementById('dm-contact-btn');
+  if (contactBtn) {
+    contactBtn.onclick = () => {
+      if (isEmail) {
+        showEmailModal(contactStr, tutorMailSubject);
+      } else {
+        window.location.href = `tel:${contactStr}`;
+      }
+    };
+    contactBtn.textContent = isEmail ? '✉️ E-posta' : '📞 Ara';
+  }
+  
+  const dmWaBtn = document.getElementById('dm-wa-btn');
+  if (dmWaBtn) {
+    if (isEmail) {
+      dmWaBtn.style.display = 'none';
+    } else {
+      dmWaBtn.style.display = '';
+      dmWaBtn.onclick = () => window.open(`https://wa.me/${contactStr.replace(/\s|\+|-/g,'')}?text=${encodeURIComponent(`Merhaba, BizdenBize üzerinden ${tutorName} ile özel ders hakkında görüşmek istiyorum.`)}`, '_blank');
+    }
+  }
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); document.body.style.overflow=''; }
+
+// ── SELF-CONTAINED OPTION B EMAIL HANDLERS ──
+let ecCurrentEmail = '';
+let ecCurrentSubject = '';
+
+function showEmailModal(email, subject = '') {
+  ecCurrentEmail = email;
+  ecCurrentSubject = subject;
+  const emailEl = document.getElementById('ec-email-text');
+  const modalEl = document.getElementById('ec-modal');
+  if (emailEl) emailEl.textContent = email;
+  if (modalEl) modalEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEcModal() {
+  const modalEl = document.getElementById('ec-modal');
+  if (modalEl) modalEl.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function copyEcEmail() {
+  if (!ecCurrentEmail) return;
+  navigator.clipboard.writeText(ecCurrentEmail).then(() => {
+    closeEcModal();
+    toastMsg(`📋 E-posta kopyalandı! (Gmail veya Webmail'e yapıştırabilirsiniz)`);
+  });
+}
+
+function openEcMailApp() {
+  if (!ecCurrentEmail) return;
+  const sub = ecCurrentSubject ? `?subject=${encodeURIComponent(ecCurrentSubject)}` : '';
+  closeEcModal();
+  window.location.href = `mailto:${ecCurrentEmail}${sub}`;
+}
+
+function toastMsg(msg) {
+  let t = document.getElementById('ec-toast');
+  if (t) t.remove();
+  t = document.createElement('div');
+  t.id = 'ec-toast';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E7B4B;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function openTutorModal() { 
+  const modal = document.getElementById('tutor-modal');
+  if (modal) { modal.classList.add('open'); document.body.style.overflow='hidden'; }
+}
+
+function closeTutorModal() { 
+  const modal = document.getElementById('tutor-modal');
+  if (modal) { modal.classList.remove('open'); document.body.style.overflow=''; }
+  const succ = document.getElementById('tm-success'); if (succ) succ.style.display='none';
+  const body = document.getElementById('tm-body'); if (body) body.style.display='flex';
+  const foot = document.getElementById('tm-footer'); if (foot) foot.style.display='flex';
+  const err = document.getElementById('tm-error'); if (err) err.style.display='none';
+}
+
+function togglePriceInput(v) { 
+  const wrap = document.getElementById('tm-price-input-wrap');
+  if (wrap) wrap.style.display = v === 'paid' ? 'block' : 'none'; 
+}
+
+async function submitTutor() {
+  const name    = document.getElementById('tm-name').value.trim();
+  const desc    = document.getElementById('tm-desc').value.trim();
+  const contact = document.getElementById('tm-contact').value.trim();
+  const err     = document.getElementById('tm-error');
+
+  if (!name || !desc || !contact) { 
+    if (err) { err.textContent = 'Lütfen zorunlu alanları (*) doldurun.'; err.style.display = 'block'; }
+    return; 
+  }
+  if (err) err.style.display = 'none';
+
+  const btn = document.querySelector('#tm-footer button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+  try {
+    let sessionUserId = null;
+    if (window._currentSession && window._currentSession.user) {
+      sessionUserId = window._currentSession.user.id;
+    }
+
+    await sbPost('tutors', {
+      name, 
+      description: desc, 
+      contact,
+      subject:     document.getElementById('tm-subject').value,
+      levels:      [document.getElementById('tm-level').value],
+      city:        document.getElementById('tm-city').value.trim(),
+      format:      document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
+      price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
+      price_label: document.getElementById('tm-price-type').value === 'paid' ? (document.getElementById('tm-price').value.trim() || null) : 'Ücretsiz',
+      active:      false,
+      status:      'pending',
+      user_id:     sessionUserId
+    });
+
+    const body = document.getElementById('tm-body'); if (body) body.style.display = 'none';
+    const foot = document.getElementById('tm-footer'); if (foot) foot.style.display = 'none';
+    const succ = document.getElementById('tm-success'); if (succ) succ.style.display = 'block';
+    setTimeout(() => closeTutorModal(), 3500);
+
+  } catch(e) {
+    console.error('Tutor submit error:', e);
+    if (err) { err.textContent = 'İlan kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.'; err.style.display = 'block'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'İlanı Yayınla →'; }
+  }
+}
+
+let activeTab = 'tutors';
+
+function switchTab(tab) {
+  activeTab = tab;
+  ['tab-tutors-hero','tab-seekers-hero'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('active'); el.style.background=''; el.style.color='rgba(255,255,255,.65)'; }
+  });
+  const activeId = tab === 'tutors' ? 'tab-tutors-hero' : 'tab-seekers-hero';
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) { activeEl.classList.add('active'); activeEl.style.background='rgba(255,255,255,.2)'; activeEl.style.color='#fff'; }
+  
+  const vTutors = document.getElementById('view-tutors'); if (vTutors) vTutors.style.display = tab === 'tutors' ? 'block' : 'none';
+  const vSeekers = document.getElementById('view-seekers'); if (vSeekers) vSeekers.style.display = tab === 'seekers' ? 'block' : 'none';
+  
+  const fbar = document.querySelector('.filter-bar');
+  if (fbar) fbar.style.display = tab === 'tutors' ? 'block' : 'none';
+  if (tab === 'seekers') renderSeekers();
+}
+
+async function renderSeekers() {
+  const grid = document.getElementById('seeker-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);grid-column:1/-1">⏳ Yükleniyor...</div>';
+  let requests = [];
+  try {
+    requests = await sbGet('seeker_requests', 'active=eq.true&order=created_at.desc');
+  } catch(e) { console.error('Seeker fetch error:', e); }
+  
+  const cntEl = document.getElementById('seeker-count');
+  if (cntEl) cntEl.innerHTML = `<strong>${requests.length}</strong> özel öğretmen arayan bulundu`;
+  
+  if (!requests.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1">
+      <div style="font-size:40px;margin-bottom:12px">🔍</div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div>
+      <p style="font-size:13px;margin-bottom:16px;">İlk ilanı siz verin!</p>
+      <button style="display:flex;align-items:center;gap:6px;padding:9px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.background='#d4a93c'" onmouseout="this.style.background='var(--gold)'" onclick="openSeekModal()">+ İlan Ver</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = requests.map(r => `
+    <div class="seeker-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div>
+          <div class="seeker-name">👨‍👩‍👧 ${r.parent_name || 'Ebeveyn'}</div>
+          <div class="seeker-subject">${r.subject || ''}${r.level ? ' · ' + r.level : ''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${r.city || 'Belirtilmemiş'}</div>
+        </div>
+        ${r.budget ? `<div style="font-size:12px;font-weight:700;color:var(--indigo);white-space:nowrap;">${r.budget}</div>` : ''}
+      </div>
+      ${r.description ? `<div class="seeker-desc">${r.description}</div>` : ''}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(67,56,202,.07);color:var(--indigo);">${r.subject || ''}</span>
+        ${r.level ? `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">${r.level}</span>` : ''}
+      </div>
+      <div class="seeker-footer">
+        <span style="font-size:11px;color:var(--sand);">${new Date(r.created_at || Date.now()).toLocaleDateString('tr-TR')}</span>
+        <button class="contact-seeker-btn" data-contact="${r.contact || ''}" data-subject="${r.subject || ''}" onclick="contactSeekerRequest(this)">İletişim →</button>
+      </div>
+    </div>`).join('');
+}
+
+function contactSeekerRequest(btn) {
+  const contact = btn.dataset.contact || '';
+  const subject = btn.dataset.subject || '';
+  if (contact.includes('@')) {
+    showEmailModal(contact, `BizdenBize'deki ${subject} özel ders talebiniz hakkında`);
+  } else {
+    window.location.href = `tel:${contact}`;
+  }
+}
+
+function openSeekModal() { 
+  const modal = document.getElementById('seek-modal');
+  if (modal) { modal.classList.add('open'); document.body.style.overflow='hidden'; }
+}
+
+function closeSeekModal() { 
+  const modal = document.getElementById('seek-modal');
+  if (modal) { modal.classList.remove('open'); document.body.style.overflow=''; }
+  const succ = document.getElementById('sk-success'); if (succ) succ.style.display='none';
+  const body = document.getElementById('sk-body'); if (body) body.style.display='flex';
+  const foot = document.getElementById('sk-footer'); if (foot) foot.style.display='flex';
+  const err = document.getElementById('sk-error'); if (err) err.style.display='none';
+}
+
+async function submitSeek() {
+  const name    = document.getElementById('sk-name').value.trim();
+  const contact = document.getElementById('sk-contact').value.trim();
+  const err     = document.getElementById('sk-error');
+
+  if (!name || !contact) { 
+    if (err) { err.textContent = 'Lütfen adınızı ve iletişim bilgisini girin.'; err.style.display = 'block'; }
+    return; 
+  }
+  if (err) err.style.display = 'none';
+
+  const btn = document.querySelector('#sk-footer button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+  try {
+    await sbPost('seeker_requests', {
+      parent_name: name,
+      city:        document.getElementById('sk-city').value.trim() || null,
+      subject:     document.getElementById('sk-subject').value,
+      level:       document.getElementById('sk-level').value,
+      budget:      document.getElementById('sk-budget').value,
+      description: document.getElementById('sk-desc').value.trim() || null,
+      contact:     contact,
+      active:      true
+    });
+
+    const body = document.getElementById('sk-body'); if (body) body.style.display = 'none';
+    const foot = document.getElementById('sk-footer'); if (foot) foot.style.display = 'none';
+    const succ = document.getElementById('sk-success'); if (succ) succ.style.display = 'block';
+    setTimeout(() => { closeSeekModal(); if (activeTab === 'seekers') renderSeekers(); }, 2500);
+
+  } catch(e) {
+    console.error('Seeker submit error:', e);
+    if (err) { err.textContent = 'İsteğiniz kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.'; err.style.display = 'block'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'İlanı Gönder →'; }
+  }
+}
+
+renderTutors();
+</script>
+
+<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
+          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<script type="module" src="nav-msg-badge.js"></script>
+<script src="smart-email.js"></script>
+</body>
+</html>
