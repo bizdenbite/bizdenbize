@@ -12,20 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
-    .topnav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,247,242,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);display:flex;align-items:center;gap:0;height:58px;}
-    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);padding:0 24px;white-space:nowrap;}
-    .nav-logo span{color:var(--red);}
-    .nav-search{flex:1;max-width:360px;display:flex;align-items:center;gap:8px;background:var(--warm);border:1px solid var(--sand);border-radius:8px;padding:8px 14px;margin:0 16px;}
-    .nav-search input{border:none;background:none;outline:none;font-size:13px;font-family:'Instrument Sans',sans-serif;color:var(--ink);width:100%;}
-    .nav-tabs{display:flex;gap:2px;margin-left:8px;flex:1;}
-    .nav-tab{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
-    .nav-tab:hover{background:var(--warm);color:var(--ink);}
-    .nav-tab.active{background:var(--red);color:var(--white);}
-    .nav-right{display:flex;align-items:center;gap:10px;padding:0 20px;}
-    .nav-avatar{width:36px;height:36px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;}
 
     .page{padding:80px 40px 40px;max-width:1200px;margin:0 auto;}
     .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
@@ -50,13 +39,10 @@
     .listing:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(26,18,8,0.1);}
     .listing.featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
     .listing-thumb{height:180px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
-    .featured-badge{position:absolute;top:10px;left:10px;background:var(--gold);color:var(--white);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.05em;}
-    .save-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.9);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
     .listing-body{padding:14px 16px;}
     .listing-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--ink);}
     .listing-title{font-size:14px;font-weight:500;color:var(--ink);margin-top:4px;line-height:1.4;}
     .listing-meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px;}
-    .listing-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
 
     /* Modal */
     .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
@@ -74,399 +60,39 @@
     .form-group textarea{resize:vertical;min-height:80px;}
     .submit-btn{width:100%;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-top:8px;}
     .submit-btn:hover{background:var(--red2);}
-  
-    /* ── MOBILE NAV ── */
-    .hamburger {
-      display: none; flex-direction: column; gap: 5px;
-      background: #D42B2B; border: none; cursor: pointer;
-      padding: 6px; border-radius: 8px; transition: background .15s;
-      flex-shrink: 0;
-    }
-    .hamburger:hover { background: #E8393A; }
-    .hamburger span {
-      display: block; width: 22px; height: 2.5px;
-      background: #ffffff; border-radius: 2px;
-      transition: transform .3s, opacity .3s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    .mobile-menu {
-      display: none; position: fixed;
-      top: 58px; left: 0; right: 0; bottom: 0;
-      background: var(--white, #fff); z-index: 99;
-      flex-direction: column; overflow-y: auto;
-      border-top: 1px solid rgba(212,197,169,.4);
-      animation: slideDown .2s ease;
-    }
-    .mobile-menu.open { display: flex; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .mm-user {
-      display: flex; align-items: center; gap: 14px;
-      padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
-    }
-    .mm-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: var(--red, #D42B2B); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: 700; flex-shrink: 0;
-    }
-    .mm-name { font-size: 15px; font-weight: 600; color: #fff; }
-    .mm-status { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
-    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; }
-    .mm-link {
-      display: flex; align-items: center; gap: 14px;
-      padding: 13px 12px; border-radius: 10px;
-      font-size: 15px; font-weight: 500;
-      color: var(--ink, #1A1208); text-decoration: none;
-      transition: background .15s; cursor: pointer;
-    }
-    .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
-    .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
-    .mm-badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px;
-      background: var(--red, #D42B2B); color: #fff;
-    }
-    .mm-divider { height: 1px; background: rgba(212,197,169,.35); margin: 8px 16px; }
-    .mm-section-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .09em;
-      text-transform: uppercase; color: var(--muted, #6B5E4E);
-      padding: 8px 24px 4px;
-    }
-    .mm-footer {
-      padding: 16px 24px 32px;
-      border-top: 1px solid rgba(212,197,169,.25);
-    }
-    .mm-logout {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 14px; color: var(--red, #D42B2B);
-      background: none; border: none; cursor: pointer;
-      font-family: inherit; font-weight: 500; padding: 8px 0;
-    }
-
-    @media (max-width: 768px) {
-      .nav-tabs { display: none !important; }
-      .hamburger { display: flex !important; }
-      .nav-search { max-width: 160px !important; }
-    }
-    @media (max-width: 480px) {
-      .nav-search { display: none !important; }
-    }
-
-  
-  /* ── COOKIE CONSENT BANNER ── */
-  #cookie-banner {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: var(--ink, #1A1208);
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding: 20px 32px;
-    display: none;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
-    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
-  }
-  #cookie-banner.visible { display: flex; }
-  @keyframes slideUpBanner {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .cb-logo { flex-shrink: 0; display: flex; align-items: center; }
-  .cb-logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
-  .cb-text { flex: 1; min-width: 240px; }
-  .cb-title {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 14px; font-weight: 600;
-    color: #fff; margin-bottom: 4px;
-  }
-  .cb-desc {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 12px; color: rgba(255,255,255,.5);
-    line-height: 1.55;
-  }
-  .cb-desc a {
-    color: rgba(255,255,255,.7);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .cb-desc a:hover { color: #fff; }
-  .cb-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
-  .cb-btn {
-    padding: 10px 20px; border-radius: 8px;
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; border: none;
-    transition: all .15s; white-space: nowrap;
-  }
-  .cb-accept {
-    background: #D42B2B; color: #fff;
-  }
-  .cb-accept:hover { background: #E8393A; }
-  .cb-essential {
-    background: rgba(255,255,255,.1);
-    color: rgba(255,255,255,.8);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-essential:hover { background: rgba(255,255,255,.18); color: #fff; }
-  .cb-manage {
-    background: none; color: rgba(255,255,255,.5);
-    border: 1px solid rgba(255,255,255,.15) !important;
-  }
-  .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
-
-  /* Cookie preferences modal */
-  #cookie-modal {
-    position: fixed; inset: 0; z-index: 10000;
-    background: rgba(26,18,8,.7);
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  #cookie-modal.open { display: flex; }
-  .cm-box {
-    background: #fff; border-radius: 20px;
-    padding: 0; max-width: 520px; width: 90%;
-    max-height: 85vh; overflow-y: auto;
-    animation: popIn .3s cubic-bezier(.16,1,.3,1);
-    font-family: 'Instrument Sans', sans-serif;
-  }
-  @keyframes popIn {
-    from { transform: scale(.95); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-  .cm-header {
-    padding: 24px 24px 0;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .cm-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; color: #1A1208;
-  }
-  .cm-sub { font-size: 13px; color: #6B5E4E; margin-top: 4px; line-height: 1.5; }
-  .cm-close {
-    background: none; border: none; font-size: 22px;
-    color: #6B5E4E; cursor: pointer; flex-shrink: 0;
-    margin: -4px -4px 0 12px; line-height: 1;
-  }
-  .cm-categories { padding: 0 24px; display: flex; flex-direction: column; gap: 2px; }
-  .cm-cat {
-    border: 1px solid #F0EAE0; border-radius: 12px;
-    overflow: hidden;
-  }
-  .cm-cat-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px; cursor: pointer;
-    background: #FAF7F2; transition: background .15s;
-    user-select: none;
-  }
-  .cm-cat-header:hover { background: #F0EAE0; }
-  .cm-cat-icon { font-size: 18px; flex-shrink: 0; }
-  .cm-cat-info { flex: 1; }
-  .cm-cat-name { font-size: 13px; font-weight: 600; color: #1A1208; }
-  .cm-cat-desc { font-size: 11px; color: #6B5E4E; margin-top: 2px; }
-  /* Toggle switch */
-  .cm-toggle {
-    width: 40px; height: 22px; border-radius: 11px;
-    background: #D4C5A9; position: relative; flex-shrink: 0;
-    cursor: pointer; transition: background .2s; border: none;
-  }
-  .cm-toggle.on { background: #1B3A8C; }
-  .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
-  .cm-toggle::after {
-    content: ''; position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #fff; transition: transform .2s;
-  }
-  .cm-toggle.on::after, .cm-toggle.locked::after { transform: translateX(18px); }
-  .cm-chevron { font-size: 12px; color: #6B5E4E; transition: transform .2s; flex-shrink: 0; }
-  .cm-cat.open .cm-chevron { transform: rotate(180deg); }
-  .cm-cat-body { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #F0EAE0; }
-  .cm-cat.open .cm-cat-body { display: block; }
-  .cm-cat-detail { font-size: 12px; color: #6B5E4E; line-height: 1.6; }
-  .cm-cat-detail strong { color: #1A1208; }
-
-  .cm-footer {
-    padding: 20px 24px 24px; display: flex; gap: 8px;
-    border-top: 1px solid #F0EAE0; margin-top: 16px;
-  }
-  .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-save:hover { background: #2348A8; }
-  .cm-accept-all {
-    flex: 1; padding: 12px; background: #D42B2B; color: #fff;
-    border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'Instrument Sans', sans-serif;
-    transition: background .15s;
-  }
-  .cm-accept-all:hover { background: #E8393A; }
-    @media (max-width: 900px) { }
-  
-    /* ── DROPDOWN NAV ── */
-    .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
-    .nav-menu { display:flex;gap:2px;flex:1;align-items:center; }
-    .nav-item { position:relative; }
-    .nav-item-btn {
-      display:flex;align-items:center;gap:5px;
-      padding:8px 12px; border-radius:7px;
-      font-size:13px;font-weight:500;color:var(--muted,#6B5E4E);
-      cursor:pointer;border:none;background:none;
-      font-family:'Instrument Sans',sans-serif;
-      transition:all .15s; white-space:nowrap;
-    }
-    .nav-item-btn:hover,.nav-item-btn.open { background:var(--warm,#F0EAE0);color:var(--ink,#1A1208); }
-    .nav-item-btn.active { background:var(--red,#D42B2B);color:#fff; }
-    .nav-item-btn .chevron { font-size:9px;opacity:.5;transition:transform .2s; }
-    .nav-item-btn.open .chevron { transform:rotate(180deg); }
-    .nav-dropdown {
-      display:none;position:absolute;top:calc(100% + 8px);left:0;
-      background:var(--white,#fff);border:1px solid rgba(212,197,169,.5);
-      border-radius:12px;padding:8px;min-width:200px;
-      box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;
-    }
-    .nav-dropdown.open { display:block;animation:dropIn .15s ease; }
-    @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-    .nav-dropdown a {
-      display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;
-      font-size:13px;font-weight:500;color:var(--ink,#1A1208);text-decoration:none;transition:background .12s;white-space:nowrap;
-    }
-    .nav-dropdown a:hover { background:var(--warm,#F0EAE0); }
-    .nav-dropdown a.active { color:var(--red,#D42B2B);font-weight:600; }
-    .nav-dropdown hr { border:none;border-top:1px solid var(--warm,#F0EAE0);margin:4px 0; }
-    .nav-right { display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto; }
-    .hamburger { display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red,#D42B2B);border:none;cursor:pointer;border-radius:8px;flex-shrink:0; }
-    .hamburger:hover { background:#E8393A; }
-    .hamburger span { display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s; }
-    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity:0; }
-    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-    .mobile-menu { display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto; }
-    .mobile-menu.open { display:flex; }
-    .mm-header { display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm,#F0EAE0);height:58px;flex-shrink:0; }
-    .mm-section { padding:12px 20px 4px; }
-    .mm-section-title { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted,#6B5E4E);margin-bottom:6px; }
-    .mm-link { display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink,#1A1208);font-size:14px;font-weight:500;transition:background .15s; }
-    .mm-link:hover { background:var(--warm,#F0EAE0); }
-    .mm-link.active { background:rgba(212,43,43,.07);color:#D42B2B;font-weight:600; }
-    .mm-link-icon { font-size:20px;width:28px;text-align:center;flex-shrink:0; }
-    .mm-footer { padding:16px 20px 32px;border-top:1px solid var(--warm,#F0EAE0);margin-top:auto; }
-        @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
-
-    /* ── SIMPLIFIED PRIMARY NAV ── */
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
     .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
-    .nav-primary a,.nav-kesfet-btn{
-      display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
-      font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;
-      background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
-    }
+    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
     .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
     .nav-primary a.active{background:var(--warm);color:var(--red);}
 
-    /* ── KEŞFET PANEL (desktop) ── */
-    .kesfet-panel{
-      display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);
-      background:#fff;border:1px solid var(--sand);border-radius:14px;
-      box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;
-    }
+    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
     .kesfet-panel.open{display:block;}
     .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;
-      padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);
-      font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
     .kesfet-tile:hover{background:var(--warm);}
     .kesfet-tile .e{font-size:22px;}
 
-    /* ── UTILITY: messages icon (matches existing notif-bell styling) ── */
-    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
-      padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
     .nav-msg:hover{background:var(--warm);}
 
-    /* ── BOTTOM TAB BAR (mobile only) ── */
-    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
-      background:#fff;border-top:1px solid var(--sand);
-      padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
-    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-      font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;
-      background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
     .bt-item.active{color:var(--red);}
     .bt-icon{font-size:20px;}
 
-    /* ── KEŞFET SHEET (mobile) ── */
     .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
     .kesfet-sheet-overlay.open{display:block;}
-    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;
-      border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));
-      z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));z-index:351;max-height:75vh;overflow-y:auto;}
     .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
     .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
     .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
+    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
   </style>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="BizdenBize">
-  <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
-  <meta name="msapplication-TileImage" content="icons/icon-144.png">
-  <!-- Apple touch icons -->
-  <link rel="apple-touch-icon" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="72x72"  href="icons/icon-72.png">
-  <link rel="apple-touch-icon" sizes="96x96"  href="icons/icon-96.png">
-  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
-  <link rel="shortcut icon" href="icons/icon-96.png">
   <script src="i18n.js"></script>
-<script>
-  function toggleDropdown(id, btn) {
-    const dropdown = document.getElementById(id);
-    const isOpen = dropdown.classList.contains('open');
-    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
-    if (!isOpen) { dropdown.classList.add('open'); btn.classList.add('open'); }
-  }
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.nav-item')) {
-      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-      document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
-    }
-  });
-  function toggleMenu() {
-    const hb = document.getElementById('hamburger');
-    const menu = document.getElementById('mobile-menu');
-    hb.classList.toggle('open');
-    menu.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-  }
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
-    document.querySelectorAll('.nav-dropdown a, .mm-link').forEach(a => {
-      if ((a.getAttribute('href')||'').split('?')[0] === page) a.classList.add('active');
-    });
-    document.querySelectorAll('.nav-item').forEach(item => {
-      if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
-    });
-  })();
-</script>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
     const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
@@ -475,13 +101,13 @@
   </script>
 </head>
 <body>
-<!-- NAV -->
+
 <nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
   <a href="mahallem.html" class="nav-logo-link"><span style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:-.3px;color:#1A1208;white-space:nowrap;">Bizden<span style="color:#D42B2B;">Bize</span></span></a>
   <div class="nav-primary">
     <a href="mahallem.html" id="np-mahallem">🏘️ Mahallem</a>
     <a href="abibot.html" id="np-abibot">🤖 AbiBOT</a>
-    <a href="classifieds.html" id="np-ilanlar">🛍️ İlanlar</a>
+    <a href="classifieds.html" id="np-ilanlar" class="active">🛍️ İlanlar</a>
     <button class="nav-kesfet-btn" onclick="toggleKesfet(event)" id="np-kesfet">🔍 Keşfet</button>
   </div>
   <div class="kesfet-panel" id="kesfet-panel">
@@ -510,54 +136,6 @@
       <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
     </div>
   </div>
-  <script>
-    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
-    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
-    async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
-
-    // Populate the nav avatar with the real logged-in user's initials/photo,
-    // reusing the existing session promise this page already sets up above
-    // (window._authReady / window._currentSession) — same visual logic as
-    // mahallem.html's avatar, for consistency.
-    // NOTE: window._authReady is created inside a deferred module script, which
-    // browsers DEFER until after all regular scripts run. Checking for it
-    // directly here would always find it undefined and silently skip — which is
-    // exactly the bug this replaces. Poll briefly for the session instead, so
-    // this doesn't depend on script execution order at all.
-    (function initNavAvatar() {
-      let waited = 0;
-      const timer = setInterval(async () => {
-        waited += 100;
-        const session = window._currentSession;
-        if (!session) {
-          if (waited >= 5000) clearInterval(timer); // give up quietly (e.g. logged out)
-          return;
-        }
-        clearInterval(timer);
-        const navAvatar = document.getElementById('nav-avatar');
-        if (!navAvatar) return;
-        try {
-          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
-            headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
-          });
-          const rows = await r.json();
-          const p = rows[0] || {};
-          // Use ONLY the BizdenBize profile record — deliberately NOT the auth
-          // provider's metadata (e.g. a Google account picture/name), which can
-          // differ from the member's actual BizdenBize identity and would show
-          // a different avatar here than on mahallem/abibot/profile.
-          if (p.avatar_url) {
-            navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-          } else {
-            const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
-            const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
-            navAvatar.textContent = initials;
-            navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
-          }
-        } catch(e) { console.error('Nav avatar load error:', e); }
-      }, 100);
-    })();
-  </script>
 </nav>
 
 <!-- KEŞFET SHEET (mobile) -->
@@ -578,7 +156,7 @@
     <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
     <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
     <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgi & Belge</a>
-      <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
+    <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
     <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
     <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
   </div>
@@ -588,42 +166,9 @@
 <div class="bottom-tabbar" id="bottom-tabbar">
   <a class="bt-item" href="mahallem.html" id="bt-mahallem"><span class="bt-icon">🏘️</span>Mahallem</a>
   <a class="bt-item" href="abibot.html" id="bt-abibot"><span class="bt-icon">🤖</span>AbiBOT</a>
-  <a class="bt-item" href="classifieds.html" id="bt-ilanlar"><span class="bt-icon">🛍️</span>İlanlar</a>
+  <a class="bt-item active" href="classifieds.html" id="bt-ilanlar"><span class="bt-icon">🛍️</span>İlanlar</a>
   <button class="bt-item" onclick="openKesfetSheet()" id="bt-kesfet"><span class="bt-icon">🔍</span>Keşfet</button>
   <a class="bt-item" href="profile.html" id="bt-profil"><span class="bt-icon">👤</span>Profil</a>
-</div>
-
-<script>
-  function toggleKesfet(e) {
-    e.stopPropagation();
-    document.getElementById('kesfet-panel').classList.toggle('open');
-  }
-  document.addEventListener('click', function(e) {
-    const panel = document.getElementById('kesfet-panel');
-    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target.id !== 'np-kesfet') {
-      panel.classList.remove('open');
-    }
-  });
-  function openKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.add('open');
-    document.getElementById('kesfet-sheet').style.display = 'block';
-  }
-  function closeKesfetSheet() {
-    document.getElementById('kesfet-sheet-overlay').classList.remove('open');
-    document.getElementById('kesfet-sheet').style.display = 'none';
-  }
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
-    const map = { 'mahallem.html': 'mahallem', 'abibot.html': 'abibot', 'classifieds.html': 'ilanlar', 'profile.html': 'profil' };
-    const key = map[page];
-    if (key) {
-      const npEl = document.getElementById('np-' + key);
-      const btEl = document.getElementById('bt-' + key);
-      if (npEl) npEl.classList.add('active');
-      if (btEl) btEl.classList.add('active');
-    }
-  })();
-</script>
 </div>
 
 <div class="page">
@@ -636,17 +181,23 @@
   </div>
 
   <div class="filter-bar">
-    <select class="filter-select">
-      <option>📍 Frankfurt</option>
-      <option>🇩🇪 Tüm Almanya</option>
-      <option>🌍 Tüm Avrupa</option>
+    <select class="filter-select" id="cl-loc-select" onchange="clFilterLoc(this.value)">
+      <option value="all">📍 Tüm Konumlar</option>
+      <option value="europe">🌍 Tüm Avrupa</option>
+      <option value="de">🇩🇪 Tüm Almanya</option>
+      <option value="Frankfurt">📍 Frankfurt</option>
+      <option value="Berlin">📍 Berlin</option>
+      <option value="München">📍 München</option>
+      <option value="Köln">📍 Köln</option>
+      <option value="Hamburg">📍 Hamburg</option>
+      <option value="Stuttgart">📍 Stuttgart</option>
     </select>
-    <select class="filter-select">
-      <option>Fiyat: Hepsi</option>
-      <option>€0 – €100</option>
-      <option>€100 – €500</option>
-      <option>€500 – €2000</option>
-      <option>€2000+</option>
+    <select class="filter-select" id="cl-price-select" onchange="clFilterPrice(this.value)">
+      <option value="all">Fiyat: Hepsi</option>
+      <option value="0-100">€0 – €100</option>
+      <option value="100-500">€100 – €500</option>
+      <option value="500-2000">€500 – €2000</option>
+      <option value="2000+">€2000+</option>
     </select>
     <button class="filter-cat active" onclick="clFilter('all',this)">Tümü</button>
     <button class="filter-cat" onclick="clFilter('arac',this)">🚗 Araç</button>
@@ -672,8 +223,10 @@
       <label>Kategori *</label>
       <select id="cl-category">
         <option value="arac">🚗 Araç</option>
-        <option value="elektronik">📱 Elektronik</option><option value="mobilya">🛋️ Mobilya</option>
-        <option value="giyim">👗 Giyim</option><option value="diger">📦 Diğer</option>
+        <option value="elektronik">📱 Elektronik</option>
+        <option value="mobilya">🛋️ Mobilya</option>
+        <option value="giyim">👗 Giyim</option>
+        <option value="diger">📦 Diğer</option>
       </select>
     </div>
     <div class="form-group">
@@ -684,15 +237,6 @@
       <div class="form-group">
         <label>Fiyat (€)</label>
         <input type="number" id="cl-price" min="0" step="1" placeholder="Boş = pazarlık">
-        <div id="cl-price-help" style="margin-top:10px;padding:12px;background:var(--warm);border:1px solid var(--sand);border-radius:11px;">
-          <div style="font-size:10.5px;font-weight:700;color:var(--gold,#C9A84C);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;">✨ Yapay Zeka Destekli</div>
-          <button type="button" id="cl-price-help-btn" onclick="clEstimatePrice()"
-            style="width:100%;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:11px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">
-            💡 Fiyat Tahmini Al
-          </button>
-          <div id="cl-price-help-hint" style="font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5;">Fotoğraf eklersen tahmin daha isabetli olur. Bu bir tahmindir, garanti edilen bir fiyat değildir.</div>
-          <div id="cl-price-help-result" style="display:none;margin-top:10px;padding:10px 12px;background:var(--white);border-radius:10px;font-size:12.5px;line-height:1.5;"></div>
-        </div>
       </div>
       <div class="form-group">
         <label>Durum</label>
@@ -714,12 +258,22 @@
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Şehir *</label>
-        <input type="text" id="cl-city" placeholder="Frankfurt">
+        <label>Şehir / Konum *</label>
+        <select id="cl-city">
+          <option value="Tüm Avrupa">🌍 Tüm Avrupa (Genel / Dijital İlan)</option>
+          <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
+          <option value="Berlin">Berlin</option>
+          <option value="Frankfurt">Frankfurt</option>
+          <option value="München">München</option>
+          <option value="Köln">Köln</option>
+          <option value="Hamburg">Hamburg</option>
+          <option value="Stuttgart">Stuttgart</option>
+          <option value="Düsseldorf">Düsseldorf</option>
+        </select>
       </div>
       <div class="form-group">
-        <label>Semt / Konum</label>
-        <input type="text" id="cl-location" placeholder="Opsiyonel">
+        <label>Semt / Detay Konum</label>
+        <input type="text" id="cl-location" placeholder="Opsiyonel (Ör: Mitte, Bockenheim)">
       </div>
     </div>
     <div class="form-group">
@@ -732,311 +286,45 @@
   </div>
 </div>
 
-<script>
-  function openModal(){ clResetForm(); __clDraft.restore(); document.getElementById('post-modal').classList.add('open'); }
-  function closeModal(){document.getElementById('post-modal').classList.remove('open');}
-  document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-  function submitAd(){alert('İlanınız yayınlandı! ✓');closeModal();}
-</script>
-<script>
-  // Mobile menu
-  function toggleMenu() {
-    const hb = document.getElementById('hamburger');
-    const menu = document.getElementById('mobile-menu');
-    hb.classList.toggle('open');
-    menu.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-  }
-  // Close on outside click
-  document.addEventListener('click', function(e) {
-    const menu = document.getElementById('mobile-menu');
-    const hb = document.getElementById('hamburger');
-    if (menu && menu.classList.contains('open') &&
-        !menu.contains(e.target) && !hb.contains(e.target)) {
-      hb.classList.remove('open');
-      menu.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-  });
-  // Close on nav link click
-  document.querySelectorAll('.mm-link').forEach(link => {
-    link.addEventListener('click', () => {
-      document.getElementById('hamburger').classList.remove('open');
-      document.getElementById('mobile-menu').classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  });
-  // Mark active link
-  (function() {
-    const page = window.location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.mm-link').forEach(link => {
-      const href = link.getAttribute('href');
-      if (href && (href === page || href.split('#')[0] === page)) {
-        link.classList.add('active');
-      }
-    });
-  })();
-
-</script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
-          .then(reg => console.log('[BizdenBize] SW registered:', reg.scope))
-          .catch(err => console.warn('[BizdenBize] SW failed:', err));
-      });
-    }
-  </script>
-
-  <!-- PWA install banner -->
-  <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
-    display:none;align-items:center;gap:14px;
-    box-shadow:0 -4px 20px rgba(0,0,0,.2);">
-    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
-    <div style="flex:1;">
-      <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
-      <div style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>
-    </div>
-    <button id="pwa-install-btn" style="background:#D42B2B;color:#fff;border:none;border-radius:8px;
-      padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;
-      font-family:inherit;white-space:nowrap;">Yükle</button>
-    <button onclick="localStorage.setItem('bb_pwa_dismissed','1');document.getElementById('pwa-banner').style.display='none'"
-      style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;
-      padding:8px 10px;cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
-  </div>
-  <script>
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (localStorage.getItem('bb_pwa_dismissed')) return;
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'flex';
-    });
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        const banner = document.getElementById('pwa-banner');
-        if (banner) banner.style.display = 'none';
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('[BizdenBize] PWA install:', outcome);
-        deferredPrompt = null;
-      });
-    }
-    window.addEventListener('appinstalled', () => {
-      localStorage.setItem('bb_pwa_dismissed','1');
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'none';
-      deferredPrompt = null;
-    });
-  </script>
-<script>
-  // ══ COOKIE CONSENT LOGIC ══
-  (function() {
-    var STORAGE_KEY = 'bb_cookie_consent';
-    var consent = null;
-    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
-
-    // Show banner if no consent yet
-    if (!consent) {
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var b = document.getElementById('cookie-banner');
-          if (b) b.classList.add('visible');
-        }, 800);
-      });
-    } else {
-      applyConsent(consent);
-    }
-
-    window.acceptAll = function() {
-      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-    };
-
-    window.acceptEssential = function() {
-      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-    };
-
-    window.savePreferences = function() {
-      var c = {
-        essential: true,
-        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
-        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
-        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
-        ts: Date.now()
-      };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-      showToast('✓ Çerez tercihleriniz kaydedildi.');
-    };
-
-    function saveConsent(c) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
-      applyConsent(c);
-    }
-
-    function applyConsent(c) {
-      // Analytics: load only if consented
-      if (c.analytics) {
-        // Plausible or similar would load here
-        // e.g. loadScript('https://plausible.io/js/plausible.js')
-        console.log('[BizdenBize] Analytics enabled');
-      }
-      // Marketing
-      if (c.marketing) {
-        console.log('[BizdenBize] Marketing enabled');
-      }
-    }
-
-    function hideBanner() {
-      var b = document.getElementById('cookie-banner');
-      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
-    }
-
-    window.openCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    };
-
-    window.closeCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.remove('open');
-      document.body.style.overflow = '';
-    };
-
-    // Close modal on backdrop click
-    document.addEventListener('click', function(e) {
-      var m = document.getElementById('cookie-modal');
-      if (m && e.target === m) closeCookieModal();
-    });
-
-    window.toggleCat = function(cat) {
-      var el = document.getElementById('cat-' + cat);
-      if (el) el.classList.toggle('open');
-    };
-
-    window.toggleCookie = function(e, cat) {
-      e.stopPropagation();
-      var btn = document.getElementById('toggle-' + cat);
-      if (btn) btn.classList.toggle('on');
-    };
-
-    function showToast(msg) {
-      var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(function(){ t.remove(); }, 2500);
-    }
-  })();
-
-  </script>
-<!-- SITE FOOTER -->
 <footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
-
-    <!-- Top row -->
     <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
-
-      <!-- Brand -->
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
-        <!-- Social -->
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
-          <a href="https://tiktok.com/@bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="TikTok">🎵</a>
-          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
-          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
-        </div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
       </div>
-
-      <!-- Platform -->
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
-          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
-          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
-          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
-          <a href="is-guc.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
-          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
-          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgi & Belge</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
         </div>
       </div>
-
-      <!-- Destek -->
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
-          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
-          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
-          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">support@bizdenbize.com</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
         </div>
       </div>
-
-      <!-- Yasal -->
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
         <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
-          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
-          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
-          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">KVKK / GDPR</a>
-          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Impressum</a>
-          <a href="ilan-kurallari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
+          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
+          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
         </div>
       </div>
-
     </div>
-
-    <!-- Language bar -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.08);">
-      <span style="font-size:11px;color:rgba(255,255,255,.25);margin-right:4px;align-self:center;">Dil:</span>
-      <a href="?lang=tr" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇹🇷 Türkçe</a>
-      <a href="?lang=de" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇩🇪 Deutsch</a>
-      <a href="?lang=en" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇬🇧 English</a>
-      <a href="?lang=nl" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇳🇱 Nederlands</a>
-      <a href="?lang=fr" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);text-decoration:none;transition:all .15s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.15)'">🇫🇷 Français</a>
-    </div>
-
-    <!-- Bottom bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
-      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
-    </div>
-
   </div>
-
-  <style>
-    @media (max-width: 768px) {
-      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
-      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
-    }
-    @media (max-width: 480px) {
-      footer > div > div:first-child { grid-template-columns: 1fr !important; }
-    }
-  </style>
 </footer>
+
 <script>
   const _CL_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _CL_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _CL_H={'apikey':_CL_KEY,'Authorization':'Bearer '+_CL_KEY};
   const CL_CATS={arac:{l:'Araç',e:'🚗'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
+
   function clEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function clPrice(e){ return e.price!=null ? '€'+Number(e.price).toLocaleString('de-DE') : 'Pazarlık'; }
 
@@ -1051,7 +339,6 @@
       + soldOverlay + '</div>';
     const loc=[l.location,l.city].filter(Boolean).join(', ');
 
-    // Owner controls (only for the listing's owner)
     let ownerBar='';
     if(window.__clUserId && l.created_by===window.__clUserId){
       const soldBtn = isSold
@@ -1075,37 +362,56 @@
   }
 
   let clAll=[];
+  let currentCat = 'all';
+  let currentLoc = 'all';
+
   async function loadListings(){
     const box=document.getElementById('listings-grid');
     try{
-      // The auth client is set up in a deferred <script type="module"> that runs AFTER
-      // this script. On a fresh page load, wait for it before reading the session —
-      // otherwise __clUserId is null and the owner controls are wrongly hidden.
       for(let i=0;i<150 && !window._authReady;i++){ await new Promise(r=>setTimeout(r,20)); }
       await (window._authReady||Promise.resolve());
       window.__clUserId = (window._currentSession && window._currentSession.user) ? window._currentSession.user.id : null;
       const r=await fetch(_CL_URL+"/rest/v1/classified_listings?active=eq.true&order=created_at.desc&select=*",{headers:_CL_H});
       if(!r.ok) throw new Error('DB '+r.status);
       clAll=await r.json();
-      renderListings('all');
+      renderListings();
     }catch(e){
       box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--red);">İlanlar yüklenemedi. Sayfayı yenile.</div>';
     }
   }
 
-  function renderListings(cat){
+  function renderListings(){
     const box=document.getElementById('listings-grid');
-    const rows = cat==='all' ? clAll : clAll.filter(l=>l.category===cat);
+    let rows = clAll;
+    
+    if (currentCat !== 'all') {
+      rows = rows.filter(l => l.category === currentCat);
+    }
+    
+    if (currentLoc !== 'all') {
+      if (currentLoc === 'europe') {
+        rows = rows.filter(l => (l.city || '').toLowerCase().includes('avrupa'));
+      } else if (currentLoc === 'de') {
+        rows = rows.filter(l => (l.country || 'de').toLowerCase() === 'de');
+      } else {
+        rows = rows.filter(l => (l.city || '').toLowerCase().includes(currentLoc.toLowerCase()));
+      }
+    }
+
     const countEl=document.getElementById('cl-count');
     if(countEl) countEl.textContent = rows.length+' ilan';
     if(!rows.length){
-      box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">Bu kategoride henüz ilan yok. İlk ilanı sen ver! 👆</div>';
+      box.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">Bu filtrede henüz ilan yok. İlk ilanı sen ver! 👆</div>';
       return;
     }
     box.innerHTML=rows.map(clCard).join('');
   }
 
-  // ── OWNER CONTROLS: mark sold / remove ──
+  window.clFilterLoc = function(val) {
+    currentLoc = val;
+    renderListings();
+  };
+
   async function clOwnerPatch(id, body){
     await (window._authReady||Promise.resolve());
     const session=window._currentSession;
@@ -1134,73 +440,18 @@
   window.clFilter=function(cat,btn){
     document.querySelectorAll('.filter-cat').forEach(b=>b.classList.remove('active'));
     if(btn) btn.classList.add('active');
-    renderListings(cat);
+    currentCat = cat;
+    renderListings();
   };
 
-  // ── PHOTO PREVIEW ──
-  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
-  // Generic, reusable across forms. Only ever stores plain text field values —
-  // never files/photos, never payment info. Guard fn controls when saving is
-  // active (e.g. only in "create" mode, never while editing an existing item).
-  function bbDraft(opts){
-    var TTL_MS = 1000*60*60*24*3; // 3 days
-    function read(){
-      try{
-        var raw=localStorage.getItem(opts.key);
-        if(!raw) return null;
-        var obj=JSON.parse(raw);
-        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
-        return obj.v||null;
-      }catch(e){ return null; }
-    }
-    function write(){
-      if(opts.guard && !opts.guard()) return;
-      try{
-        var v={};
-        opts.fields.forEach(function(f){
-          var el=document.getElementById(f.id);
-          if(!el) return;
-          v[f.id]=(f.type==='checkbox')?el.checked:el.value;
-        });
-        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
-      }catch(e){}
-    }
-    var timer=null;
-    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
-    opts.fields.forEach(function(f){
-      var el=document.getElementById(f.id);
-      if(!el) return;
-      el.addEventListener((f.type==='select'||f.type==='checkbox')?'change':'input', schedule);
-    });
-    return {
-      restore:function(){
-        var v=read(); if(!v) return false;
-        var any=false;
-        opts.fields.forEach(function(f){
-          var el=document.getElementById(f.id); if(!el) return;
-          var val=v[f.id];
-          if(val===undefined||val===null||val==='') return;
-          if(f.type==='checkbox'){ el.checked=!!val; } else { el.value=val; }
-          any=true;
-        });
-        return any;
-      },
-      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
-    };
-  }
-  const __clDraft = bbDraft({
-    key:'bb_draft_ilan',
-    guard: function(){ return clEditId===null; },
-    fields:[
-      {id:'cl-category',type:'select'},{id:'cl-title',type:'text'},{id:'cl-price',type:'text'},
-      {id:'cl-condition',type:'select'},{id:'cl-desc',type:'textarea'},{id:'cl-delivery',type:'select'},
-      {id:'cl-city',type:'text'},{id:'cl-location',type:'text'}
-    ]
-  });
+  function openModal(){ clResetForm(); document.getElementById('post-modal').classList.add('open'); }
+  function closeModal(){document.getElementById('post-modal').classList.remove('open');}
+  document.getElementById('post-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
-  let clSelectedFiles=[];      // newly picked File objects (uploaded on save)
-  let clExistingPhotos=[];     // existing photo URLs kept during an edit
-  let clEditId=null;           // null = create mode; a listing id = edit mode
+  let clSelectedFiles=[];
+  let clExistingPhotos=[];
+  let clEditId=null;
+
   function clRenderPreviews(){
     const prev=document.getElementById('cl-photo-preview');
     if(!prev) return;
@@ -1219,75 +470,13 @@
     };
     clExistingPhotos.forEach((url,idx)=>{ mkThumb(url, function(){ clExistingPhotos.splice(idx,1); clRenderPreviews(); }); });
     clSelectedFiles.forEach((f,idx)=>{ mkThumb(URL.createObjectURL(f), function(){ clSelectedFiles.splice(idx,1); clRenderPreviews(); }); });
-    clSyncPriceHelpBtn();
   }
-  function clSyncPriceHelpBtn(){
-    const hint=document.getElementById('cl-price-help-hint');
-    const hasPhoto=(clExistingPhotos.length+clSelectedFiles.length)>0;
-    if(hint) hint.textContent = hasPhoto
-      ? 'Bu bir tahmindir, garanti edilen bir fiyat değildir.'
-      : 'Fotoğraf eklersen tahmin daha isabetli olur. Bu bir tahmindir, garanti edilen bir fiyat değildir.';
-    const res=document.getElementById('cl-price-help-result'); if(res) res.style.display='none';
-  }
-  window.clEstimatePrice=async function(){
-    const btn=document.getElementById('cl-price-help-btn');
-    const resultBox=document.getElementById('cl-price-help-result');
-    if(!btn || btn.disabled) return;
-    const title=(document.getElementById('cl-title').value||'').trim();
-    if(!title){ alert('Önce bir başlık gir.'); return; }
-    btn.disabled=true; btn.textContent='⏳ Tahmin ediliyor...';
-    resultBox.style.display='none';
-    try{
-      // Convert newly-picked (not-yet-uploaded) files to base64, inline —
-      // existing photos (during edit) already have URLs the function can fetch.
-      const toBase64=(file)=>new Promise((resolve,reject)=>{
-        const r=new FileReader();
-        r.onload=()=>resolve({ mime:file.type||'image/jpeg', data:r.result.split(',')[1] });
-        r.onerror=reject;
-        r.readAsDataURL(file);
-      });
-      const photoBase64=await Promise.all(clSelectedFiles.slice(0,3).map(toBase64));
 
-      const r=await fetch(_CL_URL+'/functions/v1/estimate-price',{
-        method:'POST',
-        headers:{ ..._CL_H, 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          title,
-          description: (document.getElementById('cl-desc').value||'').trim(),
-          category: document.getElementById('cl-category').value,
-          condition: document.getElementById('cl-condition').value,
-          city: (document.getElementById('cl-city').value||'').trim(),
-          photoUrls: clExistingPhotos.slice(0,3),
-          photoBase64
-        })
-      });
-      const data=await r.json();
-      if(!r.ok || data.error){ throw new Error(data.error||'estimate failed'); }
-
-      const usedPhotoCount = clExistingPhotos.slice(0,3).length + photoBase64.length;
-      const noPhotoNote = usedPhotoCount===0
-        ? '<div style="font-size:11px;color:#8a6d1f;margin-bottom:6px;">📷 Fotoğrafsız tahmin — daha geniş bir aralık olabilir.</div>'
-        : '';
-
-      resultBox.innerHTML =
-        '<div style="font-weight:700;color:var(--ink);margin-bottom:4px;">💡 Tahmini fiyat aralığı: €'+data.min.toLocaleString('de-DE')+' – €'+data.max.toLocaleString('de-DE')+'</div>'
-        + noPhotoNote
-        + (data.gerekce? '<div style="color:var(--muted);margin-bottom:8px;">'+clEsc(data.gerekce)+'</div>' : '')
-        + '<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Bu bir yapay zeka tahminidir, gerçek piyasa verisi değildir. Son kararı sen ver.</div>'
-        + '<button type="button" onclick="document.getElementById(\'cl-price\').value='+Math.round((data.min+data.max)/2)+'" style="background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">Ortalama değeri kullan (€'+Math.round((data.min+data.max)/2)+')</button>';
-      resultBox.style.display='block';
-    }catch(e){
-      resultBox.innerHTML='<div style="color:var(--red);">Tahmin alınamadı. Lütfen tekrar dene.</div>';
-      resultBox.style.display='block';
-    }finally{
-      btn.disabled=false; btn.textContent='💡 Fiyat Tahmini Al';
-      btn.style.cursor='pointer'; btn.style.color='var(--navy,#1B3A8C)'; btn.style.borderColor='var(--navy,#1B3A8C)';
-    }
-  };
   function clResetForm(){
     clEditId=null; clExistingPhotos=[]; clSelectedFiles=[];
-    ['cl-title','cl-price','cl-desc','cl-city','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['cl-title','cl-price','cl-desc','cl-location'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     const cat=document.getElementById('cl-category'); if(cat) cat.value='arac';
+    const city=document.getElementById('cl-city'); if(city) city.value='Berlin';
     const cond=document.getElementById('cl-condition'); if(cond) cond.value='';
     const dlv=document.getElementById('cl-delivery'); if(dlv) dlv.value='';
     const t=document.getElementById('cl-modal-title'); if(t) t.textContent='İlan Ver';
@@ -1296,6 +485,7 @@
     const fileInput=document.getElementById('cl-photos'); if(fileInput) fileInput.value='';
     clRenderPreviews();
   }
+
   window.clEditListing=function(id){
     const l=(clAll||[]).find(x=>String(x.id)===String(id));
     if(!l){ alert('İlan bulunamadı.'); return; }
@@ -1308,7 +498,7 @@
     set('cl-condition', l.condition||'');
     set('cl-desc', l.description||'');
     set('cl-delivery', l.delivery||'');
-    set('cl-city', l.city||'');
+    set('cl-city', l.city||'Berlin');
     set('cl-location', l.location||'');
     clExistingPhotos=Array.isArray(l.photos)? l.photos.slice() : [];
     clSelectedFiles=[];
@@ -1318,18 +508,17 @@
     const e=document.getElementById('cl-form-err'); if(e) e.style.display='none';
     document.getElementById('post-modal').classList.add('open');
   };
+
   document.addEventListener('change', function(ev){
     if(ev.target && ev.target.id==='cl-photos'){
-      // append newly chosen files to existing selection, cap at 5
       const picked=Array.from(ev.target.files);
       const room=Math.max(0, 5 - clExistingPhotos.length);
       clSelectedFiles=clSelectedFiles.concat(picked).slice(0,room);
-      ev.target.value='';  // reset so the same file can be re-picked if removed
+      ev.target.value='';
       clRenderPreviews();
     }
   });
 
-  // ── SUBMIT AD (upload photos → insert listing) ──
   window.submitAd=async function(){
     const err=document.getElementById('cl-form-err');
     const btn=document.getElementById('cl-submit-btn');
@@ -1347,7 +536,6 @@
 
     if(btn){ btn.disabled=true; btn.textContent='Yükleniyor…'; }
     try{
-      // 1. upload photos to storage
       const photoUrls=[];
       for(let i=0;i<clSelectedFiles.length;i++){
         const f=clSelectedFiles[i];
@@ -1363,7 +551,6 @@
         }
       }
 
-      // 2. build the field payload (shared by create + edit)
       const priceVal=document.getElementById('cl-price').value;
       const finalPhotos=clExistingPhotos.concat(photoUrls);
       const fields={
@@ -1379,11 +566,9 @@
       };
 
       if(clEditId){
-        // EDIT: update the existing row (RLS restricts this to the owner)
         const ok=await clOwnerPatch(clEditId, fields);
         if(!ok) throw new Error('update failed');
       } else {
-        // CREATE: insert a new row
         const payload=Object.assign({ created_by: session.user.id, active: true, country: 'de' }, fields);
         const r=await fetch(_CL_URL+'/rest/v1/classified_listings',{
           method:'POST',
@@ -1393,15 +578,12 @@
         if(!r.ok) throw new Error(await r.text());
       }
 
-      // success
-      const wasEdit=!!clEditId;
-      if(!wasEdit) __clDraft.clear();
       document.getElementById('post-modal').classList.remove('open');
       clResetForm();
-      await loadListings();  // refresh grid
-      alert(wasEdit ? 'İlanın güncellendi! ✓' : 'İlanın yayınlandı! ✓');
+      await loadListings();
+      alert(clEditId ? 'İlanın güncellendi! ✓' : 'İlanın yayınlandı! ✓');
     }catch(e){
-      show(clEditId ? 'Değişiklikler kaydedilemedi. Lütfen tekrar dene.' : 'İlan yayınlanamadı. Lütfen tekrar dene.');
+      show('İlan kaydedilemedi. Lütfen tekrar dene.');
     }finally{
       if(btn){ btn.disabled=false; btn.textContent = clEditId ? 'Değişiklikleri Kaydet →' : 'İlanı Yayınla →'; }
     }
@@ -1409,7 +591,7 @@
 
   loadListings();
 </script>
-  <script type="module" src="nav-msg-badge.js"></script>
-  <script src="smart-email.js"></script>
+<script type="module" src="nav-msg-badge.js"></script>
+<script src="smart-email.js"></script>
 </body>
 </html>
