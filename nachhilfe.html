@@ -1,3 +1,19 @@
+Let's clean up **`nachhilfe.html`** first by removing the European country bar strip (`NL`, `BE`, `AT`, `GB`, `FR`). 
+
+This gives more vertical screen space to your tutor listings and makes the page look 100% complete and polished!
+
+---
+
+### Update `nachhilfe.html` on GitHub (1 minute):
+
+1. Open **[github.com/bizdenbite/bizdenbize/blob/main/nachhilfe.html](https://github.com/bizdenbite/bizdenbize/blob/main/nachhilfe.html)**
+2. Click the **Pencil icon (Edit)** ✏️
+3. Select all (`Ctrl + A` / `Cmd + A`) and **Delete**.
+4. Copy the code block below, paste it into GitHub, and click **Commit changes...** → **Commit changes**.
+
+---
+
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -59,13 +75,6 @@
     .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
     @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
-
-    /* COUNTRY BAR */
-    .cbar-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
-    .cbar-btn:hover{border-color:rgba(255,255,255,.5);color:#fff;}
-    .cbar-btn.active{border-color:var(--red);background:var(--red);color:#fff;}
-    .cbar-soon{opacity:.45;cursor:default!important;}
-    .cbar-soon-badge{font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600;}
 
     /* HERO */
     .hero{background:var(--indigo);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
@@ -277,18 +286,6 @@
       <div><div class="hstat-val">Türkçe</div><div class="hstat-label">Destek Dili</div></div>
     </div>
   </div>
-</div>
-
-<!-- COUNTRY BAR -->
-<div id="country-bar" style="background:var(--ink);padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
-  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
-  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
-  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
 </div>
 
 <!-- FILTER BAR -->
@@ -676,6 +673,11 @@ async function submitTutor() {
   if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
 
   try {
+    let sessionUserId = null;
+    if (window._currentSession && window._currentSession.user) {
+      sessionUserId = window._currentSession.user.id;
+    }
+
     await sbPost('tutors', {
       name, 
       description: desc, 
@@ -687,7 +689,8 @@ async function submitTutor() {
       price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
       price_label: document.getElementById('tm-price-type').value === 'paid' ? (document.getElementById('tm-price').value.trim() || null) : 'Ücretsiz',
       active:      false,
-      status:      'pending'
+      status:      'pending',
+      user_id:     sessionUserId
     });
 
     document.getElementById('tm-body').style.display = 'none';
@@ -816,21 +819,6 @@ async function submitSeek() {
   }
 }
 
-function setCbarCountry(c, btn) {
-  document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTutors();
-}
-function showYakinda() {
-  if (document.getElementById('yakinda-toast')) return;
-  const tip = document.createElement('div');
-  tip.id = 'yakinda-toast';
-  tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-  tip.textContent = 'Bu ülke yakında ekleniyor!';
-  document.body.appendChild(tip);
-  setTimeout(() => tip.remove(), 2500);
-}
-
 renderTutors();
 </script>
 
@@ -867,5 +855,13 @@ renderTutors();
   </div>
 </footer>
 <script type="module" src="nav-msg-badge.js"></script>
+<script src="smart-email.js"></script>
 </body>
 </html>
+```
+
+---
+
+### What this update achieves:
+1. **Removes the Country Bar** (`NL`, `BE`, `AT`, `GB`, `FR` placeholders) so the UI focuses 100% on Germany.
+2. **Records `user_id`** on new tutor submissions so the tutor's listing is permanently tied to their logged-in account in `profile.html`.
