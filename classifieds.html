@@ -185,11 +185,12 @@
       <option value="all">📍 Tüm Konumlar</option>
       <option value="europe">🌍 Tüm Avrupa</option>
       <option value="de">🇩🇪 Tüm Almanya</option>
-      <option value="Frankfurt">📍 Frankfurt</option>
       <option value="Berlin">📍 Berlin</option>
-      <option value="München">📍 München</option>
-      <option value="Köln">📍 Köln</option>
+      <option value="Düsseldorf">📍 Düsseldorf</option>
+      <option value="Frankfurt">📍 Frankfurt</option>
       <option value="Hamburg">📍 Hamburg</option>
+      <option value="Köln">📍 Köln</option>
+      <option value="München">📍 München (Münih)</option>
       <option value="Stuttgart">📍 Stuttgart</option>
     </select>
     <select class="filter-select" id="cl-price-select" onchange="clFilterPrice(this.value)">
@@ -264,7 +265,7 @@
           <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
           <option value="Berlin">Berlin</option>
           <option value="Frankfurt">Frankfurt</option>
-          <option value="München">München</option>
+          <option value="München">München (Münih)</option>
           <option value="Köln">Köln</option>
           <option value="Hamburg">Hamburg</option>
           <option value="Stuttgart">Stuttgart</option>
@@ -401,13 +402,12 @@
     }
     
     if (currentLoc !== 'all') {
-      if (currentLoc === 'europe') {
-        rows = rows.filter(l => (l.city || '').toLowerCase().includes('avrupa'));
-      } else if (currentLoc === 'de') {
-        rows = rows.filter(l => (l.country || 'de').toLowerCase() === 'de');
-      } else {
-        rows = rows.filter(l => (l.city || '').toLowerCase().includes(currentLoc.toLowerCase()));
-      }
+      // Strict match: "Berlin" shows only Berlin listings, never the
+      // Tüm Almanya / Tüm Avrupa ones. Product decision, deliberate.
+      const want = currentLoc === 'europe' ? 'tüm avrupa'
+                 : currentLoc === 'de'     ? 'tüm almanya'
+                 : currentLoc;
+      rows = rows.filter(l => (l.city || '').trim().toLowerCase() === want.toLowerCase());
     }
 
     const countEl=document.getElementById('cl-count');

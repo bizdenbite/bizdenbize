@@ -367,20 +367,6 @@
     });
   })();
   
-  function setCbarCountry(c, btn) {
-    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (typeof renderListings === 'function') renderListings();
-  }
-  function showYakinda() {
-    if (document.getElementById('yakinda-toast')) return;
-    const tip = document.createElement('div');
-    tip.id = 'yakinda-toast';
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-    tip.textContent = 'Bu ulke yakinda ekleniyor!';
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 2500);
-  }
 
   </script>
 </head>
@@ -564,17 +550,6 @@
 </div>
 
 <!-- BODY -->
-<!-- COUNTRY BAR -->
-<div id="country-bar" style="background:var(--ink);border-bottom:none;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
-  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
-  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
-  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
-</div>
 <div class="page-body">
 
   <!-- SIDEBAR -->
@@ -606,16 +581,21 @@
   <!-- MAIN -->
   <main class="main">
     <!-- Category pills -->
-  <!-- COUNTRY BAR — shown for all tabs -->
-  <div id="country-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
-    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Ülke</span>
-    <button class="country-filter-btn active" onclick="setCountryFilter('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
-    <button class="country-filter-btn" onclick="setCountryFilter('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
-    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda <span style="font-size:9px;opacity:.6;">Yakında</span></button>
-    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika <span style="font-size:9px;opacity:.6;">Yakında</span></button>
-    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya <span style="font-size:9px;opacity:.6;">Yakında</span></button>
-    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere <span style="font-size:9px;opacity:.6;">Yakında</span></button>
-    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+  <!-- KONUM FİLTRESİ -->
+  <div id="loc-bar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Konum</span>
+    <select id="loc-select" onchange="setLocFilter(this.value)" style="padding:7px 12px;border-radius:20px;font-size:12.5px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--ink);cursor:pointer;font-family:inherit;">
+      <option value="all">📍 Tüm Konumlar</option>
+      <option value="Tüm Avrupa">🌍 Tüm Avrupa</option>
+      <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
+      <option value="Berlin">📍 Berlin</option>
+      <option value="Düsseldorf">📍 Düsseldorf</option>
+      <option value="Frankfurt">📍 Frankfurt</option>
+      <option value="Hamburg">📍 Hamburg</option>
+      <option value="Köln">📍 Köln</option>
+      <option value="München">📍 München (Münih)</option>
+      <option value="Stuttgart">📍 Stuttgart</option>
+    </select>
   </div>
 
     <div class="cat-pills" id="cat-pills">
@@ -689,7 +669,17 @@
         </div>
         <div>
           <label class="field-label">Konum</label>
-          <input class="field-input" id="p-location" type="text" placeholder="Frankfurt, DE">
+          <select class="field-input" id="p-location">
+            <option value="Tüm Avrupa">🌍 Tüm Avrupa (Genel / Dijital / Remote)</option>
+            <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Düsseldorf">Düsseldorf</option>
+            <option value="Frankfurt">Frankfurt</option>
+            <option value="Hamburg">Hamburg</option>
+            <option value="Köln">Köln</option>
+            <option value="München">München (Münih)</option>
+            <option value="Stuttgart">Stuttgart</option>
+          </select>
         </div>
       </div>
       <!-- Work type + Price -->
@@ -868,8 +858,19 @@
   let activeMode = 'all';
   let activeCat = 'all';
 
-  let activeMigrationCountry = 'all';
-  // Keep old name as alias for backward compat
+  let activeLoc = 'all';
+
+  // Strict location match: "Berlin" shows only Berlin posts — never
+  // Tüm Almanya or Tüm Avrupa ones. Product decision, deliberate.
+  function locMatches(row) {
+    if (activeLoc === 'all') return true;
+    return ((row.city || '').trim().toLowerCase()) === activeLoc.trim().toLowerCase();
+  }
+
+  function setLocFilter(val) {
+    activeLoc = val || 'all';
+    if (activeMode === 'seeker') { renderSeekers(); } else { renderListings(); }
+  }
   function setMode(mode, btn) {
     activeMode = mode;
     document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
@@ -896,6 +897,7 @@
       if (activeCat !== 'all' && lcat !== activeCat) return false;
       if (checkedCats.length && !checkedCats.includes(lcat)) return false;
       if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
+      if (!locMatches(l)) return false;
       if (q && !(l.title||'').toLowerCase().includes(q) && !(l.description||'').toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
       return true;
     });
@@ -922,7 +924,7 @@
 
     // Merge real submissions with the curated starter profiles so the page
     // isn't empty before the job_seekers table has real data in it.
-    const allSeekers = [...dbSeekers, ...seekers];
+    const allSeekers = [...dbSeekers, ...seekers].filter(locMatches);
     window._allSeekers = allSeekers;
 
     document.getElementById('results-count').innerHTML = `<strong>${allSeekers.length}</strong> iş arayan profili`;
@@ -990,7 +992,6 @@
     const filtered = activeMode === 'migration'
       ? listings.filter(l => {
           if (l.type !== 'migration') return false;
-          if (activeMigrationCountry !== 'all' && !l.location.includes(activeMigrationCountry)) return false;
           return true;
         })
       : getFiltered();
@@ -1136,7 +1137,7 @@
   const __seekerDraft = bbDraft({
     key:'bb_draft_is_arayan',
     fields:[
-      {id:'sp-title',type:'text'},{id:'sp-city',type:'text'},{id:'sp-auth',type:'select'},
+      {id:'sp-title',type:'text'},{id:'sp-city',type:'select'},{id:'sp-auth',type:'select'},
       {id:'sp-avail',type:'select'},{id:'sp-worktype',type:'select'},{id:'sp-skills',type:'text'},
       {id:'sp-salary',type:'text'},{id:'sp-desc',type:'textarea'},{id:'sp-contact',type:'text'}
     ]
@@ -1144,7 +1145,7 @@
   const __jobDraft = bbDraft({
     key:'bb_draft_is_veren',
     fields:[
-      {id:'p-title',type:'text'},{id:'p-location',type:'text'},{id:'p-cat',type:'select'},
+      {id:'p-title',type:'text'},{id:'p-location',type:'select'},{id:'p-cat',type:'select'},
       {id:'p-worktype',type:'select'},{id:'p-price',type:'text'},{id:'p-desc',type:'textarea'},
       {id:'p-contact',type:'text'}
     ]
@@ -1342,7 +1343,12 @@
       type: _TYPE_MAP[r.listing_type] || 'gig',
       title: r.title, company: r.company || null,
       author: nameMap[r.author_id] || 'Üye',
-      location: [r.city, (r.country==='DE'?'🇩🇪':null)].filter(Boolean).join(' '),
+      location: (function(){
+        var c = (r.city||'').trim();
+        if (!c) return '';
+        if (c.toLowerCase() === 'tüm avrupa') return '🌍 ' + c;
+        return c + (r.country === 'DE' ? ' 🇩🇪' : '');
+      })(),
       category: r.category || 'diger', cat: r.category || 'diger',
       worktype: r.worktype || 'onsite', price: r.salary || '',
       description: r.description || '', desc: r.description || '',
@@ -1596,7 +1602,19 @@
         <div><label class="field-label">Unvan / Meslek *</label><input class="field-input" id="sp-title" type="text" placeholder="Elektrikçi, Hemşire..."></div>
       </div>
       <div class="field-row">
-        <div><label class="field-label">Şehir</label><input class="field-input" id="sp-city" type="text" placeholder="Berlin"></div>
+        <div><label class="field-label">Şehir</label>
+          <select class="field-input" id="sp-city">
+            <option value="Tüm Avrupa">🌍 Tüm Avrupa (Fark etmez)</option>
+            <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Düsseldorf">Düsseldorf</option>
+            <option value="Frankfurt">Frankfurt</option>
+            <option value="Hamburg">Hamburg</option>
+            <option value="Köln">Köln</option>
+            <option value="München">München (Münih)</option>
+            <option value="Stuttgart">Stuttgart</option>
+          </select>
+        </div>
         <div><label class="field-label">Çalışma İzni</label>
           <select class="field-input" id="sp-auth">
             <option>Çalışma izni var</option>
