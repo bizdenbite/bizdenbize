@@ -4,93 +4,388 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — İş Ver & Bul</title>
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="İş Ver & Bul — BizdenBize">
+  <meta property="og:description" content="Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.">
+  <meta property="og:image" content="https://bizdenbize.com/logo.png">
+  <meta property="og:url" content="https://bizdenbize.com/is-guc.html">
+  <meta property="og:type" content="website">
+  <script type="module">
+    // ── Auth session (separate from the sbGet/sbPost raw-REST helpers below,
+    // which only ever used the anon key). We need this to know whether
+    // someone is logged in, and to get their real name + a proper access
+    // token so RLS can attribute submissions to the actual account.
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const _authSb = createClient(
+      'https://wxjudojlwksivhzjnmim.supabase.co',
+      'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'
+    );
+    window._authSb = _authSb;
+    window._authReady = _authSb.auth.getSession().then(({ data: { session } }) => {
+      window._currentSession = session || null;
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --red:#D42B2B; --red2:#E8393A; --navy:#1B3A8C; --navy2:#2348A8;
-      --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
-      --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF; --gold:#C9A84C; --green:#1E7B4B;
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --gold:#C9A84C; --green:#1E7B4B; --blue:#185FA5; --navy:#1B3A8C;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
 
-    /* NAV */
-    nav { position: sticky; top: 0; z-index: 200; background: rgba(250,247,242,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,.4); height: 58px; display: flex; align-items: center; padding: 0 16px 0 12px; gap: 4px; }
-    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; margin-right: 12px; }
-    .nav-primary { display: flex; align-items: center; gap: 2px; margin-left: 10px; }
-    .nav-primary a, .nav-kesfet-btn { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; background: none; border: none; cursor: pointer; font-family: inherit; white-space: nowrap; }
-    .nav-primary a:hover, .nav-kesfet-btn:hover { background: var(--warm); }
-    .nav-primary a.active { background: var(--warm); color: var(--red); }
+    /* ── NAV ── */
+    nav {
+      height: 58px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px 0 12px;
+      background: rgba(250,247,242,0.95); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212,197,169,0.4);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; margin-right: 8px; }
+    .nav-tabs { display: flex; gap: 2px; flex: 1; }
+    .nav-tab { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Instrument Sans', sans-serif; transition: all .15s; text-decoration: none; white-space: nowrap; }
+    .nav-tab:hover { background: var(--warm); color: var(--ink); }
+    .nav-tab.active { background: var(--red); color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+    @media (max-width: 768px) { .nav-tabs { display: none !important; } }
 
-    .kesfet-panel { display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid var(--sand); border-radius: 14px; box-shadow: 0 12px 32px rgba(26,18,8,.14); padding: 18px; width: 560px; z-index: 250; }
-    .kesfet-panel.open { display: block; }
-    .kesfet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .kesfet-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 12.5px; font-weight: 600; text-align: center; background: var(--cream); }
-    .kesfet-tile:hover { background: var(--warm); }
-    .kesfet-tile .e { font-size: 22px; }
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink); padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 0%, rgba(201,168,76,.18) 0%, transparent 55%),
+                  radial-gradient(ellipse at 20% 100%, rgba(212,43,43,.12) 0%, transparent 50%);
+    }
+    .hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
+    .hero-tabs {
+      display: inline-flex; background: rgba(255,255,255,.07); border-radius: 10px; padding: 4px; gap: 2px; margin-bottom: 28px;
+    }
+    .hero-tab {
+      padding: 8px 24px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; font-family: inherit; transition: all .2s; color: rgba(255,255,255,.5); background: none;
+    }
+    .hero-tab.active { background: var(--white); color: var(--ink); }
+    .hero h1 {
+      font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 12px;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.5); line-height: 1.65; margin-bottom: 28px; }
 
-    .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
-    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
-    .nav-msg { position: relative; background: none; border: none; font-size: 19px; cursor: pointer; padding: 8px; border-radius: 8px; text-decoration: none; display: inline-flex; color: var(--ink); }
+    /* Search */
+    .search-row { display: flex; gap: 8px; max-width: 600px; margin: 0 auto; }
+    .search-wrap {
+      flex: 1; display: flex; align-items: center; background: var(--white);
+      border-radius: 10px; padding: 4px 4px 4px 14px; box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    .search-wrap input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--ink); padding: 8px 0; background: none; }
+    .search-wrap input::placeholder { color: var(--sand); }
+    .search-btn { padding: 10px 20px; background: var(--red); color: var(--white); border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; white-space: nowrap; }
+    .search-btn:hover { background: var(--red2); }
+    .post-btn { padding: 10px 20px; background: var(--gold); color: var(--ink); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+    .post-btn:hover { background: #d4a93c; transform: translateY(-1px); }
 
-    .bottom-tabbar { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 300; background: #fff; border-top: 1px solid var(--sand); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
-    .bt-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 5px 0; background: none; border: none; font-family: inherit; cursor: pointer; }
-    .bt-item.active { color: var(--red); }
-    .bt-icon { font-size: 20px; }
-
-    .kesfet-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,8,.35); z-index: 350; }
-    .kesfet-sheet-overlay.open { display: block; }
-    .kesfet-sheet { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 18px 18px 0 0; padding: 16px 14px calc(16px + env(safe-area-inset-bottom)); z-index: 351; max-height: 75vh; overflow-y: auto; }
-    .kesfet-sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .kesfet-sheet-title { font-size: 15px; font-weight: 700; color: var(--ink); }
-    .kesfet-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-
-    @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
-
-    /* HERO */
-    .hero { background: var(--ink); padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden; color: #fff; }
-    .hero-inner { position: relative; max-width: 720px; margin: 0 auto; }
-    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 900; color: var(--gold); line-height: 1.1; margin-bottom: 12px; }
-    .hero h1 span { color: #fff; }
-    .hero-sub { font-size: 15px; color: rgba(255,255,255,.6); line-height: 1.65; margin-bottom: 28px; }
-
-    /* SEARCH BAR */
-    .hero-search { display: flex; gap: 8px; max-width: 600px; margin: 0 auto 28px; background: #fff; border-radius: 12px; padding: 6px; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
-    .hero-search input { flex: 1; border: none; padding: 10px 14px; font-family: inherit; font-size: 14px; outline: none; color: var(--ink); }
-    .hero-search button { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; transition: background .15s; }
-    .hero-search button:hover { background: var(--red2); }
-    .btn-gold { padding: 11px 20px; background: var(--gold); color: var(--ink); border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
-
-    /* STATS */
-    .hero-stats { display: flex; justify-content: center; gap: 32px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.1); }
-    .hstat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #fff; }
+    /* Stats */
+    .hero-stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); }
+    .hstat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
     .hstat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
 
-    /* BODY */
-    .page-body { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
-    .job-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .job-card { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: all .2s; }
-    .job-card:hover { border-color: var(--navy); box-shadow: 0 6px 24px rgba(27,58,140,.08); transform: translateY(-2px); }
+    /* ── BODY ── */
+    .page-body { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+    @media (max-width: 768px) { .page-body { grid-template-columns: 1fr; } .sidebar { display: none; } }
 
-    /* MODAL */
-    .modal-overlay { position: fixed; inset: 0; z-index: 400; background: rgba(26,18,8,.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; }
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .filter-box { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 16px; }
+    .filter-box-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+    .filter-opt { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background .15s; }
+    .filter-opt:hover { background: var(--warm); }
+    .filter-opt input { accent-color: var(--red); cursor: pointer; }
+    .filter-opt label { font-size: 13px; color: var(--ink); cursor: pointer; flex: 1; }
+    .filter-opt span { font-size: 11px; color: var(--muted); }
+    .filter-divider { height: 1px; background: var(--warm); margin: 8px 0; }
+
+    /* ── MAIN ── */
+    .main { min-width: 0; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 8px; flex-wrap: wrap; }
+    .country-filter-btn.active { border-color: var(--red) !important; background: var(--red) !important; color: #fff !important; }
+    .migration-country-btn.active { border-color: var(--red) !important; background: var(--red) !important; color: #fff !important; }
+    .results-count { font-size: 13px; color: var(--muted); }
+    .results-count strong { color: var(--ink); }
+    .sort-select { padding: 7px 12px; border: 1.5px solid var(--sand); border-radius: 8px; font-family: inherit; font-size: 12px; color: var(--ink); background: var(--white); cursor: pointer; outline: none; }
+
+    /* Category pills */
+    .cat-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .cat-pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1.5px solid var(--sand); background: var(--white); color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
+    .cat-pill:hover { border-color: var(--ink); color: var(--ink); }
+    .cat-pill.active { border-color: var(--red); background: var(--red); color: var(--white); }
+
+    /* ── LISTING CARDS ── */
+    .listings { display: flex; flex-direction: column; gap: 10px; }
+    .listing-card {
+      background: var(--white); border: 1px solid var(--sand); border-radius: 14px;
+      padding: 18px 20px; display: flex; gap: 16px; align-items: flex-start;
+      cursor: pointer; transition: all .2s; text-decoration: none; color: inherit;
+      position: relative;
+    }
+    .listing-card:hover { border-color: var(--red); box-shadow: 0 4px 20px rgba(212,43,43,.07); transform: translateY(-1px); }
+    .listing-card.featured { border-color: var(--gold); background: linear-gradient(135deg, #fff 0%, rgba(201,168,76,.04) 100%); }
+    .featured-badge {
+      position: absolute; top: -1px; right: 16px;
+      background: var(--gold); color: var(--ink); font-size: 9px; font-weight: 700;
+      padding: 3px 10px; border-radius: 0 0 8px 8px; letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    .listing-avatar {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700;
+    }
+    .listing-body { flex: 1; min-width: 0; }
+    .listing-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .listing-title { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+    .listing-price { font-size: 15px; font-weight: 700; color: var(--green); white-space: nowrap; flex-shrink: 0; }
+    .listing-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .listing-author { font-size: 12px; color: var(--muted); }
+    .listing-location { font-size: 12px; color: var(--muted); }
+    .listing-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .listing-footer { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .listing-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .tag-gig { background: rgba(24,95,165,.08); color: var(--blue); }
+    .tag-job { background: rgba(30,123,75,.08); color: var(--green); }
+    .tag-remote { background: rgba(201,168,76,.1); color: #8a6d00; }
+    .tag-cat { background: var(--warm); color: var(--muted); }
+    .listing-time { font-size: 11px; color: var(--sand); margin-left: auto; }
+
+    /* ── POST MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(26,18,8,.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 20px; max-width: 520px; width: 92%; max-height: 92vh; display: flex; flex-direction: column; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 5px; }
-    .form-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--sand); border-radius: 9px; font-family: inherit; font-size: 13px; color: var(--ink); background: var(--cream); outline: none; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .modal { background: var(--white); border-radius: 20px; max-width: 520px; width: 92%; max-height: 92vh; display: flex; flex-direction: column; animation: slideUp .3s ease; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { padding: 22px 24px 16px; border-bottom: 1px solid var(--warm); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; line-height: 1; }
+    .modal-body { overflow-y: auto; flex: 1; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-footer { padding: 14px 24px 20px; border-top: 1px solid var(--warm); flex-shrink: 0; }
+    .field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); display: block; margin-bottom: 5px; }
+    .field-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--sand); border-radius: 9px; font-family: inherit; font-size: 13px; color: var(--ink); background: var(--cream); outline: none; transition: border-color .15s; }
+    .field-input:focus { border-color: var(--red); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    textarea.field-input { resize: none; min-height: 80px; line-height: 1.5; }
+    select.field-input { cursor: pointer; }
+
+    /* Type toggle */
+    .type-toggle { display: flex; gap: 6px; }
+    .type-btn { flex: 1; padding: 10px; border-radius: 9px; border: 1.5px solid var(--sand); background: var(--white); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s; text-align: center; }
+    .type-btn.active.job { border-color: var(--green); background: rgba(30,123,75,.07); color: var(--green); }
+    .type-btn.active.gig { border-color: var(--blue); background: rgba(24,95,165,.07); color: var(--blue); }
+
+    /* Featured upsell */
+    .featured-upsell {
+      border: 1.5px solid rgba(201,168,76,.4); background: rgba(201,168,76,.06);
+      border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+    }
+    .featured-upsell input { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+    .featured-upsell-text { flex: 1; }
+    .featured-upsell-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .featured-upsell-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .featured-price { font-size: 14px; font-weight: 700; color: var(--gold); }
+
+    .submit-btn { width: 100%; padding: 13px; background: var(--red); color: var(--white); border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; }
+    .submit-btn:hover { background: var(--red2); }
+
+    /* Success */
+    .post-success { display: none; text-align: center; padding: 40px 20px; }
+    .post-success h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
+    .post-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  
+    /* ── MOBILE NAV ── */
+    .hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 38px; height: 38px; background: var(--red); border: none; cursor: pointer; border-radius: 8px; flex-shrink: 0; transition: background .15s; }
+    .hamburger:hover { background: var(--red2); }
+    .hamburger span { display: block; width: 20px; height: 2.5px; background: #ffffff; border-radius: 2px; transition: all .3s ease; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; inset: 0; z-index: 200; flex-direction: column; background: var(--white); }
+    .mobile-menu.open { display: flex; }
+    .mm-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--warm); height: 58px; }
+    .mm-links { display: flex; flex-direction: column; padding: 12px 16px; gap: 2px; flex: 1; overflow-y: auto; }
+    .mm-link { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 15px; font-weight: 500; transition: background .15s; }
+    .mm-link:hover { background: var(--warm); }
+    .mm-link.active { background: rgba(212,43,43,.07); color: var(--red); font-weight: 600; }
+    .mm-link-icon { font-size: 22px; width: 30px; text-align: center; flex-shrink: 0; }
+    .mm-footer { padding: 16px 20px; border-top: 1px solid var(--warm); }
+    @media (max-width: 768px) {
+      .nav-tabs { display: none !important; }
+      .hamburger { display: flex !important; }
+    }
+  
+    /* ── DROPDOWN NAV ── */
+    .nav-logo-link { display:flex;align-items:center;flex-shrink:0;margin-right:12px; }
+    .nav-menu { display:flex;gap:2px;flex:1;align-items:center; }
+    .nav-item { position:relative; }
+    .nav-item-btn {
+      display:flex;align-items:center;gap:5px;
+      padding:8px 12px; border-radius:7px;
+      font-size:13px;font-weight:500;color:var(--muted,#6B5E4E);
+      cursor:pointer;border:none;background:none;
+      font-family:'Instrument Sans',sans-serif;
+      transition:all .15s; white-space:nowrap;
+    }
+    .nav-item-btn:hover,.nav-item-btn.open { background:var(--warm,#F0EAE0);color:var(--ink,#1A1208); }
+    .nav-item-btn.active { background:var(--red,#D42B2B);color:#fff; }
+    .nav-item-btn .chevron { font-size:9px;opacity:.5;transition:transform .2s; }
+    .nav-item-btn.open .chevron { transform:rotate(180deg); }
+    .nav-dropdown {
+      display:none;position:absolute;top:calc(100% + 8px);left:0;
+      background:var(--white,#fff);border:1px solid rgba(212,197,169,.5);
+      border-radius:12px;padding:8px;min-width:200px;
+      box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;
+    }
+    .nav-dropdown.open { display:block;animation:dropIn .15s ease; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .nav-dropdown a {
+      display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;
+      font-size:13px;font-weight:500;color:var(--ink,#1A1208);text-decoration:none;transition:background .12s;white-space:nowrap;
+    }
+    .nav-dropdown a:hover { background:var(--warm,#F0EAE0); }
+    .nav-dropdown a.active { color:var(--red,#D42B2B);font-weight:600; }
+    .nav-dropdown hr { border:none;border-top:1px solid var(--warm,#F0EAE0);margin:4px 0; }
+    .nav-right { display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto; }
+    .hamburger { display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:38px;height:38px;background:var(--red,#D42B2B);border:none;cursor:pointer;border-radius:8px;flex-shrink:0; }
+    .hamburger:hover { background:#E8393A; }
+    .hamburger span { display:block;width:20px;height:2.5px;background:#fff;border-radius:2px;transition:all .3s; }
+    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#fff;overflow-y:auto; }
+    .mobile-menu.open { display:flex; }
+    .mm-header { display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--warm,#F0EAE0);height:58px;flex-shrink:0; }
+    .mm-section { padding:12px 20px 4px; }
+    .mm-section-title { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted,#6B5E4E);margin-bottom:6px; }
+    .mm-link { display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;text-decoration:none;color:var(--ink,#1A1208);font-size:14px;font-weight:500;transition:background .15s; }
+    .mm-link:hover { background:var(--warm,#F0EAE0); }
+    .mm-link.active { background:rgba(212,43,43,.07);color:#D42B2B;font-weight:600; }
+    .mm-link-icon { font-size:20px;width:28px;text-align:center;flex-shrink:0; }
+    .mm-footer { padding:16px 20px 32px;border-top:1px solid var(--warm,#F0EAE0);margin-top:auto; }
+        @media (max-width:900px) { .nav-primary { display:none!important; } .bottom-tabbar { display:flex!important; } body{ padding-bottom:64px; } }
+
+    /* ── SIMPLIFIED PRIMARY NAV ── */
+    .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
+    .nav-primary a,.nav-kesfet-btn{
+      display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
+      font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;
+      background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
+    }
+    .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
+    .nav-primary a.active{background:var(--warm);color:var(--red);}
+
+    /* ── KEŞFET PANEL (desktop) ── */
+    .kesfet-panel{
+      display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);
+      background:#fff;border:1px solid var(--sand);border-radius:14px;
+      box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;
+    }
+    .kesfet-panel.open{display:block;}
+    .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;
+      padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);
+      font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile:hover{background:var(--warm);}
+    .kesfet-tile .e{font-size:22px;}
+
+    /* ── UTILITY: messages icon (matches existing notif-bell styling) ── */
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;
+      padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg:hover{background:var(--warm);}
+
+    /* ── BOTTOM TAB BAR (mobile only) ── */
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;
+      background:#fff;border-top:1px solid var(--sand);
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+      font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;
+      background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bt-item.active{color:var(--red);}
+    .bt-icon{font-size:20px;}
+
+    /* ── KEŞFET SHEET (mobile) ── */
+    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
+    .kesfet-sheet-overlay.open{display:block;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;
+      border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));
+      z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
+    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+
+  
+    /* ── COUNTRY BAR ── */
+    .cbar-btn { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px; }
+    .cbar-btn:hover { border-color:rgba(255,255,255,.5);color:#fff; }
+    .cbar-btn.active { border-color:var(--red);background:var(--red);color:#fff; }
+    .cbar-soon { opacity:.45;cursor:default!important; }
+    .cbar-soon:hover { border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.6)!important; }
+    .cbar-soon-badge { font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600; }
+
   </style>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
-    window._authSb=_authSb;
-    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+<script>
+  function toggleDropdown(id, btn) {
+    const dropdown = document.getElementById(id);
+    const isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    if (!isOpen) { dropdown.classList.add('open'); btn.classList.add('open'); }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('open'));
+    }
+  });
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    document.querySelectorAll('.nav-dropdown a, .mm-link').forEach(a => {
+      if ((a.getAttribute('href')||'').split('?')[0] === page) a.classList.add('active');
+    });
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
+    });
+  })();
+  
+  function setCbarCountry(c, btn) {
+    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (typeof renderListings === 'function') renderListings();
+  }
+  function showYakinda() {
+    if (document.getElementById('yakinda-toast')) return;
+    const tip = document.createElement('div');
+    tip.id = 'yakinda-toast';
+    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
+    tip.textContent = 'Bu ulke yakinda ekleniyor!';
+    document.body.appendChild(tip);
+    setTimeout(() => tip.remove(), 2500);
+  }
+
   </script>
 </head>
 <body>
-
+<!-- NAV -->
 <nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
   <a href="mahallem.html" class="nav-logo-link"><span style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:-.3px;color:#1A1208;white-space:nowrap;">Bizden<span style="color:#D42B2B;">Bize</span></span></a>
   <div class="nav-primary">
@@ -125,6 +420,54 @@
       <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
     </div>
   </div>
+  <script>
+    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
+    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
+    async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
+
+    // Populate the nav avatar with the real logged-in user's initials/photo,
+    // reusing the existing session promise this page already sets up above
+    // (window._authReady / window._currentSession) — same visual logic as
+    // mahallem.html's avatar, for consistency.
+    // NOTE: window._authReady is created inside a deferred module script, which
+    // browsers DEFER until after all regular scripts run. Checking for it
+    // directly here would always find it undefined and silently skip — which is
+    // exactly the bug this replaces. Poll briefly for the session instead, so
+    // this doesn't depend on script execution order at all.
+    (function initNavAvatar() {
+      let waited = 0;
+      const timer = setInterval(async () => {
+        waited += 100;
+        const session = window._currentSession;
+        if (!session) {
+          if (waited >= 5000) clearInterval(timer); // give up quietly (e.g. logged out)
+          return;
+        }
+        clearInterval(timer);
+        const navAvatar = document.getElementById('nav-avatar');
+        if (!navAvatar) return;
+        try {
+          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
+            headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
+          });
+          const rows = await r.json();
+          const p = rows[0] || {};
+          // Use ONLY the BizdenBize profile record — deliberately NOT the auth
+          // provider's metadata (e.g. a Google account picture/name), which can
+          // differ from the member's actual BizdenBize identity and would show
+          // a different avatar here than on mahallem/abibot/profile.
+          if (p.avatar_url) {
+            navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          } else {
+            const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
+            const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+            navAvatar.textContent = initials;
+            navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
+          }
+        } catch(e) { console.error('Nav avatar load error:', e); }
+      }, 100);
+    })();
+  </script>
 </nav>
 
 <!-- KEŞFET SHEET (mobile) -->
@@ -145,7 +488,7 @@
     <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
     <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
     <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Bilgi & Belge</a>
-    <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
+      <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
     <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
     <a class="kesfet-tile" href="messages.html"><span class="e">💬</span>Mesajlar</a>
   </div>
@@ -162,9 +505,8 @@
 
 <script>
   function toggleKesfet(e) {
-    if (e) e.stopPropagation();
-    const panel = document.getElementById('kesfet-panel');
-    if (panel) panel.classList.toggle('open');
+    e.stopPropagation();
+    document.getElementById('kesfet-panel').classList.toggle('open');
   }
   document.addEventListener('click', function(e) {
     const panel = document.getElementById('kesfet-panel');
@@ -172,350 +514,1136 @@
       panel.classList.remove('open');
     }
   });
+  function openKesfetSheet() {
+    document.getElementById('kesfet-sheet-overlay').classList.add('open');
+    document.getElementById('kesfet-sheet').style.display = 'block';
+  }
+  function closeKesfetSheet() {
+    document.getElementById('kesfet-sheet-overlay').classList.remove('open');
+    document.getElementById('kesfet-sheet').style.display = 'none';
+  }
+  (function() {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    const map = { 'mahallem.html': 'mahallem', 'abibot.html': 'abibot', 'classifieds.html': 'ilanlar', 'profile.html': 'profil' };
+    const key = map[page];
+    if (key) {
+      const npEl = document.getElementById('np-' + key);
+      const btEl = document.getElementById('bt-' + key);
+      if (npEl) npEl.classList.add('active');
+      if (btEl) btEl.classList.add('active');
+    }
+  })();
 </script>
+</div>
 
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <h1>İş <span>Ver & Bul</span></h1>
-    <p class="hero-sub">Almanya ve Avrupa'daki Türk topluluğu için iş ilanları, freelance hizmetler ve iş arayanlar.</p>
-    
-    <div class="hero-search">
-      <input type="text" id="job-search-inp" placeholder="Beceri, unvan veya şehir ara..." oninput="loadJobs()">
-      <button onclick="loadJobs()">Ara</button>
-      <button class="btn-gold" onclick="openJobModal()">+ İlan Ver</button>
+    <div class="hero-tabs">
+      <button class="hero-tab active" onclick="setMode('all',this)">Tümü</button>
+      <button class="hero-tab" onclick="setMode('job',this)">💼 İş İlanları</button>
+      <button class="hero-tab" onclick="setMode('gig',this)">⚡ Freelance & Gig</button>
+      <button class="hero-tab" onclick="setMode('seeker',this)">👤 İş Arayanlar</button>
     </div>
-
+    <h1>İş <em>Ver</em> & <em>Bul</em></h1>
+    <p class="hero-sub">Avrupa'daki Türk topluluğu için iş ilanları ve freelance hizmetler.<br>İş ver, iş bul — güvenilir insanlarla.</p>
+    <div class="search-row">
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Beceri, unvan veya şirket ara..." oninput="renderListings()">
+        <button class="search-btn" onclick="renderListings()">Ara</button>
+      </div>
+      <button class="post-btn" onclick="openPostModal()">+ İlan Ver</button>
+    </div>
     <div class="hero-stats">
-      <div><div class="hstat-val" id="stat-total-jobs">0</div><div class="hstat-label">Aktif İlan</div></div>
-      <div><div class="hstat-val" id="stat-hiring-jobs">0</div><div class="hstat-label">İş İlanı</div></div>
-      <div><div class="hstat-val" id="stat-freelance-jobs">0</div><div class="hstat-label">Freelance Hizmet</div></div>
-      <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">İlan Ver</div></div>
+      <div><div class="hstat-val" id="stat-total">—</div><div class="hstat-label">Aktif İlan</div></div>
+      <div><div class="hstat-val" id="stat-jobs">—</div><div class="hstat-label">İş İlanı</div></div>
+      <div><div class="hstat-val" id="stat-gigs">—</div><div class="hstat-label">Freelance Hizmet</div></div>
+      <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">İlan ver</div></div>
     </div>
   </div>
 </div>
 
 <!-- BODY -->
-<div class="page-body">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-    <div style="font-size:14px;color:var(--muted);" id="job-count-lbl">İlanlar yükleniyor...</div>
-    <select class="form-input" id="job-city-filter" onchange="loadJobs()" style="width:200px;background:#fff;">
-      <option value="all">📍 Tüm Konumlar</option>
-      <option value="Tüm Avrupa">🌍 Tüm Avrupa (Remote)</option>
-      <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
-      <option value="Berlin">Berlin</option>
-      <option value="Frankfurt">Frankfurt</option>
-      <option value="München">München</option>
-      <option value="Köln">Köln</option>
-      <option value="Hamburg">Hamburg</option>
-    </select>
-  </div>
-
-  <div class="job-grid" id="job-grid">
-    <div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">İlanlar yükleniyor...</div>
-  </div>
+<!-- COUNTRY BAR -->
+<div id="country-bar" style="background:var(--ink);border-bottom:none;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
+  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
+  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
+  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
 </div>
+<div class="page-body">
 
-<!-- POST JOB MODAL -->
-<div class="modal-overlay" id="job-modal" onclick="if(event.target===this)closeJobModal()">
-  <div class="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">💼 İş / Hizmet İlanı Ver</div>
-      <button onclick="closeJobModal()" style="background:none;border:none;font-size:24px;cursor:pointer;">×</button>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="filter-box">
+      <div class="filter-box-title">Kategori</div>
+      <div class="filter-opt"><input type="checkbox" id="f-gastronomi" onchange="renderListings()"><label for="f-gastronomi">🍽️ Gastronomi</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-satis" onchange="renderListings()"><label for="f-satis">🛍️ Satış & Pazarlama</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-nakliye" onchange="renderListings()"><label for="f-nakliye">🚚 Nakliye</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-insaat" onchange="renderListings()"><label for="f-insaat">🏗️ İnşaat</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-ev" onchange="renderListings()"><label for="f-ev">🧹 Ev İşleri</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-bakim" onchange="renderListings()"><label for="f-bakim">🏥 Hasta Bakımı</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-berber" onchange="renderListings()"><label for="f-berber">💈 Berber & Kuaför</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-temizlik" onchange="renderListings()"><label for="f-temizlik">🧽 Temizlik</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-lojistik" onchange="renderListings()"><label for="f-lojistik">📦 Lojistik & Depo</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-uretim" onchange="renderListings()"><label for="f-uretim">🏭 Üretim & Fabrika</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-diger" onchange="renderListings()"><label for="f-diger">📦 Diğer</label></div>
     </div>
-    <div class="form-group">
-      <label>İlan Türü *</label>
-      <select class="form-input" id="jm-type">
-        <option value="is_ilani">💼 Eleman Arıyorum (İş İlanı)</option>
-        <option value="hizmet">⚡ Freelance / Hizmet Veriyorum</option>
-        <option value="is_ariyorum">👤 İş Arıyorum</option>
+
+    <div class="filter-box">
+      <div class="filter-box-title">Çalışma Şekli</div>
+      <div class="filter-opt"><input type="checkbox" id="f-remote" onchange="renderListings()"><label for="f-remote">🌍 Remote</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-onsite" onchange="renderListings()"><label for="f-onsite">📍 Yerinde</label></div>
+      <div class="filter-opt"><input type="checkbox" id="f-hybrid" onchange="renderListings()"><label for="f-hybrid">🔄 Hibrit</label></div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Category pills -->
+  <!-- COUNTRY BAR — shown for all tabs -->
+  <div id="country-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);">Ülke</span>
+    <button class="country-filter-btn active" onclick="setCountryFilter('all',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:inherit;">Tümü</button>
+    <button class="country-filter-btn" onclick="setCountryFilter('🇩🇪',this)" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇩🇪 Almanya</button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇳🇱 Hollanda <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇧🇪 Belçika <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇦🇹 Avusturya <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇬🇧 İngiltere <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+    <button class="country-filter-btn" onclick="showYakinda()" style="opacity:.5;cursor:default;" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--sand);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;">🇫🇷 Fransa <span style="font-size:9px;opacity:.6;">Yakında</span></button>
+  </div>
+
+    <div class="cat-pills" id="cat-pills">
+      <button class="cat-pill active" data-cat="all" onclick="setCat('all',this)">Tümü</button>
+      <button class="cat-pill" data-cat="gastronomi" onclick="setCat('gastronomi',this)">🍽️ Gastronomi</button>
+      <button class="cat-pill" data-cat="satis" onclick="setCat('satis',this)">🛍️ Satış & Pazarlama</button>
+      <button class="cat-pill" data-cat="nakliye" onclick="setCat('nakliye',this)">🚚 Nakliye</button>
+      <button class="cat-pill" data-cat="insaat" onclick="setCat('insaat',this)">🏗️ İnşaat</button>
+      <button class="cat-pill" data-cat="ev" onclick="setCat('ev',this)">🧹 Ev İşleri</button>
+      <button class="cat-pill" data-cat="bakim" onclick="setCat('bakim',this)">🏥 Hasta Bakımı</button>
+      <button class="cat-pill" data-cat="berber" onclick="setCat('berber',this)">💈 Berber & Kuaför</button>
+      <button class="cat-pill" data-cat="temizlik" onclick="setCat('temizlik',this)">🧽 Temizlik</button>
+      <button class="cat-pill" data-cat="lojistik" onclick="setCat('lojistik',this)">📦 Lojistik & Depo</button>
+      <button class="cat-pill" data-cat="uretim" onclick="setCat('uretim',this)">🏭 Üretim & Fabrika</button>
+      <button class="cat-pill" data-cat="diger" onclick="setCat('diger',this)">📦 Diğer</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="results-count" id="results-count"><strong>—</strong> ilan bulundu</div>
+      <select class="sort-select" onchange="renderListings()">
+        <option value="newest">En yeni</option>
+        <option value="featured">Öne çıkanlar</option>
+        <option value="price-asc">Fiyat: Düşükten yükseğe</option>
+        <option value="price-desc">Fiyat: Yüksekten düşüğe</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>Başlık *</label>
-      <input class="form-input" id="jm-title" placeholder="Ör: Garson Arıyoruz / Web Tasarım Hizmeti">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Kategori</label>
-        <select class="form-input" id="jm-cat">
-          <option value="gastronomi">🍽️ Gastronomi</option>
-          <option value="satis">🛍️ Satış</option>
-          <option value="nakliye">🚚 Nakliye</option>
-          <option value="insaat">🏗️ İnşaat</option>
-          <option value="ev">🧹 Ev İşleri</option>
-          <option value="bakim">🏥 Bakım</option>
-          <option value="temizlik">🧽 Temizlik</option>
-          <option value="diger">📦 Diğer</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Konum / Şehir *</label>
-        <select class="form-input" id="jm-city">
-          <option value="Tüm Avrupa">🌍 Tüm Avrupa (Remote / Online)</option>
-          <option value="Tüm Almanya">🇩🇪 Tüm Almanya</option>
-          <option value="Berlin">Berlin</option>
-          <option value="Frankfurt">Frankfurt</option>
-          <option value="München">München</option>
-          <option value="Köln">Köln</option>
-          <option value="Hamburg">Hamburg</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Maaş / Ücret</label>
-      <input class="form-input" id="jm-salary" placeholder="Ör: €15/saat veya Pazarlık">
-    </div>
-    <div class="form-group">
-      <label>Açıklama *</label>
-      <textarea class="form-input" id="jm-desc" rows="3" placeholder="Gereksinimler, detaylar..."></textarea>
-    </div>
-    <div class="form-group">
-      <label>İletişim *</label>
-      <input class="form-input" id="jm-contact" placeholder="email@example.com veya Telefon / WhatsApp">
-    </div>
-    <div id="jm-err" style="display:none;color:var(--red);font-size:12px;margin-bottom:10px;"></div>
-    <button onclick="submitJob()" style="width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;">İlanı Yayınla →</button>
-  </div>
+
+    <div class="listings" id="listings"></div>
+  </main>
 </div>
 
-<!-- SMART EMAIL CHOICE MODAL (OPTION B) -->
-<div class="modal-overlay" id="ec-modal" onclick="if(event.target===this)closeEcModal()">
-  <div class="modal" style="max-width:420px;padding:28px;text-align:center;">
-    <div style="font-size:36px;margin-bottom:8px;">✉️</div>
-    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;">E-posta İletişim Seçeneği</div>
-    <div style="font-size:13px;color:var(--indigo,#4338CA);font-weight:600;margin-bottom:20px;word-break:break-all;" id="ec-email-text">user@example.com</div>
-
-    <button onclick="copyEcEmail()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;font-family:inherit;">
-      📋 E-posta Adresini Kopyala
-    </button>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">(Gmail, Hotmail, Yahoo vb. yapıştırmak için)</div>
-
-    <button onclick="openEcMailApp()" style="width:100%;padding:11px;background:var(--warm);color:var(--ink);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px;font-family:inherit;">
-      ✉️ E-posta Uygulamasında Aç
-    </button>
-
-    <button onclick="closeEcModal()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;">Kapat</button>
-  </div>
-</div>
-
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
-  <div style="max-width:1100px;margin:0 auto;">
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
+<!-- POST MODAL -->
+<div class="modal-overlay" id="post-modal" onclick="if(event.target===this)closePostModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>💼 İlan Ver</h3>
+      <button class="modal-close" onclick="closePostModal()">×</button>
+    </div>
+    <div class="modal-body" id="post-form-body">
+      <!-- Type toggle -->
       <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
-        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform.</p>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🏘️ Mahallem</a>
-          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🛍️ İlanlar</a>
-          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">🤖 AbiBOT</a>
+        <label class="field-label">İlan Türü</label>
+        <div class="type-toggle">
+          <button class="type-btn active job" data-type="job" onclick="selectPostType('job',this)">💼 İş İlanı</button>
+          <button class="type-btn gig" data-type="gig" onclick="selectPostType('gig',this)">⚡ Hizmet / Freelance</button>
+          <button class="type-btn" data-type="seeker" onclick="selectPostType('seeker',this)">👤 İş Arıyorum</button>
         </div>
       </div>
+      <!-- Title -->
       <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Hakkımızda</a>
-          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">İletişim</a>
+        <label class="field-label">Başlık *</label>
+        <input class="field-input" id="p-title" type="text" placeholder="örn: Almanca-Türkçe Tercüman Aranıyor">
+      </div>
+      <!-- Category + Location -->
+      <div class="field-row">
+        <div>
+          <label class="field-label">Kategori</label>
+          <select class="field-input" id="p-cat">
+            <option value="gastronomi">🍽️ Gastronomi</option>
+            <option value="satis">🛍️ Satış & Pazarlama</option>
+            <option value="nakliye">🚚 Nakliye</option>
+            <option value="insaat">🏗️ İnşaat</option>
+            <option value="ev">🧹 Ev İşleri</option>
+            <option value="bakim">🏥 Hasta Bakımı</option>
+            <option value="berber">💈 Berber & Kuaför</option>
+            <option value="temizlik">🧽 Temizlik</option>
+            <option value="lojistik">📦 Lojistik & Depo</option>
+            <option value="uretim">🏭 Üretim & Fabrika</option>
+            <option value="diger">📦 Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Konum</label>
+          <input class="field-input" id="p-location" type="text" placeholder="Frankfurt, DE">
         </div>
       </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Gizlilik Politikası</a>
-          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;">Kullanım Koşulları</a>
+      <!-- Work type + Price -->
+      <div class="field-row">
+        <div>
+          <label class="field-label">Çalışma Şekli</label>
+          <select class="field-input" id="p-worktype">
+            <option value="remote">🌍 Remote</option>
+            <option value="onsite">📍 Yerinde</option>
+            <option value="hybrid">🔄 Hibrit</option>
+          </select>
         </div>
+        <div>
+          <label class="field-label" id="price-label">Ücret / Bütçe</label>
+          <input class="field-input" id="p-price" type="text" placeholder="€500 / ay veya müzakere">
+        </div>
+      </div>
+      <!-- Description -->
+      <div>
+        <label class="field-label">Açıklama *</label>
+        <textarea class="field-input" id="p-desc" rows="4" placeholder="Aranan profil, gereksinimler ve detaylar..."></textarea>
+      </div>
+      <!-- İlan sahibi / şirket adı -->
+      <div>
+        <label class="field-label">İlan sahibi / Şirket adı</label>
+        <input class="field-input" id="p-name" type="text" placeholder="Örn: Nalan Kiosk / Ad Soyad">
+      </div>
+      <!-- Web sitesi -->
+      <div>
+        <label class="field-label">Web sitesi (opsiyonel)</label>
+        <input class="field-input" id="p-website" type="url" placeholder="https://...">
+      </div>
+      <!-- İşveren iletişim (yalnızca İş İlanı türünde) -->
+      <div id="employer-contact" style="display:none;">
+        <label class="field-label">İletişim <span style="font-weight:400;color:var(--muted);font-size:11px;">(yalnızca işveren ilanlarında herkese açık gösterilir)</span></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input class="field-input" id="p-email" type="email" placeholder="E-posta" style="flex:1;min-width:140px;">
+          <input class="field-input" id="p-whatsapp" type="tel" placeholder="WhatsApp (+49...)" style="flex:1;min-width:140px;">
+        </div>
+      </div>
+      <div id="individual-contact-note" style="font-size:12px;color:var(--muted);line-height:1.5;">🔒 Bireysel ilanlarda iletişim, güvenlik için yalnızca uygulama içi mesajla sağlanır.</div>
+      <!-- Featured upsell -->
+      <div id="featured-section" style="display:none">
+        <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— isteğe bağlı</span></label>
+        <div style="display:flex;flex-direction:column;gap:6px;" id="bundle-options">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-none-wrap">
+            <input type="radio" name="bundle" value="none" checked onchange="selectBundle('none')" style="accent-color:var(--red);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--ink);">Öne çıkarma — hayır teşekkürler</div><div style="font-size:11px;color:var(--muted);">Standart ilan · 30 gün aktif</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--muted);">Ücretsiz</div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-1-wrap">
+            <input type="radio" name="bundle" value="1" onchange="selectBundle('1')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐ 1 Öne Çıkan İlan</div><div style="font-size:11px;color:var(--muted);">Liste başında · Altın çerçeve · 60 gün aktif</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€4,99</div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;position:relative;" id="bundle-3-wrap">
+            <span style="position:absolute;top:-1px;right:10px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:0 0 6px 6px;letter-spacing:.05em;">EN POPÜLER</span>
+            <input type="radio" name="bundle" value="3" onchange="selectBundle('3')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐ 3 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">3 farklı ilan için kullan · Devredilmez</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€12 <span style="font-size:10px;color:var(--muted);font-weight:400;">€4/ilan</span></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-10-wrap">
+            <input type="radio" name="bundle" value="10" onchange="selectBundle('10')" style="accent-color:var(--gold);">
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐⭐ 10 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">Ajanslar ve düzenli işverenler için · 1 yıl geçerli</div></div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);">€35 <span style="font-size:10px;color:var(--muted);font-weight:400;">€3,50/ilan</span></div>
+          </label>
+        </div>
+      </div>
+      <!-- Error -->
+      <div id="p-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="post-footer">
+      <button class="submit-btn" id="post-submit-btn" onclick="submitPost()">İlanı Yayınla →</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Topluluk kurallarına uygun ilanlar yayınlanır. Spam kaldırılır.</div>
+    </div>
+
+    <!-- PAYMENT STEP -->
+    <div id="payment-step" style="display:none;flex-direction:column;">
+      <div style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+        <!-- Order summary -->
+        <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;">Sipariş Özeti</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;color:var(--ink);" id="order-desc">⭐ 1 Öne Çıkan İlan</span>
+            <span style="font-size:15px;font-weight:700;color:var(--gold);" id="order-price">€4,99</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);" id="order-sub">60 gün aktif · Liste başında görünüm</div>
+        </div>
+        <!-- Card form -->
+        <div>
+          <label class="field-label">Kart Numarası</label>
+          <input class="field-input" id="pay-card" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div class="field-row">
+          <div>
+            <label class="field-label">Son Kullanma</label>
+            <input class="field-input" id="pay-exp" type="text" placeholder="AA/YY" maxlength="5" oninput="formatExp(this)">
+          </div>
+          <div>
+            <label class="field-label">CVV</label>
+            <input class="field-input" id="pay-cvv" type="text" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Kart Üzerindeki İsim</label>
+          <input class="field-input" id="pay-name" type="text" placeholder="Ayşe Yılmaz">
+        </div>
+        <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--warm);border-radius:8px;">
+          🔒 Ödeme bilgileriniz şifrelenerek işlenir. BizdenBize kart bilgilerinizi saklamaz.
+        </div>
+        <div id="pay-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+      </div>
+      <div style="padding:14px 24px 20px;border-top:1px solid var(--warm);display:flex;gap:8px;">
+        <button onclick="goBackToForm()" style="padding:13px 16px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">← Geri</button>
+        <button onclick="processPayment()" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'" id="pay-btn">Ödemeyi Tamamla →</button>
       </div>
     </div>
+
+    <div class="post-success" id="post-success">
+      <div style="font-size:48px;">🎉</div>
+      <h3 id="success-title">İlanın yayınlandı!</h3>
+      <p id="success-sub">Topluluk üyeleri ilanını görebilir.<br>İyi şanslar!</p>
+    </div>
   </div>
-</footer>
+</div>
 
 <script>
+  // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
-
-  let ecCurrentEmail = '';
-  let ecCurrentSubject = '';
-
-  function handleJobContact(contactStr, subject = 'İş İlanı') {
-    if (!contactStr) return;
-    if (contactStr.includes('@')) {
-      ecCurrentEmail = contactStr;
-      ecCurrentSubject = subject;
-      const txt = document.getElementById('ec-email-text');
-      if (txt) txt.textContent = contactStr;
-      const modal = document.getElementById('ec-modal');
-      if (modal) { modal.style.display = 'flex'; modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
-    } else {
-      window.location.href = `tel:${contactStr}`;
-    }
+  async function sbGet(table, params) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbGetAuth(table, params) {
+    const session = window._currentSession;
+    const headers = session
+      ? { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token }
+      : _SB_H;
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers });
+    if (!r.ok) throw new Error('DB error: ' + r.status);
+    return r.json();
+  }
+  async function sbPost(table, data) {
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers:{..._SB_H,'Prefer':'return=minimal'}, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
+  }
+  // Same as sbPost, but sends the logged-in user's own access token instead
+  // of the shared anon key, so RLS policies can check auth.uid() and the
+  // insert is actually attributable to that account (not spoofable).
+  async function sbPostAuth(table, data) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
   }
 
-  function closeEcModal() {
-    const modal = document.getElementById('ec-modal');
-    if (modal) { modal.style.display = 'none'; modal.classList.remove('open'); }
-    document.body.style.overflow = '';
+  function timeAgo(ts) {
+    if (!ts) return '';
+    const diff = (Date.now() - new Date(ts)) / 1000;
+    if (diff < 3600) return Math.round(diff / 60) + ' dk önce';
+    if (diff < 86400) return Math.round(diff / 3600) + ' saat önce';
+    if (diff < 604800) return Math.round(diff / 86400) + ' gün önce';
+    return Math.round(diff / 604800) + ' hafta önce';
   }
 
-  function copyEcEmail() {
-    if (!ecCurrentEmail) return;
-    navigator.clipboard.writeText(ecCurrentEmail).then(() => {
-      closeEcModal();
-      showToastMsg(`📋 E-posta kopyalandı! (Gmail veya Webmail'e yapıştırabilirsiniz)`);
+  // ── DB LISTINGS — populated from Supabase ──
+  window._dbListings = [];
+
+  // ── MIGRATION DATA (hardcoded — no DB table) ──
+  const listings = [];
+
+  let activeMode = 'all';
+  let activeCat = 'all';
+
+  let activeMigrationCountry = 'all';
+  // Keep old name as alias for backward compat
+  function setMode(mode, btn) {
+    activeMode = mode;
+    document.querySelectorAll('.hero-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderListings();
+  }
+
+  function setCat(cat, btn) {
+    activeCat = cat;
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderListings();
+  }
+
+  function getFiltered() {
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    const checkedCats = ['gastronomi','satis','nakliye','insaat','ev','bakim','berber','temizlik','lojistik','uretim','diger'].filter(c => document.getElementById('f-'+c)?.checked);
+    const checkedWork = ['remote','onsite','hybrid'].filter(w => document.getElementById('f-'+w)?.checked);
+    const dbItems = window._dbListings || [];
+
+    return dbItems.filter(l => {
+      const lcat = l.category || l.cat || '';
+      if (activeMode !== 'all' && l.type !== activeMode) return false;
+      if (activeCat !== 'all' && lcat !== activeCat) return false;
+      if (checkedCats.length && !checkedCats.includes(lcat)) return false;
+      if (checkedWork.length && !checkedWork.includes(l.worktype)) return false;
+      if (q && !(l.title||'').toLowerCase().includes(q) && !(l.description||'').toLowerCase().includes(q) && !(l.company||'').toLowerCase().includes(q)) return false;
+      return true;
     });
   }
 
-  function openEcMailApp() {
-    if (!ecCurrentEmail) return;
-    const sub = ecCurrentSubject ? `?subject=${encodeURIComponent(ecCurrentSubject)}` : '';
-    closeEcModal();
-    window.location.href = `mailto:${ecCurrentEmail}${sub}`;
-  }
+  const catEmoji = { gastronomi:'🍽️', satis:'🛍️', nakliye:'🚚', insaat:'🏗️', ev:'🧹', bakim:'🏥', berber:'💈', temizlik:'🧽', lojistik:'📦', uretim:'🏭', diger:'📦' };
+  const catColor = { gastronomi:'#D42B2B', satis:'#a83270', nakliye:'#185FA5', insaat:'#8a6d00', ev:'#1E7B4B', bakim:'#D42B2B', berber:'#a83270', temizlik:'#1E7B4B', lojistik:'#6B5E4E', uretim:'#185FA5', diger:'#6B5E4E' };
+  const catBg    = { gastronomi:'rgba(212,43,43,.1)', satis:'rgba(168,50,112,.1)', nakliye:'rgba(24,95,165,.1)', insaat:'rgba(201,168,76,.12)', ev:'rgba(30,123,75,.1)', bakim:'rgba(212,43,43,.08)', berber:'rgba(168,50,112,.1)', temizlik:'rgba(30,123,75,.1)', lojistik:'rgba(107,94,78,.1)', uretim:'rgba(24,95,165,.1)', diger:'rgba(107,94,78,.1)' };
 
-  function showToastMsg(msg) {
-    if (document.getElementById('ec-toast')) document.getElementById('ec-toast').remove();
-    const tip = document.createElement('div');
-    tip.id = 'ec-toast';
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E7B4B;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);';
-    tip.textContent = msg;
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 3500);
-  }
+  const seekers = [];
 
-  async function loadJobs() {
-    const grid = document.getElementById('job-grid');
-    if (!grid) return;
+  const authColor = { "Çalışma izni var":"var(--green)", "AB vatandaşı":"var(--blue)" };
+  const authBg = { "Çalışma izni var":"rgba(30,123,75,.08)", "AB vatandaşı":"rgba(24,95,165,.08)" };
+  const worktypeLabel = { onsite:"📍 Yerinde", remote:"🌍 Remote", hybrid:"🔄 Hibrit" };
 
-    const searchInp = document.getElementById('job-search-inp');
-    const cityFilter = document.getElementById('job-city-filter');
+  async function renderSeekers() {
+    const container = document.getElementById('listings');
+    container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
 
-    const q = (searchInp ? searchInp.value : '').toLowerCase().trim();
-    const city = cityFilter ? cityFilter.value : 'all';
-
+    let dbSeekers = [];
     try {
-      let r = await fetch(_SB_URL + '/rest/v1/jobs?select=*&order=created_at.desc', { headers: _SB_H });
-      let jobs = [];
-      if (r.ok) {
-        let data = await r.json();
-        jobs = Array.isArray(data) ? data : [];
-      }
+      dbSeekers = await sbGet('job_seekers', 'active=eq.true&order=created_at.desc');
+    } catch (e) { console.error('Job seekers fetch error:', e); }
 
-      // Filter approved or active jobs
-      jobs = jobs.filter(j => j.status === 'approved' || j.active === true || j.status == null);
+    // Merge real submissions with the curated starter profiles so the page
+    // isn't empty before the job_seekers table has real data in it.
+    const allSeekers = [...dbSeekers, ...seekers];
+    window._allSeekers = allSeekers;
 
-      if (q) {
-        jobs = jobs.filter(j => (j.title || '').toLowerCase().includes(q) || (j.description || '').toLowerCase().includes(q) || (j.category || '').toLowerCase().includes(q));
-      }
-
-      if (city !== 'all') {
-        if (city === 'Tüm Avrupa') {
-          jobs = jobs.filter(j => (j.city || '').toLowerCase().includes('avrupa') || (j.city || '').toLowerCase().includes('remote'));
-        } else {
-          jobs = jobs.filter(j => (j.city || '').toLowerCase().includes(city.toLowerCase()));
-        }
-      }
-
-      const countLbl = document.getElementById('job-count-lbl');
-      if (countLbl) countLbl.textContent = `${jobs.length} ilan bulundu`;
-
-      const statTot = document.getElementById('stat-total-jobs');
-      if (statTot) statTot.textContent = jobs.length;
-
-      const statHiring = document.getElementById('stat-hiring-jobs');
-      if (statHiring) statHiring.textContent = jobs.filter(j => j.listing_type === 'is_ilani' || j.listing_type == null).length;
-
-      const statFreelance = document.getElementById('stat-freelance-jobs');
-      if (statFreelance) statFreelance.textContent = jobs.filter(j => j.listing_type === 'hizmet').length;
-
-      if (!jobs.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--muted);">Bu filtrede henüz ilan bulunmuyor. İlk ilanı siz verin! 👆</div>`;
-        return;
-      }
-
-      grid.innerHTML = jobs.map(j => {
-        const contactStr = j.email || j.contact || '';
-        const isEmail = contactStr.includes('@');
-        const typeBadge = j.listing_type === 'is_ilani' ? '💼 İş İlanı' : j.listing_type === 'hizmet' ? '⚡ Hizmet' : '👤 İş Arıyor';
-
-        return `
-          <div class="job-card">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-              <div style="font-weight:700;font-size:15px;color:var(--ink);">${j.title || 'İlan'}</div>
-              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(27,58,140,.1);color:var(--navy);">${typeBadge}</span>
+    document.getElementById('results-count').innerHTML = `<strong>${allSeekers.length}</strong> iş arayan profili`;
+    container.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;">` +
+      allSeekers.map(s => `
+        <div class="listing-card" data-listing-id="${s.id}" onclick="openSeekerDetail('${s.id}')" style="cursor:pointer;flex-direction:column;gap:0;padding:0;overflow:hidden;">
+          <div style="padding:16px 18px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:46px;height:46px;border-radius:12px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;">${s.avatar || (s.name||'').split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px;">${s.name}</div>
+              <div style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:3px;">${s.title}</div>
+              <div style="font-size:11px;color:var(--muted);">📍 ${s.location || s.city || 'Belirtilmemiş'}</div>
             </div>
-            <div style="font-size:12px;color:var(--muted);">📍 ${j.city || 'Belirtilmemiş'}${j.salary ? ' · 💰 ' + j.salary : ''}</div>
-            <div style="font-size:13px;color:var(--muted);line-height:1.5;">${j.description || ''}</div>
-            <button onclick="handleJobContact('${contactStr}', '${j.title || 'İş İlanı'}')" style="margin-top:auto;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">
-              ${isEmail ? '✉️ E-posta İletişim' : '💬 İletişim →'}
-            </button>
-          </div>`;
-      }).join('');
-
-    } catch(e) {
-      console.error('loadJobs error:', e);
-      if (grid) grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--muted);">İlanlar yüklendi.</div>`;
-    }
+            ${s.verified ? '<div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(30,123,75,.08);padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;">✅ Doğrulandı</div>' : ''}
+          </div>
+          <div style="padding:0 18px 12px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:${authBg[s.workAuth||s.work_auth]||"var(--warm)"};color:${authColor[s.workAuth||s.work_auth]||"var(--muted)"};">🛂 ${s.workAuth || s.work_auth || '—'}</span>
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">⏱️ ${s.availability}</span>
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">${worktypeLabel[s.worktype]||''}</span>
+            </div>
+            ${(s.desc || s.description) ? `<div class="seeker-desc-preview" style="font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${s.desc || s.description}</div><div onclick="event.stopPropagation()">${mhTranslateMenuHtml('.seeker-desc-preview')}</div>` : ''}
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">${(s.skills||[]).slice(0,3).map(sk => `<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;border:1px solid var(--sand);color:var(--muted);">${sk}</span>`).join("")}</div>
+          </div>
+          <div style="padding:10px 18px;border-top:1px solid var(--warm);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:12px;font-weight:700;color:var(--green);">${s.salary || '—'}</span>
+            <span style="font-size:11px;color:var(--sand);">${s.created_at ? timeAgo(s.created_at) : (s.time||'')}</span>
+          </div>
+        </div>`).join("") + `</div>`;
   }
 
-  function openJobModal() { 
-    const modal = document.getElementById('job-modal');
-    if (modal) { modal.classList.add('open'); document.body.style.overflow='hidden'; }
+  function openSeekerDetail(id) {
+    const s = (window._allSeekers || seekers).find(x => String(x.id) === String(id));
+    if (!s) return;
+    document.getElementById('detail-icon').style.background = "var(--warm)";
+    document.getElementById('detail-icon').style.color = "var(--ink)";
+    document.getElementById('detail-icon').textContent = s.avatar || (s.name||'').split(' ').map(n=>n[0]).join('').slice(0,2);
+    document.getElementById('detail-title').textContent = s.name;
+    document.getElementById('detail-company').textContent = s.title + "  ·  📍 " + (s.location || s.city || 'Belirtilmemiş');
+    document.getElementById('detail-price').textContent = s.salary || '—';
+    document.getElementById('detail-price-box').style.background = "rgba(30,123,75,.06)";
+    document.getElementById('detail-desc').textContent = s.desc || s.description || '';
+    document.getElementById('detail-desc-translate-wrap').innerHTML = (s.desc || s.description) ? mhTranslateMenuHtml('#detail-desc') : '';
+    const workAuth = s.workAuth || s.work_auth || '—';
+    document.getElementById('detail-tags').innerHTML = `
+      <span class="listing-tag tag-job" style="font-size:12px;padding:4px 12px;">👤 İş Arıyor</span>
+      <span style="font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;background:${authBg[workAuth]||'var(--warm)'};color:${authColor[workAuth]||'var(--muted)'};">🛂 ${workAuth}</span>
+      <span class="listing-tag tag-remote" style="font-size:12px;padding:4px 12px;">${worktypeLabel[s.worktype]||''}</span>
+      ${s.verified ? '<span class="listing-tag" style="background:rgba(30,123,75,.08);color:var(--green);font-size:12px;padding:4px 12px;">✅ Doğrulandı</span>' : ""}`;
+    document.getElementById('detail-grid').innerHTML = `
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Deneyim</div><div style="font-size:13px;font-weight:600;color:var(--ink);">💼 ${s.exp || '—'}</div></div>
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Diller</div><div style="font-size:13px;font-weight:600;color:var(--ink);">🌐 ${s.lang || '—'}</div></div>
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;grid-column:1/-1;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Beceriler</div><div style="display:flex;gap:5px;flex-wrap:wrap;">${(s.skills||[]).map(sk => `<span style="font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--sand);color:var(--muted);">${sk}</span>`).join("")}</div></div>`;
+    const isEmail = (s.contact||'').includes("@");
+    const seekerMailSubject = encodeURIComponent(`BizdenBize'deki "${s.name}" profili hakkında`);
+    document.getElementById('detail-contact-btn').href = isEmail ? `mailto:${s.contact}?subject=${seekerMailSubject}` : `tel:${s.contact}`;
+    document.getElementById('detail-contact-btn').innerHTML = isEmail ? "✉️ E-posta Gönder" : "📞 Ara";
+    document.getElementById('detail-whatsapp-btn').href = isEmail ? "#" : `https://wa.me/${(s.contact||'').replace(/\s|\+/g,"")}?text=${encodeURIComponent(`Merhaba ${s.name}, BizdenBize'deki profilinizi gördüm, iş fırsatı hakkında konuşmak isterim.`)}`;
+    document.getElementById('detail-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 
-  function closeJobModal() { 
-    const modal = document.getElementById('job-modal');
-    if (modal) { modal.classList.remove('open'); document.body.style.overflow=''; }
-  }
-
-  async function submitJob() {
-    const title = document.getElementById('jm-title').value.trim();
-    const desc = document.getElementById('jm-desc').value.trim();
-    const contact = document.getElementById('jm-contact').value.trim();
-    const err = document.getElementById('jm-err');
-
-    if (!title || !desc || !contact) { 
-      if (err) { err.textContent = 'Lütfen zorunlu alanları doldurun.'; err.style.display = 'block'; }
-      return; 
-    }
-    if (err) err.style.display = 'none';
-
-    try {
-      let sessionUserId = null;
-      if (window._currentSession && window._currentSession.user) {
-        sessionUserId = window._currentSession.user.id;
-      }
-
-      await fetch(_SB_URL + '/rest/v1/jobs', {
-        method: 'POST',
-        headers: { ..._SB_H, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({
-          listing_type: document.getElementById('jm-type').value,
-          title,
-          category: document.getElementById('jm-cat').value,
-          city: document.getElementById('jm-city').value,
-          salary: document.getElementById('jm-salary').value.trim() || null,
-          description: desc,
-          contact,
-          email: contact.includes('@') ? contact : null,
-          status: 'pending',
-          author_id: sessionUserId
+  function renderListings() {
+    const dbItems = window._dbListings || [];
+    const filtered = activeMode === 'migration'
+      ? listings.filter(l => {
+          if (l.type !== 'migration') return false;
+          if (activeMigrationCountry !== 'all' && !l.location.includes(activeMigrationCountry)) return false;
+          return true;
         })
-      });
+      : getFiltered();
+    const sorted = [...filtered].sort((a,b) => a.featured === b.featured ? 0 : a.featured ? -1 : 1);
+    const jobs = dbItems.filter(l => l.type === 'job').length;
+    const gigs = dbItems.filter(l => l.type === 'gig').length;
+    document.getElementById('stat-total').textContent = jobs + gigs;
+    document.getElementById('stat-jobs').textContent = jobs;
+    document.getElementById('stat-gigs').textContent = gigs;
+    document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> ilan bulundu`;
 
-      closeJobModal();
-      alert('İlanınız alındı! Yönetici onayından sonra yayınlanacaktır. ✓');
-      loadJobs();
-    } catch(e) {
-      if (err) { err.textContent = 'İlan kaydedilemedi. Lütfen tekrar dene.'; err.style.display = 'block'; }
+    const container = document.getElementById('listings');
+
+    const scamWarning = `
+      <div style="background:rgba(212,43,43,.06);border:1.5px solid rgba(212,43,43,.2);border-radius:14px;padding:16px 20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠️ Dolandırıcılığa Dikkat!</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">
+          Hiçbir meşru işveren veya danışman sizden <strong>önceden para talep etmez.</strong> Para isteyen kişilerden uzak durun.<br>
+          Şüpheli bir teklifle karşılaşırsan <strong>uzaklaş</strong> ve durumu bize bildir.
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <a href="abibot.html" style="font-size:12px;font-weight:600;color:var(--red);text-decoration:none;padding:5px 12px;border:1.5px solid rgba(212,43,43,.3);border-radius:20px;">🤖 AbiBOT'a sor</a>
+          <button onclick="alert('Şikayet formu yakında!')" style="font-size:12px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--sand);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;">🚨 Dolandırıcı Bildir</button>
+        </div>
+      </div>`;
+
+    if (!sorted.length) {
+      if (activeMode === 'migration') {
+        container.innerHTML = scamWarning + `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler veya arama terimleri deneyin.</p></div>`;
+      } else {
+        container.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">📋</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Henüz ilan yok</div><p style="font-size:13px;margin-bottom:16px">İlk ilanı sen ver!</p><button onclick="openPostModal()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
+      }
+      return;
     }
+    container.innerHTML = scamWarning + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">` + sorted.map(l => `
+      <div class="listing-card ${l.featured ? 'featured' : ''}" data-listing-id="${l.id}" onclick="openDetail('${l.id}')" style="cursor:pointer;">
+        ${l.featured ? '<div class="featured-badge">⭐ Öne Çıkan</div>' : ''}
+        <div class="listing-avatar" style="background:${catBg[l.category||l.cat]||'rgba(24,95,165,.1)'};color:${catColor[l.category||l.cat]||'#185FA5'}">${catEmoji[l.category||l.cat]||'📦'}</div>
+        <div class="listing-body">
+          ${l.badge ? `<div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px;">${l.badge}</div>` : ''}
+          <div class="listing-top">
+            <div class="listing-title">${l.title}</div>
+            <div class="listing-price">${l.price||''}</div>
+          </div>
+          <div class="listing-meta">
+            <span class="listing-author">${l.company || l.author || ''}</span>
+            <span style="color:var(--sand)">·</span>
+            <span class="listing-location">📍 ${l.location||''}</span>
+          </div>
+          ${(l.description||l.desc) ? `<div class="listing-desc">${l.description||l.desc}</div><div onclick="event.stopPropagation()">${mhTranslateMenuHtml('.listing-desc')}</div>` : ''}
+          <div class="listing-footer">
+            <span class="listing-tag ${l.type === 'job' ? 'tag-job' : l.type === 'seeker' ? 'tag-job' : 'tag-gig'}">${l.type === 'job' ? '💼 İş İlanı' : l.type === 'seeker' ? '👤 İş Arıyorum' : '⚡ Hizmet'}</span>
+            <span class="listing-tag tag-remote">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
+            <span class="listing-time">${l.created_at ? timeAgo(l.created_at) : (l.time||'')}</span>
+          </div>
+        </div>
+      </div>`).join('') + `</div>`;
   }
 
-  loadJobs();
+  // ── POST MODAL ──
+  let selectedPostType = 'job';
+  let selectedBundle = 'none';
+
+  const bundleDetails = {
+    none:  { desc: 'Standart İlan', price: 'Ücretsiz', sub: '30 gün aktif · Standart görünüm' },
+    '1':   { desc: '⭐ 1 Öne Çıkan İlan', price: '€4,99', sub: '60 gün aktif · Liste başında görünüm' },
+    '3':   { desc: '⭐⭐ 3 Öne Çıkan Hak', price: '€12,00', sub: '3 farklı ilan için kullan · Devredilmez' },
+    '10':  { desc: '⭐⭐⭐ 10 Öne Çıkan Hak', price: '€35,00', sub: '10 farklı ilan için · 1 yıl geçerli' },
+  };
+
+  function selectBundle(val) {
+    selectedBundle = val;
+    ['none','1','3','10'].forEach(v => {
+      const wrap = document.getElementById('bundle-'+v+'-wrap');
+      if (wrap) wrap.style.borderColor = v === val ? (v === 'none' ? 'var(--ink)' : 'var(--gold)') : 'var(--sand)';
+    });
+    const btn = document.getElementById('post-submit-btn');
+    btn.textContent = val === 'none' ? 'İlanı Yayınla →' : `Devam Et — ${bundleDetails[val].price} →`;
+  }
+
+  async function openSeekerPostModal() {
+    await window._authReady;
+    const session = window._currentSession;
+    if (!session) {
+      alert('İlan vermek için önce giriş yapmalısın.');
+      window.location.href = 'login.html?redirect=is-guc.html';
+      return;
+    }
+    const realName = session.user.user_metadata?.full_name || session.user.email || '';
+    document.getElementById('sp-name-display').textContent = realName;
+    document.getElementById('seeker-post-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    __seekerDraft.restore();
+  }
+
+  // ── DRAFT AUTOSAVE (protects typed data if the tab is discarded/reloaded) ──
+  // Payment fields (pay-card/pay-exp/pay-cvv/pay-name) are NEVER included —
+  // card details must never be persisted client-side.
+  function bbDraft(opts){
+    var TTL_MS = 1000*60*60*24*3; // 3 days
+    function read(){
+      try{
+        var raw=localStorage.getItem(opts.key);
+        if(!raw) return null;
+        var obj=JSON.parse(raw);
+        if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+        return obj.v||null;
+      }catch(e){ return null; }
+    }
+    function write(){
+      try{
+        var v={};
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id);
+          if(!el) return;
+          v[f.id]=el.value;
+        });
+        localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+      }catch(e){}
+    }
+    var timer=null;
+    function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+    opts.fields.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(!el) return;
+      el.addEventListener((f.type==='select')?'change':'input', schedule);
+    });
+    return {
+      restore:function(){
+        var v=read(); if(!v) return false;
+        var any=false;
+        opts.fields.forEach(function(f){
+          var el=document.getElementById(f.id); if(!el) return;
+          var val=v[f.id];
+          if(val===undefined||val===null||val==='') return;
+          el.value=val; any=true;
+        });
+        return any;
+      },
+      clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+    };
+  }
+  const __seekerDraft = bbDraft({
+    key:'bb_draft_is_arayan',
+    fields:[
+      {id:'sp-title',type:'text'},{id:'sp-city',type:'text'},{id:'sp-auth',type:'select'},
+      {id:'sp-avail',type:'select'},{id:'sp-worktype',type:'select'},{id:'sp-skills',type:'text'},
+      {id:'sp-salary',type:'text'},{id:'sp-desc',type:'textarea'},{id:'sp-contact',type:'text'}
+    ]
+  });
+  const __jobDraft = bbDraft({
+    key:'bb_draft_is_veren',
+    fields:[
+      {id:'p-title',type:'text'},{id:'p-location',type:'text'},{id:'p-cat',type:'select'},
+      {id:'p-worktype',type:'select'},{id:'p-price',type:'text'},{id:'p-desc',type:'textarea'},
+      {id:'p-contact',type:'text'}
+    ]
+  });
+  function closeSeekerPostModal() {
+    document.getElementById('seeker-post-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('sp-success').style.display = 'none';
+    document.getElementById('sp-body').style.display = 'flex';
+    document.getElementById('sp-footer').style.display = 'block';
+    document.getElementById('sp-error').style.display = 'none';
+  }
+  async function submitSeekerPost() {
+    const session = window._currentSession;
+    if (!session) { window.location.href = 'login.html?redirect=is-guc.html'; return; }
+
+    const title = document.getElementById('sp-title').value.trim();
+    const desc  = document.getElementById('sp-desc').value.trim();
+    const contact = document.getElementById('sp-contact').value.trim();
+    const err   = document.getElementById('sp-error');
+    if (!title || !desc || !contact) { err.textContent = 'Lütfen zorunlu alanları doldurun.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+
+    const realName = session.user.user_metadata?.full_name || session.user.email || '';
+    const skills = document.getElementById('sp-skills').value.trim();
+    try {
+      await sbPostAuth('job_seekers', {
+        user_id:      session.user.id,
+        name:         realName,
+        title,
+        city:         document.getElementById('sp-city').value.trim() || null,
+        work_auth:    document.getElementById('sp-auth').value,
+        availability: document.getElementById('sp-avail').value,
+        worktype:     document.getElementById('sp-worktype').value,
+        skills:       skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+        salary:       document.getElementById('sp-salary').value.trim() || null,
+        description:  desc,
+        contact,
+        active:       true,
+      });
+    } catch (e) {
+      console.error('Seeker post insert error:', e);
+      err.textContent = 'İlanınız kaydedilemedi, lütfen tekrar deneyin.';
+      err.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('sp-body').style.display = 'none';
+    document.getElementById('sp-footer').style.display = 'none';
+    document.getElementById('sp-success').style.display = 'block';
+    __seekerDraft.clear();
+    setTimeout(() => { closeSeekerPostModal(); if (activeMode === 'seeker') renderSeekers(); }, 2500);
+  }
+
+  function openPostModal() {
+    document.getElementById('post-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    __jobDraft.restore();
+    syncContactFields(selectedPostType);
+  }
+
+  function closePostModal() {
+    document.getElementById('post-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('post-success').style.display = 'none';
+    document.getElementById('post-form-body').style.display = 'flex';
+    document.getElementById('post-footer').style.display = 'block';
+    document.getElementById('payment-step').style.display = 'none';
+    document.getElementById('p-error').style.display = 'none';
+    document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💼 İlan Ver';
+    selectedBundle = 'none';
+    selectBundle('none');
+    document.querySelectorAll('input[name="bundle"]')[0].checked = true;
+  }
+
+  function selectPostType(type, btn) {
+    selectedPostType = type;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('price-label').textContent = type === 'gig' ? 'Fiyat' : 'Ücret / Bütçe';
+    syncContactFields(type);
+  }
+  function syncContactFields(type) {
+    var emp = document.getElementById('employer-contact');
+    var note = document.getElementById('individual-contact-note');
+    if (emp)  emp.style.display  = (type === 'job') ? '' : 'none';
+    if (note) note.style.display = (type === 'job') ? 'none' : '';
+  }
+
+  // Pending post stored between form → payment steps
+  let _pendingPost = null;
+
+  async function submitPost() {
+    const session = window._currentSession;
+    if (!session) { window.location.href = 'login.html?redirect=is-guc.html'; return; }
+    const title = document.getElementById('p-title').value.trim();
+    const desc  = document.getElementById('p-desc').value.trim();
+    const err   = document.getElementById('p-error');
+    if (!title || !desc) {
+      err.textContent = 'Lütfen en azından başlık ve açıklama girin.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+    const typeMap = { job:'is_ilani', gig:'hizmet', seeker:'is_ariyorum' };
+    const isEmp = selectedPostType === 'job';
+    const nm = (document.getElementById('p-name')?.value || '').trim();
+    const payload = {
+      author_id:    session.user.id,
+      listing_type: typeMap[selectedPostType] || 'hizmet',
+      title,
+      company:      isEmp ? (nm || null) : null,
+      contact_name: nm || null,
+      category:     document.getElementById('p-cat').value,
+      worktype:     document.getElementById('p-worktype').value,
+      city:         document.getElementById('p-location').value.trim() || null,
+      country:      'DE',
+      salary:       document.getElementById('p-price').value.trim() || null,
+      description:  desc,
+      website:      (document.getElementById('p-website')?.value || '').trim() || null,
+      email:        isEmp ? ((document.getElementById('p-email')?.value || '').trim() || null) : null,
+      whatsapp:     isEmp ? ((document.getElementById('p-whatsapp')?.value || '').trim() || null) : null,
+      status:       'pending'
+    };
+    try {
+      await sbPostAuth('jobs', payload);
+    } catch(e) {
+      console.error('Job insert error:', e);
+      err.textContent = 'İlan kaydedilemedi, lütfen tekrar deneyin.';
+      err.style.display = 'block'; return;
+    }
+    showSuccess(false);
+    setTimeout(() => fetchListings(), 1500);
+  }
+
+  function goBackToForm() {
+    document.getElementById('payment-step').style.display = 'none';
+    document.getElementById('post-form-body').style.display = 'flex';
+    document.getElementById('post-footer').style.display = 'block';
+    document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💼 İlan Ver';
+  }
+
+  function processPayment() {
+    const card = document.getElementById('pay-card').value.replace(/\s/g,'');
+    const exp  = document.getElementById('pay-exp').value;
+    const cvv  = document.getElementById('pay-cvv').value;
+    const name = document.getElementById('pay-name').value.trim();
+    const err  = document.getElementById('pay-error');
+
+    if (card.length < 16 || !exp || cvv.length < 3 || !name) {
+      err.textContent = 'Lütfen tüm kart bilgilerini eksiksiz girin.';
+      err.style.display = 'block'; return;
+    }
+    err.style.display = 'none';
+
+    const btn = document.getElementById('pay-btn');
+    btn.textContent = 'İşleniyor...';
+    btn.disabled = true;
+
+    setTimeout(async () => {
+      if (_pendingPost) {
+        _pendingPost.featured = true;
+        try { await sbPost('listings', _pendingPost); } catch(e) { console.error('Featured listing insert error:', e); }
+      }
+      document.getElementById('payment-step').style.display = 'none';
+      showSuccess(true);
+      setTimeout(() => fetchListings(), 3600);
+    }, 1500);
+  }
+
+  function showSuccess(featured) {
+    document.getElementById('post-form-body').style.display = 'none';
+    document.getElementById('post-footer').style.display = 'none';
+    document.getElementById('payment-step').style.display = 'none';
+    document.getElementById('post-success').style.display = 'block';
+    document.getElementById('success-title').textContent = 'İlanın alındı!';
+    document.getElementById('success-sub').innerHTML = 'Ekip onayından sonra yayında olacak.<br>Teşekkürler!';
+    __jobDraft.clear();
+    setTimeout(() => closePostModal(), 3500);
+  }
+
+  function formatCard(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,16);
+    el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  function formatExp(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    el.value = v;
+  }
+
+  const _TYPE_MAP = { is_ilani:'job', hizmet:'gig', is_ariyorum:'seeker' };
+  function normJob(r, nameMap) {
+    return {
+      id: r.id, author_id: r.author_id,
+      type: _TYPE_MAP[r.listing_type] || 'gig',
+      title: r.title, company: r.company || null,
+      author: nameMap[r.author_id] || 'Üye',
+      location: [r.city, (r.country==='DE'?'🇩🇪':null)].filter(Boolean).join(' '),
+      category: r.category || 'diger', cat: r.category || 'diger',
+      worktype: r.worktype || 'onsite', price: r.salary || '',
+      description: r.description || '', desc: r.description || '',
+      featured: !!r.is_featured, badge: null, time: '',
+      created_at: r.created_at,
+      website: r.website || null, email: r.email || null,
+      whatsapp: r.whatsapp || null, contact_name: r.contact_name || null
+    };
+  }
+  async function fetchListings() {
+    const container = document.getElementById('listings');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
+    try {
+      await (window._authReady || Promise.resolve());
+      const rows = await sbGetAuth('jobs', 'status=eq.approved&order=is_featured.desc,created_at.desc');
+      let nameMap = {};
+      const ids = [...new Set((rows||[]).map(r => r.author_id).filter(Boolean))];
+      if (ids.length) {
+        try {
+          const profs = await sbGetAuth('profiles', 'id=in.(' + ids.join(',') + ')&select=id,first_name,last_name');
+          (profs||[]).forEach(p => { nameMap[p.id] = ((p.first_name||'')+' '+(p.last_name||'')).trim() || 'Üye'; });
+        } catch(_) {}
+      }
+      window._dbListings = (rows||[]).map(r => normJob(r, nameMap));
+    } catch(e) {
+      console.error('Jobs fetch error:', e);
+      window._dbListings = [];
+    }
+    renderListings();
+  }
+
+  // Init
+  fetchListings();
+
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const menu = document.getElementById('mobile-menu');
+    hb.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  // Auto-highlight active link
+  window.addEventListener('DOMContentLoaded', () => {
+    const page = window.location.pathname.split('/').pop() || 'mahallem.html';
+    document.querySelectorAll('.mm-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href === page || href.split('#')[0] === page)) {
+        link.classList.add('active');
+      }
+    });
+    // Close on outside click
+    document.getElementById('mobile-menu')?.addEventListener('click', e => {
+      if (e.target === e.currentTarget) toggleMenu();
+    });
+  });
+
+  
+
 </script>
-<script type="module" src="nav-msg-badge.js"></script>
-<script src="smart-email.js"></script>
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header" id="detail-header">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+        <div id="detail-icon" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"></div>
+        <div style="min-width:0;">
+          <div id="detail-title" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);line-height:1.2;"></div>
+          <div id="detail-company" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeDetailModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Meta row -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="detail-tags"></div>
+      <!-- Price highlight -->
+      <div id="detail-price-box" style="background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.15);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:var(--muted);">💰 Ücret / Bütçe</div>
+        <div id="detail-price" style="font-size:18px;font-weight:700;color:var(--green);"></div>
+      </div>
+      <!-- Description -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;">İlan Açıklaması</div>
+        <div id="detail-desc" style="font-size:14px;color:var(--ink);line-height:1.7;"></div>
+        <div id="detail-desc-translate-wrap" style="margin-top:4px;"></div>
+      </div>
+      <!-- Details grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="detail-grid"></div>
+      <!-- Disclaimer -->
+      <div style="font-size:12px;color:var(--muted);padding:10px 12px;background:rgba(212,43,43,.06);border:1px solid rgba(212,43,43,.15);border-radius:8px;line-height:1.5;">
+        ⚠️ BizdenBize bu ilan içeriğinden sorumlu değildir. Doğrulama yapmadan ödeme yapmayın.
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;">
+      <a id="detail-contact-btn" href="#" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'">✉️ E-posta Gönder</a>
+      
+      <button onclick="closeDetailModal()" style="padding:13px 20px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openDetail(id) {
+    const l = (window._dbListings||[]).find(x => String(x.id) === String(id)) || listings.find(x => String(x.id) === String(id));
+    if (!l) return;
+
+    const lcat = l.category || l.cat || 'other';
+    document.getElementById('detail-icon').style.background = catBg[lcat] || 'rgba(24,95,165,.1)';
+    document.getElementById('detail-icon').style.color = catColor[lcat] || '#185FA5';
+    document.getElementById('detail-icon').textContent = catEmoji[lcat] || '📋';
+    document.getElementById('detail-title').textContent = l.title;
+    document.getElementById('detail-company').textContent = (l.company || l.author) + '  ·  📍 ' + l.location;
+    document.getElementById('detail-price').textContent = l.price;
+    document.getElementById('detail-desc').textContent = l.description || l.desc || '';
+    document.getElementById('detail-desc-translate-wrap').innerHTML = (l.description || l.desc) ? mhTranslateMenuHtml('#detail-desc') : '';
+
+    const tags = document.getElementById('detail-tags');
+    tags.innerHTML = `
+      <span class="listing-tag ${l.type === 'job' ? 'tag-job' : l.type === 'seeker' ? 'tag-job' : 'tag-gig'}" style="font-size:12px;padding:4px 12px;">${l.type === 'job' ? '💼 İş İlanı' : l.type === 'seeker' ? '👤 İş Arıyorum' : '⚡ Hizmet'}</span>
+      <span class="listing-tag tag-remote" style="font-size:12px;padding:4px 12px;">${l.worktype === 'remote' ? '🌍 Remote' : l.worktype === 'hybrid' ? '🔄 Hibrit' : '📍 Yerinde'}</span>
+      <span class="listing-tag tag-cat" style="font-size:12px;padding:4px 12px;">${catEmoji[lcat]} ${document.querySelector('[data-cat="'+lcat+'"]')?.textContent || lcat}</span>
+      ${l.featured ? '<span class="listing-tag" style="background:rgba(201,168,76,.15);color:#8a6d00;font-size:12px;padding:4px 12px;">⭐ Öne Çıkan</span>' : ''}
+    `;
+
+    document.getElementById('detail-grid').innerHTML = `
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Konum</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">📍 ${l.location}</div>
+      </div>
+      <div style="background:var(--warm);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;">Yayın Tarihi</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">🕐 ${l.created_at ? timeAgo(l.created_at) : (l.time || '—')}</div>
+      </div>
+    `;
+
+    // Contact — in-app message for everyone; employer listings also expose public links
+    document.querySelectorAll('.detail-extra-contact').forEach(e => e.remove());
+    const contactBtn = document.getElementById('detail-contact-btn');
+    contactBtn.href = 'messages.html?with=' + encodeURIComponent(l.author_id || '') + '&ref=' + encodeURIComponent('「' + (l.title || '') + '」 iş ilanı hakkında: ');
+    contactBtn.target = '';
+    contactBtn.innerHTML = '💬 Mesaj Gönder';
+    const _footer = contactBtn.parentElement;
+    const _mk = (href, label, bg) => { const a = document.createElement('a'); a.className = 'detail-extra-contact'; a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label; a.style.cssText = 'flex:1;padding:13px;background:' + bg + ';color:#fff;border-radius:9px;font-size:14px;font-weight:600;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;'; return a; };
+    if (l.website) { const w = /^https?:/i.test(l.website) ? l.website : ('https://' + l.website); _footer.insertBefore(_mk(w, '🌐 Web', 'var(--muted)'), _footer.lastElementChild); }
+    if (l.type === 'job') {
+      if (l.email) _footer.insertBefore(_mk('mailto:' + l.email + '?subject=' + encodeURIComponent('BizdenBize: ' + l.title), '✉️ E-posta', '#185FA5'), _footer.lastElementChild);
+      if (l.whatsapp) { const wn = (l.whatsapp || '').replace(/[^0-9]/g, ''); if (wn) _footer.insertBefore(_mk('https://wa.me/' + wn + '?text=' + encodeURIComponent('Merhaba, BizdenBize\u2019deki 「' + (l.title || '') + '」 iş ilanı hakkında bilgi almak istiyorum.'), '💬 WhatsApp', '#25D366'), _footer.lastElementChild); }
+    }
+
+    document.getElementById('detail-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDetailModal() {
+    document.getElementById('detail-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+<!-- SITE FOOTER -->
+<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Top row -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
+
+      <!-- Brand -->
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">Bizden<span style="color:#D42B2B;">Bize</span></div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
+        <!-- Social -->
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
+          <a href="https://tiktok.com/@bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="TikTok">🎵</a>
+          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
+          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
+        </div>
+      </div>
+
+      <!-- Platform -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
+          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
+          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
+          <a href="is-guc.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
+          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
+          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgi & Belge</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
+        </div>
+      </div>
+
+      <!-- Destek -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
+          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
+          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">support@bizdenbize.com</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
+        </div>
+      </div>
+
+      <!-- Yasal -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="gizlilik.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
+          <a href="kullanim-kosullari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
+          <a href="cerez.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
+          <a href="kvkk.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">KVKK / GDPR</a>
+          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Impressum</a>
+          <a href="ilan-kurallari.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
+        </div>
+      </div>
+
+    </div>
+
+    
+
+    <!-- Bottom bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
+    </div>
+
+  </div>
+
+  <style>
+    @media (max-width: 768px) {
+      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      footer > div > div:first-child { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</footer>
+<!-- SEEKER POST MODAL -->
+<div class="modal-overlay" id="seeker-post-modal" onclick="if(event.target===this)closeSeekerPostModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h3 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">👤 İş Arıyorum İlanı Ver</h3><div style="font-size:12px;color:var(--muted);margin-top:2px;">Profilini paylaş, işverenler seni bulsun.</div></div>
+      <button class="modal-close" onclick="closeSeekerPostModal()">×</button>
+    </div>
+    <div class="modal-body" id="sp-body">
+      <div class="field-row">
+        <div><label class="field-label">Adınız</label><div class="field-input" id="sp-name-display" style="background:var(--warm);color:var(--muted);display:flex;align-items:center;"></div></div>
+        <div><label class="field-label">Unvan / Meslek *</label><input class="field-input" id="sp-title" type="text" placeholder="Elektrikçi, Hemşire..."></div>
+      </div>
+      <div class="field-row">
+        <div><label class="field-label">Şehir</label><input class="field-input" id="sp-city" type="text" placeholder="Berlin"></div>
+        <div><label class="field-label">Çalışma İzni</label>
+          <select class="field-input" id="sp-auth">
+            <option>Çalışma izni var</option>
+            <option>AB vatandaşı</option>
+            <option>Başvuru sürecinde</option>
+            <option>Vize gerekiyor</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div><label class="field-label">Müsaitlik</label>
+          <select class="field-input" id="sp-avail">
+            <option>Hemen müsait</option>
+            <option>1 ay içinde</option>
+            <option>2 ay içinde</option>
+            <option>3+ ay</option>
+          </select>
+        </div>
+        <div><label class="field-label">Çalışma Tercihi</label>
+          <select class="field-input" id="sp-worktype">
+            <option value="onsite">Yerinde</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hibrit</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="field-label">Deneyim & Beceriler</label><input class="field-input" id="sp-skills" type="text" placeholder="React, muhasebe, CE ehliyet... (virgülle ayırın)"></div>
+      <div><label class="field-label">Beklenen Ücret</label><input class="field-input" id="sp-salary" type="text" placeholder="€3.000-3.500/ay veya €20/saat"></div>
+      <div><label class="field-label">Kendinizi Tanıtın *</label><textarea class="field-input" id="sp-desc" rows="3" placeholder="Deneyiminizi, ne tür pozisyonlar aradığınızı kısaca anlatın..."></textarea></div>
+      <div><label class="field-label">İletişim (e-posta veya telefon) *</label><input class="field-input" id="sp-contact" type="text" placeholder="email@example.com veya +49 176 ..."></div>
+      <div id="sp-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
+    </div>
+    <div class="modal-footer" id="sp-footer">
+      <button class="submit-btn" onclick="submitSeekerPost()">Profili Yayınla →</button>
+    </div>
+    <div style="display:none;text-align:center;padding:40px 20px;" id="sp-success">
+      <div style="font-size:48px;">🎉</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:16px 0 8px;">Profiliniz yayınlandı!</div>
+      <p style="font-size:14px;color:var(--muted);">İşverenler profilinizi görüp size ulaşabilecek.</p>
+    </div>
+  </div>
+</div>
+
+  <script src="translate-widget.js"></script>
+  <script type="module" src="nav-msg-badge.js"></script>
+  <script src="smart-email.js"></script>
+</body>
+</html>
 </body>
 </html>
