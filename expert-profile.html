@@ -396,7 +396,7 @@
 
       myReviews = reviews || [];
       injectOwnerPanel();
-      renderOwnerExpertise();
+      window.renderOwnerExpertise();
     } catch(e) {
       console.error('Owner panel check failed:', e);
     }
@@ -450,7 +450,7 @@
     return html;
   }
 
-  function renderOwnerExpertise() {
+  window.renderOwnerExpertise = function renderOwnerExpertise() {
     const box = document.getElementById('owner-expertise');
     if (!box) return;
     const cats  = window._expertCategories || [];
@@ -468,13 +468,13 @@
       </div>
       ${rows.map(([k, v]) => `<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;"><strong style="color:var(--ink);">${k}:</strong> ${v}</div>`).join('')}
       <button onclick="openExpertiseEdit()" style="margin-top:12px;padding:8px 16px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">✏️ Düzenle</button>`;
-  }
+  };
 
   // ---- editing your own expertise ------------------------------------
   // Writes to the `experts` table (title / bio / categories / languages).
   // The public view reads from expert_rating_summary, so the page reloads
   // afterwards rather than guessing how the view will present the change.
-  function openExpertiseEdit() {
+  window.openExpertiseEdit = function openExpertiseEdit() {
     const box = document.getElementById('owner-expertise');
     if (!box) return;
     const cfg   = window.BB_CONFIG || {};
@@ -513,9 +513,9 @@
         <button id="exp-save" onclick="saveExpertise()" style="padding:9px 18px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
         <button onclick="renderOwnerExpertise()" style="padding:9px 18px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
       </div>`;
-  }
+  };
 
-  async function saveExpertise() {
+  window.saveExpertise = async function saveExpertise() {
     const msg = document.getElementById('exp-msg');
     const btn = document.getElementById('exp-save');
     const show = (text, ok) => {
@@ -548,7 +548,7 @@
       if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
       show('Kaydedilemedi: ' + (err.message || 'bilinmeyen hata'), false);
     }
-  }
+  };
 
   function injectOwnerPanel() {
     if (document.getElementById('owner-panel')) return; // already injected
