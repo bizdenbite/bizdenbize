@@ -467,7 +467,87 @@
           : '<span style="font-size:12.5px;color:var(--muted);">Henüz uzmanlık alanı tanımlanmamış.</span>'}
       </div>
       ${rows.map(([k, v]) => `<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;"><strong style="color:var(--ink);">${k}:</strong> ${v}</div>`).join('')}
-      <div style="font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;">Bu bilgileri değiştirmek için <a href="mailto:support@bizdenbize.com" style="color:var(--navy,#1B3A8C);font-weight:600;">bize yazın</a>.</div>`;
+      <button onclick="openExpertiseEdit()" style="margin-top:12px;padding:8px 16px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">✏️ Düzenle</button>`;
+  }
+
+  // ---- editing your own expertise ------------------------------------
+  // Writes to the `experts` table (title / bio / categories / languages).
+  // The public view reads from expert_rating_summary, so the page reloads
+  // afterwards rather than guessing how the view will present the change.
+  function openExpertiseEdit() {
+    const box = document.getElementById('owner-expertise');
+    if (!box) return;
+    const cfg   = window.BB_CONFIG || {};
+    const cats  = cfg.categories || [];
+    const langs = cfg.languages || [];
+    const e     = window._expertRecord || {};
+    const mine     = window._expertCategories || [];
+    const myLangs  = e.languages || [];
+    const cb = (id, label, checked, group) =>
+      `<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--sand);border-radius:20px;font-size:12.5px;cursor:pointer;background:#fff;">
+         <input type="checkbox" class="${group}" value="${id}" ${checked ? 'checked' : ''}> ${label}
+       </label>`;
+    box.innerHTML = `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Uzmanlık Alanları</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${cats.map(c => cb(c.id, `${c.icon || ''} ${c.label}`, mine.includes(c.id), 'exp-cat')).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Diller</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${langs.map(l => cb(l.id, l.label, myLangs.includes(l.id), 'exp-lang')).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Unvan</div>
+        <input id="exp-title" type="text" value="${(e.title || '').replace(/"/g, '&quot;')}" maxlength="80" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Tanıtım</div>
+        <textarea id="exp-bio" rows="4" maxlength="600" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;">${(e.bio || e.expert_bio || '')}</textarea>
+      </div>
+      <div id="exp-msg" style="display:none;font-size:12px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;">
+        <button id="exp-save" onclick="saveExpertise()" style="padding:9px 18px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        <button onclick="renderOwnerExpertise()" style="padding:9px 18px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
+      </div>`;
+  }
+
+  async function saveExpertise() {
+    const msg = document.getElementById('exp-msg');
+    const btn = document.getElementById('exp-save');
+    const show = (text, ok) => {
+      if (!msg) return;
+      msg.textContent = text;
+      msg.style.color = ok ? 'var(--green, #1E7B4B)' : '#D42B2B';
+      msg.style.display = 'block';
+    };
+    const picked = g => Array.from(document.querySelectorAll('.' + g + ':checked')).map(el => el.value);
+    const categories = picked('exp-cat');
+    const languages  = picked('exp-lang');
+    const title = (document.getElementById('exp-title')?.value || '').trim();
+    const bio   = (document.getElementById('exp-bio')?.value || '').trim();
+
+    // Routing depends on categories, so an empty set would quietly remove
+    // this expert from every question queue.
+    if (!categories.length) { show('En az bir uzmanlık alanı seçmelisiniz.', false); return; }
+    if (!title) { show('Unvan boş bırakılamaz.', false); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
+    try {
+      const { error } = await supabase.from('experts')
+        .update({ categories, languages, title, bio })
+        .eq('id', myExpertId);
+      if (error) throw error;
+      show('Kaydedildi. Sayfa yenileniyor...', true);
+      setTimeout(() => window.location.reload(), 900);
+    } catch (err) {
+      console.error('Expertise save error:', err);
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+      show('Kaydedilemedi: ' + (err.message || 'bilinmeyen hata'), false);
+    }
   }
 
   function injectOwnerPanel() {
