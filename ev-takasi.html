@@ -157,7 +157,7 @@
 
     /* SIDEBAR FILTERS */
     .kind-tab{padding:9px 16px;border-radius:22px;font-size:13px;font-weight:600;font-family:inherit;color:var(--muted);background:var(--white);border:1.5px solid var(--sand);cursor:pointer;transition:all .15s;}
-    .kind-tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .kind-tab.active{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;}
     .filter-sidebar{display:flex;flex-direction:column;gap:14px;}
     .filter-box{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;}
     .filter-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;}
@@ -923,7 +923,7 @@ function filterAndRenderSwaps() {
     const et = kindEmptyText();
     grid.innerHTML = anyInTab
       ? `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler deneyin.</p></div>`
-      : `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🏠</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">${et.title}</div><p style="font-size:13px;margin-bottom:16px">${et.body}</p><button onclick="openPostModal()" style="padding:10px 24px;background:var(--teal);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
+      : `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🏠</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">${et.title}</div><p style="font-size:13px;margin-bottom:16px">${et.body}</p><button onclick="openPostModal()" style="padding:11px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
     return;
   }
 
@@ -1695,7 +1695,7 @@ async function renderRequestsList() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${formatDate(b.check_in)} – ${formatDate(b.check_out)} · 🪙 ${b.points_needed} puan</div>
       ${b.guest_message ? `<div style="font-size:12px;color:var(--ink);background:var(--warm);border-radius:8px;padding:8px 10px;margin-bottom:8px;">${b.guest_message}</div>` : ''}
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <a href="messages.html?with=${encodeURIComponent(_requestsTab === 'guest' ? b.host_user_id : b.guest_user_id)}" style="padding:6px 14px;background:var(--teal);color:#fff;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">💬 Mesajlaş</a>
+        <a href="messages.html?with=${encodeURIComponent(_requestsTab === 'guest' ? b.host_user_id : b.guest_user_id)}" style="padding:6px 14px;background:var(--gold);color:var(--ink);border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">💬 Mesajlaş</a>
         ${_requestsTab === 'host' && b.status === 'requested' ? `
           <button onclick="respondBooking('${b.id}','accepted')" style="padding:6px 14px;background:none;border:1.5px solid var(--teal);color:var(--teal);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Kabul Et</button>
           <button onclick="respondBooking('${b.id}','declined')" style="padding:6px 14px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Reddet</button>` : ''}
