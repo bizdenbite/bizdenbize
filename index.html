@@ -1126,12 +1126,21 @@
       if (grid) grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:rgba(255,255,255,.55);">Uzmanlar şu anda yüklenemedi.</div>';
       return;
     }
+  
     if (!data || !data.length) {
-      // No approved experts yet — hide the whole section rather than show an
-      // empty roster under "Türkçe konuşan, sizi anlayan uzmanlar".
-      if (section) section.style.display = 'none';
+      // The nav links to #uzmanlar, so this section must always exist —
+      // hiding it left that link pointing at nothing. Honest empty state
+      // instead: say the team is being built and invite experts to apply.
+      if (grid) grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:48px 24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+          <div style="font-size:34px;margin-bottom:12px;">🎓</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px;">Uzman ekibimizi kuruyoruz</div>
+          <p style="font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:460px;margin:0 auto 20px;">Hukuk, sağlık, finans ve vize alanlarında Türkçe konuşan uzmanları aramıza katıyoruz. Siz de bu alanlarda çalışıyorsanız başvurabilirsiniz.</p>
+          <a href="uzman-basvuru.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:var(--red,#D42B2B);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Instrument Sans',sans-serif;">🎓 Uzman Olarak Kayıt Ol →</a>
+        </div>`;
       return;
     }
+
 
     try {
     grid.innerHTML = data.map(e => {
@@ -1170,7 +1179,7 @@
     } catch (e) {
       // A render failure used to leave the skeletons in place indefinitely.
       console.error('Landing experts render error:', e);
-      if (section) section.style.display = 'none';
+      if (grid) grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:rgba(255,255,255,.55);">Uzmanlar şu anda yüklenemedi.</div>';
     }
   })();
 </script>
