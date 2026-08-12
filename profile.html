@@ -690,5 +690,10 @@
   init();
 </script>
 <script type="module" src="nav-msg-badge.js"></script>
+<script>
+// --- nav avatar menu + logout (was missing on this page) ---
+    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
+    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
+</script>
 </body>
 </html>
