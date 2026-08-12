@@ -33,6 +33,8 @@
     .hero-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:12px;}
     .hero-title em{color:var(--red);font-style:normal;}
     .hero-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:480px;margin:0 auto 28px;line-height:1.65;}
+    .hero-cta-alt{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.45);}
+    .hero-cta-alt:hover{background:rgba(255,255,255,.12);}
     .hero-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--red);color:var(--white);border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
     .hero-cta:hover{background:var(--red2);}
     .hero-stats{display:flex;gap:32px;justify-content:center;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
@@ -337,7 +339,10 @@
   <div class="hero-eyebrow">BizdenBize Uzman Ekibi</div>
   <h1 class="hero-title">Türkçe Konuşan<br><em>Gerçek Uzmanlar</em></h1>
   <p class="hero-sub">Hukuki, tıbbi, finansal ve vize sorularınız için Avrupa'da yaşayan, sizi anlayan uzmanlar.</p>
-  <a href="abibot.html" class="hero-cta">🤖 AbiBOT ile Başla →</a>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <a href="abibot.html" class="hero-cta">🤖 AbiBOT ile Başla →</a>
+    <a href="uzman-basvuru.html" class="hero-cta hero-cta-alt">🎓 Uzman Olarak Kayıt Ol →</a>
+  </div>
   <div class="hero-stats" id="hero-stats">
     <div class="hs-item"><div class="hs-val" id="hs-experts">—</div><div class="hs-label">Aktif Uzman</div></div>
     <div class="hs-item"><div class="hs-val" id="hs-answered">—</div><div class="hs-label">Yanıtlanan Soru</div></div>
