@@ -341,7 +341,7 @@
   <p class="hero-sub">Hukuki, tıbbi, finansal ve vize sorularınız için Avrupa'da yaşayan, sizi anlayan uzmanlar.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
     <a href="abibot.html" class="hero-cta">🤖 AbiBOT ile Başla →</a>
-    <a href="uzman-basvuru.html" class="hero-cta hero-cta-alt">🎓 Uzman Olarak Kayıt Ol →</a>
+    <a href="uzman-basvuru.html" class="hero-cta hero-cta-alt" id="expert-signup-cta">🎓 Uzman Olarak Kayıt Ol →</a>
   </div>
   <div class="hero-stats" id="hero-stats">
     <div class="hs-item"><div class="hs-val" id="hs-experts">—</div><div class="hs-label">Aktif Uzman</div></div>
@@ -576,5 +576,29 @@
   <script src="smart-email.js"></script>
 </body>
 </html>
+<script>
+// Hide/repoint the signup CTA for people who already have an experts row —
+// sending an approved expert to a page that only says "zaten onaylı bir
+// uzmansınız" is a dead end.
+(async function hideExpertCtaIfExpert(){
+  try {
+    await (window._authReady || Promise.resolve());
+    const session = window._currentSession;
+    if (!session) return;
+    const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/experts?select=id,status&profile_id=eq.${session.user.id}&limit=1`, {
+      headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
+    });
+    const rows = await r.json();
+    const cta = document.getElementById('expert-signup-cta');
+    if (!cta || !Array.isArray(rows) || !rows.length) return;
+    if (rows[0].status === 'approved') {
+      cta.textContent = '\u2699\uFE0F Uzman Panelim \u2192';
+      cta.href = 'expert-profile.html?id=' + rows[0].id;
+    } else {
+      cta.style.display = 'none';
+    }
+  } catch(e) { console.error('Expert CTA check failed:', e); }
+})();
+</script>
 </body>
 </html>
