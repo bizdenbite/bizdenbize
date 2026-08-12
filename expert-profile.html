@@ -138,6 +138,10 @@
     window._authSb=_authSb;
     window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
   </script>
+  <!-- Loaded here, not at the end of <body>: this page calls
+       mhTranslateMenuHtml() as soon as its fetch resolves, which can
+       beat a bottom-of-page script and throw before anything renders. -->
+  <script src="translate-widget.js"></script>
 </head>
 <body>
 
@@ -1309,6 +1313,5 @@
     }
   };
 </script>
-  <script src="translate-widget.js"></script>
 </body>
 </html>
