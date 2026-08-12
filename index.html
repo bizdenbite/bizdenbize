@@ -742,6 +742,7 @@
 </style>
 
   <!-- PWA -->
+  <script src="platform-config.js"></script>
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1106,7 +1107,10 @@
   // exits, and a top-level `return` inside <script type="module"> is a
   // SyntaxError — which stopped the whole script from ever running.
   (async () => {
-    const CAT_ICONS = {legal:'⚖️',visa:'🛂',medical:'🏥',tax:'💶',housing:'🏠',employment:'💼',school:'🎓',insurance:'🚗',migration:'✈️'};
+    // Icons AND Turkish labels come from platform-config.js — the page
+    // previously printed the raw id ('legal', 'tax') on a Turkish-only site.
+    const CAT_ICONS = (window.BB_CONFIG && window.BB_CONFIG.categoryIcons) || {};
+    const CAT_NAMES = (window.BB_CONFIG && window.BB_CONFIG.categoryLabels) || {};
     const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
 
     const grid = document.getElementById('hp-experts-grid');
@@ -1149,7 +1153,7 @@
       const color = COLORS[name.charCodeAt(0) % COLORS.length];
       const avg = e.avg_rating ? parseFloat(e.avg_rating).toFixed(1) : null;
       const stars = avg ? '⭐'.repeat(Math.round(parseFloat(avg))) + '☆'.repeat(5 - Math.round(parseFloat(avg))) : '☆☆☆☆☆';
-      const cats = (e.categories||[]).slice(0,3).map(c=>`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);">${CAT_ICONS[c]||''} ${c}</span>`).join('');
+      const cats = (e.categories||[]).slice(0,3).map(c=>`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);">${CAT_ICONS[c]||''} ${CAT_NAMES[c]||c}</span>`).join('');
       return `
         <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;transition:all .2s;"
              onmouseover="this.style.background='rgba(255,255,255,.09)';this.style.borderColor='rgba(255,255,255,.2)'"
