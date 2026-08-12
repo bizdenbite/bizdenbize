@@ -319,7 +319,17 @@
     loadProfile(expertId);
   }
 
+  async function requireLogin() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.replace('login.html?redirect=' + encodeURIComponent(location.pathname + location.search));
+      return false;
+    }
+    return true;
+  }
+
   async function loadProfile(id) {
+    if (!(await requireLogin())) return;
     try {
       // Fetch expert summary from view + recent rated reviews
       const [summaryRes, reviewsRes] = await Promise.all([

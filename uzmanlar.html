@@ -185,6 +185,13 @@
     const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
     window._authSb=_authSb;
     window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+    // Invite-only soft launch: the expert directory carries member-facing
+    // detail, so it gates like mahallem/messages rather than being public.
+    window._authReady.then(() => {
+      if (!window._currentSession) {
+        window.location.replace('login.html?redirect=uzmanlar.html');
+      }
+    });
   </script>
 </head>
 <body>
