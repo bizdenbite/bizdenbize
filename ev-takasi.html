@@ -450,12 +450,22 @@
         🇩🇪 <strong style="color:var(--ink);">Almanya'dan başlıyoruz!</strong><br>Diğer ülkeler yakında ekleniyor.
       </div>
       <div class="filter-box">
-      <div class="filter-box-title">Nerede?</div>
+      <div class="filter-box-title">Konum</div>
+      <select class="filter-input" id="f-loc" onchange="filterAndRenderSwaps()" style="margin-bottom:8px;cursor:pointer;">
+        <option value="all">📍 Tüm Konumlar</option>
+        <option value="eu">🌍 Tüm Avrupa</option>
+        <option value="de">🇩🇪 Tüm Almanya</option>
+        <option value="tr">🇹🇷 Türkiye</option>
+      </select>
       <input class="filter-input" id="f-city" type="text" placeholder="Şehir ara..." oninput="filterAndRenderSwaps()">
     </div>
     <div class="filter-box">
       <div class="filter-box-title">Nereye Gitmek İstiyor?</div>
-      <input class="filter-input" id="f-dest" type="text" placeholder="Hedef şehir..." oninput="filterAndRenderSwaps()">
+      <input class="filter-input" id="f-dest" type="text" placeholder="Hedef şehir..." list="dest-suggestions" oninput="filterAndRenderSwaps()">
+      <datalist id="dest-suggestions">
+        <option value="Tüm Almanya"></option>
+        <option value="Tüm Avrupa"></option>
+      </datalist>
     </div>
     <div class="filter-box">
       <div class="filter-box-title">Ev Tipi</div>
@@ -580,13 +590,13 @@
       <div><label class="field-label">İlan Sahibi</label><div class="field-input" id="p-name-display" style="background:var(--warm);color:var(--muted);display:flex;align-items:center;"></div></div>
       <div class="field-row">
         <div><label class="field-label">Şehrim *</label><input class="field-input" id="p-city" type="text" placeholder="Frankfurt"></div>
-        <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"><option value="de">🇩🇪 Almanya</option><option value="nl">🇳🇱 Hollanda</option><option value="be">🇧🇪 Belçika</option><option value="at">🇦🇹 Avusturya</option><option value="gb">🇬🇧 İngiltere</option><option value="fr">🇫🇷 Fransa</option><option value="tr">🇹🇷 Türkiye</option></select></div>
+        <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"></select></div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:8px;background:var(--warm);border-radius:8px;padding:10px 12px;margin-bottom:4px;">
         <input type="checkbox" id="p-no-dest" onchange="toggleDestField()" style="margin-top:2px;">
         <label for="p-no-dest" style="font-size:12px;color:var(--ink);cursor:pointer;">🎯 Sadece ev sahipliği yapmak istiyorum (belirli bir yere gitmek istemiyorum, puan karşılığında ev sahipliği yapacağım)</label>
       </div>
-      <div id="p-dest-wrap"><label class="field-label">Nereye gitmek istiyorum? *</label><input class="field-input" id="p-dest" type="text" placeholder="Paris, İstanbul veya Hollanda..."></div>
+      <div id="p-dest-wrap"><label class="field-label">Nereye gitmek istiyorum? *</label><input class="field-input" id="p-dest" type="text" placeholder="Paris, İstanbul veya Hollanda..." list="dest-suggestions"></div>
       <div class="field-row">
         <div><label class="field-label">Ev Tipi</label><select class="field-input" id="p-type"><option value="Daire">🏢 Daire</option><option value="Müstakil Ev">🏡 Müstakil Ev</option><option value="Villa / Yazlık">🌊 Villa / Yazlık</option></select></div>
         <div><label class="field-label">Oda Sayısı</label><select class="field-input" id="p-rooms"><option>1+1</option><option>2+1</option><option>3+1</option><option>4+1 ve üzeri</option></select></div>
@@ -788,6 +798,11 @@ async function renderSwaps() {
 function filterAndRenderSwaps() {
   const allSwaps = window._swaps || [];
   const cityQ = (document.getElementById('f-city').value||'').toLowerCase();
+  // Country-level scope. Uses the real country column, so "Tüm Almanya"
+  // here means every home in Germany — a broad filter, unlike classifieds
+  // where the same label means "listing scoped to Germany".
+  const locQ = document.getElementById('f-loc')?.value || 'all';
+  const EU_COUNTRIES = (typeof EU_COUNTRY_CODES !== 'undefined') ? EU_COUNTRY_CODES : ['de'];
   const destQ = (document.getElementById('f-dest').value||'').toLowerCase();
   const typeDaire = document.getElementById('f-daire').checked;
   const typeEv = document.getElementById('f-ev').checked;
@@ -797,6 +812,10 @@ function filterAndRenderSwaps() {
   const famL = document.getElementById('f-large').checked;
 
   let filtered = allSwaps.filter(s => {
+    const sCountry = (s.country || 'de').toLowerCase();
+    if (locQ === 'de' && sCountry !== 'de') return false;
+    if (locQ === 'tr' && sCountry !== 'tr') return false;
+    if (locQ === 'eu' && !EU_COUNTRIES.includes(sCountry)) return false;
     if (cityQ && !s.city.toLowerCase().includes(cityQ)) return false;
     if (destQ && !(s.destination||'').toLowerCase().includes(destQ)) return false;
     if ((typeDaire||typeEv||typeVilla) && !((typeDaire && s.home_type==='Daire')||(typeEv && s.home_type==='Müstakil Ev')||(typeVilla && s.home_type==='Villa / Yazlık'))) return false;
@@ -820,6 +839,7 @@ function filterAndRenderSwaps() {
     return;
   }
 
+  const _myId = (window._currentSession && window._currentSession.user) ? window._currentSession.user.id : null;
   grid.innerHTML = filtered.map(s => `
     <div class="swap-card ${s.featured?'featured':''}" data-listing-id="${s.id}" onclick="openDetail('${s.id}')">
       <div class="card-img">
@@ -851,7 +871,11 @@ function filterAndRenderSwaps() {
             <span class="card-username">${s.user_name}</span>
             ${window._ratings[s.user_id] ? `<span style="font-size:11px;color:var(--gold);margin-left:4px;">⭐ ${window._ratings[s.user_id].avg_rating} (${window._ratings[s.user_id].review_count})</span>` : ''}
           </div>
-          <span class="card-date">→</span>
+          ${(_myId && s.user_id === _myId) ? `
+            <span style="display:flex;gap:6px;" onclick="event.stopPropagation()">
+              <button onclick="openEditSwap('${s.id}')" style="font-size:11px;font-weight:600;color:var(--ink);background:none;border:1.5px solid var(--sand);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;">✏️ Düzenle</button>
+              <button onclick="hideSwap('${s.id}')" style="font-size:11px;font-weight:600;color:#D42B2B;background:none;border:1.5px solid rgba(212,43,43,.3);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit;">🗑️ Sil</button>
+            </span>` : `<span class="card-date">→</span>`}
         </div>
       </div>
       <div class="card-disclaimer">⚠️ BizdenBize takas anlaşmalarından sorumlu değildir.</div>
@@ -1056,6 +1080,49 @@ function bbDraft(opts){
     clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
   };
 }
+// ── Countries a swap home can be in ─────────────────────────
+// Home swapping is inherently cross-border, so this is deliberately
+// wider than the Germany-only scope used on jobs/classifieds.
+// eu:true drives the "Tüm Avrupa" filter. Codes are ISO-3166 alpha-2,
+// which is also what flagcdn needs for the card flags.
+const SWAP_COUNTRIES = [
+  ['de','Almanya',true],       ['tr','Türkiye',false],
+  ['al','Arnavutluk',true],    ['at','Avusturya',true],
+  ['be','Belçika',true],       ['ba','Bosna Hersek',true],
+  ['bg','Bulgaristan',true],   ['cz','Çekya',true],
+  ['dk','Danimarka',true],     ['ee','Estonya',true],
+  ['fi','Finlandiya',true],    ['fr','Fransa',true],
+  ['hr','Hırvatistan',true],   ['nl','Hollanda',true],
+  ['gb','İngiltere',true],     ['ie','İrlanda',true],
+  ['es','İspanya',true],       ['se','İsveç',true],
+  ['ch','İsviçre',true],       ['it','İtalya',true],
+  ['is','İzlanda',true],       ['me','Karadağ',true],
+  ['cy','Kıbrıs',true],        ['xk','Kosova',true],
+  ['lv','Letonya',true],       ['lt','Litvanya',true],
+  ['lu','Lüksemburg',true],    ['hu','Macaristan',true],
+  ['mk','Kuzey Makedonya',true],['mt','Malta',true],
+  ['no','Norveç',true],        ['pl','Polonya',true],
+  ['pt','Portekiz',true],      ['ro','Romanya',true],
+  ['rs','Sırbistan',true],     ['sk','Slovakya',true],
+  ['si','Slovenya',true],      ['gr','Yunanistan',true],
+  ['az','Azerbaycan',false],   ['ae','BAE',false],
+  ['eg','Mısır',false],        ['ma','Fas',false],
+  ['ge','Gürcistan',false],    ['tn','Tunus',false],
+  ['us','ABD',false],          ['ca','Kanada',false]
+];
+const EU_COUNTRY_CODES = SWAP_COUNTRIES.filter(c => c[2]).map(c => c[0]);
+
+(function populateCountrySelect() {
+  const sel = document.getElementById('p-country');
+  if (!sel) return;
+  // Almanya and Türkiye stay pinned at the top as the two most likely
+  // choices; the rest follow in Turkish alphabetical order.
+  const pinned = SWAP_COUNTRIES.slice(0, 2);
+  const rest = SWAP_COUNTRIES.slice(2).sort((a, b) => a[1].localeCompare(b[1], 'tr'));
+  sel.innerHTML = [...pinned, ...rest]
+    .map(c => `<option value="${c[0]}">${c[1]}</option>`).join('');
+})();
+
 const __swapDraft = bbDraft({
   key:'bb_draft_ev_takasi',
   fields:[
@@ -1065,6 +1132,61 @@ const __swapDraft = bbDraft({
     {id:'p-duration',type:'select'},{id:'p-desc',type:'textarea'}
   ]
 });
+// ── Owner controls: edit / hide own swap ────────────────────
+// Edits go through PATCH; RLS policy swap_update_own allows it only
+// for the row's own user_id, so a tampered id simply fails server-side.
+let _editingSwapId = null;
+
+async function openEditSwap(id) {
+  await window._authReady;
+  const session = window._currentSession;
+  if (!session) { window.location.href = 'login.html?redirect=ev-takasi.html'; return; }
+  const s = (window._swaps || []).find(x => String(x.id) === String(id));
+  if (!s) return;
+  if (s.user_id !== session.user.id) return;   // not yours; the DB would reject anyway
+
+  _editingSwapId = s.id;
+  const set = (fid, val) => { const el = document.getElementById(fid); if (el) el.value = val == null ? '' : val; };
+  set('p-city', s.city);
+  set('p-country', s.country || 'de');
+  set('p-dest', s.destination);
+  set('p-type', s.home_type);
+  set('p-rooms', s.rooms);
+  set('p-from', s.available_from);
+  set('p-to', s.available_to);
+  set('p-family', s.family_size);
+  set('p-duration', s.suggested_duration);
+  set('p-desc', s.description);
+  const noDest = document.getElementById('p-no-dest');
+  if (noDest) { noDest.checked = !s.destination; toggleDestField(); }
+
+  const nameEl = document.getElementById('p-name-display');
+  if (nameEl) nameEl.textContent = s.user_name || session.user.email || '';
+  const h = document.querySelector('#post-modal .modal-header h3');
+  if (h) h.textContent = '✏️ İlanı Düzenle';
+  const btn = document.querySelector('#post-footer .submit-btn');
+  if (btn) btn.textContent = 'Değişiklikleri Kaydet →';
+
+  // Deliberately no __swapDraft.restore() here: that would overwrite the
+  // real listing values with a half-finished new-listing draft.
+  document.getElementById('post-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+async function hideSwap(id) {
+  const s = (window._swaps || []).find(x => String(x.id) === String(id));
+  if (!s) return;
+  if (!confirm('İlanınız yayından kaldırılacak. Emin misiniz?')) return;
+  try {
+    await sbPatchAuth('swap_offers', 'id=eq.' + encodeURIComponent(id), { active: false });
+  } catch (e) {
+    console.error('Swap hide error:', e);
+    alert('İlan kaldırılamadı, lütfen tekrar deneyin.');
+    return;
+  }
+  renderSwaps();
+}
+
 function closePostModal() {
   document.getElementById('post-modal').classList.remove('open');
   document.body.style.overflow='';
@@ -1074,6 +1196,11 @@ function closePostModal() {
   document.getElementById('p-error').style.display='none';
   document.getElementById('p-no-dest').checked = false;
   toggleDestField();
+  _editingSwapId = null;
+  const h = document.querySelector('#post-modal .modal-header h3');
+  if (h) h.textContent = '🔄 Takas İlanı Ver';
+  const btn = document.querySelector('#post-footer .submit-btn');
+  if (btn) btn.textContent = 'İlanı Yayınla →';
 }
 function toggleDestField() {
   const noDest = document.getElementById('p-no-dest').checked;
@@ -1095,35 +1222,57 @@ async function submitPost() {
   err.style.display='none';
 
   const realName = session.user.user_metadata?.full_name || session.user.email || 'Anonim';
+
+  // Fields the owner may change. Deliberately excludes user_id, featured,
+  // verified and active: sending featured/verified would be rejected by the
+  // swap_update_own policy, and an edit must never silently republish a
+  // listing the owner had hidden.
+  const editableFields = {
+    city,
+    destination:    dest || null,
+    description:    desc,
+    available_from: from,
+    available_to:   to,
+    home_type:      document.getElementById('p-type')?.value || null,
+    rooms:          document.getElementById('p-rooms')?.value || null,
+    family_size:    document.getElementById('p-family')?.value || null,
+    suggested_duration: document.getElementById('p-duration')?.value || null,
+    country:        document.getElementById('p-country')?.value || 'de'
+  };
+
+  const isEdit = !!_editingSwapId;
   try {
-    await sbPostAuth('swap_offers', {
-      user_id:        session.user.id,
-      user_name:      realName,
-      contact:        session.user.email,
-      city,
-      destination:    dest || null,
-      description:    desc,
-      available_from: from,
-      available_to:   to,
-      home_type:      document.getElementById('p-type')?.value || null,
-      rooms:          document.getElementById('p-rooms')?.value || null,
-      family_size:    document.getElementById('p-family')?.value || null,
-      suggested_duration: document.getElementById('p-duration')?.value || null,
-      country:        document.getElementById('p-country')?.value || 'de',
-      featured:       false,
-      verified:       false,
-      active:         true
-    });
+    if (isEdit) {
+      await sbPatchAuth('swap_offers', 'id=eq.' + encodeURIComponent(_editingSwapId), editableFields);
+    } else {
+      await sbPostAuth('swap_offers', Object.assign({
+        user_id:   session.user.id,
+        user_name: realName,
+        contact:   session.user.email,
+        featured:  false,
+        verified:  false,
+        active:    true
+      }, editableFields));
+    }
   } catch(e) {
     console.error('Swap submit error:', e);
-    err.innerHTML = 'İlanınız kaydedilemedi, lütfen tekrar deneyin.<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
+    err.innerHTML = (isEdit ? 'Değişiklikler kaydedilemedi, lütfen tekrar deneyin.' : 'İlanınız kaydedilemedi, lütfen tekrar deneyin.') + '<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
     err.style.display = 'block';
     return;
+  }
+
+  // Success wording has to match what actually happened.
+  const okBox = document.getElementById('post-success');
+  if (okBox) {
+    const h = okBox.querySelector('h3');
+    const pEl = okBox.querySelector('p');
+    if (h)   h.textContent = isEdit ? 'Değişiklikler kaydedildi!' : 'İlanın yayınlandı!';
+    if (pEl) pEl.innerHTML = isEdit ? 'İlanın güncellendi.' : 'Eşleşmek isteyen üyeler sana ulaşacak.<br>İyi takaslar!';
   }
   document.getElementById('post-body').style.display='none';
   document.getElementById('post-footer').style.display='none';
   document.getElementById('post-success').style.display='block';
-  __swapDraft.clear();
+  if (!_editingSwapId) __swapDraft.clear();
   setTimeout(() => { closePostModal(); renderSwaps(); }, 2500);
 }
 
