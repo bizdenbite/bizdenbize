@@ -458,7 +458,7 @@
       <div class="tab-pane" id="tab-swaps">
         <div class="card">
           <table>
-            <thead><tr><th>Başlık</th><th>Şehir</th><th>Oda</th><th>Tarih</th><th>İşlem</th></tr></thead>
+            <thead><tr><th>Başlık</th><th>Durum</th><th>Oda</th><th>Tarih</th><th>İşlem</th></tr></thead>
             <tbody id="swaps-tbody"><tr class="loading-row"><td colspan="5">Yükleniyor...</td></tr></tbody>
           </table>
         </div>
@@ -986,7 +986,7 @@
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`;
 
       document.getElementById('swaps-tbody').innerHTML = swaps.length ? swaps.map(s => `
-        <tr><td>${s.city||'—'} → ${s.destination||'—'}</td><td>${s.city||'—'}</td><td>${s.rooms||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+        <tr><td>${s.city||'—'} → ${s.destination||'—'}</td><td>${s.status === 'approved' ? '<span class="badge badge-green">✓ Yayında</span>' : s.status === 'rejected' ? '<span class="badge badge-red">✕ Reddedildi</span>' : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>'}${s.active === false ? ' <span class="badge badge-muted">🙈 Sahibi gizledi</span>' : ''}</td><td>${s.rooms||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td>${s.status !== 'approved' ? `<button class="btn btn-sm btn-green" onclick="approveSwap('${s.id}')">✅ Onayla</button>` : `<button class="btn btn-sm btn-muted" onclick="unapproveSwap('${s.id}')">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
       document.getElementById('reviews-tbody').innerHTML = reviews.length ? reviews.map(r => `
         <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${r.comment||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
@@ -1029,6 +1029,23 @@
     try { await sb(`${table}?id=eq.${id}`, { method:'DELETE' }); loadContent(); toast('Kayıt silindi.'); }
     catch(e) { toast('Silme hatası.', false); }
   }
+
+  window.approveSwap = async function(id) {
+    try {
+      await sb(`swap_offers?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'approved' }) });
+      toast('Takas ilanı onaylandı ve yayına alındı! ✓');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
+  window.unapproveSwap = async function(id) {
+    if (!confirm('Bu takas ilanını yayından kaldırmak istediğinizden emin misiniz?')) return;
+    try {
+      await sb(`swap_offers?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'pending' }) });
+      toast('İlan yayından kaldırıldı.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
 
   window.approveTutor = async function(id) {
     try {
