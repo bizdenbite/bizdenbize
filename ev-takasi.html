@@ -446,9 +446,6 @@
 
   <!-- SIDEBAR -->
   <aside class="filter-sidebar">
-    <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.5;">
-        🇩🇪 <strong style="color:var(--ink);">Almanya'dan başlıyoruz!</strong><br>Diğer ülkeler yakında ekleniyor.
-      </div>
       <div class="filter-box">
       <div class="filter-box-title">Konum</div>
       <select class="filter-input" id="f-loc" onchange="filterAndRenderSwaps()" style="margin-bottom:8px;cursor:pointer;">
@@ -646,7 +643,7 @@
       <div id="p-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
     <div class="modal-footer" id="post-footer"><button class="submit-btn" onclick="submitPost()">İlanı Yayınla →</button><div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Para talep etmek yasaktır. Kural ihlalleri hesap kapatılmasına yol açar.</div></div>
-    <div class="post-success" id="post-success"><div style="font-size:48px;">🎉</div><h3>İlanın yayınlandı!</h3><p>Eşleşmek isteyen üyeler sana ulaşacak.<br>İyi takaslar!</p></div>
+    <div class="post-success" id="post-success"><div style="font-size:48px;">⏳</div><h3>İlanın alındı!</h3><p>İlanın yönetici onayına gönderildi.<br>Onaylandıktan sonra yayında görünecek.</p></div>
   </div>
 </div>
 
@@ -792,6 +789,18 @@
     const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { method:'PATCH', headers, body: JSON.stringify(data) });
     if (!r.ok) throw new Error('DB update error ' + r.status + ': ' + await r.text());
   }
+  // Like sbPostAuth but returns the created row — needed to get a new
+  // conversation's id so a message can be attached to it.
+  async function sbPostAuthReturn(table, data) {
+    const session = window._currentSession;
+    if (!session) throw new Error('Not logged in');
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
+
   async function sbRpcAuth(fn, args) {
     const session = window._currentSession;
     if (!session) throw new Error('Not logged in');
@@ -940,7 +949,10 @@ function destText(s) {
 }
 
 function formatDate(d) {
-  const [y,m,day] = d.split('-');
+  // Year-round listings have no dates; without this guard the whole
+  // detail/request flow throws on d.split and the buttons go dead.
+  if (!d) return 'Belirtilmemiş';
+  const [y,m,day] = String(d).split('-');
   const months = ['','Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
   return `${day} ${months[parseInt(m)]} ${y}`;
 }
@@ -967,23 +979,19 @@ function openDetail(id) {
     ${s.suggested_duration ? `<div class="info-box"><div class="info-box-label">Önerilen Süre</div><div class="info-box-val">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</div></div>` : ''}
     <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}${rating ? ` · ⭐ ${rating.avg_rating} (${rating.review_count})` : ''}</div></div>
     <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + s.destination : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
-  const isPhone = (s.contact||'').startsWith('+');
   const msgBtn = document.getElementById('d-msg-btn');
   const waBtn = document.getElementById('d-wa-btn');
   const waMessage = s.destination
     ? `Merhaba, BizdenBize üzerinden ${s.city} → ${s.destination} tatil takası ilanınızla ilgili görüşmek istiyorum.`
     : `Merhaba, BizdenBize üzerinden ${s.city} şehrindeki ev sahipliği ilanınızla ilgili görüşmek istiyorum.`;
-  const subjectLabel = s.destination ? `"${s.city} → ${s.destination}"` : `"${s.city}"`;
+  // On-platform messaging only: the previous mailto:/tel:/WhatsApp handlers
+  // exposed the host's personal email or phone to anyone viewing the listing.
   msgBtn.onclick = () => {
-    if (isPhone) window.location.href = `tel:${s.contact}`;
-    else window.location.href = `mailto:${s.contact}?subject=${encodeURIComponent(`BizdenBize'deki ${subjectLabel} tatil takası ilanınız hakkında`)}`;
+    if (!window._currentSession) { window.location.href = 'login.html?redirect=ev-takasi.html'; return; }
+    if (s.user_id === window._currentSession.user.id) { alert('Bu ilan size ait.'); return; }
+    window.location.href = `messages.html?with=${encodeURIComponent(s.user_id)}&ref=${encodeURIComponent(waMessage)}`;
   };
-  if (isPhone) {
-    waBtn.style.display = '';
-    waBtn.onclick = () => window.open(`https://wa.me/${(s.contact||'').replace(/\s|\+/g,'')}?text=${encodeURIComponent(waMessage)}`, '_blank');
-  } else {
-    waBtn.style.display = 'none';
-  }
+  if (waBtn) waBtn.style.display = 'none';
   window._currentDetailOffer = s;
   document.getElementById('d-request-btn').onclick = () => openRequestModal(s);
   document.getElementById('detail-modal').classList.add('open');
@@ -1330,7 +1338,8 @@ async function submitPost() {
         contact:   session.user.email,
         featured:  false,
         verified:  false,
-        active:    true
+        active:    true,
+        status:    'pending'
       }, editableFields));
     }
   } catch(e) {
@@ -1345,8 +1354,12 @@ async function submitPost() {
   if (okBox) {
     const h = okBox.querySelector('h3');
     const pEl = okBox.querySelector('p');
-    if (h)   h.textContent = isEdit ? 'Değişiklikler kaydedildi!' : 'İlanın yayınlandı!';
-    if (pEl) pEl.innerHTML = isEdit ? 'İlanın güncellendi.' : 'Eşleşmek isteyen üyeler sana ulaşacak.<br>İyi takaslar!';
+    // A new listing is NOT live yet — it waits for admin approval, so the
+    // success screen must not say it was published.
+    if (h)   h.textContent = isEdit ? 'Değişiklikler kaydedildi!' : 'İlanın alındı!';
+    if (pEl) pEl.innerHTML = isEdit
+      ? 'İlanın güncellendi.'
+      : 'İlanın yönetici onayına gönderildi. Onaylandıktan sonra yayında görünecek.<br>Durumunu profilindeki “İlanlarım” bölümünden takip edebilirsin.';
   }
   document.getElementById('post-body').style.display='none';
   document.getElementById('post-footer').style.display='none';
@@ -1404,11 +1417,16 @@ async function openRequestModal(offer) {
   document.getElementById('rq-host-info').innerHTML = `<strong>${offer.user_name}</strong>'in ${offer.city} şehrindeki evi için talep gönderiyorsunuz.`;
   document.getElementById('rq-checkin').value = '';
   document.getElementById('rq-checkout').value = '';
-  document.getElementById('rq-checkin').min = offer.available_from;
-  document.getElementById('rq-checkin').max = offer.available_to;
-  document.getElementById('rq-checkout').min = offer.available_from;
-  document.getElementById('rq-checkout').max = offer.available_to;
-  document.getElementById('rq-availability-note').textContent = `Ev sahibi ${formatDate(offer.available_from)} – ${formatDate(offer.available_to)} arasında müsait.`;
+  const anytime = offer.availability_type === 'anytime' || !offer.available_from || !offer.available_to;
+  ['rq-checkin','rq-checkout'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (anytime) { el.removeAttribute('min'); el.removeAttribute('max'); }
+    else { el.min = offer.available_from; el.max = offer.available_to; }
+  });
+  document.getElementById('rq-availability-note').textContent = anytime
+    ? 'Ev sahibi yıl boyu müsait — istediğiniz tarihleri önerin, ev sahibi onaylayacak.'
+    : `Ev sahibi ${formatDate(offer.available_from)} – ${formatDate(offer.available_to)} arasında müsait.`;
   document.getElementById('rq-message').value = '';
   document.getElementById('rq-points-preview').style.display = 'none';
   document.getElementById('rq-error').style.display = 'none';
@@ -1432,6 +1450,38 @@ function updateRequestPoints() {
   preview.style.display = 'block';
 }
 
+// Mirrors findOrCreateConversation() in messages.html: one general
+// person-to-person thread, listing_id null (swap offers are not rows in
+// the `listings` table, so scoping the thread to one would not resolve).
+async function findOrCreateSwapConversation(otherId) {
+  const me = window._currentSession.user.id;
+  const filter = `or=(and(participant_1.eq.${me},participant_2.eq.${otherId}),and(participant_1.eq.${otherId},participant_2.eq.${me}))&listing_id=is.null&select=id&limit=1`;
+  const existing = await sbGetAuth('conversations', filter);
+  if (existing && existing.length) return existing[0].id;
+  const created = await sbPostAuthReturn('conversations', { participant_1: me, participant_2: otherId });
+  return created ? created.id : null;
+}
+
+// The booking row alone is invisible until the host opens "Taleplerim",
+// so the request is also delivered as a real message in their inbox.
+async function messageHostAboutRequest(offer, checkIn, checkOut, nights, note) {
+  const convId = await findOrCreateSwapConversation(offer.user_id);
+  if (!convId) throw new Error('Konuşma oluşturulamadı');
+  const lines = [
+    '📅 Konaklama talebi gönderdim.',
+    `Ev: ${offer.city}`,
+    `Tarihler: ${formatDate(checkIn)} – ${formatDate(checkOut)} (${nights} gece)`,
+    `Puan: ${nights}`,
+    note ? `Notum: ${note}` : null,
+    'Talebi “Taleplerim” bölümünden onaylayabilir veya reddedebilirsin.'
+  ].filter(Boolean);
+  await sbPostAuth('messages', {
+    conversation_id: convId,
+    sender_id: window._currentSession.user.id,
+    content: lines.join('\n')
+  });
+}
+
 async function submitStayRequest() {
   const offer = window._currentDetailOffer;
   const session = window._currentSession;
@@ -1443,7 +1493,8 @@ async function submitStayRequest() {
   if (!checkIn || !checkOut) { err.textContent = 'Lütfen giriş ve çıkış tarihlerini seçin.'; err.style.display = 'block'; return; }
   const nights = Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000);
   if (nights <= 0) { err.textContent = 'Çıkış tarihi giriş tarihinden sonra olmalı.'; err.style.display = 'block'; return; }
-  if (checkIn < offer.available_from || checkOut > offer.available_to) {
+  const isAnytimeOffer = offer.availability_type === 'anytime' || !offer.available_from || !offer.available_to;
+  if (!isAnytimeOffer && (checkIn < offer.available_from || checkOut > offer.available_to)) {
     err.textContent = `Seçtiğiniz tarihler ev sahibinin müsaitlik aralığının (${formatDate(offer.available_from)} – ${formatDate(offer.available_to)}) dışında.`;
     err.style.display = 'block';
     return;
@@ -1469,10 +1520,26 @@ async function submitStayRequest() {
     err.style.display = 'block';
     return;
   }
+  // The booking is saved at this point. If the message fails, say so
+  // plainly rather than pretending the host was notified.
+  let messaged = true;
+  try {
+    await messageHostAboutRequest(offer, checkIn, checkOut, nights, message);
+  } catch(e) {
+    console.error('Stay request message error:', e);
+    messaged = false;
+  }
+
+  const okNote = document.getElementById('request-success');
+  if (okNote && !messaged) {
+    okNote.insertAdjacentHTML('beforeend',
+      `<p style="font-size:12px;color:var(--muted);margin-top:8px;">Talebin kaydedildi, ancak mesaj gönderilemedi. <a href="messages.html?with=${offer.user_id}" style="color:var(--teal);font-weight:600;">Ev sahibine yazmak için tıkla</a>.</p>`);
+  }
+
   document.getElementById('request-body').style.display = 'none';
   document.getElementById('request-footer').style.display = 'none';
   document.getElementById('request-success').style.display = 'block';
-  setTimeout(() => { closeRequestModal(); closeDetailModal(); }, 2500);
+  setTimeout(() => { closeRequestModal(); closeDetailModal(); }, messaged ? 2500 : 6000);
 }
 
 let _requestsTab = 'guest';
