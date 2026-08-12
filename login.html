@@ -27,7 +27,8 @@
 
     /* ── LEFT PANEL ── */
     .left-panel {
-      background: var(--navy);
+      background: var(--cream);
+      border-right: 1px solid var(--warm);
       display: flex; flex-direction: column;
       padding: 48px;
       position: relative; overflow: hidden;
@@ -36,21 +37,21 @@
       content: '';
       position: absolute; top: -100px; right: -100px;
       width: 400px; height: 400px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(212,43,43,.35) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(212,43,43,.10) 0%, transparent 65%);
       pointer-events: none;
     }
     .left-panel::after {
       content: '';
       position: absolute; bottom: -60px; left: -60px;
       width: 280px; height: 280px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(201,168,76,.15) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(201,168,76,.14) 0%, transparent 65%);
       pointer-events: none;
     }
     .panel-logo {
       position: relative; z-index: 1;
       margin-bottom: auto;
     }
-    .panel-logo img { height: 44px; width: auto; filter: brightness(0) invert(1); }
+    .panel-logo img { height: 44px; width: auto; }
 
     .panel-content {
       position: relative; z-index: 1;
@@ -59,33 +60,33 @@
     .panel-tag {
       display: inline-flex; align-items: center; gap: 8px;
       font-size: 11px; font-weight: 600; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--gold);
+      text-transform: uppercase; color: var(--red);
       margin-bottom: 20px;
     }
-    .panel-tag::before { content: ''; width: 20px; height: 2px; background: var(--gold); }
+    .panel-tag::before { content: ''; width: 20px; height: 2px; background: var(--red); }
     .panel-title {
       font-family: 'Playfair Display', serif;
       font-size: clamp(32px, 3.5vw, 48px);
       font-weight: 900; line-height: 1.1;
-      color: var(--white); letter-spacing: -1px;
+      color: var(--ink); letter-spacing: -1px;
       margin-bottom: 16px;
     }
     .panel-title em { color: var(--red2); font-style: normal; }
     .panel-sub {
-      font-size: 15px; color: rgba(255,255,255,.5);
+      font-size: 15px; color: var(--muted);
       line-height: 1.65; max-width: 360px;
       margin-bottom: 36px;
     }
 
     /* Testimonial */
     .testimonial {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
+      background: #fff;
+      border: 1px solid var(--warm);
       border-radius: 14px; padding: 20px 22px;
       max-width: 380px;
     }
     .test-text {
-      font-size: 14px; color: rgba(255,255,255,.7);
+      font-size: 14px; color: var(--muted);
       line-height: 1.65; margin-bottom: 14px;
       font-style: italic;
     }
@@ -96,21 +97,21 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 13px; font-weight: 700; flex-shrink: 0;
     }
-    .test-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85); }
-    .test-city { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+    .test-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .test-city { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
     /* Stats row */
     .stats-row {
       display: flex; gap: 32px;
       margin-top: 36px; padding-top: 28px;
-      border-top: 1px solid rgba(255,255,255,.1);
+      border-top: 1px solid var(--warm);
       position: relative; z-index: 1;
     }
     .stat-val {
       font-family: 'Playfair Display', serif;
-      font-size: 26px; font-weight: 700; color: var(--white);
+      font-size: 26px; font-weight: 700; color: var(--ink);
     }
-    .stat-label { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 2px; }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
     /* ── RIGHT PANEL ── */
     .right-panel {
@@ -843,13 +844,23 @@
 <!-- LEFT PANEL -->
 <div class="left-panel">
   <div class="panel-logo">
-    <span style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:32px;line-height:1;letter-spacing:-.3px;color:#ffffff;">Bizden<span style="color:#D42B2B;">Bize</span></span>
+    <span style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:32px;line-height:1;letter-spacing:-.3px;color:var(--ink);border-bottom:4px double var(--navy);padding-bottom:3px;">Bizden<span style="color:var(--red);">Bize</span></span>
   </div>
 
   <div class="panel-content">
-    <span class="panel-tag">Almanya'daki Dijital Mahalleniz!</span>
-    <h1 class="panel-title">Gurbet hayatını<br><em>kolaylaştırıyoruz.</em></h1>
+    <span class="panel-tag">Almanya'daki Dijital Mahallemiz</span>
+    <h1 class="panel-title">Gurbette hayat<br><em>el ele daha kolay.</em></h1>
     <p class="panel-sub">Komşularınla bağlan, güvenle al-sat yap, AbiBOT ile sorularını yanıtla — hepsi tek platformda.</p>
+
+    <div style="margin:22px 0 4px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Giriş yaptıktan sonra</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5;"><span>🏘️</span><span><strong style="color:var(--ink);font-weight:600;">Mahallene göz at</strong> — komşuların neler paylaşmış, neler oluyor?</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5;"><span>💬</span><span><strong style="color:var(--ink);font-weight:600;">Sorunu sor</strong> — topluluğa ya da AbiBOT'a; uzmanlarımız da burada.</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5;"><span>📅</span><span><strong style="color:var(--ink);font-weight:600;">İlan ve etkinlik paylaş</strong> — al-sat, iş, ev takası, buluşmalar.</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5;"><span>✉️</span><span><strong style="color:var(--ink);font-weight:600;">Mesajlarına bak</strong> — sana yazan ya da soru soran olmuş olabilir.</span></div>
+      </div>
+    </div>
 
     <div class="testimonial">
       <p class="test-text">"Frankfurt'ta Niederlas­sungs­erlaubnis için ne yapacağımı bilmiyordum. AbiBOT dakikalar içinde her şeyi açıkladı, üstelik Türkçe!"</p>
