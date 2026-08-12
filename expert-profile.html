@@ -148,7 +148,7 @@
 <nav>
   <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
   <div class="nav-right">
-    <button onclick="bbGoBack('uzmanlar.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</button>
+    <a href="uzmanlar.html" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</a>
     <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
     <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;">—</div>
     <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
@@ -396,6 +396,7 @@
 
       myReviews = reviews || [];
       injectOwnerPanel();
+      renderOwnerExpertise();
     } catch(e) {
       console.error('Owner panel check failed:', e);
     }
@@ -449,6 +450,26 @@
     return html;
   }
 
+  function renderOwnerExpertise() {
+    const box = document.getElementById('owner-expertise');
+    if (!box) return;
+    const cats  = window._expertCategories || [];
+    const cfg   = window.BB_CONFIG || {};
+    const names = cfg.categoryLabels || {};
+    const icons = cfg.categoryIcons || {};
+    const e     = window._expertRecord || {};
+    const rows = [['Unvan', e.title || e.expert_title || '—'],
+                  ['Tanıtım', e.expert_bio || e.bio || '—']];
+    box.innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+        ${cats.length
+          ? cats.map(c => `<span style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(27,58,140,.07);border:1px solid rgba(27,58,140,.2);border-radius:20px;font-size:12.5px;font-weight:600;color:var(--navy,#1B3A8C);">${icons[c] || '•'} ${names[c] || c}</span>`).join('')
+          : '<span style="font-size:12.5px;color:var(--muted);">Henüz uzmanlık alanı tanımlanmamış.</span>'}
+      </div>
+      ${rows.map(([k, v]) => `<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;"><strong style="color:var(--ink);">${k}:</strong> ${v}</div>`).join('')}
+      <div style="font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;">Bu bilgileri değiştirmek için <a href="mailto:support@bizdenbize.com" style="color:var(--navy,#1B3A8C);font-weight:600;">bize yazın</a>.</div>`;
+  }
+
   function injectOwnerPanel() {
     if (document.getElementById('owner-panel')) return; // already injected
     injectPhonePanel();
@@ -457,6 +478,12 @@
     wrap.className = 'owner-panel';
     wrap.id = 'owner-panel';
     wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">🎓 Uzmanlık Alanlarım</div>
+      </div>
+      <div class="owner-panel-note">Profilinizde görünen uzmanlık alanlarınız. Sorular size bu alanlara göre yönlendirilir.</div>
+      <div id="owner-expertise" style="margin-bottom:22px;"></div>
+
       <div class="owner-panel-head">
         <div class="owner-panel-title">🔒 Sorularım</div>
       </div>
@@ -938,6 +965,7 @@
     document.title = `BizdenBize — ${name}`;
     window._expertName = name;
     window._expertCategories = expert.categories || [];
+    window._expertRecord = expert;
     const modalName = document.getElementById('modal-expert-name');
     if (modalName) modalName.textContent = `${name} · ${expert.title || 'Uzman'}`;
   }
