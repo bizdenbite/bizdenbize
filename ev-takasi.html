@@ -460,6 +460,19 @@
       <input class="filter-input" id="f-city" type="text" placeholder="Şehir ara..." oninput="filterAndRenderSwaps()">
     </div>
     <div class="filter-box">
+      <div class="filter-box-title">Ne zaman?</div>
+      <label style="font-size:11px;color:var(--muted);">Gidiş</label>
+      <input class="filter-input" id="f-from" type="date" onchange="filterAndRenderSwaps()" style="margin-bottom:8px;">
+      <label style="font-size:11px;color:var(--muted);">Dönüş</label>
+      <input class="filter-input" id="f-to" type="date" onchange="filterAndRenderSwaps()">
+      <label class="filter-opt" style="padding:6px 0;margin-top:6px;">
+        <input type="checkbox" id="f-include-anytime" checked onchange="filterAndRenderSwaps()">
+        <span style="font-size:12px;">Yıl boyu müsait evleri de göster</span>
+      </label>
+      <button onclick="clearDateFilter()" style="font-size:11px;color:var(--muted);background:none;border:none;padding:4px 0;cursor:pointer;font-family:inherit;text-decoration:underline;">Tarihleri temizle</button>
+    </div>
+
+    <div class="filter-box">
       <div class="filter-box-title">Nereye Gitmek İstiyor?</div>
       <input class="filter-input" id="f-dest" type="text" placeholder="Hedef şehir..." list="dest-suggestions" oninput="filterAndRenderSwaps()">
       <datalist id="dest-suggestions">
@@ -589,8 +602,11 @@
       <div class="trust-box"><div class="trust-icon">ℹ️</div><div><div class="trust-title">Nasıl çalışır?</div><div class="trust-text">İlanın yayınlandıktan sonra ilgilenen üyeler sana mesaj atar. Para talep edemezsiniz — bu saf bir tatil takasıdır.</div></div></div>
       <div><label class="field-label">İlan Sahibi</label><div class="field-input" id="p-name-display" style="background:var(--warm);color:var(--muted);display:flex;align-items:center;"></div></div>
       <div class="field-row">
-        <div><label class="field-label">Şehrim *</label><input class="field-input" id="p-city" type="text" placeholder="Frankfurt"></div>
-        <div><label class="field-label">Ülke *</label><select class="field-input" id="p-country"></select></div>
+        <div style="grid-column:1/-1;"><label class="field-label">Evimin bulunduğu şehir *</label>
+          <input class="field-input" id="p-city" type="text" placeholder="Antalya, Roma, Cape Town...">
+          <input type="hidden" id="p-country">
+          <div id="p-city-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Listeden seçersen ülke ve harita bağlantısı otomatik eklenir.</div>
+        </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:8px;background:var(--warm);border-radius:8px;padding:10px 12px;margin-bottom:4px;">
         <input type="checkbox" id="p-no-dest" onchange="toggleDestField()" style="margin-top:2px;">
@@ -602,8 +618,21 @@
         <div><label class="field-label">Oda Sayısı</label><select class="field-input" id="p-rooms"><option>1+1</option><option>2+1</option><option>3+1</option><option>4+1 ve üzeri</option></select></div>
       </div>
       <div class="field-row">
-        <div><label class="field-label">Müsait Tarih *</label><input class="field-input" id="p-from" type="date"></div>
-        <div><label class="field-label">Bitiş Tarihi *</label><input class="field-input" id="p-to" type="date"></div>
+        <div style="grid-column:1/-1;">
+          <label class="field-label">Ne zaman müsait? *</label>
+          <label class="filter-opt" style="padding:6px 0;">
+            <input type="radio" name="p-avail" id="p-avail-window" value="window" checked onchange="toggleAvailFields()">
+            <span style="font-size:13px;">📅 Belirli tarihlerde (seyahatteyken)</span>
+          </label>
+          <label class="filter-opt" style="padding:6px 0;">
+            <input type="radio" name="p-avail" id="p-avail-anytime" value="anytime" onchange="toggleAvailFields()">
+            <span style="font-size:13px;">🗓️ Yıl boyunca — tarihleri talep geldikçe belirlerim</span>
+          </label>
+        </div>
+        <div id="p-date-wrap" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label class="field-label">Müsait Tarih *</label><input class="field-input" id="p-from" type="date"></div>
+          <div><label class="field-label">Bitiş Tarihi *</label><input class="field-input" id="p-to" type="date"></div>
+        </div>
       </div>
       <div><label class="field-label">Aile Büyüklüğü</label><select class="field-input" id="p-family"><option>👤 1-2 kişi</option><option>👨‍👩‍👧 Aile (3-5)</option><option>👨‍👩‍👧‍👦 Büyük Aile (6+)</option></select></div>
       <div><label class="field-label">Önerilen Konaklama Süresi</label><select class="field-input" id="p-duration">
@@ -802,6 +831,22 @@ function filterAndRenderSwaps() {
   // here means every home in Germany — a broad filter, unlike classifieds
   // where the same label means "listing scoped to Germany".
   const locQ = document.getElementById('f-loc')?.value || 'all';
+  const wantFrom = document.getElementById('f-from')?.value || '';
+  const wantTo   = document.getElementById('f-to')?.value || '';
+  const includeAnytime = document.getElementById('f-include-anytime')?.checked !== false;
+
+  // Overlap, not containment: someone free 1–31 July matches a search for
+  // 10–20 July. Requiring the listing to sit inside the search window would
+  // hide most real matches. Dates are ISO strings, so string compare is safe.
+  function dateMatches(s) {
+    if (!wantFrom && !wantTo) return true;              // no date filter set
+    if (s.availability_type === 'anytime') return includeAnytime;
+    const aFrom = s.available_from, aTo = s.available_to;
+    if (!aFrom || !aTo) return includeAnytime;          // treat unknown as flexible
+    if (wantFrom && aTo   < wantFrom) return false;     // listing ends before you arrive
+    if (wantTo   && aFrom > wantTo)   return false;     // listing starts after you leave
+    return true;
+  }
   const EU_COUNTRIES = (typeof EU_COUNTRY_CODES !== 'undefined') ? EU_COUNTRY_CODES : ['de'];
   const destQ = (document.getElementById('f-dest').value||'').toLowerCase();
   const typeDaire = document.getElementById('f-daire').checked;
@@ -816,6 +861,7 @@ function filterAndRenderSwaps() {
     if (locQ === 'de' && sCountry !== 'de') return false;
     if (locQ === 'tr' && sCountry !== 'tr') return false;
     if (locQ === 'eu' && !EU_COUNTRIES.includes(sCountry)) return false;
+    if (!dateMatches(s)) return false;
     if (cityQ && !s.city.toLowerCase().includes(cityQ)) return false;
     if (destQ && !(s.destination||'').toLowerCase().includes(destQ)) return false;
     if ((typeDaire||typeEv||typeVilla) && !((typeDaire && s.home_type==='Daire')||(typeEv && s.home_type==='Müstakil Ev')||(typeVilla && s.home_type==='Villa / Yazlık'))) return false;
@@ -828,7 +874,13 @@ function filterAndRenderSwaps() {
   // Sort — was previously decorative (selecting either option had no effect).
   const sortBy = document.getElementById('sort-select')?.value || 'new';
   if (sortBy === 'soon') {
-    filtered = [...filtered].sort((a, b) => new Date(a.available_from) - new Date(b.available_from));
+    // Year-round listings have no start date; keep them after the dated ones
+    // instead of letting Invalid Date scramble the order.
+    filtered = [...filtered].sort((a, b) => {
+      const av = a.available_from ? new Date(a.available_from).getTime() : Infinity;
+      const bv = b.available_from ? new Date(b.available_from).getTime() : Infinity;
+      return av - bv;
+    });
   } else {
     filtered = [...filtered].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   }
@@ -849,8 +901,9 @@ function filterAndRenderSwaps() {
       </div>
       <div class="card-body">
         <div class="card-location">
-          <span class="card-flag"><img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" alt="${(s.country||'').toUpperCase()}" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;"></span>
+          ${s.country ? `<span class="card-flag"><img src="https://flagcdn.com/20x15/${s.country.toLowerCase()}.png" alt="${s.country.toUpperCase()}" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;"></span>` : ''}
           <span class="card-city">${s.city}</span>
+          <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Google Haritalar'da aç" style="font-size:12px;text-decoration:none;margin-left:2px;">🗺️</a>
         </div>
         <div class="card-wants">
           <span>${s.destination ? 'Gitmek istiyor:' : ''}</span>
@@ -861,7 +914,7 @@ function filterAndRenderSwaps() {
           <span class="card-detail-tag">${HOME_TYPE_LABELS[s.home_type] || s.home_type}</span>
           <span class="card-detail-tag">${s.rooms}</span>
           <span class="card-detail-tag">👨‍👩‍👧 ${s.family_size}</span>
-          <span class="card-detail-tag">📅 ${formatDate(s.available_from)}</span>
+          <span class="card-detail-tag">${s.availability_type === 'anytime' ? '🗓️ Yıl boyu — tarih talebe göre' : '📅 ' + formatDate(s.available_from)}</span>
           ${s.suggested_duration ? `<span class="card-detail-tag">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</span>` : ''}
         </div>
         ${s.description ? `<div class="card-desc">${s.description}</div><div onclick="event.stopPropagation()" style="margin:2px 0 4px;">${mhTranslateMenuHtml('.card-desc')}</div>` : ""}
@@ -897,11 +950,15 @@ function openDetail(id) {
   if (!s) return;
   const rating = window._ratings ? window._ratings[s.user_id] : null;
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div>${s.verified ? '<div class="detail-verified">✅ Doğrulanmış Üye</div>' : ''}<button class="detail-close" onclick="closeDetailModal()">×</button>`;
-  document.getElementById('d-city').innerHTML = `<img src="https://flagcdn.com/20x15/${(s.country||'de').toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">${s.city}`;
+  document.getElementById('d-city').innerHTML =
+    (s.country ? `<img src="https://flagcdn.com/20x15/${s.country.toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">` : '')
+    + `${s.city} <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;font-weight:600;color:var(--teal);text-decoration:none;margin-left:8px;white-space:nowrap;">🗺️ Haritada gör</a>`;
   document.getElementById('d-dest-label').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest-arrow').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest').textContent = destText(s);
-  document.getElementById('d-dates').textContent = `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
+  document.getElementById('d-dates').textContent = s.availability_type === 'anytime'
+    ? 'Yıl boyu müsait — tarihler talep üzerine karşılıklı belirlenir'
+    : `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
   document.getElementById('d-desc').textContent = s.description;
   document.getElementById('d-desc-translate-wrap').innerHTML = s.description ? mhTranslateMenuHtml('#d-desc') : '';
   document.getElementById('d-info-grid').innerHTML = `
@@ -1080,53 +1137,49 @@ function bbDraft(opts){
     clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
   };
 }
-// ── Countries a swap home can be in ─────────────────────────
-// Home swapping is inherently cross-border, so this is deliberately
-// wider than the Germany-only scope used on jobs/classifieds.
-// eu:true drives the "Tüm Avrupa" filter. Codes are ISO-3166 alpha-2,
-// which is also what flagcdn needs for the card flags.
-const SWAP_COUNTRIES = [
-  ['de','Almanya',true],       ['tr','Türkiye',false],
-  ['al','Arnavutluk',true],    ['at','Avusturya',true],
-  ['be','Belçika',true],       ['ba','Bosna Hersek',true],
-  ['bg','Bulgaristan',true],   ['cz','Çekya',true],
-  ['dk','Danimarka',true],     ['ee','Estonya',true],
-  ['fi','Finlandiya',true],    ['fr','Fransa',true],
-  ['hr','Hırvatistan',true],   ['nl','Hollanda',true],
-  ['gb','İngiltere',true],     ['ie','İrlanda',true],
-  ['es','İspanya',true],       ['se','İsveç',true],
-  ['ch','İsviçre',true],       ['it','İtalya',true],
-  ['is','İzlanda',true],       ['me','Karadağ',true],
-  ['cy','Kıbrıs',true],        ['xk','Kosova',true],
-  ['lv','Letonya',true],       ['lt','Litvanya',true],
-  ['lu','Lüksemburg',true],    ['hu','Macaristan',true],
-  ['mk','Kuzey Makedonya',true],['mt','Malta',true],
-  ['no','Norveç',true],        ['pl','Polonya',true],
-  ['pt','Portekiz',true],      ['ro','Romanya',true],
-  ['rs','Sırbistan',true],     ['sk','Slovakya',true],
-  ['si','Slovenya',true],      ['gr','Yunanistan',true],
-  ['az','Azerbaycan',false],   ['ae','BAE',false],
-  ['eg','Mısır',false],        ['ma','Fas',false],
-  ['ge','Gürcistan',false],    ['tn','Tunus',false],
-  ['us','ABD',false],          ['ca','Kanada',false]
-];
-const EU_COUNTRY_CODES = SWAP_COUNTRIES.filter(c => c[2]).map(c => c[0]);
+// ── Location: Google Places (worldwide) ─────────────────────
+// No country dropdown: a fixed list can never cover every country a
+// member might own a home in. The city field uses Places autocomplete
+// (same integration as onboarding.html) and derives the ISO country
+// code from the selection, which drives the card flag and the
+// "Tüm Avrupa" filter. Typing a city by hand still works — you just
+// don't get the flag.
+const EU_COUNTRY_CODES = ['de','al','at','be','ba','bg','cz','dk','ee','fi','fr','hr','nl','gb','ie','es','se','ch','it','is','me','cy','xk','lv','lt','lu','hu','mk','mt','no','pl','pt','ro','rs','sk','si','gr'];
 
-(function populateCountrySelect() {
-  const sel = document.getElementById('p-country');
-  if (!sel) return;
-  // Almanya and Türkiye stay pinned at the top as the two most likely
-  // choices; the rest follow in Turkish alphabetical order.
-  const pinned = SWAP_COUNTRIES.slice(0, 2);
-  const rest = SWAP_COUNTRIES.slice(2).sort((a, b) => a[1].localeCompare(b[1], 'tr'));
-  sel.innerHTML = [...pinned, ...rest]
-    .map(c => `<option value="${c[0]}">${c[1]}</option>`).join('');
-})();
+// Google Maps link for a listing — no API call, just a search URL.
+function swapMapsUrl(s) {
+  const q = [s.city, s.country_name || ''].filter(Boolean).join(', ');
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+}
+
+window.initSwapPlaces = function () {
+  const input = document.getElementById('p-city');
+  if (!input || !window.google) return;
+  input.setAttribute('autocomplete', 'new-password');
+  const ac = new google.maps.places.Autocomplete(input, {
+    types: ['(cities)'],
+    fields: ['address_components', 'name']
+  });
+  google.maps.event.addListener(ac, 'place_changed', function () {
+    const place = ac.getPlace();
+    if (!place || !place.address_components) return;
+    let city = '', code = '';
+    place.address_components.forEach(c => {
+      if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
+      if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
+      if (c.types.includes('country')) code = (c.short_name || '').toLowerCase();
+    });
+    input.value = city || place.name || input.value;
+    const hidden = document.getElementById('p-country');
+    if (hidden) hidden.value = code;
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+};
 
 const __swapDraft = bbDraft({
   key:'bb_draft_ev_takasi',
   fields:[
-    {id:'p-city',type:'text'},{id:'p-country',type:'select'},{id:'p-no-dest',type:'checkbox'},
+    {id:'p-city',type:'text'},{id:'p-country',type:'text'},{id:'p-no-dest',type:'checkbox'},
     {id:'p-dest',type:'text'},{id:'p-type',type:'select'},{id:'p-rooms',type:'select'},
     {id:'p-from',type:'text'},{id:'p-to',type:'text'},{id:'p-family',type:'select'},
     {id:'p-duration',type:'select'},{id:'p-desc',type:'textarea'}
@@ -1152,6 +1205,11 @@ async function openEditSwap(id) {
   set('p-dest', s.destination);
   set('p-type', s.home_type);
   set('p-rooms', s.rooms);
+  const isAnytime = s.availability_type === 'anytime';
+  const rW = document.getElementById('p-avail-window'), rA = document.getElementById('p-avail-anytime');
+  if (rW) rW.checked = !isAnytime;
+  if (rA) rA.checked = isAnytime;
+  toggleAvailFields();
   set('p-from', s.available_from);
   set('p-to', s.available_to);
   set('p-family', s.family_size);
@@ -1202,6 +1260,24 @@ function closePostModal() {
   const btn = document.querySelector('#post-footer .submit-btn');
   if (btn) btn.textContent = 'İlanı Yayınla →';
 }
+function clearDateFilter() {
+  const f = document.getElementById('f-from'), t = document.getElementById('f-to');
+  if (f) f.value = ''; if (t) t.value = '';
+  filterAndRenderSwaps();
+}
+
+function toggleAvailFields() {
+  const anytime = document.getElementById('p-avail-anytime')?.checked;
+  const wrap = document.getElementById('p-date-wrap');
+  if (wrap) wrap.style.display = anytime ? 'none' : 'grid';
+  if (anytime) {
+    // Clear rather than hide-and-keep: a stale value would be saved and
+    // the CHECK constraint would then contradict what the card shows.
+    const f = document.getElementById('p-from'), t = document.getElementById('p-to');
+    if (f) f.value = ''; if (t) t.value = '';
+  }
+}
+
 function toggleDestField() {
   const noDest = document.getElementById('p-no-dest').checked;
   document.getElementById('p-dest-wrap').style.display = noDest ? 'none' : 'block';
@@ -1218,7 +1294,9 @@ async function submitPost() {
   const from = document.getElementById('p-from').value;
   const to   = document.getElementById('p-to').value;
   const err  = document.getElementById('p-error');
-  if (!city||(!noDest && !dest)||!desc||!from||!to) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
+  const availType = document.getElementById('p-avail-anytime')?.checked ? 'anytime' : 'window';
+  if (!city||(!noDest && !dest)||!desc||(availType === 'window' && (!from||!to))) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
+  if (availType === 'window' && from && to && to < from) { err.textContent='Bitiş tarihi başlangıçtan önce olamaz.'; err.style.display='block'; return; }
   err.style.display='none';
 
   const realName = session.user.user_metadata?.full_name || session.user.email || 'Anonim';
@@ -1231,13 +1309,14 @@ async function submitPost() {
     city,
     destination:    dest || null,
     description:    desc,
-    available_from: from,
-    available_to:   to,
+    availability_type: availType,
+    available_from: availType === 'anytime' ? null : from,
+    available_to:   availType === 'anytime' ? null : to,
     home_type:      document.getElementById('p-type')?.value || null,
     rooms:          document.getElementById('p-rooms')?.value || null,
     family_size:    document.getElementById('p-family')?.value || null,
     suggested_duration: document.getElementById('p-duration')?.value || null,
-    country:        document.getElementById('p-country')?.value || 'de'
+    country:        (document.getElementById('p-country')?.value || '').toLowerCase() || null
   };
 
   const isEdit = !!_editingSwapId;
@@ -1562,6 +1641,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 </script>
   <script type="module" src="nav-msg-badge.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initSwapPlaces" async defer></script>
   <script src="smart-email.js"></script>
 </body>
 </html>
