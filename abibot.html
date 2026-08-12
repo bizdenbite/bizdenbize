@@ -958,11 +958,13 @@
       <button class="eb-btn" id="escalate-sidebar-btn" disabled onclick="openEscalate()">Uzman İncelesin →</button>
     </div>
 
-    <div class="escalate-box" style="background:rgba(27,58,140,.05);border-color:rgba(27,58,140,.2);">
-      <div class="eb-tag" style="color:#1B3A8C;">🎓 Uzman mısınız?</div>
-      <div class="eb-title">Uzman olarak topluluğa katıl</div>
-      <div class="eb-desc">Hukuk, sağlık, finans veya vize alanında çalışıyorsanız, Türkçe konuşan topluluğa siz de destek olabilirsiniz.</div>
-      <a href="uzman-basvuru.html" class="eb-btn" style="display:block;text-align:center;text-decoration:none;background:#1B3A8C;">Uzman Olarak Kayıt Ol →</a>
+    <!-- Solid red: .eb-title/.eb-desc are white by design for the dark box
+         above, so a light background made them nearly unreadable. -->
+    <div class="escalate-box" style="background:var(--red);border:none;">
+      <div class="eb-tag" style="color:rgba(255,255,255,.85);">🎓 Uzman mısınız?</div>
+      <div class="eb-title" style="font-size:14px;font-weight:700;">Uzman olarak topluluğa katıl</div>
+      <div class="eb-desc" style="color:rgba(255,255,255,.85);">Hukuk, sağlık, finans veya vize alanında çalışıyorsanız, Türkçe konuşan topluluğa siz de destek olabilirsiniz.</div>
+      <a href="uzman-basvuru.html" class="eb-btn" style="display:block;text-align:center;text-decoration:none;background:#fff;color:var(--red);font-weight:700;border:none;opacity:1;">Uzman Olarak Kayıt Ol →</a>
     </div>
 
     <div class="panel-section" style="padding-top:14px;padding-bottom:14px;">
