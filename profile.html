@@ -210,6 +210,8 @@
           <div class="credit-val" id="disp-expert-credits">0</div>
         </div>
       </div>
+      <!-- Only rendered for members who actually have an experts row -->
+      <div id="expert-box" style="display:none;margin-top:10px;"></div>
       <a href="#" class="btn-public" id="view-public-btn">👁 Herkese Açık Profilim →</a>
       <button onclick="doLogout()" style="width:100%;margin-top:10px;padding:9px;background:none;border:1px solid var(--sand);border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
     </div>
@@ -328,6 +330,37 @@
     return { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
   }
 
+  // An approved expert had no way in here to reach their own expert
+  // dashboard — the page only showed them as a BUYER of expert answers
+  // (Uzman Kredisi / Uzman Yanıtı), never as an expert themselves.
+  async function loadExpertStatus() {
+    const box = document.getElementById('expert-box');
+    if (!box || !currentUser) return;
+    let row = null;
+    try {
+      const rows = await sb(`experts?select=status&profile_id=eq.${currentUser.id}&limit=1`);
+      row = (rows || [])[0] || null;
+    } catch(e) { console.error('Expert status error:', e); return; }
+    if (!row) return;   // not an expert and never applied — show nothing
+
+    const map = {
+      approved: { bg:'rgba(30,123,75,.08)', bd:'rgba(30,123,75,.3)', c:'#1E7B4B', t:'✅ Onaylı Uzman',
+                  sub:'Sorularınızı ve profilinizi yönetin.', href:'expert-panel.html', cta:'Uzman Paneli →' },
+      pending:  { bg:'rgba(201,168,76,.08)', bd:'rgba(201,168,76,.35)', c:'#8a6d1f', t:'⏳ Uzman Başvurunuz İnceleniyor',
+                  sub:'Onaylandığında size bildirim göndereceğiz.', href:'uzman-basvuru.html', cta:'Başvurumu Gör →' },
+      rejected: { bg:'rgba(212,43,43,.06)', bd:'rgba(212,43,43,.25)', c:'#D42B2B', t:'Uzman başvurunuz onaylanmadı',
+                  sub:'Detaylar için başvuru sayfasına bakın.', href:'uzman-basvuru.html', cta:'Detaylar →' }
+    };
+    const v = map[row.status];
+    if (!v) return;
+    box.style.display = 'block';
+    box.innerHTML = `<div style="background:${v.bg};border:1px solid ${v.bd};border-radius:12px;padding:12px 14px;">
+      <div style="font-size:12.5px;font-weight:700;color:${v.c};margin-bottom:3px;">${v.t}</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:9px;">${v.sub}</div>
+      <a href="${v.href}" style="display:block;text-align:center;padding:8px;background:${v.c};color:#fff;border-radius:8px;font-size:12.5px;font-weight:700;text-decoration:none;">${v.cta}</a>
+    </div>`;
+  }
+
   async function sb(path, opts = {}) {
     try {
       const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
@@ -420,6 +453,7 @@
 
     const abiCredEl = document.getElementById('disp-abibot-credits'); if (abiCredEl) abiCredEl.textContent = profile.abibot_credits || 0;
     const expCredEl = document.getElementById('disp-expert-credits'); if (expCredEl) expCredEl.textContent = profile.expert_credits || 0;
+    loadExpertStatus();
 
     const since = profile.created_at ? new Date(profile.created_at).getFullYear() : '—';
     const sinceEl = document.getElementById('stat-since'); if (sinceEl) sinceEl.textContent = since;

@@ -56,7 +56,7 @@
 
 <nav>
   <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
-  <a href="profil.html" class="nav-back">← Profilime Dön</a>
+  <a href="profile.html" class="nav-back">← Profilime Dön</a>
 </nav>
 
 <div class="page" id="page-content">
@@ -347,7 +347,7 @@
         'Uzman başvurunuz ekibimiz tarafından değerlendiriliyor. Onaylandığında size bildirim göndereceğiz.');
     } else if (existing?.status === 'approved') {
       document.getElementById('page-content').innerHTML = statusBox('✅', 'Zaten onaylı bir uzmansınız',
-        'Profilinizi <a href="profil.html">profil sayfanızdan</a> düzenleyebilirsiniz.');
+        'Uzman profilinizi <a href="expert-panel.html">Uzman Paneli</a> üzerinden düzenleyebilirsiniz.');
     } else if (existing?.status === 'rejected') {
       document.getElementById('page-content').innerHTML = statusBox('✗', 'Başvurunuz onaylanmadı',
         'Sorularınız için <a href="iletisim.html">bizimle iletişime geçebilirsiniz</a>.');
