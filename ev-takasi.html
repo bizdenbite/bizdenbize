@@ -156,6 +156,8 @@
     @media(max-width:768px){.page-body{grid-template-columns:1fr;}.filter-sidebar{display:none;}}
 
     /* SIDEBAR FILTERS */
+    .kind-tab{padding:9px 16px;border-radius:22px;font-size:13px;font-weight:600;font-family:inherit;color:var(--muted);background:var(--white);border:1.5px solid var(--sand);cursor:pointer;transition:all .15s;}
+    .kind-tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
     .filter-sidebar{display:flex;flex-direction:column;gap:14px;}
     .filter-box{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;}
     .filter-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;}
@@ -497,6 +499,10 @@
 
   <!-- MAIN -->
   <main>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="kind-tab active" id="kind-tab-offer" onclick="setKindTab('offer')">🏠 Ev Sahipliği Verenler</button>
+      <button class="kind-tab" id="kind-tab-seeking" onclick="setKindTab('seeking')">🔎 Konaklama Arayanlar</button>
+    </div>
     <div class="results-bar">
       <div class="results-count" id="results-count"><strong>—</strong> takas ilanı</div>
       <select class="sort-select" id="sort-select" onchange="filterAndRenderSwaps()">
@@ -599,6 +605,17 @@
       <div class="trust-box"><div class="trust-icon">ℹ️</div><div><div class="trust-title">Nasıl çalışır?</div><div class="trust-text">İlanın yayınlandıktan sonra ilgilenen üyeler sana mesaj atar. Para talep edemezsiniz — bu saf bir tatil takasıdır.</div></div></div>
       <div><label class="field-label">İlan Sahibi</label><div class="field-input" id="p-name-display" style="background:var(--warm);color:var(--muted);display:flex;align-items:center;"></div></div>
       <div class="field-row">
+        <div style="grid-column:1/-1;">
+          <label class="field-label">İlan türü *</label>
+          <label class="filter-opt" style="padding:6px 0;">
+            <input type="radio" name="p-kind" id="p-kind-offer" value="offer" checked onchange="toggleKindFields()">
+            <span style="font-size:13px;">🏠 Evimi sunuyorum</span>
+          </label>
+          <label class="filter-opt" style="padding:6px 0;">
+            <input type="radio" name="p-kind" id="p-kind-seeking" value="seeking" onchange="toggleKindFields()">
+            <span style="font-size:13px;">🔎 Konaklama arıyorum — karşılığında evimi sunuyorum</span>
+          </label>
+        </div>
         <div style="grid-column:1/-1;"><label class="field-label">Evimin bulunduğu şehir *</label>
           <input class="field-input" id="p-city" type="text" placeholder="Antalya, Roma, Cape Town...">
           <input type="hidden" id="p-country">
@@ -616,7 +633,7 @@
       </div>
       <div class="field-row">
         <div style="grid-column:1/-1;">
-          <label class="field-label">Ne zaman müsait? *</label>
+          <label class="field-label" id="p-date-label">Ne zaman müsait? *</label>
           <label class="filter-opt" style="padding:6px 0;">
             <input type="radio" name="p-avail" id="p-avail-window" value="window" checked onchange="toggleAvailFields()">
             <span style="font-size:13px;">📅 Belirli tarihlerde (seyahatteyken)</span>
@@ -666,7 +683,7 @@
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Açıklama</div><div style="font-size:13px;color:var(--ink);line-height:1.7;" id="d-desc"></div><div id="d-desc-translate-wrap" style="margin-top:4px;"></div></div>
       <div class="trust-box"><div class="trust-icon">🛡️</div><div><div class="trust-title">Güvenli Takas</div><div class="trust-text">Bu üye BizdenBize kimlik doğrulamasından geçmiştir. Para transferi talep etmesi yasaktır. Şüpheli durumları bildirin.</div></div></div>
       <div style="text-align:right;"><button onclick="openReportModal()" style="background:none;border:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;padding:2px 0;">🚩 Bu ilanı bildir</button></div>
-      <div class="trust-box" style="background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🪙</div><div><div class="trust-title" style="color:var(--gold);">Puanla Konaklama</div><div class="trust-text">Karşılıklı takas yapmak zorunda değilsiniz. "Konaklama Talep Et" ile puanınızı kullanarak tek taraflı kalabilirsiniz — ev sahibi daha sonra puanlarını başka bir yerde kullanır.</div></div></div>
+      <div class="trust-box" id="d-points-box" style="background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);"><div class="trust-icon">🪙</div><div><div class="trust-title" style="color:var(--gold);">Puanla Konaklama</div><div class="trust-text">Karşılıklı takas yapmak zorunda değilsiniz. "Konaklama Talep Et" ile puanınızı kullanarak tek taraflı kalabilirsiniz — ev sahibi daha sonra puanlarını başka bir yerde kullanır.</div></div></div>
       <div style="font-size:11px;color:var(--sand);padding:8px 0;border-top:1px dashed var(--warm);">⚠️ BizdenBize takas anlaşmalarından sorumlu değildir. Taşınmadan önce detayları yazılı olarak netleştirin.</div>
     </div>
     <div class="detail-footer" style="flex-wrap:wrap;">
@@ -840,6 +857,7 @@ function filterAndRenderSwaps() {
   // here means every home in Germany — a broad filter, unlike classifieds
   // where the same label means "listing scoped to Germany".
   const locQ = document.getElementById('f-loc')?.value || 'all';
+  const kindQ = window._kindTab || 'offer';
   const wantFrom = document.getElementById('f-from')?.value || '';
   const wantTo   = document.getElementById('f-to')?.value || '';
   const includeAnytime = document.getElementById('f-include-anytime')?.checked !== false;
@@ -870,6 +888,9 @@ function filterAndRenderSwaps() {
     if (locQ === 'de' && sCountry !== 'de') return false;
     if (locQ === 'tr' && sCountry !== 'tr') return false;
     if (locQ === 'eu' && !EU_COUNTRIES.includes(sCountry)) return false;
+    // Rows default to 'offer' so listings created before this feature
+    // keep showing up on the offers tab.
+    if ((s.listing_kind || 'offer') !== kindQ) return false;
     if (!dateMatches(s)) return false;
     if (cityQ && !s.city.toLowerCase().includes(cityQ)) return false;
     if (destQ && !(s.destination||'').toLowerCase().includes(destQ)) return false;
@@ -878,7 +899,7 @@ function filterAndRenderSwaps() {
     return true;
   });
 
-  document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> takas ilanı`;
+  document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> ${kindQ === 'seeking' ? 'konaklama arayan' : 'takas ilanı'}`;
 
   // Sort — was previously decorative (selecting either option had no effect).
   const sortBy = document.getElementById('sort-select')?.value || 'new';
@@ -896,7 +917,13 @@ function filterAndRenderSwaps() {
 
   const grid = document.getElementById('swap-grid');
   if (!filtered.length) {
-    grid.innerHTML = `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler deneyin.</p></div>`;
+    // Distinguish "your filters matched nothing" from "this tab is empty",
+    // and let the seeking tab invite the first post rather than look broken.
+    const anyInTab = (window._swaps || []).some(x => (x.listing_kind || 'offer') === (window._kindTab || 'offer'));
+    const et = kindEmptyText();
+    grid.innerHTML = anyInTab
+      ? `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler deneyin.</p></div>`
+      : `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🏠</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">${et.title}</div><p style="font-size:13px;margin-bottom:16px">${et.body}</p><button onclick="openPostModal()" style="padding:10px 24px;background:var(--teal);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
     return;
   }
 
@@ -914,8 +941,9 @@ function filterAndRenderSwaps() {
           <span class="card-city">${s.city}</span>
           <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Google Haritalar'da aç" style="font-size:12px;text-decoration:none;margin-left:2px;">🗺️</a>
         </div>
+        ${s.listing_kind === 'seeking' ? `<div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:2px;">🔎 KONAKLAMA ARIYOR</div>` : ''}
         <div class="card-wants">
-          <span>${s.destination ? 'Gitmek istiyor:' : ''}</span>
+          <span>${s.destination ? (s.listing_kind === 'seeking' ? 'Gitmek istediği yer:' : 'Gitmek istiyor:') : ''}</span>
           <span class="card-wants-arrow">${s.destination ? '→' : ''}</span>
           <span class="card-wants-dest">${destText(s)}</span>
         </div>
@@ -968,6 +996,8 @@ function openDetail(id) {
   document.getElementById('d-dest-label').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest-arrow').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest').textContent = destText(s);
+  const dLabel = document.querySelector('#d-dates')?.previousElementSibling;
+  if (dLabel && dLabel.textContent) dLabel.textContent = s.listing_kind === 'seeking' ? 'Gitmek İstediği Tarihler' : dLabel.textContent;
   document.getElementById('d-dates').textContent = s.availability_type === 'anytime'
     ? 'Yıl boyu müsait — tarihler talep üzerine karşılıklı belirlenir'
     : `${formatDate(s.available_from)} – ${formatDate(s.available_to)}`;
@@ -993,7 +1023,17 @@ function openDetail(id) {
   };
   if (waBtn) waBtn.style.display = 'none';
   window._currentDetailOffer = s;
-  document.getElementById('d-request-btn').onclick = () => openRequestModal(s);
+  const ptsBox = document.getElementById('d-points-box');
+  if (ptsBox) ptsBox.style.display = s.listing_kind === 'seeking' ? 'none' : '';
+  const reqBtn = document.getElementById('d-request-btn');
+  if (s.listing_kind === 'seeking') {
+    // They are looking for a stay, not offering one — there is nothing to
+    // book here. Messaging is the only sensible action.
+    reqBtn.style.display = 'none';
+  } else {
+    reqBtn.style.display = '';
+    reqBtn.onclick = () => openRequestModal(s);
+  }
   document.getElementById('detail-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1213,6 +1253,11 @@ async function openEditSwap(id) {
   set('p-dest', s.destination);
   set('p-type', s.home_type);
   set('p-rooms', s.rooms);
+  const isSeeking = s.listing_kind === 'seeking';
+  const kO = document.getElementById('p-kind-offer'), kS = document.getElementById('p-kind-seeking');
+  if (kO) kO.checked = !isSeeking;
+  if (kS) kS.checked = isSeeking;
+  toggleKindFields();
   const isAnytime = s.availability_type === 'anytime';
   const rW = document.getElementById('p-avail-window'), rA = document.getElementById('p-avail-anytime');
   if (rW) rW.checked = !isAnytime;
@@ -1268,6 +1313,20 @@ function closePostModal() {
   const btn = document.querySelector('#post-footer .submit-btn');
   if (btn) btn.textContent = 'İlanı Yayınla →';
 }
+window._kindTab = 'offer';
+function kindEmptyText() {
+  return window._kindTab === 'seeking'
+    ? { title: 'Henüz konaklama arayan yok', body: 'Bir yere gitmek istiyorsan ilk ilanı sen ver — evini de karşılığında sunarsın.' }
+    : { title: 'Henüz takas ilanı yok', body: 'İlk ilanı sen ver!' };
+}
+
+function setKindTab(kind) {
+  window._kindTab = kind;
+  document.getElementById('kind-tab-offer').classList.toggle('active', kind === 'offer');
+  document.getElementById('kind-tab-seeking').classList.toggle('active', kind === 'seeking');
+  filterAndRenderSwaps();
+}
+
 function clearDateFilter() {
   const f = document.getElementById('f-from'), t = document.getElementById('f-to');
   if (f) f.value = ''; if (t) t.value = '';
@@ -1286,6 +1345,21 @@ function toggleAvailFields() {
   }
 }
 
+function toggleKindFields() {
+  const seeking = document.getElementById('p-kind-seeking')?.checked;
+  const noDestWrap = document.getElementById('p-no-dest')?.closest('div');
+  // "Nereye gitmek istediğimi bilmiyorum" contradicts a seeking post, so
+  // the option is hidden and the destination becomes required.
+  if (noDestWrap) noDestWrap.style.display = seeking ? 'none' : '';
+  if (seeking) {
+    const nd = document.getElementById('p-no-dest');
+    if (nd) nd.checked = false;
+    toggleDestField();
+  }
+  const dateLabel = document.getElementById('p-date-label');
+  if (dateLabel) dateLabel.textContent = seeking ? 'Ne zaman gitmek istiyorum? *' : 'Ne zaman müsait? *';
+}
+
 function toggleDestField() {
   const noDest = document.getElementById('p-no-dest').checked;
   document.getElementById('p-dest-wrap').style.display = noDest ? 'none' : 'block';
@@ -1302,7 +1376,9 @@ async function submitPost() {
   const from = document.getElementById('p-from').value;
   const to   = document.getElementById('p-to').value;
   const err  = document.getElementById('p-error');
+  const listingKind = document.getElementById('p-kind-seeking')?.checked ? 'seeking' : 'offer';
   const availType = document.getElementById('p-avail-anytime')?.checked ? 'anytime' : 'window';
+  if (listingKind === 'seeking' && !dest) { err.textContent = 'Konaklama arayan ilanlarda nereye gitmek istediğinizi belirtmelisiniz.'; err.style.display='block'; return; }
   if (!city||(!noDest && !dest)||!desc||(availType === 'window' && (!from||!to))) { err.textContent='Lütfen zorunlu alanları doldurun.'; err.style.display='block'; return; }
   if (availType === 'window' && from && to && to < from) { err.textContent='Bitiş tarihi başlangıçtan önce olamaz.'; err.style.display='block'; return; }
   err.style.display='none';
@@ -1317,6 +1393,7 @@ async function submitPost() {
     city,
     destination:    dest || null,
     description:    desc,
+    listing_kind:   listingKind,
     availability_type: availType,
     available_from: availType === 'anytime' ? null : from,
     available_to:   availType === 'anytime' ? null : to,
@@ -1618,10 +1695,12 @@ async function renderRequestsList() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${formatDate(b.check_in)} – ${formatDate(b.check_out)} · 🪙 ${b.points_needed} puan</div>
       ${b.guest_message ? `<div style="font-size:12px;color:var(--ink);background:var(--warm);border-radius:8px;padding:8px 10px;margin-bottom:8px;">${b.guest_message}</div>` : ''}
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <a href="messages.html?with=${encodeURIComponent(_requestsTab === 'guest' ? b.host_user_id : b.guest_user_id)}" style="padding:6px 14px;background:var(--teal);color:#fff;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">💬 Mesajlaş</a>
         ${_requestsTab === 'host' && b.status === 'requested' ? `
-          <button onclick="respondBooking('${b.id}','accepted')" style="padding:6px 14px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Kabul Et</button>
+          <button onclick="respondBooking('${b.id}','accepted')" style="padding:6px 14px;background:none;border:1.5px solid var(--teal);color:var(--teal);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Kabul Et</button>
           <button onclick="respondBooking('${b.id}','declined')" style="padding:6px 14px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Reddet</button>` : ''}
         ${canConfirm ? `<button onclick="confirmCompletion('${b.id}')" style="padding:6px 14px;background:var(--gold);color:var(--ink);border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Konaklama Tamamlandı ✓</button>` : ''}
+        ${_requestsTab === 'host' && b.status === 'requested' ? `<div style="font-size:11px;color:var(--muted);width:100%;margin-top:4px;">Acele etmeyin — karar vermeden önce dilediğiniz kadar mesajlaşabilirsiniz.</div>` : ''}
         ${waitingOnOther ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Onayınız kaydedildi, diğer tarafın onayı bekleniyor.</span>` : ''}
         ${plannedNotDue ? `<span style="font-size:11px;color:var(--muted);padding:6px 0;">Her iki taraf da onayladı. Takas tarihi (${formatDate(b.check_out)}) geçtiğinde puanlar otomatik aktarılacak.</span>` : ''}
         ${canReview ? `<button onclick="openReviewModalById('${b.id}')" style="padding:6px 14px;background:none;border:1.5px solid var(--gold);color:var(--gold);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">⭐ Değerlendir</button>` : ''}
@@ -1632,9 +1711,23 @@ async function renderRequestsList() {
 }
 
 async function respondBooking(id, status) {
+  const booking = (window._currentBookingsList || []).find(b => String(b.id) === String(id));
   try {
     await sbPatchAuth('swap_bookings', `id=eq.${id}`, { status });
   } catch(e) { console.error('Booking response error:', e); alert('İşlem başarısız oldu.'); return; }
+
+  // Once a stay is agreed, the listing usually needs updating — narrower
+  // dates, or off the page entirely. Nothing does this automatically,
+  // so the owner is asked rather than left with a listing that no longer
+  // reflects reality.
+  if (status === 'accepted' && booking) {
+    const offer = (window._swaps || []).find(o => String(o.id) === String(booking.offer_id));
+    if (offer && confirm('Talebi kabul ettiniz. İlanınızı şimdi güncellemek ister misiniz?\n\nTarihleri daraltabilir veya ilanı yayından kaldırabilirsiniz.')) {
+      closeRequestsModal();
+      openEditSwap(offer.id);
+      return;
+    }
+  }
   renderRequestsList();
 }
 
