@@ -132,7 +132,7 @@ else initBadge();
       #bb-feedback-btn {
         position: fixed; right: 0; top: 58%; transform: translateY(-50%);
         z-index: 9998; writing-mode: vertical-rl;
-        background: var(--navy, #1B3A8C); color: #fff; border: none;
+        background: var(--navy, #003399); color: #fff; border: none;
         border-radius: 8px 0 0 8px; padding: 14px 6px; cursor: pointer;
         font-family: 'Instrument Sans', system-ui, sans-serif;
         font-size: 12px; font-weight: 600; letter-spacing: .4px; text-decoration: none;
