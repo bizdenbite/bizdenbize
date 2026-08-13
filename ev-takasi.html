@@ -31,7 +31,7 @@
   <style>
     :root {
       --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
-      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --sand:#D4C5A9; --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF;
       --gold:#C9A84C; --green:#1E7B4B; --blue:#185FA5; --teal:#0E7C7B;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -123,7 +123,7 @@
     .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
     /* HERO */
-    .hero{background:var(--ink);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
+    .hero{background:var(--deep, #002266);padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 0%,rgba(14,124,123,.25) 0%,transparent 55%),radial-gradient(ellipse at 10% 100%,rgba(201,168,76,.15) 0%,transparent 50%);}
     .hero-inner{position:relative;max-width:700px;margin:0 auto;}
     .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(14,124,123,.35);padding:4px 12px;border-radius:20px;margin-bottom:18px;}
@@ -514,7 +514,7 @@
   </main>
 </div>
 
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
 
     <!-- Top row -->

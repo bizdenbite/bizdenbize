@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--navy:#1B3A8C;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    :root{--red:#D42B2B;--navy:#003399;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
     nav{position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
@@ -20,7 +20,7 @@
     .nav-back:hover{color:var(--navy);}
 
     /* HERO */
-    .hero{background:var(--ink);padding:80px 24px 72px;text-align:center;position:relative;overflow:hidden;}
+    .hero{background:var(--deep, #002266);padding:80px 24px 72px;text-align:center;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(27,58,140,.35) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(212,43,43,.2) 0%,transparent 50%);}
     .hero-inner{position:relative;max-width:680px;margin:0 auto;}
     .hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:4px 14px;border-radius:20px;margin-bottom:20px;}
@@ -218,7 +218,7 @@
 </div>
 
 
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
 
     <!-- Top row -->

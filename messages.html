@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --red:#D42B2B; --red2:#E8393A; --navy:#1B3A8C; --navy2:#2348A8;
+      --red:#D42B2B; --red2:#E8393A; --navy:#003399; --navy2:#1E4FBF;
       --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
-      --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF;
       --gold:#C9A84C; --green:#1E7B4B;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -265,7 +265,7 @@
     .mm-user {
       display: flex; align-items: center; gap: 14px;
       padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
+      background: var(--navy, #003399);
     }
     .mm-avatar {
       width: 46px; height: 46px; border-radius: 50%;
@@ -284,7 +284,7 @@
       transition: background .15s; cursor: pointer;
     }
     .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #003399); font-weight: 600; }
     .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
     .mm-badge {
       margin-left: auto; font-size: 10px; font-weight: 700;
@@ -489,7 +489,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -509,7 +509,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -532,8 +532,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -706,7 +706,7 @@
     <div id="active-conv" class="conv-view" style="display:none;flex-direction:column;height:100%">
       <div class="chat-header">
         <button class="ch-back" onclick="backToConvList()" title="Geri" aria-label="Geri">‹</button>
-        <div class="ch-avatar" id="ch-avatar" style="background:#1B3A8C"></div>
+        <div class="ch-avatar" id="ch-avatar" style="background:#003399"></div>
         <div class="ch-info">
           <div class="ch-name" id="ch-name"></div>
           <div class="ch-status" id="ch-status"></div>
@@ -764,7 +764,7 @@
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
   window.supabase = supabase;
 
-  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#534AB7','#854F0B'];
+  const AVATAR_COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#534AB7','#854F0B'];
   function colorFor(id) {
     let hash = 0;
     for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
@@ -955,7 +955,7 @@
                 <div class="cg-title">${title}</div>
                 <div class="cg-sub">${convs.length} kişi${unreadTotal>0?` · <span style="color:var(--red);font-weight:600;">${unreadTotal} yeni</span>`:''}</div>
               </div>
-              <a href="${listingDetailUrl(listing, lid)}" onclick="event.stopPropagation()" title="İlanı gör" style="font-size:12px;color:var(--navy,#1B3A8C);text-decoration:none;font-weight:600;white-space:nowrap;">İlanı gör →</a>
+              <a href="${listingDetailUrl(listing, lid)}" onclick="event.stopPropagation()" title="İlanı gör" style="font-size:12px;color:var(--navy,#003399);text-decoration:none;font-weight:600;white-space:nowrap;">İlanı gör →</a>
             </div>
             ${convs.map(c => convItemHtml(c, {grouped:true})).join('')}
           </div>`;
@@ -1538,7 +1538,7 @@ document.addEventListener('click', function(e) {
 
   <!-- PWA install banner -->
   <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
+    background:#003399;color:#fff;padding:14px 20px;
     display:none;align-items:center;gap:14px;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);">
     <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
@@ -1679,7 +1679,7 @@ document.addEventListener('click', function(e) {
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);

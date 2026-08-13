@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -35,7 +35,7 @@
     .chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
     .chip{padding:8px 14px;border:1.5px solid var(--sand);border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;background:var(--cream);}
     .chip:hover{border-color:var(--ink);}
-    .chip.selected{background:var(--ink);border-color:var(--ink);color:#fff;}
+    .chip.selected{background:var(--deep, #002266);border-color:var(--ink);color:#fff;}
 
     .btn-submit{width:100%;padding:14px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-top:6px;}
     .btn-submit:hover{background:var(--red2);}

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--navy:#1B3A8C;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--gold2:#E8C05A;--green:#1E7B4B;}
+    :root{--red:#D42B2B;--red2:#E8393A;--navy:#003399;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--gold2:#E8C05A;--green:#1E7B4B;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
     nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
@@ -20,7 +20,7 @@
     .nav-title span{color:var(--gold);}
     .nav-right{display:flex;align-items:center;gap:10px;}
     .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
-    .hero{background:var(--ink);padding:100px 40px 60px;text-align:center;position:relative;overflow:hidden;}
+    .hero{background:var(--deep, #002266);padding:100px 40px 60px;text-align:center;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.2) 0%,transparent 65%);}
     .hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;position:relative;z-index:1;}
     .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,58px);font-weight:900;color:var(--white);letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px;position:relative;z-index:1;}
@@ -207,7 +207,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -227,7 +227,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -374,7 +374,7 @@
     const plan=isAnnual?'Yıllık · €99.90':'Aylık · €9.99';
     const d=document.createElement('div');
     d.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(26,18,8,.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-    d.innerHTML=`<div style="background:#fff;border-radius:20px;padding:40px;max-width:400px;width:90%;text-align:center;animation:popIn .3s ease"><div style="font-size:48px;margin-bottom:16px">⭐</div><h3 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:8px">Premium'a Hoş Geldin!</h3><p style="font-size:14px;color:#6B5E4E;margin-bottom:6px">${plan}</p><p style="font-size:13px;color:#6B5E4E;line-height:1.6;margin-bottom:24px">Stripe ödeme entegrasyonu backend kurulumunda eklenecek. Şu an demo modunda.</p><button onclick="this.closest('div[style]').remove();window.location='mahallem.html'" style="background:#1B3A8C;color:#fff;border:none;border-radius:10px;padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Dashboard'a Git →</button></div>`;
+    d.innerHTML=`<div style="background:#fff;border-radius:20px;padding:40px;max-width:400px;width:90%;text-align:center;animation:popIn .3s ease"><div style="font-size:48px;margin-bottom:16px">⭐</div><h3 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:8px">Premium'a Hoş Geldin!</h3><p style="font-size:14px;color:#6B5E4E;margin-bottom:6px">${plan}</p><p style="font-size:13px;color:#6B5E4E;line-height:1.6;margin-bottom:24px">Stripe ödeme entegrasyonu backend kurulumunda eklenecek. Şu an demo modunda.</p><button onclick="this.closest('div[style]').remove();window.location='mahallem.html'" style="background:#003399;color:#fff;border:none;border-radius:10px;padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Dashboard'a Git →</button></div>`;
     const s=document.createElement('style');s.textContent='@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}';
     document.head.appendChild(s);document.body.appendChild(d);
     d.addEventListener('click',e=>{if(e.target===d)d.remove();});
@@ -485,7 +485,7 @@
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);

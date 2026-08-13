@@ -15,7 +15,7 @@
   <style>
     :root {
       --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
-      --sand:#D4C5A9; --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF;
+      --sand:#D4C5A9; --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF;
       --gold:#C9A84C; --green:#1E7B4B; --blue:#185FA5;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,7 +42,7 @@
     .nav-right { display: flex; align-items: center; gap: 10px; }
     .credit-pill {
       display: flex; align-items: center; gap: 6px;
-      background: var(--ink); color: var(--white);
+      background:var(--deep, #002266); color: var(--white);
       padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
     }
     .credit-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
@@ -88,7 +88,7 @@
     /* Escalate box */
     .escalate-box {
       margin: 16px; border-radius: 12px;
-      background: var(--ink); padding: 16px;
+      background:var(--deep, #002266); padding: 16px;
     }
     .eb-tag { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
     .eb-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
@@ -122,7 +122,7 @@
     }
     .abibot-avatar {
       width: 44px; height: 44px; border-radius: 12px;
-      background: var(--ink); display: flex; align-items: center; justify-content: center;
+      background:var(--deep, #002266); display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; position: relative;
     }
     .abibot-avatar-inner { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 900; color: var(--white); }
@@ -136,13 +136,13 @@
     body.abibot-brand .abibot-avatar,
     body.abibot-brand .welcome-icon,
     body.abibot-brand .msg-avatar.ai {
-      background: linear-gradient(135deg, var(--ink) 0%, var(--ink) 50%, var(--red) 50%, var(--red) 100%) !important;
+      background: linear-gradient(135deg, var(--deep, #002266) 0%, var(--ink) 50%, var(--red) 50%, var(--red) 100%) !important;
     }
 
     /* Collapsed how-to bar (shown after first visit) */
     .howto-collapsed {
       display: none; align-items: center; gap: 8px; padding: 8px 20px;
-      background: #1A1208; cursor: pointer; flex-shrink: 0;
+      background:var(--deep, #002266); cursor: pointer; flex-shrink: 0;
     }
     .howto-collapsed:hover { background: #2a1f10; }
     .howto-collapsed span { font-size: 12px; color: rgba(255,255,255,.75); }
@@ -150,7 +150,7 @@
     /* How-to bar */
     .howto-bar {
       display: flex !important; align-items: center; gap: 8px;
-      padding: 11px 20px; background: #1A1208 !important;
+      padding: 11px 20px; background:var(--deep, #002266) !important;
       border-bottom: none; flex-wrap: wrap; flex-shrink: 0;
     }
     .howto-step { display: flex; align-items: center; gap: 8px; }
@@ -184,7 +184,7 @@
     .welcome-state { text-align: center; margin: auto; max-width: 440px; padding: 40px 20px; }
     .welcome-icon {
       width: 72px; height: 72px; border-radius: 18px;
-      background: var(--ink); display: flex; align-items: center; justify-content: center;
+      background:var(--deep, #002266); display: flex; align-items: center; justify-content: center;
       margin: 0 auto 20px;
     }
     .welcome-icon-inner { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; color: var(--white); }
@@ -206,7 +206,7 @@
       width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
     }
-    .msg-avatar.ai { background: var(--ink); color: var(--white); border-radius: 9px; font-family: 'Playfair Display', serif; }
+    .msg-avatar.ai { background:var(--deep, #002266); color: var(--white); border-radius: 9px; font-family: 'Playfair Display', serif; }
     .msg-avatar.user { background: var(--red); color: var(--white); }
     .msg-body { max-width: 72%; }
     .msg.user .msg-body { align-items: flex-end; display: flex; flex-direction: column; }
@@ -214,7 +214,7 @@
       padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.65;
     }
     .bubble.ai { background: var(--white); border: 1px solid var(--sand); color: var(--ink); border-radius: 4px 14px 14px 14px; }
-    .bubble.user { background: var(--ink); color: var(--white); border-radius: 14px 4px 14px 14px; }
+    .bubble.user { background:var(--deep, #002266); color: var(--white); border-radius: 14px 4px 14px 14px; }
     .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
     .msg-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
     .msg-action {
@@ -223,7 +223,7 @@
       cursor: pointer; font-family: 'Instrument Sans', sans-serif; transition: all .15s;
     }
     .msg-action:hover { border-color: var(--red); color: var(--red); }
-    .msg-action.escalate-btn { background: var(--ink); color: var(--white); border-color: var(--ink); }
+    .msg-action.escalate-btn { background:var(--deep, #002266); color: var(--white); border-color: var(--ink); }
     .msg-action.escalate-btn:hover { background: var(--red); border-color: var(--red); }
     .msg-action.verify-btn { }
     .verify-box { margin-top: 10px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.55; border: 1px solid var(--sand); background: var(--cream, #FAF7F2); display: none; }
@@ -435,7 +435,7 @@
     .mm-user {
       display: flex; align-items: center; gap: 14px;
       padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
+      background: var(--navy, #003399);
     }
     .mm-avatar {
       width: 46px; height: 46px; border-radius: 50%;
@@ -454,7 +454,7 @@
       transition: background .15s; cursor: pointer;
     }
     .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #003399); font-weight: 600; }
     .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
     .mm-badge {
       margin-left: auto; font-size: 10px; font-weight: 700;
@@ -605,7 +605,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -625,7 +625,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -791,8 +791,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -1004,7 +1004,7 @@
     </div>
 
     <!-- How-to steps -->
-    <div class="howto-bar" id="howto-bar-full" style="background:#1A1208;display:flex;align-items:center;gap:8px;padding:11px 20px;flex-wrap:wrap;flex-shrink:0;">
+    <div class="howto-bar" id="howto-bar-full" style="background:var(--deep, #002266);display:flex;align-items:center;gap:8px;padding:11px 20px;flex-wrap:wrap;flex-shrink:0;">
       <div class="howto-step">
         <span class="howto-num" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
         <span class="howto-text" style="color:rgba(255,255,255,.85);font-size:12px;">Soldaki menüden <strong style="color:#fff;font-weight:700;">kategori seç</strong></span>
@@ -1118,7 +1118,7 @@
       <!-- Secondary: buy credits (no credits) -->
       <div id="esc-buy-bar" style="display:none;">
         <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;" id="esc-buy-msg"></div>
-        <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:block;">💳 Kredi Satın Al →</button>
+        <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:block;">💳 Kredi Satın Al →</button>
       </div>
     </div>
   </div>
@@ -2413,7 +2413,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     const categoryExperts = (experts || []).filter(e =>
       !e.categories?.length || e.categories.includes(selectedCat)
     );
-    const expertColors = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+    const expertColors = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
     if (!categoryExperts.length) {
       document.getElementById('esc-expert-list').innerHTML =
         '<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted);">Bu kategori için henüz uzman atanmamış.</div>';
@@ -2439,7 +2439,7 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
   function renderExpertCards() {
     const categoryExperts = window._escCategoryExperts || [];
-    const expertColors = window._escExpertColors || ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+    const expertColors = window._escExpertColors || ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
 
     const teamSelected = expertSelectionMade && selectedExpertId === null;
     const teamCard = `<div class="expert-option" data-expert-id="" onclick="selectExpert(null)" style="cursor:pointer;${teamSelected ? 'border-color:var(--red);background:rgba(212,43,43,.05);' : ''}">
@@ -2699,7 +2699,7 @@ ${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
 .header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--warm,#F0EAE0);padding-bottom:12px;margin-bottom:24px;}
 .logo{font-size:22px;font-weight:900;color:#D42B2B;}.logo span{color:#1A1208;}
 .meta{font-size:12px;color:#6B5E4E;text-align:right;}
-.badge{display:inline-block;background:#E8EEF8;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;color:#1B3A8C;}
+.badge{display:inline-block;background:#E8EEF8;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;color:#003399;}
 .disclaimer{margin-top:32px;padding:12px 16px;background:#FEF9EC;border-left:3px solid #C9A84C;font-size:12px;color:#6B5E4E;border-radius:0 8px 8px 0;}
 .footer{margin-top:32px;border-top:1px solid #D4C5A9;padding-top:12px;font-size:11px;color:#6B5E4E;text-align:center;}</style>
 </head><body>
@@ -2735,7 +2735,7 @@ ${text.replace(/\n/g,'<br>')}
     <div style="padding:24px 24px 0;flex-shrink:0;border-bottom:1px solid var(--warm);">
       <button class="modal-close" onclick="closeInfoModal()">×</button>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div style="width:36px;height:36px;border-radius:9px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:9px;background:var(--deep, #002266);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span style="font-family:'Playfair Display',serif;font-size:13px;font-weight:900;color:#fff;">AI</span>
         </div>
         <div>
@@ -2786,7 +2786,7 @@ ${text.replace(/\n/g,'<br>')}
     </div>
 
     <div style="padding:16px 24px 24px;border-top:1px solid var(--warm);flex-shrink:0;">
-      <button onclick="closeInfoModal()" style="width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Anladım →</button>
+      <button onclick="closeInfoModal()" style="width:100%;padding:12px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Anladım →</button>
     </div>
   </div>
 </div>
@@ -2814,7 +2814,7 @@ ${text.replace(/\n/g,'<br>')}
 
   <!-- PWA install banner -->
   <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
+    background:#003399;color:#fff;padding:14px 20px;
     display:none;align-items:center;gap:14px;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);">
     <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
@@ -2955,7 +2955,7 @@ ${text.replace(/\n/g,'<br>')}
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);

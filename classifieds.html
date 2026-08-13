@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -293,7 +293,7 @@
   </div>
 </div>
 
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
     <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
       <div>
@@ -365,7 +365,7 @@
         : '<button onclick="event.stopPropagation();clSetSold(\''+l.id+'\',true)" style="flex:1;background:var(--green);border:none;border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;">✓ Satıldı</button>';
       ownerBar='<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">'
         + soldBtn
-        + '<button onclick="event.stopPropagation();clEditListing(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(27,58,140,.08);border:1px solid rgba(27,58,140,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--navy,#1B3A8C);">✏️ Düzenle</button>'
+        + '<button onclick="event.stopPropagation();clEditListing(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(27,58,140,.08);border:1px solid rgba(27,58,140,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--navy,#003399);">✏️ Düzenle</button>'
         + '<button onclick="event.stopPropagation();clRemove(\''+l.id+'\')" style="flex:1;min-width:70px;background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.25);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--red);">🗑 Kaldır</button>'
         + '</div>';
     }

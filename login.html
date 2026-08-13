@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --red:#D42B2B; --red2:#E8393A; --navy:#1B3A8C; --navy2:#2348A8;
+      --red:#D42B2B; --red2:#E8393A; --navy:#003399; --navy2:#1E4FBF;
       --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
-      --ink:#1A1208; --muted:#6B5E4E; --white:#FFFFFF; --gold:#C9A84C;
+      --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF; --gold:#C9A84C;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -415,7 +415,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -435,7 +435,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -458,8 +458,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -960,13 +960,13 @@
       <div id="login-deactivated-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">😴 Hesabınız deaktive edilmiş</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Verileriniz güvende — dilediğiniz zaman geri dönebilirsiniz.</div>
-        <button type="button" id="reactivate-btn" onclick="doReactivate()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Hesabımı Yeniden Aktive Et</button>
+        <button type="button" id="reactivate-btn" onclick="doReactivate()" style="width:100%;padding:9px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Hesabımı Yeniden Aktive Et</button>
       </div>
 
       <div id="login-pending-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">⏳ Hesabın onay bekliyor</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Kaydın alındı! Ekibimiz hesabını en kısa sürede inceleyip onaylayacak. Onaylandığında e-posta ile haber vereceğiz — sonra buradan giriş yapabilirsin.</div>
-        <button type="button" onclick="(async()=>{await supabase.auth.signOut();location.reload();})()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
+        <button type="button" onclick="(async()=>{await supabase.auth.signOut();location.reload();})()" style="width:100%;padding:9px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
       </div>
 
       <button class="submit-btn" id="login-btn" onclick="doLogin()">
@@ -1045,7 +1045,7 @@
       <div class="form-group" style="display:flex;flex-direction:row;align-items:flex-start;gap:8px;">
         <input type="checkbox" id="reg-rules" style="width:auto;margin-top:3px;flex-shrink:0;cursor:pointer;">
         <label for="reg-rules" style="font-weight:400;font-size:13px;line-height:1.45;cursor:pointer;">
-          <a href="kullanim-kosullari.html" target="_blank" style="color:var(--navy,#1B3A8C);font-weight:600;">Topluluk kurallarını</a> okudum ve kabul ediyorum. *
+          <a href="kullanim-kosullari.html" target="_blank" style="color:var(--navy,#003399);font-weight:600;">Topluluk kurallarını</a> okudum ve kabul ediyorum. *
         </label>
       </div>
       <div class="field-error" id="reg-join-err" style="display:none;">Lütfen tüm alanları doldur ve kuralları kabul et.</div>
@@ -1309,7 +1309,7 @@
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);

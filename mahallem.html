@@ -17,7 +17,7 @@
   <style>
     :root {
       --red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;
-      --sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--white:#FFFFFF;
+      --sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;
       --gold:#C9A84C;--green:#1E7B4B;--blue:#185FA5;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -87,7 +87,7 @@
       position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;
     }
     .user-card{
-      background:var(--ink);border-radius:14px;padding:20px;
+      background:var(--deep, #002266);border-radius:14px;padding:20px;
       margin-bottom:20px;text-align:center;
     }
     .user-card-avatar{
@@ -352,7 +352,7 @@
     .trend-tag:hover{background:var(--red);color:var(--white);}
 
     .premium-widget{
-      background:var(--ink);border-radius:14px;padding:20px;margin-bottom:16px;
+      background:var(--deep, #002266);border-radius:14px;padding:20px;margin-bottom:16px;
       text-align:center;
     }
     .pw-icon{font-size:28px;margin-bottom:10px;}
@@ -401,7 +401,7 @@
     .mm-user {
       display: flex; align-items: center; gap: 14px;
       padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
+      background: var(--navy, #003399);
     }
     .mm-avatar {
       width: 46px; height: 46px; border-radius: 50%;
@@ -420,7 +420,7 @@
       transition: background .15s; cursor: pointer;
     }
     .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #003399); font-weight: 600; }
     .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
     .mm-badge {
       margin-left: auto; font-size: 10px; font-weight: 700;
@@ -572,7 +572,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -592,7 +592,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -733,8 +733,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -1066,7 +1066,7 @@
 
   <!-- PWA install banner -->
   <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
+    background:#003399;color:#fff;padding:14px 20px;
     display:none;align-items:center;gap:14px;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);">
     <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
@@ -1226,7 +1226,7 @@
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);
@@ -1454,7 +1454,7 @@
   // ── Real Mahallem feed (posts / likes / comments / tags) ─────────
 
   const CATEGORY_META = {
-    legal:      { label: '⚖️ Hukuki',            color: '#1B3A8C' },
+    legal:      { label: '⚖️ Hukuki',            color: '#003399' },
     visa:       { label: '🛂 Vize & Oturma',     color: '#D42B2B' },
     medical:    { label: '💊 Tıbbi',              color: '#534AB7' },
     tax:        { label: '📊 Vergi & Finans',    color: '#C9A84C' },
@@ -1843,7 +1843,7 @@
 
   window.showToast = function(message) {
     const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--deep, #002266);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
     toast.textContent = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2500);
@@ -1982,7 +1982,7 @@
 
   window.showComingSoon = function(feature) {
     const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--deep, #002266);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;font-weight:600;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;';
     toast.textContent = `${feature} yakında geliyor!`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
@@ -2297,7 +2297,7 @@
   });
 </script>
 <!-- SITE FOOTER -->
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
 
     <!-- Top row -->

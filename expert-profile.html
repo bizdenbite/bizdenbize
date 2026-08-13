@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="platform-config.js"></script>
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -148,7 +148,7 @@
 <nav>
   <a href="index.html" class="nav-logo">Bizden<span>Bize</span></a>
   <div class="nav-right">
-    <a href="uzmanlar.html" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;background:var(--navy,#1B3A8C);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</a>
+    <a href="uzmanlar.html" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;background:var(--navy,#003399);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</a>
     <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
     <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;">—</div>
     <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
@@ -214,7 +214,7 @@
   </div>
 </div>
 
-<footer style="background:var(--ink);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
   <div style="max-width:1100px;margin:0 auto;">
 
     <!-- Top row -->
@@ -307,7 +307,7 @@
   const CAT_ICONS = window.BB_CONFIG.categoryIcons;
   const CAT_NAMES = window.BB_CONFIG.categoryLabels;
   const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
-  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
+  const AVATAR_COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
 
   // Get expert_id from URL
   const params = new URLSearchParams(window.location.search);
@@ -385,7 +385,7 @@
       if (ctaRow) {
         ctaRow.innerHTML = `
           <span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:rgba(30,123,75,.1);border:1px solid rgba(30,123,75,.3);color:#1E7B4B;border-radius:9px;font-size:13px;font-weight:700;">✅ Bu sizin uzman profiliniz</span>
-          <button onclick="document.getElementById('owner-panel')?.scrollIntoView({behavior:'smooth'})" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">⚙️ Uzman Panelim</button>
+          <button onclick="document.getElementById('owner-panel')?.scrollIntoView({behavior:'smooth'})" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">⚙️ Uzman Panelim</button>
           <a href="uzmanlar.html" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;">← Tüm Uzmanlar</a>`;
       }
 
@@ -473,11 +473,11 @@
     box.innerHTML = `
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
         ${cats.length
-          ? cats.map(c => `<span style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(27,58,140,.07);border:1px solid rgba(27,58,140,.2);border-radius:20px;font-size:12.5px;font-weight:600;color:var(--navy,#1B3A8C);">${icons[c] || '•'} ${names[c] || c}</span>`).join('')
+          ? cats.map(c => `<span style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(27,58,140,.07);border:1px solid rgba(27,58,140,.2);border-radius:20px;font-size:12.5px;font-weight:600;color:var(--navy,#003399);">${icons[c] || '•'} ${names[c] || c}</span>`).join('')
           : '<span style="font-size:12.5px;color:var(--muted);">Henüz uzmanlık alanı tanımlanmamış.</span>'}
       </div>
       ${rows.map(([k, v]) => `<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;"><strong style="color:var(--ink);">${k}:</strong> ${v}</div>`).join('')}
-      <button onclick="openExpertiseEdit()" style="margin-top:12px;padding:8px 16px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">✏️ Düzenle</button>`;
+      <button onclick="openExpertiseEdit()" style="margin-top:12px;padding:8px 16px;background:var(--navy,#003399);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">✏️ Düzenle</button>`;
   };
 
   // ---- editing your own expertise ------------------------------------
@@ -520,7 +520,7 @@
       </div>
       <div id="exp-msg" style="display:none;font-size:12px;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;">
-        <button id="exp-save" onclick="saveExpertise()" style="padding:9px 18px;background:var(--navy,#1B3A8C);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        <button id="exp-save" onclick="saveExpertise()" style="padding:9px 18px;background:var(--navy,#003399);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
         <button onclick="renderOwnerExpertise()" style="padding:9px 18px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
       </div>`;
   };
@@ -1010,7 +1010,7 @@
           ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
           <div class="hero-cta" id="hero-cta-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
             <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
-            <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
+            <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
               ✉️ Doğrudan Soru Sor
             </button>
             ${expert.whatsapp_enabled && expert.whatsapp_number ? `
@@ -1434,7 +1434,7 @@
           <div style="font-size:40px;margin-bottom:12px;">✅</div>
           <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;">Şikayet alındı</div>
           <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Ekibimiz en kısa sürede inceleyecek. Desteğiniz için teşekkürler.</div>
-          <button onclick="closeExpertReportModal()" style="padding:10px 28px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
+          <button onclick="closeExpertReportModal()" style="padding:10px 28px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
         </div>`;
     } catch(e) {
       btn.disabled = false; btn.textContent = 'Şikayeti Gönder';

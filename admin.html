@@ -9,8 +9,8 @@
   <style>
     :root {
       --red:#D42B2B; --cream:#FAF7F2; --warm:#F0EAE0; --sand:#D4C5A9;
-      --ink:#1A1208; --muted:#6B5E4E; --gold:#C9A84C; --green:#1E7B4B;
-      --navy:#1B3A8C; --white:#FFFFFF;
+      --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --gold:#C9A84C; --green:#1E7B4B;
+      --navy:#003399; --white:#FFFFFF;
       --sidebar-w: 220px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,7 +18,7 @@
 
     /* SIDEBAR */
     .sidebar {
-      width: var(--sidebar-w); background: var(--ink); position: fixed;
+      width: var(--sidebar-w); background:var(--deep, #002266); position: fixed;
       top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
       z-index: 50; overflow-y: auto;
     }
@@ -140,7 +140,7 @@
       transition: all .15s; white-space: nowrap;
     }
     .btn-sm { padding: 4px 10px; font-size: 11px; }
-    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary { background:var(--deep, #002266); color: #fff; }
     .btn-primary:hover { background: var(--red); }
     .btn-green { background: rgba(30,123,75,.1); color: var(--green); border: 1px solid rgba(30,123,75,.2); }
     .btn-green:hover { background: var(--green); color: #fff; }
@@ -198,7 +198,7 @@
     .loading-row td { text-align: center; color: var(--muted); font-size: 13px; padding: 32px; }
 
     #toast {
-      position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff;
+      position: fixed; bottom: 24px; right: 24px; background:var(--deep, #002266); color: #fff;
       padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
       z-index: 999; opacity: 0; transform: translateY(8px);
       transition: all .25s; pointer-events: none;
@@ -669,7 +669,7 @@
   let currentUser = null;
   let currentUserId = null;
   let allUsers = [];
-  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+  const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
 
   function hdrs(tok) {
     return {

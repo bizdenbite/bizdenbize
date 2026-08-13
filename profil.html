@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -16,13 +16,13 @@
     .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
     .nav-logo span{color:var(--red);}
     .nav-right{display:flex;align-items:center;gap:10px;}
-    .btn-edit{padding:7px 16px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;display:none;}
+    .btn-edit{padding:7px 16px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;display:none;}
     .btn-edit:hover{background:var(--red);}
     .btn-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
     .btn-back:hover{background:var(--warm);color:var(--ink);}
 
     /* HERO BANNER */
-    .hero{background:var(--ink);padding:78px 0 0;margin-top:58px;position:relative;overflow:hidden;}
+    .hero{background:var(--deep, #002266);padding:78px 0 0;margin-top:58px;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%, rgba(212,43,43,.15) 0%, transparent 60%),radial-gradient(ellipse at 70% 20%, rgba(27,58,140,.1) 0%, transparent 50%);pointer-events:none;}
     .hero-inner{max-width:860px;margin:0 auto;padding:40px 24px 0;position:relative;}
     .hero-top{display:flex;align-items:flex-end;gap:24px;margin-bottom:0;}
@@ -116,7 +116,7 @@
 <script>
   const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
-  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+  const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
   const LANG_NAMES = {tr:'🇹🇷 Türkçe',de:'🇩🇪 Almanca',en:'🇬🇧 İngilizce',fr:'🇫🇷 Fransızca',nl:'🇳🇱 Hollandaca',ar:'🇸🇦 Arapça'};
   const INT_NAMES  = {legal:'⚖️ Hukuki',housing:'🏠 Konut',employment:'💼 İş',tax:'💶 Vergi',education:'🎓 Eğitim',health:'🏥 Sağlık',business:'🏢 İşletme',family:'👨‍👩‍👧 Aile',culture:'🎭 Kültür',sport:'⚽ Spor',tech:'💻 Teknoloji',food:'🍽️ Yemek'};
 
@@ -273,7 +273,7 @@
     const connectSection = isOwn ? `
       <div class="card">
         <div class="card-title">⚙️ Profil Ayarları</div>
-        <a href="profile.html" style="display:block;width:100%;padding:11px;background:var(--ink);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-align:center;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--red)'" onmouseout="this.style.background='var(--ink)'">
+        <a href="profile.html" style="display:block;width:100%;padding:11px;background:var(--deep, #002266);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-align:center;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--red)'" onmouseout="this.style.background='var(--ink)'">
           ✏️ Profili Düzenle
         </a>
       </div>` : `
@@ -376,7 +376,7 @@
         <div style="font-size:48px;margin-bottom:16px;">🔍</div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;">${title}</div>
         <div style="font-size:14px;color:var(--muted);">${sub}</div>
-        <a href="mahallem.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--ink);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">← Mahallem'e Dön</a>
+        <a href="mahallem.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--deep, #002266);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">← Mahallem'e Dön</a>
       </div>`;
   }
 
@@ -456,7 +456,7 @@
           <div style="font-size:40px;margin-bottom:12px;">✅</div>
           <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;">Şikayet alındı</div>
           <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Ekibimiz en kısa sürede inceleyecek. Desteğiniz için teşekkürler.</div>
-          <button onclick="closeReportModal()" style="padding:10px 28px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
+          <button onclick="closeReportModal()" style="padding:10px 28px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
         </div>`;
     } catch(e) {
       btn.disabled = false; btn.textContent = 'Şikayeti Gönder';

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -51,7 +51,7 @@
     .avatar-wrap{position:relative;display:inline-block;margin-bottom:16px;}
     .avatar{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;margin:0 auto;overflow:hidden;background:#D42B2B;}
     .avatar img{width:100%;height:100%;object-fit:cover;}
-    .avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;background:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white);transition:background .15s;}
+    .avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;background:var(--deep, #002266);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white);transition:background .15s;}
     .avatar-edit:hover{background:var(--red);}
     .avatar-edit svg{width:13px;height:13px;stroke:#fff;stroke-width:2;}
     #avatar-input{display:none;}
@@ -69,7 +69,7 @@
     .ps-item{background:var(--cream);border-radius:10px;padding:12px 8px;text-align:center;}
     .ps-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--ink);}
     .ps-label{font-size:10px;color:var(--muted);margin-top:2px;}
-    .credit-box{background:var(--ink);border-radius:12px;padding:14px;margin-bottom:16px;}
+    .credit-box{background:var(--deep, #002266);border-radius:12px;padding:14px;margin-bottom:16px;}
     .credit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
     .credit-row:last-child{margin-bottom:0;}
     .credit-label{font-size:11px;color:rgba(255,255,255,.5);}
@@ -90,7 +90,7 @@
     .tag-group{display:flex;flex-wrap:wrap;gap:6px;}
     .tag-pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--cream);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
     .tag-pill:hover{border-color:var(--ink);color:var(--ink);}
-    .tag-pill.selected{background:var(--ink);border-color:var(--ink);color:var(--white);}
+    .tag-pill.selected{background:var(--deep, #002266);border-color:var(--ink);color:var(--white);}
     .btn-save{padding:11px 28px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
     .btn-save:hover{background:#176040;}
     .btn-save:disabled{background:var(--sand);cursor:not-allowed;}
@@ -101,7 +101,7 @@
     .activity-text{font-size:13px;color:var(--ink);line-height:1.5;}
     .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
-    #toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--deep, #002266);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
     #toast.show{opacity:1;transform:translateY(0);}
     #toast.error{background:var(--red);}
 
@@ -311,7 +311,7 @@
 <script>
   const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
-  const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+  const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
 
   let token = null;
   let currentUser = null;

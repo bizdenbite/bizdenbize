@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#1B3A8C;--white:#FFFFFF;}
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
@@ -28,7 +28,7 @@
     .btn-primary:hover{background:var(--red2);}
 
     /* HERO BANNER */
-    .hero-banner{background:var(--ink);padding:56px 24px 48px;text-align:center;}
+    .hero-banner{background:var(--deep, #002266);padding:56px 24px 48px;text-align:center;}
     .hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
     .hero-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:12px;}
     .hero-title em{color:var(--red);font-style:normal;}
@@ -47,7 +47,7 @@
     .filter-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-right:4px;flex-shrink:0;}
     .filter-pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--cream);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
     .filter-pill:hover{border-color:var(--ink);color:var(--ink);}
-    .filter-pill.active{background:var(--ink);border-color:var(--ink);color:var(--white);}
+    .filter-pill.active{background:var(--deep, #002266);border-color:var(--ink);color:var(--white);}
 
     /* EXPERTS GRID */
     .page{padding:28px 24px 60px;max-width:1000px;margin:0 auto;}
@@ -76,7 +76,7 @@
     .ec-rating-val{font-size:13px;font-weight:700;color:var(--gold);}
     .ec-rating-count{font-size:11px;color:var(--muted);}
     .ec-actions{display:flex;gap:6px;}
-    .btn-profile{flex:1;padding:9px 14px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;text-align:center;}
+    .btn-profile{flex:1;padding:9px 14px;background:var(--deep, #002266);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;text-align:center;}
     .btn-profile:hover{background:var(--red);}
     .btn-ask{flex:1;padding:9px 14px;background:var(--red);color:var(--white);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;text-align:center;}
     .btn-ask:hover{background:var(--red2);}
@@ -421,7 +421,7 @@
     school:'Okul', insurance:'Sigorta', migration:'Göç', other:'Diğer'
   };
   const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
-  const AVATAR_COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
+  const AVATAR_COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
 
   let allExperts = [];
   let activeFilter = 'all';

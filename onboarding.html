@@ -19,7 +19,7 @@
       --cream: #FAF7F2;
       --warm:  #F0EAE0;
       --sand:  #D4C5A9;
-      --ink:   #1A1208;
+      --ink:   #1A1208; --deep:#002266;
       --muted: #6B5E4E;
       --white: #FFFFFF;
       --gold:  #C9A84C;
@@ -45,7 +45,7 @@
 
     /* ── SIDEBAR ── */
     .sidebar {
-      background: var(--ink);
+      background:var(--deep, #002266);
       display: flex; flex-direction: column;
       padding: 40px 36px;
       position: relative; overflow: hidden;
@@ -199,7 +199,7 @@
 
     /* ── WELCOME PANEL ── */
     .welcome-highlight {
-      background: var(--ink); border-radius: 20px;
+      background:var(--deep, #002266); border-radius: 20px;
       padding: 40px 44px; margin-bottom: 40px;
       display: grid; grid-template-columns: 1fr 1fr 1fr;
       gap: 32px; position: relative; overflow: hidden;
@@ -237,7 +237,7 @@
     }
     .invite-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
     .copy-invite {
-      background: var(--ink); color: var(--white);
+      background:var(--deep, #002266); color: var(--white);
       border: none; border-radius: 8px;
       padding: 10px 20px; font-size: 13px; font-weight: 600;
       font-family: 'Instrument Sans', sans-serif;
@@ -369,7 +369,7 @@
     .city-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 580px; margin-bottom: 36px; }
     .city-tag {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 14px; background: var(--ink); color: #fff;
+      padding: 8px 14px; background:var(--deep, #002266); color: #fff;
       border-radius: 20px; font-size: 13px; font-weight: 600;
       font-family: 'Instrument Sans', sans-serif;
     }
@@ -399,7 +399,7 @@
     }
     .done-icon {
       width: 100px; height: 100px; border-radius: 50%;
-      background: var(--ink); color: var(--white);
+      background:var(--deep, #002266); color: var(--white);
       display: flex; align-items: center; justify-content: center;
       font-size: 44px; margin-bottom: 36px;
       position: relative;
@@ -604,7 +604,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -624,7 +624,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -647,8 +647,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -1234,7 +1234,7 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);
