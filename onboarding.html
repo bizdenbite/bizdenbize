@@ -1368,12 +1368,55 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
   window._sb = sb;
 
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) { window.location.replace('/login.html'); }
+  // ── Oturumun kurulmasini BEKLE ───────────────────────────────────────
+  // Google/PKCE donusunde oturum, URL'deki kod takas edildikten SONRA
+  // olusur. Eskiden profiles herkese acik okunabildigi icin bu yaris fark
+  // edilmiyordu; artik oturumsuz sorgu sifir satir doner ve kullanici
+  // "onaysiz" sanilip login'e atilir.
+  async function oturumBekle(ms = 8000) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) return session;
 
-  // Try profile first, fall back to auth metadata
-  const { data: profile } = await sb.from('profiles')
-    .select('first_name, last_name, onboarding_completed, status').eq('id', user.id).single();
+    const kodVar = /[?&]code=/.test(location.search)
+                || location.hash.indexOf('access_token') !== -1;
+    if (!kodVar) return null;
+
+    return await new Promise(resolve => {
+      let sub;
+      const bitir = (s) => {
+        try { sub.data.subscription.unsubscribe(); } catch (e) {}
+        resolve(s);
+      };
+      const t = setTimeout(() => bitir(null), ms);
+      sub = sb.auth.onAuthStateChange((_e, s) => {
+        if (s) { clearTimeout(t); bitir(s); }
+      });
+    });
+  }
+
+  const session = await oturumBekle();
+  if (!session) {
+    window.location.replace('/login.html');
+    // NOT: replace() calismayi DURDURMAZ. throw sart, yoksa asagidaki
+    // satirlar null user uzerinde patlar.
+    throw new Error('oturum yok - login.html');
+  }
+  const user = session.user;
+
+  // Profil okuma. RLS artik gercek oturum istiyor, bu yuzden yarisa karsi
+  // bir kez daha denenir. single() yerine maybeSingle(): sifir satir hata
+  // degil, bos sonuc dondursun.
+  async function profilOku() {
+    return await sb.from('profiles')
+      .select('first_name, last_name, onboarding_completed, status')
+      .eq('id', user.id).maybeSingle();
+  }
+  let { data: profile, error: profilHatasi } = await profilOku();
+  if (!profile) {
+    await new Promise(r => setTimeout(r, 600));
+    ({ data: profile, error: profilHatasi } = await profilOku());
+  }
+  if (profilHatasi) console.error('profil okunamadi:', profilHatasi);
 
   // ── Manual-approval gate ──────────────────────────────────────────────
   // Google sign-ups land here directly, so this is the chokepoint for that
