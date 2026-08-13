@@ -73,7 +73,13 @@
   function build() {
     var el = document.createElement('footer');
     el.id = 'bb-site-footer';
-    el.style.cssText = 'background:var(--deep, #002266);color:#fff;padding:56px 24px 28px;margin-top:56px;';
+    // display/flex/grid are forced: several pages style the <footer> ELEMENT
+    // themselves (index has `footer{flex-direction:column}`), and the injected
+    // footer would otherwise inherit it and lay out sideways. grid-column
+    // covers pages whose <body> is itself a grid (login).
+    el.style.cssText = 'display:block;flex-direction:initial;align-items:initial;text-align:left;' +
+      'grid-column:1/-1;width:100%;box-sizing:border-box;' +
+      'background:var(--deep, #002266);color:#fff;padding:56px 24px 28px;margin-top:56px;';
 
     el.innerHTML =
       '<div style="max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;">' +
