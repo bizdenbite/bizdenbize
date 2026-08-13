@@ -816,7 +816,10 @@
 
   <div class="hero-right">
     <div class="hero-map-bg"></div>
-    <div class="hero-cards">
+    <div class="hero-cards" id="hero-cards">
+      <!-- Illustrative until there are enough real public listings;
+           replaced at runtime by loadRealHeroCards() below. -->
+      <div id="hero-cards-label" style="align-self:flex-end;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:2px;">Örnek</div>
       <div class="preview-card">
         <div class="card-header">
           <div class="avatar" style="background:rgba(192,57,43,0.3);color:#E8393A">AY</div>
@@ -1455,5 +1458,90 @@
   })();
 
   </script>
+
+<script>
+/* ── Hero cards: real listings when there are enough ──────────────
+   Shows genuine public listings once at least three exist, otherwise
+   keeps the illustrative cards (labelled "Örnek").
+
+   Deliberately limited to content members published PUBLICLY —
+   classifieds, events and swap listings. Mahallem posts are written
+   inside an invite-only community and are not marketing material.
+   Names are shortened to first name + initial for the same reason. */
+(async () => {
+  const SB  = 'https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/';
+  const KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const H   = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+  // "Ayşe Yılmaz" → "Ayşe Y." — enough to feel human, not a full identity.
+  const shortName = n => {
+    const parts = String(n || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'Üye';
+    return parts.length === 1 ? parts[0] : parts[0] + ' ' + parts[1][0] + '.';
+  };
+  const initials = n => shortName(n).split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0,2);
+
+  const get = async (path) => {
+    try {
+      const r = await fetch(SB + path, { headers: H });
+      if (!r.ok) return [];
+      return await r.json();
+    } catch { return []; }
+  };
+
+  const [cls, evs, swaps] = await Promise.all([
+    get('classified_listings?active=eq.true&order=created_at.desc&limit=3&select=title,city,price,user_name'),
+    get('events?status=eq.approved&order=event_date.asc&limit=3&select=title,city,event_date,organizer_name'),
+    get('swap_offers?active=eq.true&status=eq.approved&order=created_at.desc&limit=3&select=city,destination,description,user_name')
+  ]);
+
+  const fmtDate = d => {
+    if (!d) return '';
+    const M = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+    const dt = new Date(d);
+    return isNaN(dt) ? '' : dt.getDate() + ' ' + M[dt.getMonth()];
+  };
+
+  const cards = [];
+  if (cls[0])   cards.push({ n: cls[0].user_name, city: cls[0].city, body: cls[0].title,
+                             tag: 'İlan' + (cls[0].price ? ' · €' + cls[0].price : ''),
+                             bg: 'rgba(192,57,43,0.3)', fg: '#E8393A',
+                             tagBg: 'rgba(192,57,43,0.2)', tagFg: '#E8393A' });
+  if (evs[0])   cards.push({ n: evs[0].organizer_name, city: evs[0].city, body: evs[0].title,
+                             tag: 'Etkinlik' + (evs[0].event_date ? ' · ' + fmtDate(evs[0].event_date) : ''),
+                             bg: 'rgba(201,168,76,0.2)', fg: '#C9A84C',
+                             tagBg: 'rgba(201,168,76,0.15)', tagFg: '#C9A84C' });
+  if (swaps[0]) cards.push({ n: swaps[0].user_name, city: swaps[0].city,
+                             body: swaps[0].description || ('Ev takası: ' + (swaps[0].city || '') + ' → ' + (swaps[0].destination || '')),
+                             tag: 'Ev Takası',
+                             bg: 'rgba(255,255,255,0.1)', fg: 'rgba(255,255,255,0.7)',
+                             tagBg: 'rgba(255,255,255,0.08)', tagFg: 'rgba(255,255,255,0.5)' });
+
+  // Fewer than three real items looks emptier than the mockup — keep the örnek cards.
+  if (cards.length < 3) return;
+
+  const host = document.getElementById('hero-cards');
+  if (!host) return;
+  const label = document.getElementById('hero-cards-label');
+  if (label) label.remove();
+
+  host.querySelectorAll('.preview-card').forEach(el => el.remove());
+  host.insertAdjacentHTML('beforeend', cards.map(c => `
+      <div class="preview-card">
+        <div class="card-header">
+          <div class="avatar" style="background:${c.bg};color:${c.fg}">${esc(initials(c.n))}</div>
+          <div class="card-meta">
+            <div class="card-name">${esc(shortName(c.n))}</div>
+            <div class="card-city">📍 ${esc(c.city || 'Almanya')}</div>
+          </div>
+        </div>
+        <div class="card-body">${esc(c.body).slice(0, 110)}</div>
+        <span class="card-tag" style="background:${c.tagBg};color:${c.tagFg}">${esc(c.tag)}</span>
+      </div>`).join(''));
+})();
+</script>
 </body>
 </html>
