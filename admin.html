@@ -786,7 +786,7 @@
   async function loadDashboard() {
     try {
       const [users, experts, reviews, listings, messages, ratings] = await Promise.all([
-        sb('profiles?select=id,first_name,last_name,city,country,is_premium,is_admin,created_at&order=created_at.desc'),
+        sb('profiles?select=id,first_name,last_name,city,country,status,is_premium,is_admin,created_at&order=created_at.desc'),
         sb('experts?select=id&is_active=eq.true'),
         sb('expert_reviews?select=id,status'),
         sb('listings?select=id'),
@@ -880,17 +880,86 @@
         <td style="font-size:12px;color:var(--muted);">${u.city||'—'}</td>
         <td style="font-weight:600;">${u.abibot_credits||0}</td>
         <td>
+          ${u.status === 'approved'  ? '<span class="badge badge-green">✓ Onaylı</span> '
+            : u.status === 'banned'    ? '<span class="badge badge-red">🚫 Engelli</span> '
+            : u.status === 'deactivated' ? '<span class="badge badge-muted">💤 Kendi kapattı</span> '
+            : u.status === 'rejected'  ? '<span class="badge badge-red">✕ Reddedildi</span> '
+            : '<span class="badge badge-gold">⏳ Onay Bekliyor</span> '}
+          ${!(u.first_name||'').trim() || !(u.last_name||'').trim()
+              ? '<span class="badge badge-red" title="Ad veya soyad eksik">⚠ İsim eksik</span> ' : ''}
           ${u.is_admin ? '<span class="badge badge-red">Admin</span> ' : ''}
           ${u.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-muted">Standart</span>'}
         </td>
         <td style="font-size:11px;color:var(--muted);">${fmtDate(u.created_at)}</td>
         <td>
           <div class="actions">
+            ${u.status === 'deactivated'
+                ? ''
+                : u.status === 'banned'
+                  ? `<button class="btn btn-sm btn-green" onclick="unbanMember('${u.id}')">↩ Engeli Kaldır</button>`
+                  : u.status !== 'approved'
+                    ? `<button class="btn btn-sm btn-green" onclick="approveMember('${u.id}')">✅ Onayla</button>`
+                    : `<button class="btn btn-sm btn-muted" onclick="suspendMember('${u.id}')">⏸ Onayı Kaldır</button>`}
+            ${(u.status === 'approved' || u.status === 'pending')
+                ? `<button class="btn btn-sm btn-red" onclick="banMember('${u.id}')">🚫 Engelle</button>` : ''}
             <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">${u.is_premium ? 'Premium Kaldır' : '⭐ Premium'}</button>
             <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}', '${(`${u.first_name||''} ${u.last_name||''}`).trim()}')">🗑️ Sil</button>
           </div>
         </td>
       </tr>`).join('') : `<tr class="loading-row"><td colspan="7">Kullanıcı bulunamadı.</td></tr>`;
+  }
+
+  // Membership approval. profiles.status is what gates the whole app —
+  // mahallem.html bounces anyone who isn't 'approved' back to login.
+  async function approveMember(id) {
+    const u = (allUsers || []).find(x => x.id === id);
+    const first = (u && u.first_name || '').trim();
+    const last  = (u && u.last_name  || '').trim();
+
+    // Rule: nobody is approved without a real first AND last name.
+    // Enforced here rather than left to memory — the signup form validates
+    // in the browser only, and older accounts predate the requirement.
+    if (!first || !last) {
+      toast('Ad ve soyad eksik — bu üye onaylanamaz.', false);
+      return;
+    }
+    if (!confirm(first + ' ' + last + ' onaylansın mı?\n\nOnaylandıktan sonra platforma giriş yapabilecek.')) return;
+    try {
+      await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'approved' }) });
+      toast('Üye onaylandı ✓');
+      allUsersLoaded = false; loadUsers();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  }
+
+  async function suspendMember(id) {
+    if (!confirm('Bu üyenin onayı kaldırılsın mı?\n\nArtık platforma giriş yapamayacak.')) return;
+    try {
+      await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'pending' }) });
+      toast('Onay kaldırıldı.');
+      allUsersLoaded = false; loadUsers();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  }
+
+  // Blocking, not deleting. Deletion cascades and takes abuse reports with
+  // it, so the record of who reported whom disappears along with the member.
+  async function banMember(id) {
+    const u = (allUsers || []).find(x => x.id === id);
+    const name = ((u && u.first_name || '') + ' ' + (u && u.last_name || '')).trim() || 'Bu üye';
+    if (!confirm(name + ' engellensin mi?\n\nGiriş yapamayacak, ancak içerikleri ve şikayet geçmişi korunacak. Bu işlem geri alınabilir.')) return;
+    try {
+      await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'banned' }) });
+      toast('Üye engellendi.');
+      allUsersLoaded = false; loadUsers();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  }
+
+  async function unbanMember(id) {
+    if (!confirm('Engel kaldırılsın mı?\n\nÜye tekrar giriş yapabilecek.')) return;
+    try {
+      await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'approved' }) });
+      toast('Engel kaldırıldı ✓');
+      allUsersLoaded = false; loadUsers();
+    } catch(e) { toast('Hata: ' + e.message, false); }
   }
 
   async function togglePremium(id, current) {
