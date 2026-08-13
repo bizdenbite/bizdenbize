@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+  <script src="auth-gate.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Admin Paneli</title>
@@ -219,12 +220,13 @@
     .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 399; }
     .sidebar-backdrop.show { display: block; }
   </style>
+  <link rel="stylesheet" href="brand.css">
 </head>
 <body>
 
 <aside class="sidebar">
   <a href="mahallem.html" class="sidebar-logo">
-    Bizden<span>Bize</span>
+    <span class="bb-logo bb-logo--plain">Bizden<span>Bize</span></span>
     <span class="sidebar-tag">⚙️ Admin Paneli</span>
   </a>
 

@@ -764,12 +764,13 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
   <link rel="shortcut icon" href="icons/icon-96.png">
   <script src="i18n.js"></script>
+  <link rel="stylesheet" href="brand.css">
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="nav-logo-link"><span style="display:inline-block;background:#003399;padding:4px 9px 5px;border-radius:5px;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:-.3px;color:#FFCC00;white-space:nowrap;">Bizden<span style="color:#FFFFFF;">Bize</span></span></a>
+  <a href="index.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
   <div class="nav-links">
     <a href="#nasil-calisir">Nasıl çalışır?</a>
     <a href="#ozellikler">Özellikler</a>
@@ -1124,7 +1125,7 @@
     // result left the heading advertising an expert team with nothing under it.
     let data = null, error = null;
     try {
-      const res = await sb.from('expert_rating_summary').select('*').eq('is_active', true).limit(3);
+      const res = await sb.from('expert_cards_public').select('*').eq('is_active', true).limit(3);
       data = res.data; error = res.error;
     } catch (e) { error = e; }
 
@@ -1214,7 +1215,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo"><span style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:20px;line-height:1;letter-spacing:-.3px;color:#ffffff;white-space:nowrap;">Bizden<span style="color:#D42B2B;">Bize</span></span></div>
+  <div class="footer-logo"><span class="bb-logo bb-logo--plain">Bizden<span>Bize</span></span></div>
   <p class="footer-text"><a href="legal.html#impressum" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Impressum</a><a href="legal.html#privacy" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Gizlilik</a><a href="legal.html#terms" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Kullanım Şartları</a><a href="legal.html#cookies" style="color:rgba(255,255,255,.35);text-decoration:none;margin-right:14px;font-size:12px;">Çerezler</a>© 2026 BizdenBize · Gurbette hayat el ele daha kolay.</p>
 </footer>
 
@@ -1290,7 +1291,7 @@
     background:#003399;color:#fff;padding:14px 20px;
     display:none;align-items:center;gap:14px;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);">
-    <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
+    <span class="bb-logo bb-logo--sm" style="flex-shrink:0;">Bizden<span>Bize</span></span>
     <div style="flex:1;">
       <div style="font-size:13px;font-weight:600;">BizdenBize'yi yükle</div>
       <div id="pwa-banner-sub" style="font-size:11px;opacity:.6;margin-top:1px;">Ana ekrana ekle, uygulama gibi kullan</div>

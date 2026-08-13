@@ -1,0 +1,53 @@
+/* ============================================================
+   BizdenBize — marka.
+   Logonun TEK kaynağı. Sayfalara inline stil YAZILMAZ:
+   inline stil bu dosyayı ezer ve sürüklenme (drift) yeniden başlar.
+
+   Kullanım (her sayfada aynı, değişmez):
+     <a href="mahallem.html" class="nav-logo-link">
+       <span class="bb-logo">Bizden<span>Bize</span></span>
+     </a>
+   ============================================================ */
+
+:root {
+  --bb-blue: #003399;   /* Reflex Blue */
+  --bb-gold: #FFCC00;   /* EU gold     */
+}
+
+.nav-logo-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bb-logo {
+  display: inline-block;
+  background: var(--bb-blue);
+  padding: 4px 9px 5px;
+  border-radius: 5px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -.3px;
+  color: var(--bb-gold);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.bb-logo > span { color: #fff; }
+
+/* Koyu zeminde (footer, PWA bandı) kutu gereksiz — yazı zaten
+   zemine oturuyor. Sadece renkler taşınır. */
+.bb-logo--plain {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Küçük varyant: PWA kurulum bandı, dar mobil başlıklar. */
+.bb-logo--sm { font-size: 17px; padding: 3px 7px 4px; }
+
+@media (max-width: 480px) {
+  .bb-logo { font-size: 19px; }
+}
