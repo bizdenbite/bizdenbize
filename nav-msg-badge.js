@@ -170,7 +170,7 @@ else initBadge();
   if (document.getElementById('bb-navlogo-style')) return;
   const st = document.createElement('style');
   st.id = 'bb-navlogo-style';
-  st.textContent = 'a.nav-logo-link > span{display:inline-block;background:#FFCE00;padding:4px 9px 5px;border-radius:5px;color:#FFFFFF;}';
+  st.textContent = 'a.nav-logo-link > span{display:inline-block;background:#003399;padding:4px 9px 5px;border-radius:5px;color:#FFCC00;}';
   document.head.appendChild(st);
 })();
 
