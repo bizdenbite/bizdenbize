@@ -593,8 +593,14 @@
       const rulesOk    = document.getElementById('reg-rules').checked;
       let valid = true;
 
+      // Clear highlights from a previous attempt, otherwise a field the user
+      // has since corrected keeps its red border.
+      ['reg-fname','reg-lname','reg-email','reg-password','reg-challenges','reg-reason','reg-source']
+        .forEach(id => document.getElementById(id)?.classList.remove('error'));
+
       document.getElementById('reg-email-err').style.display = 'none';
       if (!fname) { document.getElementById('reg-fname').classList.add('error'); valid = false; }
+      if (!lname) { document.getElementById('reg-lname').classList.add('error'); valid = false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         document.getElementById('reg-email-err').style.display = 'block';
         document.getElementById('reg-email').classList.add('error'); valid = false;
@@ -999,23 +1005,23 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>Ad</label>
+          <label>Ad *</label>
           <input type="text" id="reg-fname" placeholder="Ayşe" autocomplete="given-name">
         </div>
         <div class="form-group">
-          <label>Soyad</label>
+          <label>Soyad *</label>
           <input type="text" id="reg-lname" placeholder="Yılmaz" autocomplete="family-name">
         </div>
       </div>
 
       <div class="form-group">
-        <label>E-posta</label>
+        <label>E-posta *</label>
         <input type="email" id="reg-email" placeholder="adresin@email.com" autocomplete="email">
         <div class="field-error" id="reg-email-err">Geçerli bir e-posta girin.</div>
       </div>
 
       <div class="form-group">
-        <label>Şifre</label>
+        <label>Şifre *</label>
         <div class="input-wrap">
           <input type="password" id="reg-password" placeholder="En az 8 karakter" oninput="checkStrength(this.value)" autocomplete="new-password">
           <button class="input-icon" onclick="togglePassword('reg-password', this)" tabindex="-1">👁</button>
