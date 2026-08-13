@@ -32,7 +32,7 @@
       --cream:  #FAF7F2;
       --warm:   #F0EAE0;
       --sand:   #D4C5A9;
-      --ink:    #1A1208;
+      --ink:    #1A1208; --deep:#002266;
       --muted:  #6B5E4E;
       --white:  #FFFFFF;
       --gold:   #C9A84C;
@@ -146,7 +146,7 @@
     .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
     .hero-right {
-      background: var(--ink);
+      background:var(--deep, #002266);
       position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
@@ -226,7 +226,7 @@
     .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
     /* ── SECTION: MODULES ── */
-    .modules-section { background: var(--ink); padding: 100px 80px; }
+    .modules-section { background:var(--deep, #002266); padding: 100px 80px; }
     .modules-section .section-tag { color: var(--gold); }
     .modules-section h2 { color: var(--white); }
     .modules-section .section-sub { color: rgba(255,255,255,0.5); }
@@ -397,7 +397,7 @@
     }
     .copy-btn {
       width: 100%; padding: 13px;
-      background: var(--ink); color: var(--white);
+      background:var(--deep, #002266); color: var(--white);
       border: none; border-radius: 8px;
       font-family: 'Instrument Sans', sans-serif;
       font-size: 14px; font-weight: 600;
@@ -407,7 +407,7 @@
 
     /* ── FOOTER ── */
     footer {
-      background: var(--ink);
+      background:var(--deep, #002266);
       padding: 48px 80px;
       display: flex; align-items: center; justify-content: space-between;
     }
@@ -488,7 +488,7 @@
     .mm-user {
       display: flex; align-items: center; gap: 14px;
       padding: 20px 24px;
-      background: var(--navy, #1B3A8C);
+      background: var(--navy, #003399);
     }
     .mm-avatar {
       width: 46px; height: 46px; border-radius: 50%;
@@ -507,7 +507,7 @@
       transition: background .15s; cursor: pointer;
     }
     .mm-link:hover { background: var(--warm, #F0EAE0); }
-    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #1B3A8C); font-weight: 600; }
+    .mm-link.active { background: rgba(27,58,140,.07); color: var(--navy, #003399); font-weight: 600; }
     .mm-link-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
     .mm-badge {
       margin-left: auto; font-size: 10px; font-weight: 700;
@@ -658,7 +658,7 @@
     background: #D4C5A9; position: relative; flex-shrink: 0;
     cursor: pointer; transition: background .2s; border: none;
   }
-  .cm-toggle.on { background: #1B3A8C; }
+  .cm-toggle.on { background: #003399; }
   .cm-toggle.locked { background: #1E7B4B; cursor: not-allowed; }
   .cm-toggle::after {
     content: ''; position: absolute; top: 3px; left: 3px;
@@ -678,7 +678,7 @@
     border-top: 1px solid #F0EAE0; margin-top: 16px;
   }
   .cm-save {
-    flex: 1; padding: 12px; background: #1B3A8C; color: #fff;
+    flex: 1; padding: 12px; background: #003399; color: #fff;
     border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: 'Instrument Sans', sans-serif;
     transition: background .15s;
@@ -749,8 +749,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BizdenBize">
   <meta name="application-name" content="BizdenBize">
-  <meta name="theme-color" content="#1B3A8C">
-  <meta name="msapplication-TileColor" content="#1B3A8C">
+  <meta name="theme-color" content="#003399">
+  <meta name="msapplication-TileColor" content="#003399">
   <meta name="msapplication-TileImage" content="icons/icon-144.png">
   <!-- Apple touch icons -->
   <link rel="apple-touch-icon" href="icons/icon-152.png">
@@ -1054,7 +1054,7 @@
 </section>
 
 <!-- EXPERTS SECTION -->
-<section id="uzmanlar" style="padding:100px 48px;background:var(--ink);">
+<section id="uzmanlar" style="padding:100px 48px;background:var(--deep, #002266);">
   <div style="max-width:1100px;margin:0 auto;">
 
     <!-- Header -->
@@ -1111,7 +1111,7 @@
     // previously printed the raw id ('legal', 'tax') on a Turkish-only site.
     const CAT_ICONS = (window.BB_CONFIG && window.BB_CONFIG.categoryIcons) || {};
     const CAT_NAMES = (window.BB_CONFIG && window.BB_CONFIG.categoryLabels) || {};
-    const COLORS = ['#D42B2B','#1B3A8C','#1E7B4B','#C9A84C','#185FA5'];
+    const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
 
     const grid = document.getElementById('hp-experts-grid');
     const section = document.getElementById('uzmanlar');
@@ -1284,7 +1284,7 @@
 
   <!-- PWA install banner -->
   <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:#1B3A8C;color:#fff;padding:14px 20px;
+    background:#003399;color:#fff;padding:14px 20px;
     display:none;align-items:center;gap:14px;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);">
     <img src="logo.png" style="height:32px;width:auto;filter:brightness(0) invert(1);flex-shrink:0;">
@@ -1447,7 +1447,7 @@
 
     function showToast(msg) {
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B3A8C;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function(){ t.remove(); }, 2500);
