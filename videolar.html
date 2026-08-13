@@ -7,6 +7,11 @@
   <meta property="og:image" content="https://bizdenbize.com/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* matches .nav-primary a on the other pages */
+    .nav-primary-link{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;}
+    .nav-primary-link:hover{background:rgba(212,197,169,.25);}
+    @media(max-width:640px){.nav-primary-link{font-size:0;gap:0;padding:9px 8px;}}
+
     :root {
       --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
       --sand:#D4C5A9; --ink:#1A1208;--deep:#002266; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF; --navy:#003399;
@@ -62,8 +67,12 @@
     <a href="mahallem.html" class="nav-logo-link"><span style="display:inline-block;background:#003399;padding:4px 9px 5px;border-radius:5px;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:-.3px;color:#FFCC00;white-space:nowrap;vertical-align:middle;">Bizden<span style="color:#FFFFFF;">Bize</span></span></a>
     <span style="color:var(--sand);">|</span>
     <span style="font-size:13px;color:var(--muted);font-weight:500;">Videothek</span>
+    <!-- Primary nav, matching every other page. This page had only a
+         "← Geri dön" link, so it was a dead end. -->
+    <a href="mahallem.html" class="nav-primary-link">🏘️ Mahallem</a>
+    <a href="abibot.html" class="nav-primary-link">🤖 AbiBOT</a>
+    <a href="classifieds.html" class="nav-primary-link">🛍️ İlanlar</a>
     <span class="nav-spacer"></span>
-    <a href="mahallem.html" class="nav-back">← Geri dön</a>
     <a href="profile.html" class="nav-avatar" id="nav-avatar">?</a>
   </nav>
 

@@ -21,9 +21,11 @@
   'use strict';
 
   function init() {
-    // Already has legal links (index, login, mahallem, ev-takasi …) —
-    // leave the page alone rather than showing two footers.
-    if (document.querySelector('a[href*="legal.html"], a[href*="gizlilik.html"]')) return;
+    // Skip only if the page already has a real footer element of its own
+    // (index, mahallem, ev-takasi, classifieds …). Checking for legal LINKS
+    // was wrong: the legal pages link to each other in their body copy, so
+    // they were skipped and ended up with no footer at all.
+    if (document.querySelector('footer')) return;
     if (document.getElementById('bb-legal-footer')) return;
 
     var LINKS = [
