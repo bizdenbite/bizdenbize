@@ -1,18 +1,18 @@
 /* ============================================================
-   BizdenBize — erişim kapısı.
+   BizdenBize — erişim kapısı.  (v2)
 
-   <head> içinde, DİĞER script'lerden ÖNCE çağrılır:
+   <head> içinde, diğer script'lerden ÖNCE:
      <script src="auth-gate.js"></script>
 
-   Neden burada ve neden senkron:
-   Sayfa sonunda çalışan bir kontrol, içerik ZATEN çizildikten
-   sonra yönlendirir — giriş yapmamış ziyaretçi içeriği bir an
-   görür. Bu dosya sayfayı çizilmeden gizler, oturumu localStorage'
-   dan (ağ beklemeden) okur ve gerekirse hemen yönlendirir.
-
-   NOT: Bu bir kilit değil, kapıdır. Asıl koruma RLS'tedir —
-   veriye erişimi politikalar belirler. Burası sadece giriş
-   yapmamış ziyaretçinin boş sayfada dolaşmasını engeller.
+   v2 DÜZELTMESİ — ÖNEMLİ:
+   Google ile giriş, oturumu URL'de geri gönderir:
+     ?code=...            (PKCE akışı)
+     #access_token=...    (implicit akış)
+   Supabase istemcisi bunu OKUYUP localStorage'a yazar. Bu dosya
+   daha önce çalıştığı için localStorage'ı boş görüp kullanıcıyı
+   login'e atıyordu — ve Google'ın az önce verdiği oturum çöpe
+   gidiyordu. Sonsuz giriş döngüsü.
+   Artık URL'de böyle bir dönüş varsa kapı HİÇ çalışmaz.
    ============================================================ */
 (function () {
   'use strict';
@@ -20,50 +20,56 @@
   var PROJECT_REF = 'wxjudojlwksivhzjnmim';
   var LOGIN_URL   = 'login.html';
 
-  // Bu dosyayı yükleyen her sayfa korumalıdır. Herkese açık
-  // sayfalar (index, login, yasal sayfalar, videolar, library,
-  // saglik, ogrenim, premium, events) bu script'i ÇAĞIRMAZ.
+  // ---- 1) Kimlik doğrulama dönüşü mü? Öyleyse hiç karışma. ----
+  var hash   = window.location.hash   || '';
+  var search = window.location.search || '';
 
+  var isAuthCallback =
+        hash.indexOf('access_token')  !== -1 ||
+        hash.indexOf('refresh_token') !== -1 ||
+        hash.indexOf('error')         !== -1 ||
+        hash.indexOf('type=')         !== -1 ||   // recovery / invite / magiclink
+        /[?&]code=/.test(search)               ||
+        /[?&]error/.test(search)               ||
+        /[?&]token_hash=/.test(search);
+
+  if (isAuthCallback) return;
+
+  // ---- 2) Oturum var mı? (ağ beklemeden) ----
   function hasSession() {
     try {
-      // Supabase oturumu: sb-<ref>-auth-token
       var raw = window.localStorage.getItem('sb-' + PROJECT_REF + '-auth-token');
       if (!raw) return false;
 
       var s = JSON.parse(raw);
-      if (!s || !s.access_token) return false;
+      if (!s) return false;
 
-      // Süresi dolmuş token'ı oturum sayma. expires_at saniye cinsinden.
-      if (s.expires_at && (s.expires_at * 1000) < Date.now()) {
-        // Yenileme token'ı varsa Supabase istemcisi tazeleyebilir —
-        // kapıyı kapatma, sayfanın kendi mantığına bırak.
-        return !!s.refresh_token;
+      // Supabase sürümüne göre token doğrudan veya .currentSession içinde olur.
+      var sess = s.currentSession || s;
+      if (!sess || !sess.access_token) return false;
+
+      if (sess.expires_at && (sess.expires_at * 1000) < Date.now()) {
+        // Süresi dolmuş ama yenileme token'ı varsa istemci tazeleyebilir.
+        return !!sess.refresh_token;
       }
       return true;
     } catch (e) {
-      // localStorage kapalı/bozuksa kapıyı kapatma; sayfanın kendi
-      // oturum kontrolü devreye girsin. Yanlışlıkla üyeyi dışarıda
-      // bırakmak, misafiri içeride bırakmaktan daha kötü.
+      // localStorage kapalı/bozuk: kapıyı kapatma. Üyeyi yanlışlıkla
+      // dışarıda bırakmak, misafiri içeride bırakmaktan daha kötü —
+      // asıl koruma zaten RLS'te.
       return true;
     }
   }
 
-  if (!hasSession()) {
-    // Nereye gitmek istediğini sakla ki girişten sonra oraya dönsün.
-    try {
-      window.sessionStorage.setItem(
-        'bb_redirect_after_login',
-        window.location.pathname + window.location.search
-      );
-    } catch (e) { /* önemsiz */ }
+  if (hasSession()) return;
 
-    // replace(): geri tuşu korumalı sayfaya geri döndürmesin.
-    window.location.replace(LOGIN_URL);
-    return;
-  }
+  // ---- 3) Oturum yok: giriş sayfasına ----
+  try {
+    window.sessionStorage.setItem(
+      'bb_redirect_after_login',
+      window.location.pathname + window.location.search
+    );
+  } catch (e) { /* önemsiz */ }
 
-  // Oturum var: sayfayı normal çizdir. (Gizleme stili hiç
-  // eklenmediği için burada yapılacak bir şey yok — gizleme
-  // yalnızca yönlendirme yolunda gerekli ve orada zaten
-  // sayfadan çıkıyoruz.)
+  window.location.replace(LOGIN_URL);
 })();
