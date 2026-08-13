@@ -970,14 +970,56 @@
     } catch(e) { toast('Hata: ' + e.message, false); }
   }
 
+  // Deleting a member CASCADEs their abuse reports away with them, so the
+  // reason is snapshotted into moderation_records first. Order matters:
+  // once the profile is gone the reports no longer exist to summarise.
+  const DELETE_REASONS = [
+    ['abuse',        'Kötüye kullanım'],
+    ['harassment',   'Taciz / rahatsız etme'],
+    ['spam',         'Spam'],
+    ['fake_account', 'Sahte hesap'],
+    ['scam',         'Dolandırıcılık'],
+    ['user_request', 'Kullanıcının kendi talebi (GDPR)'],
+    ['other',        'Diğer']
+  ];
+
   function confirmDirectDelete(id, name) {
     if (id === currentUserId) { toast('Kendi hesabınızı silemezsiniz.', false); return; }
-    if (!confirm(`"${name}" kullanıcısını kalıcı olarak silmek üzeresiniz. Emin misiniz?`)) return;
-    executeDirectDelete(id);
+
+    const menu = DELETE_REASONS.map((r, i) => `${i + 1}. ${r[1]}`).join('\n');
+    const pick = prompt(`"${name}" siliniyor.\n\nSilme nedeni (numara girin):\n${menu}`);
+    if (pick === null) return;
+    const idx = parseInt(pick, 10) - 1;
+    if (!(idx >= 0 && idx < DELETE_REASONS.length)) { toast('Geçersiz neden seçildi.', false); return; }
+    const reasonCode = DELETE_REASONS[idx][0];
+
+    const notes = prompt('Kısa not (isteğe bağlı) — olgusal tutun, üçüncü kişilerin adını yazmayın:') || '';
+
+    const kind = reasonCode === 'user_request' ? 'user_request' : 'admin_removal';
+    if (!confirm(`"${name}" kalıcı olarak silinecek.\n\nNeden: ${DELETE_REASONS[idx][1]}\n\nŞikayet geçmişi özeti saklanacak (24 ay), hesap ve içerikleri silinecek. Geri alınamaz.`)) return;
+
+    executeDirectDelete(id, kind, reasonCode, notes);
   }
 
-  async function executeDirectDelete(userId) {
+  async function executeDirectDelete(userId, deletionType, reasonCode, notes) {
     try {
+      // 1. Snapshot first — this is the only moment the reports still exist.
+      const rec = await fetch(`${SB_URL}/rest/v1/rpc/record_user_deletion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+        body: JSON.stringify({
+          p_user_id: userId,
+          p_deletion_type: deletionType || 'admin_removal',
+          p_reason_code: reasonCode || 'other',
+          p_notes: notes || null
+        })
+      });
+      if (!rec.ok) {
+        // Don't delete blind: without the record the reason is lost forever.
+        throw new Error('Silme kaydı oluşturulamadı, silme iptal edildi: ' + await rec.text());
+      }
+
+      // 2. Then remove the account.
       const res = await fetch(`${SB_URL}/rest/v1/rpc/admin_delete_user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
