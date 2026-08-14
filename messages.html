@@ -1455,6 +1455,11 @@
     window.openConv(convId);
   };
 
+  // type="module" kapsami window'a acilmaz. Asagidaki duz <script> blogu
+  // loadConversations'i cagirip ReferenceError veriyordu; bu da o blogun
+  // geri kalanini (window.loadNotifications dahil) komple olduruyordu.
+  window.loadConversations = loadConversations;
+
   init();
   if (window.loadNotifications) window.loadNotifications();
 </script>
@@ -1472,7 +1477,6 @@ function timeAgoNotif(iso) {
   if (diffHr < 24) return `${diffHr} saat önce`;
   return `${Math.round(diffHr / 24)} gün önce`;
 }
-window.loadConversations = loadConversations;
 window.loadNotifications = async function() {
   const sb = window.supabase;
   if (!sb) return;
