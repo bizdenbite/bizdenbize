@@ -251,6 +251,9 @@
     <button class="nav-item" onclick="showSection('videos', this)">
       🎬 Videothek
     </button>
+    <button class="nav-item" onclick="showSection('resources', this)">
+      📚 Kütüphane <span class="nav-badge" id="badge-resources" style="background:var(--red);">—</span>
+    </button>
     <button class="nav-item" onclick="showSection('businesses', this)">
       🏪 İşletmeler <span class="nav-badge" id="badge-businesses">—</span>
     </button>
@@ -300,6 +303,7 @@
       <option value="content">📋 İçerik</option>
       <option value="events">📅 Etkinlikler</option>
       <option value="videos">🎬 Videothek</option>
+      <option value="resources">📚 Kütüphane</option>
       <option value="businesses">🏪 İşletmeler</option>
       <option value="jobs">💼 İş İlanları</option>
       <option value="webinars">🎥 Webinarlar</option>
@@ -498,6 +502,51 @@
       </div>
       <div id="messages-list">
         <div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Yükleniyor...</div></div>
+      </div>
+    </div>
+
+    <!-- KÜTÜPHANE -->
+    <div class="section" id="section-resources">
+      <div style="background:#fff;border:1px solid #e0d8cc;border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+        <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;">
+          <div><div style="font-size:20px;font-weight:700;font-family:'Playfair Display',serif;" id="lib-stat-total">—</div><div style="font-size:11px;color:var(--muted);">Kaynak</div></div>
+          <div><div style="font-size:20px;font-weight:700;font-family:'Playfair Display',serif;color:#1E7B4B;" id="lib-stat-ok">—</div><div style="font-size:11px;color:var(--muted);">Doğrulanmış</div></div>
+          <div><div style="font-size:20px;font-weight:700;font-family:'Playfair Display',serif;color:#B8860B;" id="lib-stat-todo">—</div><div style="font-size:11px;color:var(--muted);">Kontrol bekliyor</div></div>
+          <div style="flex:1;min-width:180px;text-align:right;">
+            <input id="lib-search" oninput="renderLibrary()" placeholder="Ara…" style="width:100%;max-width:220px;box-sizing:border-box;padding:8px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:13px;">
+          </div>
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin:12px 0 0;line-height:1.6;">
+          En eski kontrol edilenler en üstte. Bağlantıyı aç, çalışıyorsa <strong>Kontrol ettim</strong>, çalışmıyorsa <strong>Bozuk</strong> de — bozuk olanlar yayından kalkar.
+        </p>
+      </div>
+
+      <div id="lib-list"><div style="color:var(--muted);">Yükleniyor…</div></div>
+
+      <div style="max-width:640px;margin-top:28px;">
+        <h3 style="font-family:'Playfair Display',serif;margin-bottom:4px;">Yeni Kaynak Ekle</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Yalnızca resmî ve doğrulanmış kaynak ekle.</p>
+        <div style="display:grid;gap:10px;background:#fff;border:1px solid #e0d8cc;border-radius:12px;padding:18px;">
+          <input id="res-title" placeholder="Başlık *" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+          <input id="res-source" placeholder="Kaynak kurum * — örn. Bundesagentur für Arbeit" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+          <input id="res-url" placeholder="Bağlantı * — https://…" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+          <textarea id="res-desc" placeholder="Türkçe açıklama * — ne işe yarar, ne zaman lazım olur" rows="3" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+          <textarea id="res-caution" placeholder="Uyarı notu (isteğe bağlı) — ücret, değişen kural, sivil kuruluş vb." rows="2" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <select id="res-cat" style="flex:1;min-width:150px;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;"></select>
+            <select id="res-type" style="flex:1;min-width:120px;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+              <option value="link">Bağlantı</option><option value="guide">Rehber</option><option value="doc">Belge / PDF</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink);">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="res-tr"> Türkçe var</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="res-de" checked> Almanca</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="res-en"> İngilizce</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="res-official" checked> Resmî kurum</label>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;"><input type="checkbox" id="res-verified" checked> Bağlantıyı şimdi açıp kontrol ettim</label>
+          <button onclick="addResource()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">Kaynağı Ekle</button>
+        </div>
       </div>
     </div>
 
@@ -712,7 +761,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek', resources: '📚 Kütüphane', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
   };
 
   window.toggleAdminSidebar = function() {
@@ -733,6 +782,7 @@
     document.getElementById('topbar-title').textContent = sectionTitles[id];
     if (id === 'users') loadUsers();
     if (id === 'videos') loadVideos();
+    if (id === 'resources') loadLibrary();
     if (id === 'experts') { loadExperts(); loadExpertApplications(); }
     if (id === 'content') loadContent();
     if (id === 'events') loadEvents();
@@ -1224,6 +1274,155 @@
       if (!notifs.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">Henüz bildirim gönderilmedi.</div></div>`; return; }
       el.innerHTML = notifs.map(n => `<div style="padding:12px 0;border-bottom:1px solid var(--warm);"><div style="font-size:13px;font-weight:600;color:var(--ink);">${n.title}</div><div style="font-size:12px;color:var(--muted);">${n.body}</div><div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div></div>`).join('');
     } catch(e) {}
+  }
+
+  // ── KÜTÜPHANE ──────────────────────────────────────────────
+  // Resources live in the `resources` table. The point of this panel is the
+  // quarterly link audit: oldest-checked float to the top, one click stamps
+  // today's date, one click takes a dead link out of circulation.
+  const LIB_CATS = {
+    visa:'🛂 Oturum & Göç', citizenship:'🇩🇪 Vatandaşlık', employment:'💼 İş & Çalışma',
+    recognition:'🎓 Diploma Denkliği', family:'👶 Aile & Çocuk', medical:'🏥 Sağlık & Sigorta',
+    housing:'🏠 Konut & Kira', tax:'💶 Vergi & Finans', language:'🗣️ Dil & Entegrasyon',
+    driving:'🚗 Ehliyet', pension:'👴 Emeklilik', consulate:'🇹🇷 Konsolosluk',
+    rights:'⚖️ Haklar & Hukuk', emergency:'🚨 Acil Durum'
+  };
+  const UNTESTED_NOTE = 'Bağlantı henüz test edilmedi.';
+  let LIB = [];
+
+  function escR(v) {
+    return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  async function loadLibrary() {
+    const list = document.getElementById('lib-list');
+    const sel = document.getElementById('res-cat');
+    if (sel && !sel.options.length) {
+      sel.innerHTML = Object.entries(LIB_CATS)
+        .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+    }
+    try {
+      // nullsfirst: never-checked links are the ones most likely to be rotten
+      LIB = await sb('resources?select=*&order=last_verified.asc.nullsfirst,category.asc');
+      renderLibrary();
+    } catch (e) {
+      list.innerHTML = '<p style="color:var(--red);">Kütüphane yüklenemedi.</p>';
+    }
+  }
+
+  function renderLibrary() {
+    const list = document.getElementById('lib-list');
+    const q = (document.getElementById('lib-search')?.value || '').toLowerCase().trim();
+    const todo = LIB.filter(r => !r.last_verified).length;
+
+    document.getElementById('lib-stat-total').textContent = LIB.length;
+    document.getElementById('lib-stat-ok').textContent = LIB.length - todo;
+    document.getElementById('lib-stat-todo').textContent = todo;
+    const badge = document.getElementById('badge-resources');
+    if (badge) { badge.textContent = todo; badge.style.display = todo ? '' : 'none'; }
+
+    const rows = q
+      ? LIB.filter(r => (r.title + ' ' + r.source + ' ' + r.url + ' ' + (LIB_CATS[r.category]||'')).toLowerCase().includes(q))
+      : LIB;
+
+    if (!rows.length) { list.innerHTML = '<p style="color:var(--muted);">Sonuç yok.</p>'; return; }
+
+    list.innerHTML = rows.map(r => {
+      const ok = !!r.last_verified;
+      const stamp = ok
+        ? `<span style="color:#1E7B4B;font-size:12px;white-space:nowrap;">✓ ${fmtDate(r.last_verified)}</span>`
+        : `<span style="color:#B8860B;font-size:12px;white-space:nowrap;">⚠️ Kontrol edilmedi</span>`;
+      const off = r.is_published === false
+        ? '<span style="background:rgba(212,43,43,.1);color:var(--red);font-size:11px;padding:2px 7px;border-radius:5px;">Yayında değil</span>' : '';
+      return `<div style="background:#fff;border:1px solid #e0d8cc;border-left:3px solid ${ok ? '#1E7B4B' : '#B8860B'};border-radius:10px;padding:12px 14px;margin-bottom:8px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:1;min-width:220px;">
+            <div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escR(r.title)} ${off}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">${LIB_CATS[r.category] || escR(r.category)} · ${escR(r.source)}</div>
+            <a href="${escR(r.url)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--navy,#1B3A8C);word-break:break-all;">${escR(r.url)} ↗</a>
+            ${r.caution ? `<div style="font-size:11px;color:#7a5c00;margin-top:6px;line-height:1.5;">ℹ️ ${escR(r.caution)}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            ${stamp}
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+              <button onclick="verifyResource(${r.id})" style="background:#1E7B4B;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">✓ Kontrol ettim</button>
+              <button onclick="breakResource(${r.id})" style="background:none;border:1px solid #B8860B;color:#B8860B;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">Bozuk</button>
+              <button onclick="deleteResource(${r.id})" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">Sil</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function verifyResource(id) {
+    const r = LIB.find(x => x.id === id);
+    const body = { last_verified: new Date().toISOString().slice(0, 10), is_published: true };
+    // Only clear the placeholder note — real warnings (fees, changing rules) stay.
+    if (r && r.caution === UNTESTED_NOTE) body.caution = null;
+    try {
+      await sb('resources?id=eq.' + id, {
+        method: 'PATCH',
+        headers: { ...hdrs(token), 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      toast('✓ Kontrol tarihi güncellendi.');
+      loadLibrary();
+    } catch (e) { toast('Güncellenemedi.', false); }
+  }
+
+  async function breakResource(id) {
+    if (!confirm('Bağlantı bozuksa kaynak yayından kaldırılacak. Devam edilsin mi?')) return;
+    try {
+      await sb('resources?id=eq.' + id, {
+        method: 'PATCH',
+        headers: { ...hdrs(token), 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ is_published: false, last_verified: null, caution: 'Bağlantı çalışmıyor — yenisi bulunmalı.' })
+      });
+      toast('Kaynak yayından kaldırıldı.');
+      loadLibrary();
+    } catch (e) { toast('İşlem başarısız.', false); }
+  }
+
+  async function deleteResource(id) {
+    if (!confirm('Kaynak tamamen silinsin mi?')) return;
+    try { await sb('resources?id=eq.' + id, { method: 'DELETE' }); toast('🗑️ Silindi.'); loadLibrary(); }
+    catch (e) { toast('Silme hatası.', false); }
+  }
+
+  async function addResource() {
+    const val = id => document.getElementById(id).value.trim();
+    const title = val('res-title'), source = val('res-source'), url = val('res-url'), desc = val('res-desc');
+    if (!title || !source || !url || !desc) return toast('Başlık, kurum, bağlantı ve açıklama zorunlu.', false);
+    if (!/^https:\/\//i.test(url)) return toast('Bağlantı https:// ile başlamalı.', false);
+
+    const lang = [];
+    if (document.getElementById('res-tr').checked) lang.push('TR');
+    if (document.getElementById('res-de').checked) lang.push('DE');
+    if (document.getElementById('res-en').checked) lang.push('EN');
+    if (!lang.length) return toast('En az bir dil seç.', false);
+
+    const checked = document.getElementById('res-verified').checked;
+    const caution = val('res-caution');
+    try {
+      await sb('resources', {
+        method: 'POST',
+        headers: { ...hdrs(token), 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({
+          title, source, url, description: desc,
+          category: document.getElementById('res-cat').value,
+          type: document.getElementById('res-type').value,
+          lang,
+          is_official: document.getElementById('res-official').checked,
+          last_verified: checked ? new Date().toISOString().slice(0, 10) : null,
+          caution: caution || (checked ? null : UNTESTED_NOTE)
+        })
+      });
+      toast('📚 Kaynak eklendi.');
+      ['res-title','res-source','res-url','res-desc','res-caution'].forEach(i => document.getElementById(i).value = '');
+      loadLibrary();
+    } catch (e) { toast('Eklenemedi: ' + e.message, false); }
   }
 
   async function loadVideos() {
