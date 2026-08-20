@@ -359,15 +359,6 @@
     if (typeof render === 'function') render();
     if (typeof renderListings === 'function') renderListings();
   }
-  function showYakinda() {
-    if (document.getElementById('yakinda-toast')) return;
-    const tip = document.createElement('div');
-    tip.id = 'yakinda-toast';
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--deep, #002266);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-    tip.textContent = 'Bu ülke yakında ekleniyor!';
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 2500);
-  }
 
   </script>
   <script type="module">
@@ -541,7 +532,7 @@
 <div class="stats-bar" id="stats-bar">
   <div class="stat"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Kaynak</div></div>
   <div class="stat"><div class="stat-num" id="stat-cats">—</div><div class="stat-label">Kategori</div></div>
-  <div class="stat"><div class="stat-num" id="stat-countries">—</div><div class="stat-label">Ülke</div></div>
+  <div class="stat"><div class="stat-num" id="stat-verified">—</div><div class="stat-label">Doğrulanmış</div></div>
   <div class="stat"><div class="stat-num">%100</div><div class="stat-label">Ücretsiz</div></div>
 </div>
 
@@ -565,11 +556,6 @@
   <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
   <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
   <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
 </div>
 
 <div class="page-body">
@@ -588,26 +574,20 @@
   <div class="filters" id="filters">
     <span class="filter-label">Kategori</span>
     <button class="filter-btn active" data-filter="cat" data-value="all" onclick="setFilter('cat','all',this)">Tümü</button>
-    <button class="filter-btn" data-filter="cat" data-value="legal" onclick="setFilter('cat','legal',this)">⚖️ Hukuki</button>
-    <button class="filter-btn" data-filter="cat" data-value="medical" onclick="setFilter('cat','medical',this)">🏥 Tıbbi</button>
-    <button class="filter-btn" data-filter="cat" data-value="tax" onclick="setFilter('cat','tax',this)">💶 Vergi</button>
-    <button class="filter-btn" data-filter="cat" data-value="visa" onclick="setFilter('cat','visa',this)">🛂 Vize</button>
-    <button class="filter-btn" data-filter="cat" data-value="housing" onclick="setFilter('cat','housing',this)">🏠 Konut</button>
-    <button class="filter-btn" data-filter="cat" data-value="employment" onclick="setFilter('cat','employment',this)">💼 İş</button>
-    <button class="filter-btn" data-filter="cat" data-value="school" onclick="setFilter('cat','school',this)">👶 Okul</button>
-    <button class="filter-btn" data-filter="cat" data-value="insurance" onclick="setFilter('cat','insurance',this)">🚗 Sigorta</button>
-
-    <div class="filter-divider"></div>
-
-    <span class="filter-label">Ülke</span>
-    <button class="filter-btn active" data-filter="country" data-value="all" onclick="setFilter('country','all',this)">Tümü</button>
-    <button class="filter-btn" data-filter="country" data-value="de" onclick="setFilter('country','de',this)">🇩🇪 Almanya</button>
-    <button class="filter-btn" data-filter="country" data-value="nl" onclick="showYakinda()">🇳🇱 Hollanda <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
-    <button class="filter-btn" data-filter="country" data-value="be" onclick="showYakinda()">🇧🇪 Belçika <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
-    <button class="filter-btn" data-filter="country" data-value="at" onclick="showYakinda()">🇦🇹 Avusturya <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
-    <button class="filter-btn" data-filter="country" data-value="fr" onclick="showYakinda()">🇫🇷 Fransa <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
-    <button class="filter-btn" data-filter="country" data-value="eu" onclick="setFilter('country','eu',this)">🇪🇺 Tüm AB</button>
-    <button class="filter-btn" data-filter="country" data-value="gb" onclick="showYakinda()">🇬🇧 İngiltere <span style="font-size:9px;background:rgba(107,94,78,.12);padding:1px 6px;border-radius:10px;">Yakında</span></button>
+    <button class="filter-btn" data-filter="cat" data-value="visa" onclick="setFilter('cat','visa',this)">🛂 Oturum & Göç</button>
+    <button class="filter-btn" data-filter="cat" data-value="citizenship" onclick="setFilter('cat','citizenship',this)">🇩🇪 Vatandaşlık</button>
+    <button class="filter-btn" data-filter="cat" data-value="employment" onclick="setFilter('cat','employment',this)">💼 İş & Çalışma</button>
+    <button class="filter-btn" data-filter="cat" data-value="recognition" onclick="setFilter('cat','recognition',this)">🎓 Diploma Denkliği</button>
+    <button class="filter-btn" data-filter="cat" data-value="family" onclick="setFilter('cat','family',this)">👶 Aile & Çocuk</button>
+    <button class="filter-btn" data-filter="cat" data-value="medical" onclick="setFilter('cat','medical',this)">🏥 Sağlık & Sigorta</button>
+    <button class="filter-btn" data-filter="cat" data-value="housing" onclick="setFilter('cat','housing',this)">🏠 Konut & Kira</button>
+    <button class="filter-btn" data-filter="cat" data-value="tax" onclick="setFilter('cat','tax',this)">💶 Vergi & Finans</button>
+    <button class="filter-btn" data-filter="cat" data-value="language" onclick="setFilter('cat','language',this)">🗣️ Dil & Entegrasyon</button>
+    <button class="filter-btn" data-filter="cat" data-value="driving" onclick="setFilter('cat','driving',this)">🚗 Ehliyet</button>
+    <button class="filter-btn" data-filter="cat" data-value="pension" onclick="setFilter('cat','pension',this)">👴 Emeklilik</button>
+    <button class="filter-btn" data-filter="cat" data-value="consulate" onclick="setFilter('cat','consulate',this)">🇹🇷 Konsolosluk</button>
+    <button class="filter-btn" data-filter="cat" data-value="rights" onclick="setFilter('cat','rights',this)">⚖️ Haklar & Hukuk</button>
+    <button class="filter-btn" data-filter="cat" data-value="emergency" onclick="setFilter('cat','emergency',this)">🚨 Acil Durum</button>
 
     <div class="filter-divider"></div>
 
@@ -633,155 +613,40 @@
 <script>
   // ── RESOURCE DATA ──
   // Admin-managed. Add new resources to this array.
-  const resources = [
-    {
-      id: 1,
-      title: 'Kindergeld Başvuru Formu (Anlage Kind)',
-      source: 'Familienkasse / Bundesagentur für Arbeit',
-      desc: 'Almanya\'da çocuk parası başvurusu için resmi form. Çocuk başına bir form doldurulması gerekir.',
-      type: 'doc',
-      cat: 'tax',
-      country: 'de',
-      lang: ['TR', 'DE'],
-      url: 'https://www.arbeitsagentur.de/familie-und-kinder/kindergeld-beantragen',
-      verified: true,
-    },
-    {
-      id: 2,
-      title: 'Niederlassungserlaubnis — Başvuru Rehberi',
-      source: 'Bundesamt für Migration und Flüchtlinge (BAMF)',
-      desc: 'Kalıcı oturma izni (Niederlassungserlaubnis) için gerekli belgeler, koşullar ve süreç hakkında kapsamlı rehber.',
-      type: 'guide',
-      cat: 'visa',
-      country: 'de',
-      lang: ['TR', 'DE', 'EN'],
-      url: 'https://www.bamf.de/DE/Themen/MigrationAufenthalt/ZuwandererDrittstaaten/Migrathek/Niederlassen/niederlassen-node.html',
-      verified: true,
-    },
-    {
-      id: 3,
-      title: 'Mietvertrag — Kira Sözleşmesi Rehberi',
-      source: 'Deutscher Mieterbund',
-      desc: 'Almanya\'da kira sözleşmesinde dikkat edilmesi gereken maddeler, kiracı hakları ve Nebenkosten açıklaması.',
-      type: 'guide',
-      cat: 'housing',
-      country: 'de',
-      lang: ['DE'],
-      url: 'https://www.mieterbund.de',
-      verified: true,
-    },
-    {
-      id: 4,
-      title: 'Krankenkasse Karşılaştırma Aracı',
-      source: 'GKV-Spitzenverband',
-      desc: 'Almanya\'daki tüm yasal sağlık sigortası şirketlerini karşılaştır ve en uygun seçeneği bul.',
-      type: 'link',
-      cat: 'medical',
-      country: 'de',
-      lang: ['DE', 'EN'],
-      url: 'https://www.gkv-spitzenverband.de',
-      verified: true,
-    },
-    {
-      id: 5,
-      title: 'Elterngeld Hesaplama Aracı',
-      source: 'Bundesministerium für Familie',
-      desc: 'Doğum sonrası ne kadar Elterngeld alabileceğini hesapla. Gelir bilgilerini girerek tahmini tutarı öğren.',
-      type: 'link',
-      cat: 'school',
-      country: 'de',
-      lang: ['DE'],
-      url: 'https://familienportal.de/familienportal/rechner-antraege/elterngeldrechner',
-      verified: true,
-    },
-    {
-      id: 6,
-      title: 'Wohngeld Başvuru Formu',
-      source: 'Bundesministerium für Wohnen',
-      desc: 'Almanya\'da kira yardımı (Wohngeld) için resmi başvuru formu ve başvuru koşulları.',
-      type: 'doc',
-      cat: 'housing',
-      country: 'de',
-      lang: ['DE'],
-      url: 'https://www.bmwsb.bund.de/DE/wohnen/wohngeld/wohngeld_node.html',
-      verified: true,
-    },
-    {
-      id: 7,
-      title: 'Hollanda\'da DigiD Nasıl Alınır?',
-      source: 'Rijksoverheid.nl',
-      desc: 'DigiD, Hollanda\'da devlet hizmetlerine erişim için kullanılan dijital kimlik. Başvuru adımları ve gerekenler.',
-      type: 'guide',
-      cat: 'visa',
-      country: 'nl',
-      lang: ['NL', 'EN'],
-      url: 'https://www.digid.nl',
-      verified: true,
-    },
-    {
-      id: 8,
-      title: 'AB\'de İşçi Hakları — Genel Rehber',
-      source: 'Avrupa Komisyonu',
-      desc: 'Avrupa Birliği\'nde çalışanların temel hakları: asgari ücret, çalışma saatleri, eşit muamele ve daha fazlası.',
-      type: 'guide',
-      cat: 'employment',
-      country: 'eu',
-      lang: ['TR', 'DE', 'EN', 'FR', 'NL'],
-      url: 'https://europa.eu/youreurope/citizens/work/index_tr.htm',
-      verified: true,
-    },
-    {
-      id: 9,
-      title: 'Almanya\'da Vergi Beyannamesi (Steuererklärung)',
-      source: 'Bundesministerium der Finanzen',
-      desc: 'Almanya\'da vergi beyannamesi vermek zorunda mısın? Kimler beyanname vermeli, nasıl verilir, hangi belgeler gerekli?',
-      type: 'guide',
-      cat: 'tax',
-      country: 'de',
-      lang: ['DE', 'EN'],
-      url: 'https://www.bundesfinanzministerium.de',
-      verified: true,
-    },
-    {
-      id: 10,
-      title: 'Kısa Çalışma Ödeneği (Kurzarbeit) Rehberi',
-      source: 'Bundesagentur für Arbeit',
-      desc: 'Kısa çalışma ödeneği nedir, ne kadar alınır, nasıl başvurulur? İşçiler ve işverenler için kapsamlı bilgi.',
-      type: 'guide',
-      cat: 'employment',
-      country: 'de',
-      lang: ['DE', 'EN'],
-      url: 'https://www.arbeitsagentur.de/unternehmen/finanziell/kurzarbeitergeld',
-      verified: true,
-    },
-    {
-      id: 11,
-      title: 'Avusturya\'da Oturma İzni Başvurusu',
-      source: 'Bundesministerium Inneres (Avusturya)',
-      desc: 'Avusturya\'da farklı oturma izni türleri (Rot-Weiß-Rot Karte, Niederlassungsbewilligung) için başvuru süreci.',
-      type: 'link',
-      cat: 'visa',
-      country: 'at',
-      lang: ['DE', 'EN'],
-      url: 'https://www.migration.gv.at',
-      verified: true,
-    },
-    {
-      id: 12,
-      title: 'Fransa\'da Carte de Séjour Başvurusu',
-      source: 'Service-Public.fr',
-      desc: 'Fransa\'da oturma kartı (Carte de Séjour) başvurusu için gerekli belgeler ve başvuru adımları.',
-      type: 'link',
-      cat: 'visa',
-      country: 'fr',
-      lang: ['FR', 'EN'],
-      url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/N110',
-      verified: true,
-    },
-  ];
+  let resources = [];
+
+  // Content now lives in the Supabase `resources` table so a dead link can be
+  // fixed without a redeploy. RLS allows anonymous SELECT on published rows,
+  // which is what makes this public page work logged-out.
+  async function loadResources() {
+    const grid = document.getElementById('resource-grid');
+    try {
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+      const { data, error } = await sb.from('resources')
+        .select('id,title,source,description,url,type,category,lang,last_verified,caution,is_official')
+        .eq('is_published', true)
+        .order('category').order('sort_order');
+      if (error) throw error;
+      resources = (data || []).map(r => ({
+        id: r.id, title: r.title, source: r.source, desc: r.description, url: r.url,
+        type: r.type, cat: r.category, lang: r.lang || ['DE'],
+        lastVerified: r.last_verified, caution: r.caution, official: r.is_official,
+      }));
+      applyFiltersFromUrl();
+      renderCards();
+    } catch (e) {
+      console.error('Kütüphane yüklenemedi:', e);
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
+        <h3>Kaynaklar yüklenemedi</h3>
+        <p>Bağlantını kontrol edip sayfayı yenile.</p></div>`;
+    }
+  }
+
 
   // ── STATE ──
-  let activeFilters = { cat: 'all', country: 'all', type: 'all' };
+  let activeFilters = { cat: 'all', type: 'all' };
 
   // ── FILTER LOGIC ──
   function setFilter(filterKey, value, btn) {
@@ -795,7 +660,6 @@
     const q = document.getElementById('search-input').value.toLowerCase().trim();
     return resources.filter(r => {
       if (activeFilters.cat !== 'all' && r.cat !== activeFilters.cat) return false;
-      if (activeFilters.country !== 'all' && r.country !== activeFilters.country) return false;
       if (activeFilters.type !== 'all' && r.type !== activeFilters.type) return false;
       if (q && !r.title.toLowerCase().includes(q) && !r.desc.toLowerCase().includes(q) && !r.source.toLowerCase().includes(q)) return false;
       return true;
@@ -809,7 +673,6 @@
     video: { icon: '▶️', label: 'Video' },
   };
 
-  const countryNames = { de:'Almanya', nl:'Hollanda', be:'Belçika', at:'Avusturya', fr:'Fransa', eu:'Tüm AB', gb:'İngiltere', ch:'İsviçre' };
 
   function renderCards() {
     const filtered = getFiltered();
@@ -817,7 +680,7 @@
     document.getElementById('results-count').innerHTML = `<strong>${filtered.length}</strong> kaynak bulundu`;
     document.getElementById('stat-total').textContent = resources.length;
     document.getElementById('stat-cats').textContent = new Set(resources.map(r => r.cat)).size;
-    document.getElementById('stat-countries').textContent = new Set(resources.map(r => r.country)).size;
+    document.getElementById('stat-verified').textContent = resources.filter(r => r.lastVerified).length;
 
     if (filtered.length === 0) {
       grid.innerHTML = `
@@ -831,7 +694,6 @@
 
     grid.innerHTML = filtered.map(r => {
       const t = typeData[r.type];
-      const country = countryNames[r.country] || r.country.toUpperCase();
       return `
         <a class="resource-card" href="${r.url}" target="_blank" rel="noopener">
           <div class="card-top">
@@ -844,21 +706,33 @@
           <div class="card-desc">${r.desc}</div>
           <div class="card-tags">
             <span class="card-tag cat">${getCatName(r.cat)}</span>
-            <span class="card-tag country">${country}</span>
-            ${r.verified ? '<span class="card-tag verified">✓ Doğrulandı</span>' : ''}
+            ${r.lastVerified
+                ? `<span class="card-tag verified">✓ ${fmtDate(r.lastVerified)} tarihinde kontrol edildi</span>`
+                : '<span class="card-tag" style="background:rgba(201,168,76,.16);color:#7a5c00;">⚠️ Bağlantı doğrulanmadı</span>'}
+            ${r.official === false ? '<span class="card-tag" style="background:rgba(107,94,78,.10);">Sivil kuruluş</span>' : ''}
             <span class="card-tag">${t.label}</span>
           </div>
           <div class="card-footer">
             <span class="card-lang">🌐 ${r.lang.join(' · ')}</span>
             <span class="card-arrow">→</span>
           </div>
+          ${r.caution ? `<div style="font-size:11px;color:#7a5c00;line-height:1.5;padding-top:8px;margin-top:4px;border-top:1px dashed var(--warm);">ℹ️ ${r.caution}</div>` : ''}
           <div style="font-size:10px;color:var(--sand);line-height:1.4;padding-top:6px;border-top:1px dashed var(--warm);">⚠️ BizdenBize bu kaynağın içeriğinden hukuki olarak sorumlu değildir.</div>
         </a>`;
     }).join('');
   }
 
+  function fmtDate(d) {
+    const [y, m, day] = String(d).split('-');
+    return `${day}.${m}.${y}`;
+  }
+
   function getCatName(cat) {
-    const map = { legal:'⚖️ Hukuki', medical:'🏥 Tıbbi', tax:'💶 Vergi', visa:'🛂 Vize', housing:'🏠 Konut', employment:'💼 İş', school:'👶 Okul', insurance:'🚗 Sigorta' };
+    const map = { visa:'🛂 Oturum & Göç', citizenship:'🇩🇪 Vatandaşlık', employment:'💼 İş & Çalışma',
+      recognition:'🎓 Diploma Denkliği', family:'👶 Aile & Çocuk', medical:'🏥 Sağlık & Sigorta',
+      housing:'🏠 Konut & Kira', tax:'💶 Vergi & Finans', language:'🗣️ Dil & Entegrasyon',
+      driving:'🚗 Ehliyet', pension:'👴 Emeklilik', consulate:'🇹🇷 Konsolosluk',
+      rights:'⚖️ Haklar & Hukuk', emergency:'🚨 Acil Durum' };
     return map[cat] || cat;
   }
 
@@ -867,7 +741,7 @@
   // with ?cat=medical etc. Without this, the filter buttons existed but
   // nothing ever read the URL, so every incoming link landed on the
   // unfiltered "Tümü" view regardless of what it was supposed to show.
-  (function applyFiltersFromUrl() {
+  function applyFiltersFromUrl() {
     const params = new URLSearchParams(window.location.search);
     ['cat', 'country', 'type'].forEach(key => {
       const val = params.get(key);
@@ -878,8 +752,8 @@
       document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
-  })();
-  renderCards();
+  }
+  loadResources();
 
   function toggleMenu() {
     const hb = document.getElementById('hamburger');
