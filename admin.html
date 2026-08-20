@@ -1289,6 +1289,7 @@
   };
   const UNTESTED_NOTE = 'Bağlantı henüz test edilmedi.';
   let LIB = [];
+  let LIB_EDITING = null;   // id of the row whose edit panel is open
 
   function escR(v) {
     return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -1347,13 +1348,68 @@
             ${stamp}
             <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
               <button onclick="verifyResource(${r.id})" style="background:#1E7B4B;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">✓ Kontrol ettim</button>
+              <button onclick="editResource(${r.id})" style="background:none;border:1px solid var(--navy,#1B3A8C);color:var(--navy,#1B3A8C);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">✎ Düzenle</button>
               <button onclick="breakResource(${r.id})" style="background:none;border:1px solid #B8860B;color:#B8860B;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">Bozuk</button>
               <button onclick="deleteResource(${r.id})" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;">Sil</button>
             </div>
           </div>
         </div>
+        ${LIB_EDITING === r.id ? editForm(r) : ''}
       </div>`;
     }).join('');
+  }
+
+  // Agency sites reorganise constantly: the page has not died, it MOVED.
+  // Neither "Kontrol ettim" nor "Bozuk" fits that — this does.
+  function editForm(r) {
+    const fld = 'width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:13px;';
+    const cats = Object.entries(LIB_CATS)
+      .map(([v, l]) => `<option value="${v}"${v === r.category ? ' selected' : ''}>${l}</option>`).join('');
+    return `<div style="margin-top:12px;padding-top:12px;border-top:1px dashed #e0d8cc;display:grid;gap:8px;">
+      <input id="ed-url" value="${escR(r.url)}" placeholder="Bağlantı — https://…" style="${fld}">
+      <input id="ed-title" value="${escR(r.title)}" placeholder="Başlık" style="${fld}">
+      <input id="ed-source" value="${escR(r.source)}" placeholder="Kaynak kurum" style="${fld}">
+      <textarea id="ed-desc" rows="3" placeholder="Türkçe açıklama" style="${fld}resize:vertical;">${escR(r.description)}</textarea>
+      <textarea id="ed-caution" rows="2" placeholder="Uyarı notu (boş bırakılabilir)" style="${fld}resize:vertical;">${escR(r.caution || '')}</textarea>
+      <select id="ed-cat" style="${fld}">${cats}</select>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="ed-verified" checked> Yeni bağlantıyı açıp kontrol ettim
+      </label>
+      <div style="display:flex;gap:8px;">
+        <button onclick="saveResource(${r.id})" style="background:var(--red);color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;">Kaydet</button>
+        <button onclick="cancelEdit()" style="background:none;border:1px solid #e0d8cc;color:var(--muted);border-radius:7px;padding:9px 16px;cursor:pointer;font-size:13px;font-family:inherit;">Vazgeç</button>
+      </div>
+    </div>`;
+  }
+
+  function editResource(id) { LIB_EDITING = (LIB_EDITING === id ? null : id); renderLibrary(); }
+  function cancelEdit() { LIB_EDITING = null; renderLibrary(); }
+
+  async function saveResource(id) {
+    const v = i => document.getElementById(i).value.trim();
+    const url = v('ed-url'), title = v('ed-title'), source = v('ed-source'), desc = v('ed-desc');
+    if (!url || !title || !source || !desc) return toast('Bağlantı, başlık, kurum ve açıklama zorunlu.', false);
+    if (!/^https:\/\//i.test(url)) return toast('Bağlantı https:// ile başlamalı.', false);
+    const caution = v('ed-caution');
+    const checked = document.getElementById('ed-verified').checked;
+    try {
+      await sb('resources?id=eq.' + id, {
+        method: 'PATCH',
+        headers: { ...hdrs(token), 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({
+          url, title, source, description: desc,
+          category: document.getElementById('ed-cat').value,
+          caution: caution || null,
+          // A corrected URL is republished; if you have not checked it, it
+          // stays honestly marked unverified instead of silently going live.
+          last_verified: checked ? new Date().toISOString().slice(0, 10) : null,
+          is_published: true
+        })
+      });
+      LIB_EDITING = null;
+      toast('✓ Kaynak güncellendi.');
+      loadLibrary();
+    } catch (e) { toast('Kaydedilemedi.', false); }
   }
 
   async function verifyResource(id) {
