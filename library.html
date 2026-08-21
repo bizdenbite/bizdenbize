@@ -533,7 +533,7 @@
   <div class="stat"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Kaynak</div></div>
   <div class="stat"><div class="stat-num" id="stat-cats">—</div><div class="stat-label">Kategori</div></div>
   <div class="stat"><div class="stat-num" id="stat-verified">—</div><div class="stat-label">Doğrulanmış</div></div>
-  <div class="stat"><div class="stat-num">%100</div><div class="stat-label">Ücretsiz</div></div>
+  <div class="stat"><div class="stat-num" id="stat-lastcheck">—</div><div class="stat-label">Son kontrol</div></div>
 </div>
 
 <!-- DISCLAIMER -->
@@ -681,6 +681,9 @@
     document.getElementById('stat-total').textContent = resources.length;
     document.getElementById('stat-cats').textContent = new Set(resources.map(r => r.cat)).size;
     document.getElementById('stat-verified').textContent = resources.filter(r => r.lastVerified).length;
+    const dates = resources.map(r => r.lastVerified).filter(Boolean).sort();
+    const last = dates[dates.length - 1];
+    document.getElementById('stat-lastcheck').textContent = last ? fmtMonth(last) : '—';
 
     if (filtered.length === 0) {
       grid.innerHTML = `
@@ -720,6 +723,12 @@
           <div style="font-size:10px;color:var(--sand);line-height:1.4;padding-top:6px;border-top:1px dashed var(--warm);">⚠️ BizdenBize bu kaynağın içeriğinden hukuki olarak sorumlu değildir.</div>
         </a>`;
     }).join('');
+  }
+
+  const AYLAR = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  function fmtMonth(d) {
+    const [y, m] = String(d).split('-');
+    return `${AYLAR[parseInt(m, 10) - 1]} ${y}`;
   }
 
   function fmtDate(d) {
