@@ -55,8 +55,7 @@
   var SOCIAL = [
     ['https://instagram.com/bizdenbize', 'Instagram', '📸'],
     ['https://tiktok.com/@bizdenbize',   'TikTok',    '🎵'],
-    ['https://facebook.com/bizdenbize',  'Facebook',  '👤'],
-    ['https://wa.me/bizdenbize',         'WhatsApp',  '💬']
+    ['https://facebook.com/bizdenbize',  'Facebook',  '👤']
   ];
 
   function col(title, items) {
