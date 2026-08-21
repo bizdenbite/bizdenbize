@@ -229,6 +229,9 @@
 </footer>
 
 <script>
+  // Shared links must always carry the canonical domain — Vercel's preview
+  // domain stays live alongside it and would otherwise leak into WhatsApp.
+  const BB_SITE = 'https://bizdenbize.com';
   const _LD_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _LD_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _LD_H={'apikey':_LD_KEY,'Authorization':'Bearer '+_LD_KEY};
@@ -305,7 +308,7 @@
 
   function ldShareData(){
     const l=window.__ldListing||{};
-    const url=location.origin+location.pathname+'?id='+encodeURIComponent(l.id||'');
+    const url=BB_SITE+location.pathname+'?id='+encodeURIComponent(l.id||'');
     return { url:url, price:ldPrice(l), title:l.title||'İlan' };
   }
 

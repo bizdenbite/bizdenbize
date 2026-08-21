@@ -776,6 +776,9 @@
   </div>
 </div>
 <script>
+  // Shared links must always carry the canonical domain — Vercel's preview
+  // domain stays live alongside it and would otherwise leak into WhatsApp.
+  const BB_SITE = 'https://bizdenbize.com';
 (function(){
   var SB_URL='https://wxjudojlwksivhzjnmim.supabase.co', SB_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   var sb=null, BIZ=null, ME=null, MYREVIEW=null, selectedStars=5, IS_ADMIN=false;
@@ -790,7 +793,7 @@
 
   window.setStars=function(n){setStarsInit(n);};
   window.toggleReviewForm=function(){if(!ME){location.href='login.html';return;}var frm=document.getElementById('review-form');frm.classList.toggle('open');if(frm.classList.contains('open'))frm.scrollIntoView({behavior:'smooth',block:'nearest'});};
-  window.shareBiz=function(){if(navigator.clipboard)navigator.clipboard.writeText(location.href);alert('Bağlantı kopyalandı!');};
+  window.shareBiz=function(){if(navigator.clipboard)navigator.clipboard.writeText(BB_SITE+location.pathname+location.search);alert('Bağlantı kopyalandı!');};
   window.pickBizPhoto=function(){var i=document.getElementById('biz-photo-input');if(i)i.click();};
   window.onBizPhoto=async function(){
     var inp=document.getElementById('biz-photo-input');
