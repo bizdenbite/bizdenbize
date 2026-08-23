@@ -154,10 +154,10 @@
 </nav>
 
 <div class="breadcrumb" style="flex-direction:column;align-items:flex-start;gap:10px;">
-  <button onclick="bbGoBack('classifieds.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#003399);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">← Geri</button>
+  <button onclick="bbGoBack('emlak.html')" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy,#003399);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;">← Geri</button>
   <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
     <a href="mahallem.html">Ana Sayfa</a><span>/</span>
-    <a href="classifieds.html">İlanlar</a><span>/</span>
+    <a href="emlak.html">Emlak</a><span>/</span>
     <span id="bc-title" style="color:var(--ink)">İlan</span>
   </div>
 </div>
@@ -235,7 +235,7 @@
   const _LD_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _LD_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   function _ldH(){const t=(window._currentSession&&window._currentSession.access_token)?window._currentSession.access_token:_LD_KEY;return {'apikey':_LD_KEY,'Authorization':'Bearer '+t};}
-  const LD_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
+  const LD_CATS={kiralik:{l:'Kiralık',e:'🔑'},satilik:{l:'Satılık',e:'🏡'},sublet:{l:'Sublet',e:'🤝'},paylasimli:{l:'Paylaşımlı Ev',e:'👥'}};
   const LD_COND={sifir:'Sıfır gibi',iyi:'İyi',orta:'Kullanılmış'};
   const LD_DELIV={elden:'🤝 Elden teslim',kargo:'📦 Kargo',ikisi:'🤝📦 Elden veya kargo'};
   function ldEsc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -247,14 +247,15 @@
     try{ await window._authReady; }catch(e){}
     const root=document.getElementById('listing-root');
     const id=ldId();
-    if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
+    if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="emlak.html">← Emlak ilanlarına dön</a></div>'; return; }
     try{
-      const r=await fetch(_LD_URL+'/rest/v1/classified_listings?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_ldH()});
+      const r=await fetch(_LD_URL+'/rest/v1/emlak_listings?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_ldH()});
       const rows=await r.json();
-      if(!rows.length){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı ya da kaldırılmış. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
+      if(!rows.length){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı ya da kaldırılmış. <a href="emlak.html">← Emlak ilanlarına dön</a></div>'; return; }
       const l=rows[0];
-      const cat=LD_CATS[l.category]||{l:l.category||'',e:'📦'};
-      const isSold=l.status==='satildi';
+      const cat=LD_CATS[l.tip]||{l:l.tip||'',e:'🏠'};
+      const isSold=(l.status==='satildi'||l.status==='kiralandi');
+      const doneWord=(l.status==='kiralandi')?'KİRALANDI':'SATILDI';
       document.getElementById('bc-title').textContent=l.title;
       document.title='BizdenBize — '+l.title;
 
@@ -270,8 +271,17 @@
         gallery='<div class="gallery"><div style="width:100%;aspect-ratio:4/3;border-radius:14px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:72px;">'+cat.e+'</div></div>';
       }
 
-      const cond=l.condition?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Durum</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_COND[l.condition]||l.condition)+'</td></tr>'):'';
-      const deliv=l.delivery?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);">Teslimat</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(LD_DELIV[l.delivery]||l.delivery)+'</td></tr>'):'';
+      const _row=(k,v)=>v?('<tr><td style="padding:4px 24px 4px 0;color:var(--muted);white-space:nowrap;">'+k+'</td><td style="padding:4px 0;font-weight:600;">'+ldEsc(v)+'</td></tr>'):'';
+      const _eur=v=>(v!=null&&v!=='')?('€'+Number(v).toLocaleString('de-DE')):'';
+      const _date=v=>{ if(!v) return ''; const d=String(v).split('-'); return d.length===3?(d[2]+'.'+d[1]+'.'+d[0]):String(v); };
+      const specs = _row('İlan tipi', cat.l)
+                  + _row('Oda', l.rooms)
+                  + _row('Büyüklük', l.size_sqm!=null&&l.size_sqm!==''?l.size_sqm+' m²':'')
+                  + _row('Kat', l.floor)
+                  + _row('Eşyalı', l.furnished===true?'Evet':(l.furnished===false?'Hayır':''))
+                  + _row('Yan giderler', _eur(l.nebenkosten))
+                  + _row('Depozito', _eur(l.kaution))
+                  + _row('Müsait tarih', _date(l.available_from));
       const loc=[l.location,l.city].filter(Boolean).join(', ');
 
       const shareHtml = `<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--sand);"><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Bu İlanı Paylaş</div><div style="display:flex;gap:8px;"><button onclick="ldShareWhatsApp()" style="flex:1;background:#1E7B4B;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3A2.8 2.8 0 0 0 6 8.9a4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.9.5 2.2.5a2.4 2.4 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c0-.2-.2-.2-.4-.3z"/></svg>WhatsApp</button><button onclick="ldShareEmail()" style="flex:1;background:var(--navy,#003399);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">✉️ E-posta</button></div></div>`;
@@ -279,23 +289,23 @@
       root.innerHTML=
         '<div>'
         + gallery
-        + (isSold?'<div style="margin:14px 0;background:var(--red);color:#fff;text-align:center;padding:8px;border-radius:10px;font-weight:700;">SATILDI</div>':'')
+        + (isSold?'<div style="margin:14px 0;background:var(--red);color:#fff;text-align:center;padding:8px;border-radius:10px;font-weight:700;">'+doneWord+'</div>':'')
         + '<div class="li-price">'+ldPrice(l)+'</div>'
         + '<div class="li-title">'+ldEsc(l.title)+'</div>'
         + '<div style="color:var(--muted);font-size:14px;margin:8px 0 20px;">'+cat.e+' '+ldEsc(cat.l)+(loc?' · 📍 '+ldEsc(loc):'')+'</div>'
         + (l.description?'<div id="ld-description" style="font-size:15px;line-height:1.7;color:var(--ink);margin-bottom:8px;white-space:pre-line;">'+ldEsc(l.description)+'</div>':'')
-        + ((cond||deliv)?'<table style="width:auto;font-size:14px;border-collapse:collapse;"><tbody>'+cond+deliv+'</tbody></table>':'')
+        + (specs?'<table style="width:auto;font-size:14px;border-collapse:collapse;margin-top:14px;"><tbody>'+specs+'</tbody></table>':'')
         + '</div>'
         + '<div class="right-col"><div class="seller-card">'
-        +   '<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Satıcı ile İletişim</div>'
+        +   '<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">İlan Sahibi ile İletişim</div>'
         +   (isSold
-              ? '<div style="color:var(--muted);font-size:14px;">Bu ilan satılmış.</div>'
+              ? '<div style="color:var(--muted);font-size:14px;">Bu ilan artık aktif değil.</div>'
               : '<button onclick="ldContact(\''+l.created_by+'\')" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Instrument Sans\',sans-serif;">💬 Mesaj Gönder</button>')
         +   '<div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5;">Güvenliğin için tüm iletişim BizdenBize üzerinden yapılır. Kişisel bilgilerini paylaşmadan önce dikkatli ol.</div>'
         +   shareHtml
         + '</div></div>';
       window.__ldListing=l;
-    }catch(e){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="classifieds.html">← İlanlara dön</a></div>'; }
+    }catch(e){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Yüklenemedi. <a href="emlak.html">← Emlak ilanlarına dön</a></div>'; }
   }
 
   window.ldSwap=function(url){ const m=document.getElementById('ld-main'); if(m) m.style.backgroundImage='url(\''+url+'\')'; };

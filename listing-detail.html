@@ -243,6 +243,8 @@
   function ldPrice(l){ return l.price!=null ? '€'+Number(l.price).toLocaleString('de-DE') : 'Pazarlık'; }
 
   async function loadListing(){
+    // Oturum gelmeden fetch atma: RLS gercek kullanici bekliyor.
+    try{ await window._authReady; }catch(e){}
     const root=document.getElementById('listing-root');
     const id=ldId();
     if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
