@@ -234,7 +234,7 @@
   const BB_SITE = 'https://bizdenbize.com';
   const _LD_URL='https://wxjudojlwksivhzjnmim.supabase.co';
   const _LD_KEY='sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-  const _LD_H={'apikey':_LD_KEY,'Authorization':'Bearer '+_LD_KEY};
+  function _ldH(){const t=(window._currentSession&&window._currentSession.access_token)?window._currentSession.access_token:_LD_KEY;return {'apikey':_LD_KEY,'Authorization':'Bearer '+t};}
   const LD_CATS={arac:{l:'Araç',e:'🚗'},emlak:{l:'Emlak',e:'🏠'},elektronik:{l:'Elektronik',e:'📱'},mobilya:{l:'Mobilya',e:'🛋️'},giyim:{l:'Giyim',e:'👗'},diger:{l:'Diğer',e:'📦'}};
   const LD_COND={sifir:'Sıfır gibi',iyi:'İyi',orta:'Kullanılmış'};
   const LD_DELIV={elden:'🤝 Elden teslim',kargo:'📦 Kargo',ikisi:'🤝📦 Elden veya kargo'};
@@ -247,7 +247,7 @@
     const id=ldId();
     if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
     try{
-      const r=await fetch(_LD_URL+'/rest/v1/classified_listings?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_LD_H});
+      const r=await fetch(_LD_URL+'/rest/v1/classified_listings?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_ldH()});
       const rows=await r.json();
       if(!rows.length){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı ya da kaldırılmış. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
       const l=rows[0];
