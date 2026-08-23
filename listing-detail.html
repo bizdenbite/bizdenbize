@@ -243,8 +243,15 @@
   function ldPrice(l){ return l.price!=null ? '€'+Number(l.price).toLocaleString('de-DE') : 'Pazarlık'; }
 
   async function loadListing(){
-    // Oturum gelmeden fetch atma: RLS gercek kullanici bekliyor.
-    try{ await window._authReady; }catch(e){}
+    // window._authReady bir MODULE icinde tanimlaniyor; module'ler klasik
+    // script'lerden SONRA calisiyor, yani burada henuz undefined olabilir ve
+    // 'await undefined' hic beklemez. Bu yuzden olusmasini da bekliyoruz.
+    await (async function waitSession(){
+      for(let i=0;i<50;i++){                        // en fazla ~5 sn
+        if(window._authReady){ try{ await window._authReady; }catch(e){} return; }
+        await new Promise(r=>setTimeout(r,100));
+      }
+    })();
     const root=document.getElementById('listing-root');
     const id=ldId();
     if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">İlan bulunamadı. <a href="classifieds.html">← İlanlara dön</a></div>'; return; }
