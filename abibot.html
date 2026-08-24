@@ -2253,6 +2253,9 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
           body: JSON.stringify({ messages, systemPrompt }),
         });
         const d = await res.json();
+        // 401 = abibot-chat artik gecerli bir kullanici oturumu istiyor.
+        // Sayfa hala anon anahtar gonderdigi icin bakim mesaji gosteriyoruz.
+        if (res.status === 401) throw new Error('ABIBOT_MAINTENANCE');
         if (!res.ok) throw new Error(d.error || 'Edge Function error');
         return d.answer || '';
       }
@@ -2333,7 +2336,13 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
     } catch (err) {
       removeTyping();
-      addMessage('assistant', 'Bağlantı hatası oluştu. İnternet bağlantınızı kontrol edin ve tekrar deneyin.', false);
+      if (err && err.message === 'ABIBOT_MAINTENANCE') {
+        addMessage('assistant',
+          'AbiBOT şu anda bakımda. Güvenlik güncellemesi yapıyoruz; kısa süre içinde tekrar açılacak.\n\nBu senin internetinle ilgili değil — sorun bizde. Anlayışın için teşekkürler.\n\nAcil bir konuysa "Uzmana Gönder" ile sorunu gerçek bir uzmana iletebilirsin; o bölüm çalışmaya devam ediyor.',
+          false);
+      } else {
+        addMessage('assistant', 'Bağlantı hatası oluştu. İnternet bağlantınızı kontrol edin ve tekrar deneyin.', false);
+      }
     }
 
     isLoading = false;
@@ -2674,6 +2683,16 @@ ${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
         }),
       });
       const d = await res.json();
+      if (res.status === 401) {
+        box.querySelector('.translation-text').textContent =
+          'Çeviri şu anda bakımda. Kısa süre içinde tekrar açılacak.';
+        return;
+      }
+      if (!res.ok) {
+        box.querySelector('.translation-text').textContent =
+          'Çeviri başarısız oldu. Lütfen tekrar deneyin.';
+        return;
+      }
       const translated = d.answer || '';
       box.querySelector('.translation-text').innerHTML = translated.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
       const transActions = document.createElement('div');
