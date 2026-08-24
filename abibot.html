@@ -1381,12 +1381,8 @@
 
   // On abibot.eu, AbiBOT shouldn't describe itself as "on the BizdenBize platform" —
   // it's its own product now. Strips both phrasings used across the category prompts.
-  function stripBizdenBizeRef(prompt) {
-    if (!isAbibotDomain) return prompt;
-    return prompt
-      .replace(/ on the BizdenBize platform/g, '')
-      .replace(/ on BizdenBize helping/g, ' helping');
-  }
+  // stripBizdenBizeRef kaldirildi: marka bilgisi artik sunucuya
+  // { brand: 'abibot' | 'bizdenbize' } olarak gonderiliyor.
 
   if (ABIBOT_HOSTS.includes(window.location.hostname)) {
     // Browser tab title + PWA "add to home screen" name
@@ -1449,47 +1445,14 @@
     if (sidebarCatSection) sidebarCatSection.style.display = 'none';
   }
 
-  // ── Shared honesty & escalation rules — applied to EVERY category. ──
-  // This exists to make good on a specific promise on the BizdenBize landing
-  // page: "AbiBOT bilmediğini uydurmaz; ne zaman gerçek bir uzmana danışman
-  // gerektiğini açıkça söyler." Do not remove without updating that copy too.
-  const BASE_RULES = `
-CRITICAL RULES — always follow these, in every answer, regardless of topic:
-1. NEVER invent facts, laws, numbers, deadlines, or procedures you are not confident about. If you don't know something, or it depends on details you don't have (the person's specific city, visa type, contract, etc.), say so plainly in Turkish instead of guessing — e.g. "Bundan emin değilim, bu durum kişiye göre değişebilir" or "Bu konuda net bilgim yok, resmi kaynağı kontrol etmeni öneririm."
-2. When a question has real legal, medical, financial, or immigration consequences (something that could cost the person money, their residence status, their health, or a legal deadline), explicitly recommend they use BizdenBize's paid expert review ("Uzmana Gönder") for a final check — even after giving your best general answer. Say this directly, don't bury it.
-3. Prefer saying "emin değilim" over sounding confident when you are not. Being honestly uncertain is more helpful to this community than a wrong answer stated with false confidence.
-4. Never present yourself as a substitute for a lawyer, doctor, tax advisor, or immigration official on decisions that matter — you are a starting point, not the final word.
-`;
-
-  const systemPrompts = {
-    legal: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in LEGAL matters — German, Dutch, Belgian, Austrian, and EU law as it applies to Turkish immigrants and diaspora. You understand the specific challenges of 1st, 2nd, and 3rd generation Turkish Europeans.`,
-    medical: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in MEDICAL topics — European healthcare systems, Krankenkasse, medication, symptoms, and navigating healthcare as a Turkish person in Europe.`,
-    tax: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in TAX and FINANCE — German Steuer, Dutch belasting, income tax, Kindergeld, Wohngeld, social benefits, and financial planning for Turkish diaspora.`,
-    visa: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in VISA and RESIDENCE PERMITS — Niederlassungserlaubnis, Aufenthaltstitel, family reunification, citizenship applications, and EU free movement rights for Turkish citizens.`,
-    housing: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in HOUSING and TENANCY — German Mietrecht, rental contracts, deposit rules, tenant rights, Nebenkosten, and housing benefits for Turkish residents in Europe.`,
-    migration: BASE_RULES + `You are AbiBOT, an AI assistant on BizdenBize helping Turkish people in Turkey who want to find work and move to Europe — especially Germany, Netherlands, Austria, and Belgium. Your audience is working-class people: factory workers, truck drivers, healthcare workers, skilled tradespeople, construction workers. They are NOT necessarily highly educated and may be vulnerable to exploitation by unqualified job placement consultants who take their money and deliver nothing.
-
-Your role is to:
-1. Explain the LEGITIMATE process for finding work in Europe from Turkey
-2. Explain what real job offers look like and what red flags to watch for
-3. Warn clearly about common scams — fake contracts, upfront payment demands, fake employer names
-4. Guide users toward official channels only: Make it in Germany, Bundesagentur für Arbeit, official embassy visa processes
-5. Explain work visa types: Fachkräfteeinwanderungsgesetz, Blaue Karte, sector-specific visas
-6. Help users understand their rights BEFORE they sign anything or pay anyone
-
-CRITICAL SCAM WARNING — always include when relevant: Hiçbir meşru işveren veya danışman sizden önceden para talep etmez. Para isteyen kişilerden uzak durun.
-
-Be simple, direct, and protective. Use plain Turkish. These users may be desperate and that makes them vulnerable — your job is to protect them, not just inform them.`,
-    employment: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in EMPLOYMENT and LABOR LAW — Kündigung, Arbeitsvertrag, sick leave, discrimination at work, unemployment benefits (ALG), and workers' rights in Germany and Europe.`,
-    school: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in SCHOOLS, CHILDREN, and SOCIAL BENEFITS — Kindergeld, Elterngeld, school enrollment, childcare (Kita), Bafög, and family support systems for Turkish families in Europe.`,
-    insurance: BASE_RULES + `You are AbiBOT, an AbiBOT — Dijital Abiniz for the Turkish community in Europe on the BizdenBize platform. You specialize in INSURANCE and VEHICLES — Kfz-Versicherung, Haftpflicht, car registration, accidents, claims, and navigating German/European insurance as a Turkish resident.`,
-  };
-
-  const langInstructions = {
-    tr: 'Always respond in TURKISH (Türkçe). Use clear, friendly Turkish. Avoid overly formal legal jargon — explain things simply.',
-    de: 'Always respond in GERMAN (Deutsch). Use clear, accessible German. Avoid overly formal legal jargon — explain things simply.',
-    en: 'Always respond in ENGLISH. Use clear, friendly English. Avoid overly formal legal jargon — explain things simply.',
-  };
+  // ── SISTEM PROMPTLARI ARTIK SUNUCUDA ──
+  // BASE_RULES, systemPrompts ve langInstructions bu dosyadan kaldirildi.
+  // Hepsi abibot-chat Edge Function'inda yasiyor (Supabase dashboard).
+  // Sebep: tarayicida uretilen prompt, devtools ile degistirilebiliyordu.
+  // Prompt degisikligi = dashboard'da duzenle + Deploy. GitHub'a gerek yok.
+  //
+  // Landing page sozu ("AbiBOT bilmedigini uydurmaz...") oradaki
+  // BASE_RULES blogunda korunuyor — o copy'yi degistirirsen orayi da guncelle.
 
   const startersByCat = {
     legal: {
@@ -2049,7 +2012,35 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
   // ── CATEGORY TOPICS FOR AI CHECK ──
   // Sourced from shared config — this also fixes a prior gap where 'migration' had no
   // topic string here and silently fell back to the raw category id in the classifier prompt.
-  const catTopics = window.BB_CONFIG.categoryTopics;
+  // ── Tek giris noktasi: abibot-chat ──
+  // Her cagri GERCEK kullanici oturum token'i tasir. Anon anahtar
+  // kabul edilmiyor. systemPrompt sunucuda uretiliyor.
+  async function callAbibot(payload) {
+    let token = null;
+    try {
+      const c = window.supabase;
+      if (c) {
+        const { data: { session } } = await c.auth.getSession();
+        token = session?.access_token || null;
+      }
+    } catch (e) {}
+    if (!token) return { ok: false, status: 401, data: { error: 'no session' } };
+
+    const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + token,
+      },
+      body: JSON.stringify(payload),
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  // catTopics kaldirildi: konu siniflandirmasi sunucuda yapiliyor.
 
   // ── PHOTO / PDF ATTACHMENT (for document/photo questions) ──
   let attachedPhoto = null; // { file, dataUrl, isPdf }
@@ -2137,58 +2128,9 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       }
     }
 
-    // ── 1. DAILY LIMIT CHECK ──
-    if (sb) {
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-          const { data: profile } = await sb.from('profiles')
-            .select('daily_prompts_used, daily_prompts_reset_at, is_premium')
-            .eq('id', session.user.id).single();
-
-          if (profile) {
-            const today = new Date().toISOString().split('T')[0];
-            const resetDate = (profile.daily_prompts_reset_at || '').toString().split('T')[0];
-            let usedToday = profile.daily_prompts_used || 0;
-
-            if (resetDate !== today) {
-              usedToday = 0;
-              await sb.from('profiles').update({
-                daily_prompts_used: 0,
-                daily_prompts_reset_at: today
-              }).eq('id', session.user.id);
-            }
-
-            // TEMP TESTING OVERRIDE (2026-07): limit raised to 10 for all users regardless of
-            // premium status, to allow QA testing of cooldown/limit behavior. Revert to
-            // `profile.is_premium ? 10 : 2` when testing is done.
-            const limit = 10;
-            console.log(`[AbiBOT] Daily usage: ${usedToday}/${limit} | resetDate: ${resetDate} | today: ${today} | match: ${resetDate === today}`);
-
-            if (usedToday >= limit) {
-              hideWelcome();
-              addMessage('user', text, false, (attachedPhoto && !attachedPhoto.isPdf) ? attachedPhoto.dataUrl : null, (attachedPhoto && attachedPhoto.isPdf) ? attachedPhoto.file.name : null);
-              removeAttachedPhoto();
-              const limitDiv = document.createElement('div');
-              limitDiv.className = 'msg';
-              const limitMsg = profile.is_premium
-                ? `Günlük ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin.`
-                : `Günlük ücretsiz ${limit} soru limitinize ulaştınız. Yarın tekrar deneyin veya <a href="premium.html" style="color:var(--red);font-weight:600;text-decoration:none;">Premium'a geçerek 10 soruya çıkarın →</a>`;
-              limitDiv.innerHTML = `<div class="msg-avatar ai">AI</div>
-                <div class="msg-body">
-                  <div class="bubble ai" style="border-color:var(--gold);background:rgba(201,168,76,.06);">
-                    ⏳ <strong>Günlük limit doldu.</strong><br><br>${limitMsg}
-                  </div>
-                </div>`;
-              document.getElementById('messages').appendChild(limitDiv);
-              scrollToBottom();
-              isLoading = false;
-              return;
-            }
-          }
-        }
-      } catch(e) { console.warn('Daily limit check failed:', e); }
-    }
+    // ── DAILY LIMIT ──
+    // Limit artik SUNUCUDA uygulaniyor (abibot_consume_prompt RPC).
+    // Istemci sayaci yazmiyor; 429 yaniti geldiginde uyari gosteriliyor.
 
     document.getElementById('send-btn').disabled = true;
     input.value = '';
@@ -2196,8 +2138,8 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
 
     // If a photo or PDF is attached, the message sent to Claude carries both
     // the attachment and the text as a multimodal content array (Anthropic's
-    // native format) instead of a plain string — callClaude forwards
-    // messageHistory as-is, so no other change is needed downstream.
+    // native format) instead of a plain string — messageHistory is sent
+    // to the Edge Function as-is, so no other change is needed downstream.
     // Images use a 'image' content block; PDFs use Claude's native 'document'
     // block (application/pdf) — both are base64-encoded the same way.
     const sentPhoto = attachedPhoto;
@@ -2231,80 +2173,75 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
     hideWelcome();
     addTyping();
 
-    // Get session token from global supabase — no new createClient
-    let sessionToken = null;
     try {
-      if (sb) {
-        const { data: { session } } = await sb.auth.getSession();
-        sessionToken = session?.access_token;
-      }
-    } catch(e) {}
+      // ── Tek istek: sunucu hem konu kontrolunu hem cevabi yapiyor ──
+      // systemPrompt ARTIK GONDERILMIYOR — sunucuda uretiliyor.
+      const r = await callAbibot({
+        mode: 'chat',
+        category: selectedCat,
+        brand: isAbibotDomain ? 'abibot' : 'bizdenbize',
+        messages: messageHistory,
+      });
 
-    try {
-      // ── Direct Anthropic API call ──
-      async function callClaude(messages, systemPrompt) {
-        const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON,
-            'Authorization': 'Bearer ' + SUPABASE_ANON,
-          },
-          body: JSON.stringify({ messages, systemPrompt }),
-        });
-        const d = await res.json();
-        // 401 = abibot-chat artik gecerli bir kullanici oturumu istiyor.
-        // Sayfa hala anon anahtar gonderdigi icin bakim mesaji gosteriyoruz.
-        if (res.status === 401) throw new Error('ABIBOT_MAINTENANCE');
-        if (!res.ok) throw new Error(d.error || 'Edge Function error');
-        return d.answer || '';
+      // Oturum yok / gecersiz
+      if (r.status === 401) {
+        removeTyping();
+        messageHistory.pop();
+        addMessage('assistant', 'Oturumun sona ermiş görünüyor. Lütfen tekrar giriş yap.', false);
+        isLoading = false;
+        document.getElementById('send-btn').disabled = false;
+        return;
       }
 
-      // ── 2. CATEGORY RELEVANCE CHECK ──
-      // Skipped for photo-only sends (no text to classify) — the selected
-      // category already scopes the question in that case.
-      const verdict = (sentPhoto && !text)
-        ? 'YES'
-        : await callClaude([{
-            role: 'user',
-            content: `You are a topic classifier. Is this question relevant to the topic of "${catTopics[selectedCat] || selectedCat}"? Question: "${text}" — Reply with ONLY the word YES or NO. Nothing else.`
-          }], 'You are a topic classifier. Reply only YES or NO.');
+      // Uyelik henuz onaylanmamis
+      if (r.status === 403) {
+        removeTyping();
+        messageHistory.pop();
+        addMessage('assistant', 'Hesabın henüz onaylanmadı. AbiBOT, onaylı üyelere açık. Onay sonrası burada görüşürüz.', false);
+        isLoading = false;
+        document.getElementById('send-btn').disabled = false;
+        return;
+      }
 
-      if (verdict.trim().toUpperCase().startsWith('NO')) {
+      // Gunluk limit doldu
+      if (r.status === 429) {
+        removeTyping();
+        messageHistory.pop();
+        const lim = r.data.limit || 2;
+        const limitMsg = r.data.isPremium
+          ? `Günlük ${lim} soru limitine ulaştın. Yarın tekrar bekleriz.`
+          : `Günlük ${lim} soru limitine ulaştın. Yarın yeniden sorabilirsin.`;
+        const limitDiv = document.createElement('div');
+        limitDiv.className = 'msg';
+        limitDiv.innerHTML = `<div class="msg-avatar ai">AI</div>
+          <div class="msg-body">
+            <div class="bubble ai" style="border-color:var(--gold);background:rgba(201,168,76,.06);">
+              ⏳ <strong>Günlük limit doldu.</strong><br><br>${limitMsg}
+            </div>
+          </div>`;
+        document.getElementById('messages').appendChild(limitDiv);
+        scrollToBottom();
+        isLoading = false;
+        document.getElementById('send-btn').disabled = false;
+        return;
+      }
+
+      if (!r.ok) throw new Error(r.data && r.data.error ? r.data.error : 'Edge Function error');
+
+      // Kapsam disi
+      if (r.data.offTopic) {
         removeTyping();
         messageHistory.pop();
         addMessage('assistant',
           `Bu soru bizim kapsama alanımız dışındadır.\n\nAbiBOT yalnızca platform kategorilerimiz dahilindeki konularda yardımcı olabilir. Lütfen soldaki menüden uygun bir kategori seçin.`,
           false);
-
-        // Increment counter even for off-topic
-        if (sb) {
-          try {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-              const today = new Date().toISOString().split('T')[0];
-              const { data: p } = await sb.from('profiles')
-                .select('daily_prompts_used, daily_prompts_reset_at')
-                .eq('id', session.user.id).single();
-              const pDate = (p?.daily_prompts_reset_at || '').toString().split('T')[0];
-              const used = pDate === today ? (p?.daily_prompts_used || 0) : 0;
-              await sb.from('profiles').update({
-                daily_prompts_used: used + 1,
-                daily_prompts_reset_at: today
-              }).eq('id', session.user.id);
-            }
-          } catch(e) { console.warn('Counter update failed:', e); }
-        }
-
         isLoading = false;
         document.getElementById('send-btn').disabled = false;
         input.focus();
         return;
       }
 
-      // ── 3. MAIN ANSWER ──
-      const systemPrompt = stripBizdenBizeRef(systemPrompts[selectedCat] || systemPrompts['legal']);
-      const reply = await callClaude(messageHistory, systemPrompt);
+      const reply = r.data.answer || '';
       lastAnswer = reply;
       lastQuestion = text;
 
@@ -2315,34 +2252,9 @@ Be simple, direct, and protective. Use plain Turkish. These users may be despera
       hasAnswered = true;
       document.getElementById('escalate-sidebar-btn').disabled = false;
 
-      // ── 4. INCREMENT DAILY COUNTER ──
-      if (sb) {
-        try {
-          const { data: { session } } = await sb.auth.getSession();
-          if (session) {
-            const today = new Date().toISOString().split('T')[0];
-            const { data: p } = await sb.from('profiles')
-              .select('daily_prompts_used, daily_prompts_reset_at')
-              .eq('id', session.user.id).single();
-            const pDate = (p?.daily_prompts_reset_at || '').toString().split('T')[0];
-            const used = pDate === today ? (p?.daily_prompts_used || 0) : 0;
-            await sb.from('profiles').update({
-              daily_prompts_used: used + 1,
-              daily_prompts_reset_at: today
-            }).eq('id', session.user.id);
-          }
-        } catch(e) { console.warn('Counter update failed:', e); }
-      }
-
     } catch (err) {
       removeTyping();
-      if (err && err.message === 'ABIBOT_MAINTENANCE') {
-        addMessage('assistant',
-          'AbiBOT şu anda bakımda. Güvenlik güncellemesi yapıyoruz; kısa süre içinde tekrar açılacak.\n\nBu senin internetinle ilgili değil — sorun bizde. Anlayışın için teşekkürler.\n\nAcil bir konuysa "Uzmana Gönder" ile sorunu gerçek bir uzmana iletebilirsin; o bölüm çalışmaya devam ediyor.',
-          false);
-      } else {
-        addMessage('assistant', 'Bağlantı hatası oluştu. İnternet bağlantınızı kontrol edin ve tekrar deneyin.', false);
-      }
+      addMessage('assistant', 'Bağlantı hatası oluştu. İnternet bağlantınızı kontrol edin ve tekrar deneyin.', false);
     }
 
     isLoading = false;
@@ -2648,12 +2560,7 @@ ${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
   });
 
   const langNames = { de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce', fr: '🇫🇷 Fransızca', nl: '🇳🇱 Hollandaca' };
-  const langInstructs = {
-    de: 'Translate the following answer into German. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
-    en: 'Translate the following answer into English. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
-    fr: 'Translate the following answer into French. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
-    nl: 'Translate the following answer into Dutch. Keep the formatting, bold text and structure. Reply ONLY with the translation, no preamble.',
-  };
+  // langInstructs kaldirildi: ceviri talimatlari sunucuda.
 
   async function translateAnswer(btn, lang) {
     btn.closest('.translate-dropdown').classList.remove('open');
@@ -2674,25 +2581,18 @@ ${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
     const actionsEl = msgBody.querySelector('.msg-actions');
     actionsEl.insertAdjacentElement('afterend', box);
     try {
-      const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_ANON, 'Authorization':'Bearer ' + SUPABASE_ANON },
-        body: JSON.stringify({
-          messages: [{ role:'user', content: langInstructs[lang] + '\n\n' + originalText }],
-          systemPrompt: 'You are a professional translator. Translate accurately and preserve all formatting including bold and line breaks.',
-        }),
-      });
-      const d = await res.json();
-      if (res.status === 401) {
+      const r = await callAbibot({ mode: 'translate', lang: lang, text: originalText });
+      if (r.status === 401) {
         box.querySelector('.translation-text').textContent =
-          'Çeviri şu anda bakımda. Kısa süre içinde tekrar açılacak.';
+          'Oturumun sona ermiş görünüyor. Lütfen tekrar giriş yap.';
         return;
       }
-      if (!res.ok) {
+      if (!r.ok) {
         box.querySelector('.translation-text').textContent =
           'Çeviri başarısız oldu. Lütfen tekrar deneyin.';
         return;
       }
+      const d = r.data;
       const translated = d.answer || '';
       box.querySelector('.translation-text').innerHTML = translated.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
       const transActions = document.createElement('div');
