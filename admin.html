@@ -735,7 +735,20 @@
     const res = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(token), ...opts });
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
     const text = await res.text();
-    return text ? JSON.parse(text) : [];
+    const data = text ? JSON.parse(text) : [];
+
+    // SESSIZ BASARISIZLIK KORUMASI
+    // PostgREST, RLS bir satiri engelledigimde 200 + BOS DIZI donuyor.
+    // Eski hali bunu basari sayiyordu: panel "onaylandi ✓" diyor, veritabaninda
+    // hicbir sey degismiyordu (Fatma'nin engelinin kalkmamasi bu yuzdendi).
+    // hdrs() zaten Prefer: return=representation gonderdigi icin basarili bir
+    // yazma her zaman en az bir satir dondurur. Bos dizi = yazma gerceklesmedi.
+    const method = (opts.method || 'GET').toUpperCase();
+    if ((method === 'PATCH' || method === 'DELETE') && Array.isArray(data) && data.length === 0) {
+      throw new Error('Islem veritabaninda uygulanmadi (yetki veya kayit bulunamadi). Degisiklik KAYDEDILMEDI.');
+    }
+
+    return data;
   }
 
   function toast(msg, ok = true) {
