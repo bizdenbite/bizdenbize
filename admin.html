@@ -1592,8 +1592,30 @@
     try {
       const rows = await sb('webinars?status=eq.'+(webAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
       if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">Webinar yok.</p>'; return; }
-      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${r.title}</div><button class="btn btn-sm btn-green" onclick="webApprove('${r.id}')">✅ Onayla</button></div>`).join('');
+      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;">
+        <div style="font-weight:700;">${escH(r.title)}</div>
+        <div style="font-size:12px;color:var(--muted);margin:4px 0 10px;">${escH(r.event_date||'—')} · ${escH(r.status)}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.status==='pending'?`<button class="btn btn-sm btn-green" onclick="webApprove('${escH(r.id)}')">✅ Onayla</button>`:''}
+          ${r.status==='approved'?`<button class="btn btn-sm" onclick="webUnpublish('${escH(r.id)}')">↩ Yayından kaldır</button>`:''}
+          <button class="btn btn-sm" onclick="webEditLink('${escH(r.id)}')">✏️ Düzenle</button>
+          <button class="btn btn-sm btn-red" onclick="webRemove('${escH(r.id)}')">🗑️ Sil</button>
+        </div></div>`).join('');
     } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
+  }
+  // Duzenleme formu webinar.html'de. Ikinci form yazmak yerine derin baglanti.
+  function webEditLink(id){ window.open('webinar.html?edit='+encodeURIComponent(id), '_blank'); }
+  // Silme SOFT delete: cancelWebinar ile ayni mekanizma (status='removed'),
+  // boylece kayitlar ve olasi sikayet izleri korunur.
+  async function webRemove(id){
+    if(!confirm('Webinar silinsin mi? (Yayindan kaldirilir, kayit gecmisi korunur)')) return;
+    await sb('webinars?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'removed'})});
+    toast('Webinar kaldırıldı'); loadWebinarsAdmin();
+  }
+  async function webUnpublish(id){
+    if(!confirm('Yayından kaldırılsın mı? Tekrar onay bekleyene döner.')) return;
+    await sb('webinars?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'pending'})});
+    toast('Yayından kaldırıldı'); loadWebinarsAdmin();
   }
   async function webApprove(id){ await sb('webinars?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Webinar onaylandı ✓'); loadWebinarsAdmin(); }
 

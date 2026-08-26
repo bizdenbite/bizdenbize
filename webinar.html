@@ -735,7 +735,16 @@ function openHostModal(){
 }
 async function openEditWebinar(id){
   if(!ME){ window.location.href='login.html?redirect=webinar.html'; return; }
-  var w=myWebinars.find(function(x){return String(x.id)===String(id);}); if(!w) return;
+  var w=myWebinars.find(function(x){return String(x.id)===String(id);});
+  if(!w){
+    // Kendi listesinde yoksa (admin baskasinin webinarini duzenliyor olabilir)
+    // tek satiri dogrudan cek. RLS izin vermezse zaten bos doner.
+    try{
+      var one=await sb.from('webinars').select('*').eq('id',id).maybeSingle();
+      if(one.data){ w=one.data; myWebinars=myWebinars.concat([w]); }
+    }catch(_){}
+  }
+  if(!w){ alert('Webinar bulunamadı ya da düzenleme yetkin yok.'); return; }
   editingId=id;
   document.getElementById('h-title').value=w.title||'';
   document.getElementById('h-desc').value=w.description||'';
@@ -757,13 +766,22 @@ async function openEditWebinar(id){
 }
 async function cancelWebinar(id){
   if(!confirm('Bu webinarı iptal etmek istediğine emin misin?')) return;
-  try{ var r=await sb.from('webinars').update({status:'removed'}).eq('id',id); if(r.error) throw r.error; await loadMyWebinars(); await loadWebinars(); }
+  try{
+    // .select() olmadan RLS engeli sessizce "basari" gibi gorunuyor.
+    var r=await sb.from('webinars').update({status:'removed'}).eq('id',id).select();
+    if(r.error) throw r.error;
+    if(!r.data || !r.data.length){ alert('İptal edilemedi: bu webinar için yetkin yok görünüyor. Değişiklik KAYDEDİLMEDİ.'); return; }
+    await loadMyWebinars(); await loadWebinars();
+  }
   catch(e){ console.error(e); alert('İptal edilemedi, lütfen tekrar dene.'); }
 }
 function toggleMyWebinars(){
   var sec=document.getElementById('my-webinars-section');
   if(sec){ var open=(sec.style.display!=='none' && sec.style.display!==''); sec.style.display=open?'none':'block'; if(!open) sec.scrollIntoView({behavior:'smooth',block:'nearest'}); }
 }
+const WEB_ADMIN_ID='3e96d976-5c3a-4270-af88-6172f1751f9a';
+function webIsAdmin(){ return ME===WEB_ADMIN_ID; }
+
 async function loadMyWebinars(){
   if(!ME){ return; }
   try{ var r=await sb.from('webinars').select('*').eq('created_by',ME).neq('status','removed').order('created_at',{ascending:false}); myWebinars=r.data||[]; }
@@ -840,6 +858,12 @@ async function initWebinars(){
   if(ME){ try{ const p=await sb.from('profiles').select('first_name,last_name').eq('id',ME).maybeSingle(); if(p.data) MY_NAME=((p.data.first_name||'')+' '+(p.data.last_name||'')).trim(); }catch(_){} }
   await loadWebinars();
   await loadMyWebinars();
+
+  // Admin panelinden gelen ?edit=<id> baglantisi: formu dogrudan ac.
+  try{
+    var _q=new URLSearchParams(location.search).get('edit');
+    if(_q) await openEditWebinar(_q);
+  }catch(_){}
 }
 window.setFilter=setFilter; window.openRegister=openRegister; window.closeRegisterModal=closeRegisterModal;
 window.submitRegister=submitRegister; window.openHostModal=openHostModal; window.closeHostModal=closeHostModal; window.submitHost=submitHost;
