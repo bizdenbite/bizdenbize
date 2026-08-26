@@ -1060,6 +1060,81 @@
     }
     return '';
   }
+  // ── SAHIP KONTROLLERI ──────────────────────────────────────
+  // Etkinligi ekleyen uye kendi etkinligini duzenleyebilir/silebilir.
+  // Duzenleme RLS tarafindan otomatik olarak 'pending'e dusurulur.
+  function evIsMine(e){
+    const s = window._currentSession;
+    return !!(s && e && e.created_by && e.created_by === s.user.id);
+  }
+  function evOwnerBar(e){
+    if(!evIsMine(e)) return '';
+    const badge = e.status !== 'approved'
+      ? '<span style="font-size:11px;font-weight:600;color:#8a6d1f;background:#F5E6C0;border-radius:6px;padding:3px 8px;margin-left:8px;">⏳ Onay bekliyor</span>'
+      : '';
+    return badge
+      + '<button onclick="evEdit(\''+evEsc(e.id)+'\')" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-left:8px;">✏️ Düzenle</button>'
+      + '<button onclick="evOwnerDelete(\''+evEsc(e.id)+'\')" style="background:none;border:1px solid var(--sand);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--red);cursor:pointer;margin-left:6px;">🗑️ Sil</button>';
+  }
+
+  // Duzenleme: mevcut formu doldurup PATCH moduna gecirir.
+  window.__evEditId = null;
+  window.evEdit = function(id){
+    const e = (window.__evAll||[]).find(x=>String(x.id)===String(id));
+    if(!e){ alert('Etkinlik bulunamadı. Sayfayı yenile.'); return; }
+    if(!evIsMine(e)){ alert('Bu etkinlik sana ait değil.'); return; }
+    window.__evEditId = e.id;
+    const set=(elId,val)=>{ const el=document.getElementById(elId); if(el) el.value = (val==null?'':val); };
+    set('ev-title', e.title);       set('ev-city', e.city);
+    set('ev-date', e.event_date);   set('ev-note', e.event_note);
+    set('ev-venue', e.venue);       set('ev-desc', e.description);
+    set('ev-audience', e.target_audience); set('ev-agenda', e.agenda);
+    set('ev-org-name', e.organizer_name);  set('ev-org-info', e.organizer_info);
+    set('ev-contact', e.contact_info);     set('ev-link', e.link_url);
+    set('ev-price', e.price);       set('ev-capacity', e.capacity);
+    const cat=document.getElementById('ev-category'); if(cat && e.category) cat.value=e.category;
+    const typ=document.getElementById('ev-type'); if(typ && e.event_type){ typ.value=e.event_type; if(window.evTypeChanged) window.evTypeChanged(); }
+    const btn=document.getElementById('ev-submit-btn'); if(btn) btn.textContent='Değişiklikleri Kaydet →';
+    const modal=document.getElementById('event-modal'); if(modal) modal.classList.add('open');
+  };
+
+  window.evOwnerDelete = async function(id){
+    await (window._authReady || Promise.resolve());
+    const s = window._currentSession;
+    if(!s){ alert('Giriş yapmalısın.'); return; }
+    const e = (window.__evAll||[]).find(x=>String(x.id)===String(id));
+    if(!e || !evIsMine(e)){ alert('Bu etkinlik sana ait değil.'); return; }
+
+    // Kayitli katilimci varsa sahibi bilsin — silmek onlari da etkiler.
+    let regCount = 0;
+    try{
+      const rc=await fetch(_EV_SB_URL+'/rest/v1/event_registrations?event_id=eq.'+id+'&select=id',
+        {headers:{'apikey':_EV_SB_KEY,'Authorization':'Bearer '+s.access_token}});
+      if(rc.ok){ const rr=await rc.json(); regCount = Array.isArray(rr)?rr.length:0; }
+    }catch(_){ /* sayilamadi; yine de uyar */ }
+
+    const warn = regCount > 0
+      ? ('Bu etkinliğe ' + regCount + ' kişi kayıtlı. Silersen kayıtları da iptal olur.\n\nYine de silinsin mi?')
+      : 'Etkinlik silinsin mi? Bu işlem geri alınamaz.';
+    if(!confirm(warn)) return;
+
+    try{
+      const r=await fetch(_EV_SB_URL+'/rest/v1/events?id=eq.'+id,{
+        method:'DELETE',
+        headers:{'apikey':_EV_SB_KEY,'Authorization':'Bearer '+s.access_token,'Prefer':'return=representation'}
+      });
+      if(!r.ok) throw new Error(await r.text());
+      // RLS engellerse PostgREST 200 + BOS DIZI doner; bunu basari sayma.
+      const back=await r.json().catch(()=>[]);
+      if(Array.isArray(back) && back.length===0){
+        alert('Silinemedi: bu işlem için yetkin yok görünüyor. Değişiklik KAYDEDİLMEDİ.');
+        return;
+      }
+      alert('Etkinlik silindi.');
+      loadEvents();
+    }catch(_){ alert('Silinemedi. Lütfen tekrar dene.'); }
+  };
+
   function evCard(e){
     const cat = EV_CAT[e.category] || { label: e.category||'Etkinlik', color:'#6B5E4E' };
     const venue = e.venue ? ('📍 '+evEsc(e.venue)+(e.city?', '+evEsc(e.city):'')) : (e.city?('📍 '+evEsc(e.city)):'');
@@ -1072,16 +1147,42 @@
       +   (e.description?'<div style="font-size:13px;color:var(--muted);margin:4px 0;line-height:1.5;">'+evEsc(e.description)+'</div>':'')
       +   '<div class="ei-meta">'+(venue?'<span>'+venue+'</span>':'')+note+'</div>'
       +   '<div class="ei-tags"><span class="ei-tag" style="background:'+cat.color+'1a;color:'+cat.color+'">'+evEsc(cat.label)+'</span></div>'
-      +   '<div style="display:flex;align-items:center;flex-wrap:wrap;">'+evAction(e)+exportBtn+'</div>'
+      +   '<div style="display:flex;align-items:center;flex-wrap:wrap;">'+evAction(e)+exportBtn+evOwnerBar(e)+'</div>'
       + '</div></div>';
   }
 
   async function loadEvents(){
     const box=document.getElementById('events-list');
     try{
-      const r=await fetch(_EV_SB_URL+"/rest/v1/"+(window._currentSession?"events":"events_public")+"?status=eq.approved&order=event_date.asc&select=*",{headers:_EV_H});
+      // GECMIS ETKINLIKLERI GIZLE
+      // Sorgu her onayli etkinligi cekiyordu, bu yuzden tarihi gecmis
+      // etkinlikler listede kaliyordu. Bugun dahil ileri tarihliler gosterilir.
+      // Tarihi olmayan etkinlikler (ornegin "Agustos ortasi") elenmesin diye
+      // is.null da kabul ediliyor.
+      const _n=new Date();
+      const _today=_n.getFullYear()+'-'+String(_n.getMonth()+1).padStart(2,'0')+'-'+String(_n.getDate()).padStart(2,'0');
+      const r=await fetch(_EV_SB_URL+"/rest/v1/"+(window._currentSession?"events":"events_public")+"?status=eq.approved&or=(event_date.gte."+_today+",event_date.is.null)&order=event_date.asc&select=*",{headers:_EV_H});
       if(!r.ok) throw new Error('DB '+r.status);
-      const rows=await r.json();
+      let rows=await r.json();
+
+      // KENDI ETKINLIKLERIM
+      // Liste yalnizca 'approved' cekiyordu; bu yuzden uye kendi onay
+      // bekleyen etkinligini goremiyor, dolayisiyla duzenleyemiyordu.
+      // events_read_own politikasi sayesinde kendi satirlarini okuyabilir.
+      await (window._authReady || Promise.resolve());
+      const _s = window._currentSession;
+      if(_s){
+        try{
+          const mine=await fetch(_EV_SB_URL+"/rest/v1/events?created_by=eq."+_s.user.id+"&or=(event_date.gte."+_today+",event_date.is.null)&order=event_date.asc&select=*",
+            {headers:{'apikey':_EV_SB_KEY,'Authorization':'Bearer '+_s.access_token}});
+          if(mine.ok){
+            const mineRows=await mine.json();
+            const seen=new Set(rows.map(x=>x.id));
+            rows = rows.concat(mineRows.filter(x=>!seen.has(x.id)));
+            rows.sort((a,b)=>String(a.event_date||'9999').localeCompare(String(b.event_date||'9999')));
+          }
+        }catch(_){ /* kendi etkinlikleri opsiyonel; listeyi bozma */ }
+      }
       window.__evAll=rows; calYear=undefined; renderCalendar();
       if(!rows.length){ box.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Henüz etkinlik yok. İlk öneren sen ol! 👇</div>'; return; }
       box.innerHTML=rows.map(evCard).join('');
@@ -1279,14 +1380,31 @@
       country: 'de'
     };
 
-    if(btn){ btn.disabled=true; btn.textContent='Gönderiliyor…'; }
+    // Duzenleme modundaysak yeni kayit acma, mevcut satiri guncelle.
+    const editId = window.__evEditId || null;
+    if(editId){
+      // created_by degistirilemez; status RLS tarafindan zaten 'pending'e
+      // zorlanir, ama acikca gonderiyoruz ki niyet kodda gorunsun.
+      delete payload.created_by;
+      payload.status = 'pending';
+    }
+
+    if(btn){ btn.disabled=true; btn.textContent=editId?'Kaydediliyor…':'Gönderiliyor…'; }
     try{
-      const r=await fetch(_EV_SB_URL+'/rest/v1/events',{
-        method:'POST',
+      const r=await fetch(_EV_SB_URL+'/rest/v1/events'+(editId?('?id=eq.'+editId):''),{
+        method: editId?'PATCH':'POST',
         headers:{ 'apikey':_EV_SB_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=representation' },
         body: JSON.stringify(payload)
       });
       if(!r.ok) throw new Error(await r.text());
+      if(editId){
+        // RLS engellerse 200 + BOS DIZI gelir; sessiz basarisizligi yakala.
+        const back=await r.clone().json().catch(()=>[]);
+        if(Array.isArray(back) && back.length===0){
+          show('Kaydedilemedi: bu etkinliği düzenleme yetkin yok görünüyor.');
+          return;
+        }
+      }
       // If hosted + a meeting link was given, store it in the gated table
       const meetingUrl=(document.getElementById('ev-meeting').value||'').trim();
       if(meetingUrl && (evType==='hosted_free'||evType==='hosted_paid')){
@@ -1305,7 +1423,12 @@
       // success UI
       const modal=document.getElementById('event-modal');
       if(modal) modal.classList.remove('open');
-      alert('Teşekkürler! Etkinlik önerin alındı. İncelendikten sonra yayınlanacak.');
+      alert(editId
+        ? 'Değişiklikler kaydedildi. Etkinliğin tekrar onaya düştü; onaylandığında yayında olacak.'
+        : 'Teşekkürler! Etkinlik önerin alındı. İncelendikten sonra yayınlanacak.');
+      window.__evEditId = null;
+      const _sb=document.getElementById('ev-submit-btn'); if(_sb) _sb.textContent='Öneriyi Gönder →';
+      loadEvents();
       ['ev-title','ev-city','ev-venue','ev-note','ev-desc','ev-link','ev-audience','ev-agenda','ev-org-name','ev-org-info','ev-contact','ev-meeting'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
       __eventDraft.clear();
     }catch(e){
