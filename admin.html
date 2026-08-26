@@ -1529,6 +1529,14 @@
   }
 
   let evAdminFilter = 'pending';
+  // Uye tarafindan girilen metin admin panelinde HAM basiliyordu.
+  // Etkinlik basligina HTML yazan biri bunu kendi panelinde calistirabilirdi.
+  function escH(v){
+    return String(v ?? '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
   function evAdminTab(f, btn){ evAdminFilter=f; document.querySelectorAll('#section-events .tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); loadEvents(); }
   async function loadEvents(){
     const box=document.getElementById('events-admin-list');
@@ -1539,9 +1547,11 @@
       else if(evAdminFilter==='approved') q='events?status=eq.approved&select=*&order=event_date.asc';
       const rows=await sb(q);
       if(!rows.length){ box.innerHTML='<p style="color:var(--muted);padding:20px;">Etkinlik yok.</p>'; return; }
-      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>' + rows.map(e=>`<tr><td><strong>${e.title}</strong><br><span style="font-size:12px;color:var(--muted);">${e.city||''}</span></td><td>${e.event_date||'—'}</td><td>${e.status}</td><td><button class="btn btn-sm btn-red" onclick="evDelete('${e.id}')">🗑️ Sil</button></td></tr>`).join('') + '</tbody></table>';
+      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>' + rows.map(e=>`<tr><td><strong>${escH(e.title)}</strong><br><span style="font-size:12px;color:var(--muted);">${escH(e.city||'')}</span></td><td>${escH(e.event_date||'—')}</td><td>${escH(e.status)}</td><td>${e.status==='pending'?`<button class="btn btn-sm btn-green" onclick="evApprove('${escH(e.id)}')">✓ Onayla</button> `:''}${e.status==='approved'?`<button class="btn btn-sm" onclick="evUnpublish('${escH(e.id)}')">↩ Yayından kaldır</button> `:''}<button class="btn btn-sm btn-red" onclick="evDelete('${escH(e.id)}')">🗑️ Sil</button></td></tr>`).join('') + '</tbody></table>';
     }catch(e){ box.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
+  async function evApprove(id){ await sb('events?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Etkinlik onaylandı ✓'); loadEvents(); }
+  async function evUnpublish(id){ if(confirm('Yayından kaldırılsın mı? Etkinlik tekrar onay bekleyene döner.')){ await sb('events?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'pending'})}); toast('Yayından kaldırıldı'); loadEvents(); } }
   async function evDelete(id){ if(confirm('Silinsin mi?')){ await sb('events?id=eq.'+id,{method:'DELETE'}); loadEvents(); toast('Etkinlik silindi'); } }
 
   let bizAdminFilter = 'pending';
