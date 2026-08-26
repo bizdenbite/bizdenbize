@@ -1547,9 +1547,13 @@
       else if(evAdminFilter==='approved') q='events?status=eq.approved&select=*&order=event_date.asc';
       const rows=await sb(q);
       if(!rows.length){ box.innerHTML='<p style="color:var(--muted);padding:20px;">Etkinlik yok.</p>'; return; }
-      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>' + rows.map(e=>`<tr><td><strong>${escH(e.title)}</strong><br><span style="font-size:12px;color:var(--muted);">${escH(e.city||'')}</span></td><td>${escH(e.event_date||'—')}</td><td>${escH(e.status)}</td><td>${e.status==='pending'?`<button class="btn btn-sm btn-green" onclick="evApprove('${escH(e.id)}')">✓ Onayla</button> `:''}${e.status==='approved'?`<button class="btn btn-sm" onclick="evUnpublish('${escH(e.id)}')">↩ Yayından kaldır</button> `:''}<button class="btn btn-sm btn-red" onclick="evDelete('${escH(e.id)}')">🗑️ Sil</button></td></tr>`).join('') + '</tbody></table>';
+      box.innerHTML='<table><thead><tr><th>Etkinlik</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead><tbody>' + rows.map(e=>`<tr><td><strong>${escH(e.title)}</strong><br><span style="font-size:12px;color:var(--muted);">${escH(e.city||'')}</span></td><td>${escH(e.event_date||'—')}</td><td>${escH(e.status)}</td><td>${e.status==='pending'?`<button class="btn btn-sm btn-green" onclick="evApprove('${escH(e.id)}')">✓ Onayla</button> `:''}${e.status==='approved'?`<button class="btn btn-sm" onclick="evUnpublish('${escH(e.id)}')">↩ Yayından kaldır</button> `:''}<button class="btn btn-sm" onclick="evEditLink('${escH(e.id)}')">✏️ Düzenle</button> <button class="btn btn-sm btn-red" onclick="evDelete('${escH(e.id)}')">🗑️ Sil</button></td></tr>`).join('') + '</tbody></table>';
     }catch(e){ box.innerHTML='<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
+  // Duzenleme formu events.html'de yasiyor (20+ alan). Ikinci bir form
+  // yazmak yerine oraya derin baglanti veriyoruz; admin RLS'te zaten
+  // events_update_admin ile her etkinligi duzenleyebiliyor.
+  function evEditLink(id){ window.open('events.html?edit='+encodeURIComponent(id), '_blank'); }
   async function evApprove(id){ await sb('events?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Etkinlik onaylandı ✓'); loadEvents(); }
   async function evUnpublish(id){ if(confirm('Yayından kaldırılsın mı? Etkinlik tekrar onay bekleyene döner.')){ await sb('events?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'pending'})}); toast('Yayından kaldırıldı'); loadEvents(); } }
   async function evDelete(id){ if(confirm('Silinsin mi?')){ await sb('events?id=eq.'+id,{method:'DELETE'}); loadEvents(); toast('Etkinlik silindi'); } }

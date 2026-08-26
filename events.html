@@ -1063,9 +1063,17 @@
   // ── SAHIP KONTROLLERI ──────────────────────────────────────
   // Etkinligi ekleyen uye kendi etkinligini duzenleyebilir/silebilir.
   // Duzenleme RLS tarafindan otomatik olarak 'pending'e dusurulur.
+  const EV_ADMIN_ID = '3e96d976-5c3a-4270-af88-6172f1751f9a';
+  function evIsAdmin(){
+    const s = window._currentSession;
+    return !!(s && s.user && s.user.id === EV_ADMIN_ID);
+  }
   function evIsMine(e){
     const s = window._currentSession;
-    return !!(s && e && e.created_by && e.created_by === s.user.id);
+    if(!s || !e) return false;
+    // Admin her etkinligi duzenleyebilir — RLS'te events_update_admin zaten var.
+    if(evIsAdmin()) return true;
+    return !!(e.created_by && e.created_by === s.user.id);
   }
   function evOwnerBar(e){
     if(!evIsMine(e)) return '';
@@ -1079,8 +1087,20 @@
 
   // Duzenleme: mevcut formu doldurup PATCH moduna gecirir.
   window.__evEditId = null;
-  window.evEdit = function(id){
-    const e = (window.__evAll||[]).find(x=>String(x.id)===String(id));
+  window.evEdit = async function(id){
+    let e = (window.__evAll||[]).find(x=>String(x.id)===String(id));
+    if(!e){
+      // Listede yoksa (gecmis tarihli veya baska durumda) tek tek cek.
+      await (window._authReady || Promise.resolve());
+      const s0 = window._currentSession;
+      if(s0){
+        try{
+          const rr=await fetch(_EV_SB_URL+'/rest/v1/events?id=eq.'+encodeURIComponent(id)+'&select=*',
+            {headers:{'apikey':_EV_SB_KEY,'Authorization':'Bearer '+s0.access_token}});
+          if(rr.ok){ const arr=await rr.json(); if(arr && arr[0]){ e=arr[0]; window.__evAll=(window.__evAll||[]).concat([e]); } }
+        }catch(_){}
+      }
+    }
     if(!e){ alert('Etkinlik bulunamadı. Sayfayı yenile.'); return; }
     if(!evIsMine(e)){ alert('Bu etkinlik sana ait değil.'); return; }
     window.__evEditId = e.id;
@@ -1323,7 +1343,13 @@
     document.getElementById('cal-clear').style.display='none';
   };
 
-  loadEvents();
+  loadEvents().then(()=>{
+    // Admin panelinden gelen ?edit=<id> baglantisi: formu dogrudan ac.
+    try{
+      const _q=new URLSearchParams(location.search).get('edit');
+      if(_q && window.evEdit) window.evEdit(_q);
+    }catch(_){}
+  });
 
   // ---- Submit a new event proposal (goes to pending) ----
   window.submitEvent = async function(){
@@ -1386,7 +1412,14 @@
       // created_by degistirilemez; status RLS tarafindan zaten 'pending'e
       // zorlanir, ama acikca gonderiyoruz ki niyet kodda gorunsun.
       delete payload.created_by;
-      payload.status = 'pending';
+      // Uye duzenlemesi yeniden onaya duser (RLS zaten zorluyor).
+      // Admin duzenlemesi mevcut durumu korur — onayli etkinlik yayinda kalir.
+      if(!evIsAdmin()){
+        payload.status = 'pending';
+      } else {
+        const _orig=(window.__evAll||[]).find(x=>String(x.id)===String(editId));
+        if(_orig && _orig.status) payload.status = _orig.status;
+      }
     }
 
     if(btn){ btn.disabled=true; btn.textContent=editId?'Kaydediliyor…':'Gönderiliyor…'; }
