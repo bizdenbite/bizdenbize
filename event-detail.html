@@ -887,7 +887,16 @@
     const id=edId();
     if(!id){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Etkinlik bulunamadı. <a href="events.html">← Etkinliklere dön</a></div>'; return; }
     try{
-      const r=await fetch(_ED_URL+'/rest/v1/' + (window._currentSession ? 'events' : 'events_public') + '?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_ED_H});
+      // _ED_H anon anahtarla imzali. Giris yapmis uye icin RLS korumali
+      // 'events' tablosuna anon kimlikle sorulunca auth.uid() NULL oluyor,
+      // hicbir okuma politikasi eslesmiyor ve PostgREST BOS DIZI donuyor —
+      // sayfa da "bulunamadi" diyordu. Oturum varsa GERCEK token gonder.
+      await (window._authReady || Promise.resolve());
+      const _edS = window._currentSession;
+      const _edHeaders = _edS
+        ? {'apikey':_ED_KEY,'Authorization':'Bearer '+_edS.access_token}
+        : _ED_H;
+      const r=await fetch(_ED_URL+'/rest/v1/' + (_edS ? 'events' : 'events_public') + '?id=eq.'+encodeURIComponent(id)+'&select=*',{headers:_edHeaders});
       const rows=await r.json();
       if(!rows.length){ root.innerHTML='<div style="text-align:center;padding:60px;color:var(--red);">Etkinlik bulunamadı ya da henüz onaylanmadı. <a href="events.html">← Etkinliklere dön</a></div>'; return; }
       const e=rows[0];
