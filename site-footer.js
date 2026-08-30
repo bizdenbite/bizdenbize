@@ -52,8 +52,7 @@
     ['legal.html#terms',             'Kullanım Şartları'],
     ['legal.html#cookies',           'Çerez Politikası'],
     ['legal.html#impressum',         'Impressum'],
-    ['legal.html#section-listings',  'İlan Kuralları'],
-    ['kvkk.html',                    'KVKK / GDPR']
+    ['legal.html#section-listings',  'İlan Kuralları']
   ];
 
   var SOCIAL = [
