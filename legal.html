@@ -286,7 +286,7 @@
           <p><strong>Profil verileri:</strong> Biyografi, ilgi alanları, profil fotoğrafı, uzman başvurusu yaptıysanız mesleki bilgileriniz (isteğe bağlı).</p>
           <p><strong>İçerik verileri:</strong> Oluşturduğunuz ilanlar, etkinlikler, yorumlar, yüklediğiniz fotoğraflar.</p>
           <p><strong>Mesaj verileri:</strong> Diğer üyelerle platform üzerinden yaptığınız yazışmalar. Bu mesajlar aktarımda (TLS) ve sunucuda şifreli olarak tutulur; ancak uçtan uca şifreli <em>değildir</em> — kötüye kullanım bildirimi hâlinde yönetim tarafından okunabilir.</p>
-          <p><strong>AbiBOT verileri:</strong> AbiBOT'a sorduğunuz sorular ve aldığınız yanıtlar. Aşağıdaki bölüme bakınız.</p>
+          <p><strong>AbiBOT verileri:</strong> Sorularınızın ve yanıtların <strong>metni saklanmaz</strong>. Yalnızca kullanım kaydı tutulur: tarih, konu başlığı, kullanılan kredi ve sorunun bir uzmana yönlendirilip yönlendirilmediği. Aşağıdaki bölüme bakınız.</p>
           <p><strong>Teknik veriler:</strong> Giriş zamanları ve sunucu günlükleri. Sayfa gezinme davranışınızı izlemiyor, analiz aracı kullanmıyoruz.</p>
         </div>
       </div>
@@ -294,12 +294,13 @@
       <div class="legal-section" id="section-abibot">
         <h2 class="ls-title">AbiBOT ve Hassas Veriler</h2>
         <div class="ls-body">
-          <p>AbiBOT'a yazdığınız sorular ve size verilen yanıtlar, <strong>anonim değildir</strong>: kullanıcı hesabınıza bağlı olarak veritabanımızda saklanır. Bunu açıkça belirtiyoruz çünkü sorularınız sağlık durumunuz, oturum ve ikamet durumunuz, çalışma hayatınız veya ailevi meseleleriniz hakkında bilgi içerebilir. Bunların bir kısmı GDPR Madde 9 anlamında <strong>özel nitelikli kişisel veri</strong> sayılabilir.</p>
-          <p>Bu nedenle:</p>
-          <p>• AbiBOT'a kimlik numarası, dosya numarası, tam adres veya üçüncü kişilerin isimleri gibi bilgileri yazmamanızı öneririz.<br>
-          • AbiBOT genel bilgi verir; hukuki, tıbbi veya mali danışmanlık değildir.<br>
-          • Sorularınızı istediğiniz zaman sildirebilirsiniz — <a href="mailto:support@bizdenbize.com">support@bizdenbize.com</a>.</p>
-          <p>Soru ve yanıtlarınızı işleyebilmek için mesajınız yapay zekâ sağlayıcımıza iletilir. Sağlayıcılarımızın tam listesi aşağıdaki "Üçüncü Taraf Hizmetler" bölümündedir.</p>
+          <p>AbiBOT'a yazdığınız soruların ve size verilen yanıtların <strong>metnini saklamıyoruz</strong>. Yanıt üretildikten sonra soru metni veritabanımıza kaydedilmez.</p>
+          <p>Sadece hizmetin çalışması ve kötüye kullanımın önlenmesi için bir <strong>kullanım kaydı</strong> tutulur: hangi tarihte, hangi konu başlığında soru sorduğunuz, kullanılan kredi miktarı ve sorunun bir uzmana yönlendirilip yönlendirilmediği. Bu kayıt soru metnini içermez ve <strong>90 gün</strong> sonra otomatik olarak silinir.</p>
+          <p>Bununla birlikte, yanıtın üretilebilmesi için sorunuz yapay zekâ sağlayıcımıza <strong>iletilir</strong>. Sorularınız sağlık durumunuz, oturum ve ikamet durumunuz veya çalışma hayatınız hakkında bilgi içerebileceğinden — ki bunların bir kısmı GDPR Madde 9 anlamında özel nitelikli kişisel veri sayılabilir — şunları öneririz:</p>
+          <p>• AbiBOT'a kimlik numarası, dosya numarası, tam adres veya üçüncü kişilerin isimleri gibi bilgileri yazmayın.<br>
+          • AbiBOT genel bilgi verir; hukuki, tıbbi veya mali danışmanlık değildir.</p>
+          <p><strong>"2. Kontrol" düğmesi:</strong> Bu düğmeye bastığınızda sorunuz ve AbiBOT'un yanıtı, bağımsız bir ikinci değerlendirme için Google'ın Gemini servisine iletilir. Bu adım isteğe bağlıdır — düğmeye basmazsanız Google'a hiçbir veri gitmez.</p>
+          <p>Sağlayıcılarımızın tam listesi aşağıdaki "Üçüncü Taraf Hizmetler" bölümündedir.</p>
         </div>
       </div>
 
@@ -341,7 +342,7 @@
           <p>Hesabınızı sildiğinizde kişisel verileriniz <strong>30 gün içinde</strong> sistemlerimizden kalıcı olarak silinir.</p>
           <p>Kötüye kullanım bildirimi yapılmış içerikler, bildirimin incelenmesi ve tekrarının önlenmesi amacıyla hesap silindikten sonra da anonimleştirilmiş biçimde saklanabilir.</p>
           <p>Yasal saklama yükümlülüğü bulunan kayıtlar (örn. ticari ve vergisel belgeler) ilgili mevzuatın öngördüğü süre boyunca saklanır.</p>
-          <p><strong>AbiBOT soru ve yanıtları:</strong> <!-- KARAR BEKLİYOR: saklama süresi --></p>
+          <p><strong>AbiBOT kullanım kaydı:</strong> Soru ve yanıt metinleri saklanmaz. Kullanım kaydı (tarih, konu başlığı, kredi) <strong>90 gün</strong> sonra otomatik olarak silinir.</p>
         </div>
       </div>
 
@@ -354,6 +355,7 @@
             <tr><td>Supabase</td><td>Veritabanı ve kimlik doğrulama — AB, Frankfurt</td></tr>
             <tr><td>Vercel</td><td>Barındırma ve içerik dağıtımı</td></tr>
             <tr><td>Anthropic (Claude)</td><td>AbiBOT yanıtlarının üretilmesi</td></tr>
+            <tr><td>Google (Gemini API)</td><td>AbiBOT yanıtının ikinci kontrolü ("2. Kontrol") — yalnızca bu düğmeye bastığınızda, sorunuz ve yanıt Google'a iletilir. Ücretli katman kullanılır; Google'ın şartlarına göre bu veriler ürün geliştirme veya model eğitimi için kullanılmaz.</td></tr>
             <tr><td>Resend</td><td>Bildirim e-postalarının gönderimi</td></tr>
             <tr><td>Google Fonts</td><td>Yazı tiplerinin sunulması — sayfa açıldığında IP adresiniz Google'a iletilir</td></tr>
             <tr><td>Google Maps / Places</td><td>Şehir adı tamamlama alanlarında</td></tr>
