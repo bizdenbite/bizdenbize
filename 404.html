@@ -208,20 +208,8 @@
       .quick-links { grid-template-columns: repeat(2, 1fr); }
     }
   
-  /* ── COOKIE CONSENT BANNER ── */
-  #cookie-banner {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: var(--ink, #1A1208);
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding: 20px 32px;
-    display: none;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.25);
-    animation: slideUpBanner .4s cubic-bezier(.16,1,.3,1);
-  }
-  #cookie-banner.visible { display: flex; }
+
+
   @keyframes slideUpBanner {
     from { transform: translateY(100%); opacity: 0; }
     to   { transform: translateY(0);    opacity: 1; }
@@ -270,13 +258,8 @@
   .cb-manage:hover { color: #fff; border-color: rgba(255,255,255,.4) !important; }
 
   /* Cookie preferences modal */
-  #cookie-modal {
-    position: fixed; inset: 0; z-index: 10000;
-    background: rgba(26,18,8,.7);
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  #cookie-modal.open { display: flex; }
+
+
   .cm-box {
     background: #fff; border-radius: 20px;
     padding: 0; max-width: 520px; width: 90%;
@@ -490,114 +473,6 @@
           .catch(err => console.warn('[BizdenBize] SW failed:', err));
       });
     }
-  </script>
-<script>
-  // ══ COOKIE CONSENT LOGIC ══
-  (function() {
-    var STORAGE_KEY = 'bb_cookie_consent';
-    var consent = null;
-    try { consent = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
-
-    // Show banner if no consent yet
-    if (!consent) {
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var b = document.getElementById('cookie-banner');
-          if (b) b.classList.add('visible');
-        }, 800);
-      });
-    } else {
-      applyConsent(consent);
-    }
-
-    window.acceptAll = function() {
-      var c = { essential:true, prefs:true, analytics:true, marketing:true, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-    };
-
-    window.acceptEssential = function() {
-      var c = { essential:true, prefs:false, analytics:false, marketing:false, ts: Date.now() };
-      saveConsent(c);
-      hideBanner();
-    };
-
-    window.savePreferences = function() {
-      var c = {
-        essential: true,
-        prefs:     document.getElementById('toggle-prefs')?.classList.contains('on') || false,
-        analytics: document.getElementById('toggle-analytics')?.classList.contains('on') || false,
-        marketing: document.getElementById('toggle-marketing')?.classList.contains('on') || false,
-        ts: Date.now()
-      };
-      saveConsent(c);
-      hideBanner();
-      closeCookieModal();
-      showToast('✓ Çerez tercihleriniz kaydedildi.');
-    };
-
-    function saveConsent(c) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {}
-      applyConsent(c);
-    }
-
-    function applyConsent(c) {
-      // Analytics: load only if consented
-      if (c.analytics) {
-        // Plausible or similar would load here
-        // e.g. loadScript('https://plausible.io/js/plausible.js')
-        console.log('[BizdenBize] Analytics enabled');
-      }
-      // Marketing
-      if (c.marketing) {
-        console.log('[BizdenBize] Marketing enabled');
-      }
-    }
-
-    function hideBanner() {
-      var b = document.getElementById('cookie-banner');
-      if (b) { b.style.animation = 'none'; b.style.transform = 'translateY(100%)'; b.style.opacity = '0'; b.style.transition = 'transform .3s ease, opacity .3s'; setTimeout(function(){ b.classList.remove('visible'); b.style = ''; }, 350); }
-    }
-
-    window.openCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    };
-
-    window.closeCookieModal = function() {
-      var m = document.getElementById('cookie-modal');
-      if (m) m.classList.remove('open');
-      document.body.style.overflow = '';
-    };
-
-    // Close modal on backdrop click
-    document.addEventListener('click', function(e) {
-      var m = document.getElementById('cookie-modal');
-      if (m && e.target === m) closeCookieModal();
-    });
-
-    window.toggleCat = function(cat) {
-      var el = document.getElementById('cat-' + cat);
-      if (el) el.classList.toggle('open');
-    };
-
-    window.toggleCookie = function(e, cat) {
-      e.stopPropagation();
-      var btn = document.getElementById('toggle-' + cat);
-      if (btn) btn.classList.toggle('on');
-    };
-
-    function showToast(msg) {
-      var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#003399;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:10001;font-family:inherit;white-space:nowrap;';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(function(){ t.remove(); }, 2500);
-    }
-  })();
-
   </script>
   <script src="legal-footer.js" defer></script>
   <script src="site-footer.js" defer></script>

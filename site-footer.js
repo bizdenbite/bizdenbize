@@ -43,13 +43,17 @@
     ['abibot.html',     "🤖 AbiBOT'a Sor"]
   ];
 
+  // All four core documents live in legal.html as tabs. The standalone
+  // gizlilik/kullanim-kosullari/cerez-politikasi pages are now redirect stubs
+  // kept only for old links; point straight at the anchors so members do not
+  // take a redirect hop, and so the two copies cannot drift apart again.
   var YASAL = [
-    ['gizlilik.html',           'Gizlilik Politikası'],
-    ['kullanim-kosullari.html', 'Kullanım Koşulları'],
-    ['cerez-politikasi.html',   'Çerez Politikası'],
-    ['kvkk.html',               'KVKK / GDPR'],
-    ['legal.html#impressum',    'Impressum'],
-    ['ilan-kurallari.html',     'İlan Kuralları']
+    ['legal.html#privacy',           'Gizlilik Politikası'],
+    ['legal.html#terms',             'Kullanım Şartları'],
+    ['legal.html#cookies',           'Çerez Politikası'],
+    ['legal.html#impressum',         'Impressum'],
+    ['legal.html#section-listings',  'İlan Kuralları'],
+    ['kvkk.html',                    'KVKK / GDPR']
   ];
 
   var SOCIAL = [
