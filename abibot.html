@@ -491,6 +491,12 @@
       .nav-search { display: none !important; }
     }
 
+  
+
+
+  /* Cookie preferences modal */
+
+  #cookie-modal.open { display: flex; }
 
   @keyframes popIn {
     from { transform: scale(.95); opacity: 0; }
@@ -1744,8 +1750,6 @@
           <div class="translate-dropdown">
             <button class="translate-opt" onclick="translateAnswer(this, 'de')">🇩🇪 Almanca</button>
             <button class="translate-opt" onclick="translateAnswer(this, 'en')">🇬🇧 İngilizce</button>
-            <button class="translate-opt" onclick="translateAnswer(this, 'fr')">🇫🇷 Fransızca</button>
-            <button class="translate-opt" onclick="translateAnswer(this, 'nl')">🇳🇱 Hollandaca</button>
           </div>
         </div>
         <button class="msg-action verify-btn" onclick="verifyAnswer(this)">🔍 2. Kontrol</button>
@@ -2071,16 +2075,21 @@
       if (r.status === 429) {
         removeTyping();
         messageHistory.pop();
-        const lim = r.data.limit || 2;
-        const limitMsg = r.data.isPremium
-          ? `Günlük ${lim} soru limitine ulaştın. Yarın tekrar bekleriz.`
+        // İki ayrı 429 var ve aynı mesajı göstermek yanıltıcı olur:
+        //  daily_limit   -> cevaplanan soru hakkı doldu
+        //  request_limit -> kapsam dışı/çeviri dahil toplam istek tavanı
+        const isReqLimit = r.data.error === 'request_limit';
+        const lim = r.data.limit || (isReqLimit ? 15 : 2);
+        const limitTitle = isReqLimit ? 'Çok fazla istek gönderdin.' : 'Günlük limit doldu.';
+        const limitMsg = isReqLimit
+          ? `Bugün için toplam ${lim} istek sınırına ulaştın. Bu sınır kötüye kullanımı önlemek için var; yarın sıfırlanır.`
           : `Günlük ${lim} soru limitine ulaştın. Yarın yeniden sorabilirsin.`;
         const limitDiv = document.createElement('div');
         limitDiv.className = 'msg';
         limitDiv.innerHTML = `<div class="msg-avatar ai">AI</div>
           <div class="msg-body">
             <div class="bubble ai" style="border-color:var(--gold);background:rgba(201,168,76,.06);">
-              ⏳ <strong>Günlük limit doldu.</strong><br><br>${limitMsg}
+              ⏳ <strong>${limitTitle}</strong><br><br>${limitMsg}
             </div>
           </div>`;
         document.getElementById('messages').appendChild(limitDiv);
