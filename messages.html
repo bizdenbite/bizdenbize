@@ -1008,8 +1008,6 @@
             <button class="msg-translate-opt" onclick="translateMsg(this,'tr','${m.id}')">🇹🇷 Türkçe</button>
             <button class="msg-translate-opt" onclick="translateMsg(this,'de','${m.id}')">🇩🇪 Almanca</button>
             <button class="msg-translate-opt" onclick="translateMsg(this,'en','${m.id}')">🇬🇧 İngilizce</button>
-            <button class="msg-translate-opt" onclick="translateMsg(this,'fr','${m.id}')">🇫🇷 Fransızca</button>
-            <button class="msg-translate-opt" onclick="translateMsg(this,'nl','${m.id}')">🇳🇱 Hollandaca</button>
           </div>
         </span>`;
       if (mine) {
@@ -1065,14 +1063,23 @@
     document.querySelectorAll('.msg-translate-dropdown.open').forEach(d => d.classList.remove('open'));
   });
 
-  const msgLangNames = { tr: '🇹🇷 Türkçe', de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce', fr: '🇫🇷 Fransızca', nl: '🇳🇱 Hollandaca' };
-  const msgLangInstructs = {
-    tr: 'Translate the following chat message into Turkish. Reply ONLY with the translation, no preamble, no quotes.',
-    de: 'Translate the following chat message into German. Reply ONLY with the translation, no preamble, no quotes.',
-    en: 'Translate the following chat message into English. Reply ONLY with the translation, no preamble, no quotes.',
-    fr: 'Translate the following chat message into French. Reply ONLY with the translation, no preamble, no quotes.',
-    nl: 'Translate the following chat message into Dutch. Reply ONLY with the translation, no preamble, no quotes.',
-  };
+
+  async function mhAuthToken() {
+    try {
+      if (window._authReady) { try { await window._authReady; } catch (e) {} }
+      if (window._currentSession && window._currentSession.access_token) {
+        return window._currentSession.access_token;
+      }
+      var c = window.supabase;
+      if (c && c.auth && typeof c.auth.getSession === 'function') {
+        var r = await c.auth.getSession();
+        if (r && r.data && r.data.session) return r.data.session.access_token;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  const msgLangNames = { tr: '🇹🇷 Türkçe', de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce' };
 
   window.translateMsg = async function(optBtn, lang, msgId) {
     optBtn.closest('.msg-translate-dropdown').classList.remove('open');
@@ -1094,13 +1101,19 @@
     col.appendChild(box);
 
     try {
+      const _tok = await mhAuthToken();
+      if (!_tok) {
+        const _t0 = box.querySelector('.msg-translation-text');
+        if (_t0) _t0.textContent = 'Çeviri için giriş yapmalısın.';
+        return;
+      }
+      // mode:'translate' SART. Eskiden messages[] gonderiliyordu; o chat
+      // yoluna dusuyor, gunluk soru hakkini harciyor ve AbiBOT'un hukuk
+      // personasi ile cevap uretiyordu — ceviri degil.
       const res = await fetch(SUPABASE_URL + '/functions/v1/abibot-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + SUPABASE_ANON },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: msgLangInstructs[lang] + '\n\n' + original }],
-          systemPrompt: 'You are a professional translator. Translate accurately, preserving tone and meaning.',
-        }),
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + _tok },
+        body: JSON.stringify({ mode: 'translate', lang: lang, text: original }),
       });
       const d = await res.json();
       const translatedEl = box.querySelector('.msg-translation-text');

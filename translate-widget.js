@@ -71,8 +71,6 @@
         <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'tr','${contentSelector}')">🇹🇷 Türkçe</button>
         <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'de','${contentSelector}')">🇩🇪 Almanca</button>
         <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'en','${contentSelector}')">🇬🇧 İngilizce</button>
-        <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'fr','${contentSelector}')">🇫🇷 Fransızca</button>
-        <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'nl','${contentSelector}')">🇳🇱 Hollandaca</button>
       </div>
     </span>`;
   };
@@ -103,14 +101,25 @@
     document.querySelectorAll('.msg-translate-dropdown.open').forEach(d => d.classList.remove('open'));
   }, true);
 
-  const mhLangNames = { tr: '🇹🇷 Türkçe', de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce', fr: '🇫🇷 Fransızca', nl: '🇳🇱 Hollandaca' };
-  const mhLangInstructs = {
-    tr: 'Translate the following text into Turkish. Reply ONLY with the translation, no preamble, no quotes.',
-    de: 'Translate the following text into German. Reply ONLY with the translation, no preamble, no quotes.',
-    en: 'Translate the following text into English. Reply ONLY with the translation, no preamble, no quotes.',
-    fr: 'Translate the following text into French. Reply ONLY with the translation, no preamble, no quotes.',
-    nl: 'Translate the following text into Dutch. Reply ONLY with the translation, no preamble, no quotes.',
-  };
+
+  // Oturum tokeni — abibot-chat artık anon anahtarı ACIKCA reddediyor (401),
+  // bu yuzden ceviri gercek bir kullanici tokeni ile cagrilmali.
+  async function mhAuthToken() {
+    try {
+      if (window._authReady) { try { await window._authReady; } catch (e) {} }
+      if (window._currentSession && window._currentSession.access_token) {
+        return window._currentSession.access_token;
+      }
+      var c = window.supabase;
+      if (c && c.auth && typeof c.auth.getSession === 'function') {
+        var r = await c.auth.getSession();
+        if (r && r.data && r.data.session) return r.data.session.access_token;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  const mhLangNames = { tr: '🇹🇷 Türkçe', de: '🇩🇪 Almanca', en: '🇬🇧 İngilizce' };
 
   window.translateMhContent = async function (optBtn, lang, contentSelector) {
     optBtn.closest('.msg-translate-dropdown').classList.remove('open');
@@ -145,16 +154,27 @@
     textEl.insertAdjacentElement('afterend', box);
 
     try {
+      const _tok = await mhAuthToken();
+      const t = box.querySelector('.msg-translation-text');
+      if (!_tok) {
+        if (t) t.textContent = 'Çeviri için giriş yapmalısın.';
+        return;
+      }
+      // mode:'translate' SART. Eskiden messages[] gonderiliyordu; bu chat
+      // yoluna dusuyor, uyenin gunluk soru hakkini harciyor ve AbiBOT'un
+      // hukuk personasi ile cevap uretiyordu — ceviri degil.
       const res = await fetch(MH_SB_URL + '/functions/v1/abibot-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': MH_SB_KEY, 'Authorization': 'Bearer ' + MH_SB_KEY },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: mhLangInstructs[lang] + '\n\n' + original }],
-          systemPrompt: 'You are a professional translator. Translate accurately, preserving tone and meaning.',
-        }),
+        headers: { 'Content-Type': 'application/json', 'apikey': MH_SB_KEY, 'Authorization': 'Bearer ' + _tok },
+        body: JSON.stringify({ mode: 'translate', lang: lang, text: original }),
       });
       const d = await res.json();
-      const t = box.querySelector('.msg-translation-text');
+      if (!res.ok) {
+        if (t) t.textContent = d && d.error === 'request_limit'
+          ? 'Bugünlük istek sınırına ulaştın.'
+          : 'Çeviri alınamadı.';
+        return;
+      }
       if (t) t.textContent = d.answer || 'Çeviri alınamadı.';
     } catch (e) {
       const t = box.querySelector('.msg-translation-text');
