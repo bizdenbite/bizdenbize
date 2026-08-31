@@ -1026,6 +1026,22 @@
     'Accept': 'application/json',
   };
 
+  // ── YAZMA YARDIMCISI ────────────────────────────────────────────────
+  // PostgREST, RLS bir yazmayi engelledigin de HATA DONDURMEZ:
+  // 200 + BOS DIZI doner ve r.ok true olur. Bu yuzden "basarili" sayilan
+  // ama aslinda hicbir sey yazmayan islemler olusuyordu (ornegin bir
+  // gonderiyi duzenlemek: ekranda degisiyor, yenileyince eski haline
+  // donuyordu). Donen satir sayisini kontrol etmek tek guvenilir yol.
+  async function bbWrite(url, method, body) {
+    const opts = { method, headers: { ...headers, 'Prefer': 'return=representation' } };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const r = await fetch(url, opts);
+    if (!r.ok) throw new Error(await r.text().catch(() => 'HTTP ' + r.status));
+    const rows = await r.json().catch(() => []);
+    if (Array.isArray(rows) && rows.length === 0) throw new Error('RLS_BLOCKED');
+    return rows;
+  }
+
   // Load current user profile
   const profRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=*&id=eq.${user.id}`, { headers });
   const profiles = await profRes.json();
@@ -1064,11 +1080,9 @@
           data: { user_name: firstNameForEmail }
         })
       });
-      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${user.id}`, {
-        method: 'PATCH',
-        headers: { ...headers, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ welcome_email_sent: true })
-      });
+      // Yazilamazsa isaretleme — yoksa e-posta gonderilmemis sayilir
+      // ama tekrar denenmez.
+      await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${user.id}`, 'PATCH', { welcome_email_sent: true });
     } catch(e) { console.warn('Welcome email failed:', e); }
   }
 
@@ -1583,16 +1597,16 @@
     btnEl.disabled = true;
     try {
       if (isLiked) {
-        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?post_id=eq.${postId}&user_id=eq.${user.id}`, { method:'DELETE', headers });
+        await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes?post_id=eq.${postId}&user_id=eq.${user.id}`, 'DELETE');
         btnEl.classList.remove('liked'); count--;
         window._myLikedPostIds.delete(postId);
       } else {
-        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes`, { method:'POST', headers:{...headers,'Prefer':'return=minimal'}, body: JSON.stringify({post_id:postId,user_id:user.id}) });
+        await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_likes`, 'POST', {post_id:postId,user_id:user.id});
         btnEl.classList.add('liked'); count++;
         window._myLikedPostIds.add(postId);
       }
       countSpan.textContent = count;
-    } catch(e) { console.error('Like toggle error:', e); }
+    } catch(e) { console.error('Like toggle error:', e); window.showToast('Kaydedilemedi, tekrar dener misin?'); }
     btnEl.disabled = false;
   };
 
@@ -1601,12 +1615,12 @@
     btnEl.disabled = true;
     try {
       if (isBookmarked) {
-        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks?post_id=eq.${postId}&user_id=eq.${user.id}`, { method:'DELETE', headers });
+        await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks?post_id=eq.${postId}&user_id=eq.${user.id}`, 'DELETE');
         btnEl.classList.remove('liked');
         window._myBookmarkedPostIds.delete(postId);
         if (window._feedTier === 'saved') { window._allPosts = window._allPosts.filter(p => p.id !== postId); renderFeedFromCache(); }
       } else {
-        await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks`, { method:'POST', headers:{...headers,'Prefer':'return=minimal'}, body: JSON.stringify({post_id:postId,user_id:user.id}) });
+        await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/post_bookmarks`, 'POST', {post_id:postId,user_id:user.id});
         btnEl.classList.add('liked');
         window._myBookmarkedPostIds.add(postId);
         window.showToast('🔖 Kaydedildi');
@@ -1703,10 +1717,7 @@
     if (!content && !pendingImg) return;
     input.disabled = true;
     try {
-      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments`, {
-        method:'POST', headers:{...headers,'Prefer':'return=minimal'},
-        body: JSON.stringify({post_id:postId, author_id:user.id, content: content || '', image_urls: pendingImg ? [pendingImg] : []})
-      });
+      await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments`, 'POST', {post_id:postId, author_id:user.id, content: content || '', image_urls: pendingImg ? [pendingImg] : []});
       input.value = '';
       window.removePendingCommentPhoto(postId);
       const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?post_id=eq.${postId}&select=*&order=created_at.asc`, { headers });
@@ -1819,10 +1830,7 @@
     btn.disabled = true;
     try {
       if (isFollowing) {
-        const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/follows?follower_id=eq.${user.id}&following_id=eq.${targetId}`, {
-          method: 'DELETE', headers,
-        });
-        if (!r.ok) throw new Error(await r.text());
+        await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/follows?follower_id=eq.${user.id}&following_id=eq.${targetId}`, 'DELETE');
         btn.textContent = 'Takip Et';
       } else {
         const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/follows`, {
@@ -1891,11 +1899,7 @@
     const newContent = textarea.value.trim();
     if (!newContent) return;
     try {
-      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${postId}`, {
-        method: 'PATCH',
-        headers: { ...headers, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ content: newContent, updated_at: new Date().toISOString() })
-      });
+      await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?id=eq.${postId}`, 'PATCH', { content: newContent, updated_at: new Date().toISOString() });
       const post = window._allPosts.find(p => p.id === postId);
       if (post) post.content = newContent;
       renderFeedFromCache();
@@ -1932,12 +1936,9 @@
     const newContent = textarea.value.trim();
     if (!newContent) return;
     try {
-      await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?id=eq.${commentId}`, {
-        method:'PATCH', headers:{...headers,'Prefer':'return=minimal'},
-        body: JSON.stringify({ content: newContent })
-      });
+      await bbWrite(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/comments?id=eq.${commentId}`, 'PATCH', { content: newContent });
       window.cancelEditComment(postId);
-    } catch(e) { console.error('Comment edit error:', e); alert('Düzenleme kaydedilemedi.'); }
+    } catch(e) { console.error('Comment edit error:', e); alert('Düzenleme KAYDEDİLMEDİ. Yorumu düzenleme yetkin olmayabilir.'); }
   };
 
   window._reportTarget = null;

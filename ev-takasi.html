@@ -807,9 +807,15 @@
   async function sbPatchAuth(table, params, data) {
     const session = window._currentSession;
     if (!session) throw new Error('Not logged in');
-    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    // return=representation SART: RLS engellenen bir PATCH, minimal ile
+    // 200 doner ve basari gibi gorunur. Donen satir sayisi tek gostergedir.
+    const headers = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
     const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { method:'PATCH', headers, body: JSON.stringify(data) });
     if (!r.ok) throw new Error('DB update error ' + r.status + ': ' + await r.text());
+    const rows = await r.json().catch(() => []);
+    if (Array.isArray(rows) && rows.length === 0) {
+      throw new Error('Değişiklik kaydedilmedi: bu işlem için yetkin yok görünüyor.');
+    }
   }
   // Like sbPostAuth but returns the created row — needed to get a new
   // conversation's id so a message can be attached to it.

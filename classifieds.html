@@ -445,12 +445,16 @@
     await (window._authReady||Promise.resolve());
     const session=window._currentSession;
     if(!session){ alert('Bu işlem için giriş yapmalısın.'); return false; }
+    // RLS engellerse PostgREST 200 + BOS DIZI doner ve r.ok true olur.
+    // return=minimal ile bunu ayirt etmek imkansiz; representation sart.
     const r=await fetch(_CL_URL+'/rest/v1/classified_listings?id=eq.'+id,{
       method:'PATCH',
-      headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+      headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=representation' },
       body: JSON.stringify(body)
     });
-    return r.ok;
+    if(!r.ok) return false;
+    const rows=await r.json().catch(()=>[]);
+    return Array.isArray(rows) && rows.length>0;
   }
 
   window.clSetSold=async function(id, sold){
