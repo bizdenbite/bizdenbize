@@ -127,9 +127,19 @@
     /* ── RIGHT PANEL ── */
     .right-panel {
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: center;
+      /* justify-content:center + overflow-y:auto traps overflow ABOVE the
+         scroll origin: when the panel is taller than the viewport (the
+         register form, with its three textareas), the heading and first
+         line become unreachable — you cannot scroll up past the start.
+         flex-start keeps the top reachable; margin-block:auto on the
+         children still centres everything when it does fit. */
+      justify-content: flex-start;
       padding: 48px 64px;
       overflow-y: auto;
+    }
+    .right-panel > .form-container {
+      margin-block: auto;
     }
     .form-container { width: 100%; max-width: 400px; }
 
