@@ -197,6 +197,23 @@
     <p>Bu yolda yalnız değilim. BizdenBize'yi, birlikte çalıştığım harika insanlar ve güvenilir yapay zekâ asistanları ile birlikte geliştiriyorum. İnsanların kalbini, deneyimini ve sezgisini yapay zekânın hızı ve gücüyle bir araya getiriyoruz.</p>
     <p>Bunu bilinçli bir şekilde yapıyorum: yıllardır yapay zekâ güvenliği üzerine çalışan biri olarak, yapay zekânın doğru ve insan odaklı kullanıldığında ne kadar değerli bir yardımcı olabileceğine inanıyorum. En iyi işler, <strong>insan ve teknoloji el ele çalıştığında</strong> ortaya çıkıyor.</p>
 
+    <p>BizdenBize'yi birlikte kuranlar:</p>
+
+    <ul class="founders">
+      <li>
+        <span class="fo-name">Naz van Norel</span>
+        <span class="fo-role">Kurucu</span>
+      </li>
+      <li>
+        <span class="fo-name">Adem Erkoçak</span>
+        <span class="fo-role">Tanıtım &amp; Medya</span>
+      </li>
+      <li>
+        <span class="fo-name">Saltuk Buğra Karacan</span>
+        <span class="fo-role">Teknoloji &amp; Siber Güvenlik</span>
+      </li>
+    </ul>
+
     <h2 class="letter-h">Bu Yolculukta Bize Katılın</h2>
     <p>BizdenBize henüz yolculuğunun başında. Bu platformu birlikte büyüteceğiz — öğretmenlerle, doktorlarla, esnaflarla, girişimcilerle, öğrencilerle, uzmanlarla ve birbirine destek olmak isteyen herkesle. Çünkü inanıyorum ki, <strong>gurbet hayatını birlikte kolaylaştırabiliriz.</strong></p>
 
@@ -298,7 +315,18 @@
     @media (max-width: 480px) {
       footer > div > div:first-child { grid-template-columns: 1fr !important; }
     }
-  </style>
+  
+    /* Kurucular — düz bir liste; kart ya da avatar yok, çünkü mektubun
+       sesini bozmadan isimleri anmak yeterli. */
+    .founders { list-style: none; margin: 22px 0 30px; padding: 0; }
+    .founders li {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+      padding: 13px 0; border-bottom: 1px solid var(--warm, #EDE6DC);
+    }
+    .founders li:first-child { border-top: 1px solid var(--warm, #EDE6DC); }
+    .fo-name { font-weight: 600; color: var(--ink, #1A1208); }
+    .fo-role { font-size: 14px; color: var(--muted, #6B6259); }
+</style>
 </footer>
   <script src="site-footer.js" defer></script>
 </body>
