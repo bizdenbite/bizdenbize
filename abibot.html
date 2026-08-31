@@ -715,7 +715,7 @@
   <div style="flex:1;"></div>
   <div class="nav-right">
     <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
-    <div class="credit-pill" style="cursor:pointer" title="Kredi yükle" onclick="window.location='premium.html'"><div class="credit-dot"></div><span id="credit-display">— kredi</span></div>
+    <div class="credit-pill" title="Kredi bakiyen"><div class="credit-dot"></div><span id="credit-display">— kredi</span></div>
     <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;">—</div>
     <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
       <a href="profile.html" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;">👤 Profilim</a>
@@ -993,7 +993,9 @@
       <!-- Secondary: buy credits (no credits) -->
       <div id="esc-buy-bar" style="display:none;">
         <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;" id="esc-buy-msg"></div>
-        <button onclick="window.location='topup.html'" style="width:100%;padding:14px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:block;">💳 Kredi Satın Al →</button>
+        <div style="width:100%;padding:14px;background:var(--sand,#F0EAE0);color:var(--ink);border-radius:9px;font-size:13.5px;line-height:1.5;text-align:center;">
+          Kredi satın alma henüz açık değil. Şu anda platformdaki her şey ücretsiz; ücretli hizmetler başladığında burada duyuracağız.
+        </div>
       </div>
     </div>
   </div>
@@ -2184,13 +2186,13 @@
       document.getElementById('esc-main-btn').disabled = false;
     } else if (hasCredits) {
       window._escType = 'credits';
-      document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
+      document.getElementById('esc-cost-display').textContent = '5 Kredi';
       document.getElementById('esc-cost-display').style.color = 'var(--ink)';
       document.getElementById('esc-main-btn').textContent = 'Kredi ile Gönder →';
       document.getElementById('esc-main-btn').disabled = false;
     } else {
       window._escType = null;
-      document.getElementById('esc-cost-display').textContent = '5 Kredi (5 EUR)';
+      document.getElementById('esc-cost-display').textContent = '5 Kredi';
       document.getElementById('esc-cost-display').style.color = 'var(--muted)';
       document.getElementById('esc-main-btn').style.display = 'none';
       const buyBar = document.getElementById('esc-buy-bar');

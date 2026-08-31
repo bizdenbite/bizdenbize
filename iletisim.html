@@ -125,7 +125,7 @@
         </div>
         <div id="c-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
         <button class="submit-btn" onclick="submitContact()">Gönder →</button>
-        <p class="form-note">Verileriniz yalnızca talebinize yanıt vermek için kullanılır. <a href="gizlilik.html" style="color:var(--navy)">Gizlilik Politikası</a></p>
+        <p class="form-note">Verileriniz yalnızca talebinize yanıt vermek için kullanılır. <a href="legal.html#privacy" style="color:var(--navy)">Gizlilik Politikası</a></p>
       </div>
     </div>
 
@@ -189,7 +189,9 @@
 <script>
   // Supabase integration
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
+  // Eski legacy JWT anon anahtari kaldirildi; site genelinde kullanilan
+  // publishable anahtar ile ayni olmali (tek kimlik bilgisi).
+  const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
 
   async function submitContact() {
