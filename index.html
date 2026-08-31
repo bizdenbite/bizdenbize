@@ -138,57 +138,73 @@
     .btn-secondary svg { transition: transform .2s; }
     .btn-secondary:hover svg { transform: translateX(3px); }
 
-/* ── Manifesto ─────────────────────────────────────────────────────
-       Deliberately not cards: the section is four short statements that
-       build to one invitation, so the type is the whole design. Each line
-       sits on its own baseline with generous space, and only the line that
-       carries the idea takes the accent colour. */
+    /* ── Manifesto ─────────────────────────────────────────────────────
+       A story, not a list of claims. It opens on a concrete moment the
+       reader has lived, turns on the stranger who helped, and only then
+       states the principle — the principle means little before the memory.
+       The technical proof sits at the END: in the middle it stopped the
+       reader dead between two statements. */
     .manifesto {
-      padding: 110px 80px;
+      padding: 120px 80px;
       background: var(--warm);
       border-top: 1px solid var(--sand);
       border-bottom: 1px solid var(--sand);
     }
-    .mf-inner { max-width: 760px; }
+    .mf-inner { max-width: 660px; }
+    .mf-open {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3.4vw, 42px);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.6px;
+      color: var(--ink); margin: 0 0 34px;
+    }
+    .mf-story {
+      font-size: 18px; line-height: 1.75; color: var(--ink);
+      margin: 0 0 22px;
+    }
+    .mf-story em { font-style: normal; color: var(--red); }
+    .mf-turn {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; line-height: 1.4;
+      margin: 32px 0 42px;
+    }
     .mf-line {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(24px, 2.9vw, 36px);
-      font-weight: 400; line-height: 1.28;
-      letter-spacing: -0.4px;
-      color: var(--ink);
-      margin: 0 0 18px;
+      font-size: clamp(22px, 2.4vw, 30px);
+      font-weight: 400; line-height: 1.3; letter-spacing: -0.3px;
+      color: var(--ink); margin: 0 0 12px;
     }
-    /* Subordinate to the statement above it: the claim is the headline, the
-       specifics are the receipt. Vague "we respect your privacy" copy is
-       worthless — every clause here is something the platform actually does. */
+    .mf-accent { font-weight: 700; color: var(--red); margin: 18px 0 42px; }
+    .mf-close {
+      font-size: 18px; line-height: 1.7; color: var(--ink);
+      margin: 38px 0 0; padding-top: 30px;
+      border-top: 1px solid var(--sand);
+    }
     .mf-note {
-      font-size: 15px; line-height: 1.7; color: var(--muted);
-      max-width: 560px; margin: -6px 0 26px;
-      padding-left: 16px; border-left: 2px solid var(--sand);
+      font-size: 14px; line-height: 1.65; color: var(--muted);
+      margin: 26px 0 0; padding-left: 16px;
+      border-left: 2px solid var(--sand);
     }
     .mf-note a { color: var(--red); text-decoration: underline; text-underline-offset: 2px; }
-    .mf-accent { font-weight: 700; color: var(--red); margin-top: 34px; }
-    .mf-body {
-      font-size: 17px; line-height: 1.7; color: var(--muted);
-      max-width: 540px; margin: 38px 0 0;
-      padding-top: 30px; border-top: 1px solid var(--sand);
-    }
     @media (max-width: 768px) {
-      .manifesto { padding: 72px 24px; }
-      .mf-line { margin-bottom: 14px; }
-      .mf-body { font-size: 16px; }
+      .manifesto { padding: 76px 24px; }
+      .mf-story, .mf-close { font-size: 17px; }
+      .mf-turn { font-size: 20px; }
     }
 
-    .hero-trust {
-      list-style: none; margin: 22px 0 0; padding: 0;
-      display: flex; flex-wrap: wrap; gap: 8px 20px;
-      font-size: 13px; color: var(--muted);
+    /* The three questions a visitor arrives with, answered before the fold.
+       A definition list, because that is literally what this is — the
+       question is the term and the answer is the definition. */
+    .hero-faq { margin: 30px 0 0; padding: 26px 0 0; border-top: 1px solid var(--sand); }
+    .hero-faq dt {
+      font-size: 14px; font-weight: 600; color: var(--ink);
+      margin-bottom: 4px;
     }
-    .hero-trust li { display: flex; align-items: center; gap: 7px; }
-    .hero-trust li::before {
-      content: ''; width: 5px; height: 5px; border-radius: 50%;
-      background: var(--red); flex-shrink: 0;
+    .hero-faq dd {
+      margin: 0 0 18px; padding: 0;
+      font-size: 14px; line-height: 1.6; color: var(--muted);
+      max-width: 430px;
     }
+    .hero-faq dd:last-child { margin-bottom: 0; }
 
     .hero-principle {
       margin-top: 52px; padding-top: 36px;
@@ -724,9 +740,7 @@
   <div class="hero-left">
     <h1>Gurbetteki İyilerin<br><em>Dijital Mahallesi.</em></h1>
     <p class="hero-sub">
-      Almanya'da yaşayan Türkler için kurulmuş, Türkçe bir topluluk. Komşularına
-      danış, doğrulanmış bilgiye ulaş, etkinliklere katıl, alıp sat. Yeni gelenlerin
-      en çok zorlandığı konularda yol gösteren yapay zekâ asistanı AbiBOT da burada.
+      Almanya'da yaşayan Türkler için, baştan sona Türkçe.
     </p>
     <div class="hero-actions">
       <a href="login.html?tab=register" class="btn-primary">
@@ -740,14 +754,25 @@
     </div>
     <p style="font-size:14px;color:var(--muted);margin-top:14px;">Hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:700;text-decoration:none;">Giriş yap →</a></p>
 
-    <!-- Her madde doğrulanabilir olmalı. "%100 doğrulanmış profil" ve
-         "GDPR uyumlu" gibi ifadeler bilerek kullanılmadı: e-posta doğrulaması
-         henüz açık değil ve uyumluluk beyanı hukuki bir iddiadır. -->
-    <ul class="hero-trust">
-      <li>Her başvuruyu bir insan okur</li>
-      <li>Sunucular Frankfurt'ta, AB içinde</li>
-      <li>Reklam yok, veri satışı yok</li>
-    </ul>
+    <!-- Bir ziyaretçinin ilk üç sorusu. Cevaplar aşağıdaki bölümlerde
+         detaylanıyor ama burada, kaydolmadan önce görülmeli.
+         Her ifade doğrulanabilir: "%100 doğrulanmış profil" ve "GDPR uyumlu"
+         gibi cümleler bilerek kullanılmadı — e-posta doğrulaması henüz açık
+         değil ve uyumluluk beyanı hukuki bir iddiadır. -->
+    <dl class="hero-faq">
+      <dt>Bu nedir?</dt>
+      <dd>Komşuna danışabildiğin, doğrulanmış resmî kaynaklara ulaştığın, ilan verip
+        etkinliğe katıldığın bir topluluk. Takıldığın konuyu AbiBOT'a sorarsın; iş
+        ciddiye binince Türkçe konuşan bir uzmana bağlanırsın.</dd>
+
+      <dt>Ücreti ne?</dt>
+      <dd>Topluluğun tamamı ücretsiz. Yalnızca uzman danışmanlığı ve işletme tanıtımı
+        ücretli olacak. Reklam yok, veri satışı yok.</dd>
+
+      <dt>Nasıl çalışır?</dt>
+      <dd>Kaydol, başvurunu bir insan okusun, onaylandığında mahallene katıl.
+        Kayıt herkese açık — ama otomatik onay yok.</dd>
+    </dl>
     <div class="hero-principle">
       <span class="hp-label">Prensibimiz</span>
       <p class="hp-text"><span class="hp-give">İyilik yap.</span><span class="hp-get">İyilik bul.</span></p>
@@ -802,13 +827,36 @@
      kart yok, ikon yok — sadece cümleler, çünkü söylenen şey bu. -->
 <section class="manifesto" id="neden">
   <div class="mf-inner">
+
+    <p class="mf-open">Almanya'ya ilk geldiğin günü hatırla.</p>
+
+    <p class="mf-story">Elinde anlamadığın bir mektup vardır. Karşında bir sıra numarası,
+      etrafında bilmediğin bir dil. Kime soracağını bilemezsin; yanlış bir şey yapmaktan korkarsın.</p>
+
+    <p class="mf-story">Sonra biri çıkar. Tanımadığın biri. <em>«Ben de aynısını yaşamıştım»</em>
+      der, bir yolunu gösterir. Karşılığında hiçbir şey istemez.</p>
+
+    <p class="mf-story mf-turn">O cümleyi hâlâ hatırlıyorsun, değil mi?</p>
+
     <p class="mf-line">İnsanlar yardımlaşmadan ilerleyemez.</p>
-    <p class="mf-line">Yapay zekâ, insanın hayatını kolaylaştırmak için bir araçtır — yerine geçmek için değil.</p>
-    <p class="mf-note">AbiBOT bilmediğini uydurmaz: emin olmadığı bir rakamı ya da kanun adını yazmaz, konu ciddileştiğinde seni gerçek bir uzmana yönlendirir. Sorularının metni saklanmaz. Verilerin Frankfurt'taki AB sunucularında tutulur ve hangi hizmetin neyi işlediğini <a href="legal.html#privacy">gizlilik metnimizde</a> tek tek yazdık.</p>
-    <p class="mf-line">Vizyonu ortak olan insanlar çabuk kaynaşır.</p>
+    <p class="mf-line">Vizyonu ortak olanlar çabuk kaynaşır.</p>
     <p class="mf-line mf-accent">İyilik bulaşıcıdır.</p>
-    <p class="mf-body">Biz, iyilerin olduğu bir dijital mahalle kurmak için yola çıktık.
-      Sen de katıl; hem kendi hayatını hem başkalarının hayatını kolaylaştır.</p>
+
+    <p class="mf-story">Sana yapılan iyiliği bir gün başkasına yaparsın. Biz de o cümleyi
+      çoğaltmak için buradayız: yeni gelen biri aynı mektubun karşısında yalnız kalmasın diye.</p>
+
+    <p class="mf-story">Yapay zekâ da bunun bir parçası. İnsanın yerine geçmek için değil,
+      yükünü hafifletmek için. AbiBOT ilk soruyu karşılar; işin ucunda hayatını etkileyecek
+      bir karar varsa seni gerçek bir insana bağlar.</p>
+
+    <p class="mf-close">Biz, iyilerin olduğu bir dijital mahalle kurmak için yola çıktık.<br>
+      <strong>Sen de katıl.</strong> Hem kendi hayatını hem başkalarının hayatını kolaylaştır.</p>
+
+    <p class="mf-note">Sözün arkası: AbiBOT bilmediğini uydurmaz, emin olmadığı bir rakamı ya da
+      kanun adını yazmaz. Sorularının metni saklanmaz. Verilerin Frankfurt'taki AB sunucularında
+      tutulur ve hangi hizmetin neyi işlediğini <a href="legal.html#privacy">gizlilik metnimizde</a>
+      tek tek yazdık.</p>
+
   </div>
 </section>
 
@@ -909,8 +957,7 @@
   <span class="section-tag">Neler var</span>
   <h2 style="color:var(--white)">Gurbette işine yarayan<br>her şey, tek yerde.</h2>
   <p class="section-sub">Platformun dili Türkçe. Gönderileri, mesajları ve AbiBOT'un yanıtlarını
-    tek dokunuşla Almancaya veya İngilizceye çevirebilirsin — ya da Almanca bir metni Türkçeye.
-    Uzman danışmanlığı ve işletme tanıtımı dışında her şey ücretsiz.</p>
+    tek dokunuşla Almancaya veya İngilizceye çevirebilirsin — ya da Almanca bir metni Türkçeye.</p>
   <div class="modules-grid">
 
     <div class="module-tile">
