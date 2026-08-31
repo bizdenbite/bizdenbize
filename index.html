@@ -138,6 +138,38 @@
     .btn-secondary svg { transition: transform .2s; }
     .btn-secondary:hover svg { transform: translateX(3px); }
 
+/* ── Manifesto ─────────────────────────────────────────────────────
+       Deliberately not cards: the section is four short statements that
+       build to one invitation, so the type is the whole design. Each line
+       sits on its own baseline with generous space, and only the line that
+       carries the idea takes the accent colour. */
+    .manifesto {
+      padding: 110px 80px;
+      background: var(--warm);
+      border-top: 1px solid var(--sand);
+      border-bottom: 1px solid var(--sand);
+    }
+    .mf-inner { max-width: 760px; }
+    .mf-line {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 2.9vw, 36px);
+      font-weight: 400; line-height: 1.28;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+      margin: 0 0 18px;
+    }
+    .mf-accent { font-weight: 700; color: var(--red); margin-top: 34px; }
+    .mf-body {
+      font-size: 17px; line-height: 1.7; color: var(--muted);
+      max-width: 540px; margin: 38px 0 0;
+      padding-top: 30px; border-top: 1px solid var(--sand);
+    }
+    @media (max-width: 768px) {
+      .manifesto { padding: 72px 24px; }
+      .mf-line { margin-bottom: 14px; }
+      .mf-body { font-size: 16px; }
+    }
+
     .hero-principle {
       margin-top: 52px; padding-top: 36px;
       border-top: 1px solid var(--sand);
@@ -737,6 +769,19 @@
 </section>
 
 <!-- HOW IT WORKS -->
+<!-- Neden buradayız. Hero'daki "İyilik yap. İyilik bul." ilkesinin açılımı;
+     kart yok, ikon yok — sadece cümleler, çünkü söylenen şey bu. -->
+<section class="manifesto" id="neden">
+  <div class="mf-inner">
+    <p class="mf-line">İnsanlar yardımlaşmadan ilerleyemez.</p>
+    <p class="mf-line">Yapay zekâ, insanın hayatını kolaylaştırmak için bir araçtır — yerine geçmek için değil.</p>
+    <p class="mf-line">Vizyonu ortak olan insanlar çabuk kaynaşır.</p>
+    <p class="mf-line mf-accent">İyilik bulaşıcıdır.</p>
+    <p class="mf-body">Biz, iyilerin olduğu bir dijital mahalle kurmak için yola çıktık.
+      Sen de katıl; hem kendi hayatını hem başkalarının hayatını kolaylaştır.</p>
+  </div>
+</section>
+
 <section class="section" id="nasil-calisir">
   <span class="section-tag">Nasıl çalışır?</span>
   <h2>Güven ile<br>başlar.</h2>
