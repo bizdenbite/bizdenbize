@@ -238,7 +238,6 @@
       background: rgba(255,255,255,0.04);
       padding: 40px;
       transition: background .2s;
-      cursor: pointer;
     }
     .module-tile:hover { background: rgba(255,255,255,0.08); }
     .module-icon {
@@ -453,6 +452,8 @@
       .steps { grid-template-columns: 1fr; }
       .modules-section { padding: 60px 24px; }
       .modules-grid { grid-template-columns: 1fr; }
+    .module-tile { padding: 26px 22px; }
+    .module-tile h3 { margin-bottom: 6px; }
       .waitlist-section { grid-template-columns: 1fr; padding: 60px 24px; gap: 40px; }
       footer { flex-direction: column; gap: 20px; text-align: center; padding: 40px 24px; }
       .library-section-grid { grid-template-columns: 1fr !important; padding: 60px 24px !important; gap: 40px !important; }
@@ -656,7 +657,9 @@
   <div class="hero-left">
     <h1>Gurbetteki İyilerin<br><em>Dijital Mahallesi.</em></h1>
     <p class="hero-sub">
-      Almanya'daki güvenilir Türk komşularınla bağlan. İkinci el al-sat yap, etkinliklere katıl, yerel işletmeleri keşfet — hepsi tek platformda.
+      Almanya'da yaşayan Türkler için kurulmuş, Türkçe bir topluluk. Komşularına
+      danış, doğrulanmış bilgiye ulaş, etkinliklere katıl, alıp sat. Yeni gelenlerin
+      en çok zorlandığı konularda yol gösteren yapay zekâ asistanı AbiBOT da burada.
     </p>
     <div class="hero-actions">
       <a href="login.html?tab=register" class="btn-primary">
@@ -671,12 +674,12 @@
     <p style="font-size:14px;color:var(--muted);margin-top:14px;">Hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:700;text-decoration:none;">Giriş yap →</a></p>
     <div class="hero-stats">
       <div>
-        <div class="stat-val">Topluluk</div>
-        <div class="stat-label">Güvenilir &amp; yakın</div>
+        <div class="stat-val">Türkçe</div>
+        <div class="stat-label">Baştan sona</div>
       </div>
       <div>
         <div class="stat-val">Ücretsiz</div>
-        <div class="stat-label">Temel kullanım</div>
+        <div class="stat-label">Tüm topluluk özellikleri</div>
       </div>
       <div>
         <div class="stat-val">Almanya'dan</div>
@@ -739,17 +742,17 @@
     <div class="step fade-up">
       <div class="step-num">01</div>
       <h3>Kaydol</h3>
-      <p>E-postanla ücretsiz hesabını oluştur. Kısa bir onay sürecinden sonra topluluğa katılırsın.</p>
+      <p>E-postanla ücretsiz hesap aç ve neden katılmak istediğini birkaç cümleyle yaz. Kayıt herkese açık.</p>
     </div>
     <div class="step fade-up" style="transition-delay:.1s">
       <div class="step-num">02</div>
-      <h3>Profilini oluştur</h3>
-      <p>Şehrin, ilgi alanların ve konuştuğun diller. Sadece senin bilmeni istediğin kişiler seni görebilir.</p>
+      <h3>Başvurun incelensin</h3>
+      <p>Her başvuruyu bir insan okuyor — otomatik onay yok. Bu yüzden hesabın hemen açılmaz, önce sıraya girer. Topluluğun güvenli kalmasının tek yolu bu.</p>
     </div>
     <div class="step fade-up" style="transition-delay:.2s">
       <div class="step-num">03</div>
-      <h3>Topluluğuna katıl</h3>
-      <p>Şehir bazında mahalleni keşfet. İlan ver, etkinliğe git, işletme bul — hepsi güvenilir insanlarla.</p>
+      <h3>Mahallene katıl</h3>
+      <p>Onaylandığında e-posta alırsın. Sonrası senin: soru sor, ilan ver, etkinliğe git, komşularını tanı.</p>
     </div>
   </div>
 </section>
@@ -823,42 +826,86 @@
 
 <!-- MODULES -->
 <section class="modules-section" id="ozellikler">
-  <span class="section-tag">Özellikler</span>
-  <h2 style="color:var(--white)">En güvenilir çözümleri<br>bir araya getirdik.</h2>
-  <p class="section-sub">Gurbette ihtiyacın olan her şey — komşuluk, alışveriş, uzman desteği ve eğitim — tek bir Türkçe platformda.</p>
+  <span class="section-tag">Neler var</span>
+  <h2 style="color:var(--white)">Gurbette işine yarayan<br>her şey, tek yerde.</h2>
+  <p class="section-sub">Hepsi Türkçe. Uzman danışmanlığı ve işletme tanıtımı dışında tamamı ücretsiz.</p>
   <div class="modules-grid">
+
     <div class="module-tile">
-      <div class="module-icon" style="background:rgba(192,57,43,0.2)">🏘️</div>
-      <h3>Mahallem</h3>
-      <p>Şehrindeki Türklerle paylaş, yardımlaş, tanış. Mahalle gruplarında lokal haberler ve duyurular.</p>
+      <div class="module-icon" style="background:rgba(192,57,43,0.2)">🤖</div>
+      <h3>AbiBOT</h3>
+      <p>Oturum izni, kira, sağlık, vergi, okul — yeni gelenlerin en çok takıldığı konularda Türkçe yol gösterir. Bilmediğini uydurmaz; ne zaman gerçek bir uzmana danışman gerektiğini söyler.</p>
     </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(201,168,76,0.2)">🏘️</div>
+      <h3>Mahallem</h3>
+      <p>Şehrindeki Türklerle soru sor, deneyim paylaş, yardımlaş. Reklamsız, algoritmasız — sadece komşuluk.</p>
+    </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(27,58,140,0.25)">📚</div>
+      <h3>Kütüphane</h3>
+      <p>Resmî kurumların güncel kaynakları, tek tek kontrol edilmiş halde. Yanlış bilgi aramakla vakit kaybetme.</p>
+    </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎉</div>
+      <h3>Etkinlikler &amp; Webinarlar</h3>
+      <p>Buluşmalar, festivaller ve çevrim içi bilgilendirme oturumları. Kendi etkinliğini de duyurabilirsin.</p>
+    </div>
+
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(201,168,76,0.2)">🛍️</div>
-      <h3>İlan & Alışveriş</h3>
-      <p>Güvendiğin insanlarla al-sat yap. Araç, ev eşyası, elektronik — topluluk içinde, tanıdık yüzlerle.</p>
+      <h3>İlan &amp; Alışveriş</h3>
+      <p>Ev eşyası, elektronik, araç. Konut ilanları ayrı bir bölümde. Mesajlaşma platform içinde kalır.</p>
     </div>
+
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(255,255,255,0.1)">🏢</div>
       <h3>Türk İşletmeleri</h3>
-      <p>Şehrindeki Türk restoranları, avukatlar, doktorlar, ustalar. Gerçek yorumlar, gerçek insanlardan.</p>
-      <span class="coming">Yakında</span>
+      <p>Şehrindeki Türk esnafı, restoranlar, ustalar. Gerçek üyelerden gerçek yorumlar.</p>
     </div>
-    <div class="module-tile">
-      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎉</div>
-      <h3>Etkinlikler</h3>
-      <p>Almanya'daki Türk etkinlikleri, festivaller, buluşmalar. Oluştur, katıl, haberdar ol.</p>
-      <span class="coming">Yakında</span>
-    </div>
+
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(30,123,75,0.2)">👨‍⚖️</div>
       <h3>Türkçe Konuşan Uzmanlar</h3>
-      <p>Avukat, danışman, doktor — anadilinde anlaşabileceğin uzmanlara sorunu sor, cevabını Türkçe al.</p>
+      <p>Avukat, mali müşavir, danışman. Anadilinde sor, Türkçe cevap al. Tek ücretli hizmet bu.</p>
+      <span class="coming" style="background:rgba(201,168,76,.18);color:var(--gold)">Ücretli</span>
     </div>
+
     <div class="module-tile">
-      <div class="module-icon" style="background:rgba(27,58,140,0.25)">📚</div>
-      <h3>Özel Ders</h3>
-      <p>Çocuğun için Türkçe konuşan öğretmenler ve Nachhilfe. Matematik, Almanca, sınav hazırlığı.</p>
+      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🏡</div>
+      <h3>Ev Takası</h3>
+      <p>Tatilde evini bir başka üyeyle takas et. Puan usulü çalışır, para el değiştirmez.</p>
     </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(192,57,43,0.2)">💼</div>
+      <h3>İş &amp; Güç</h3>
+      <p>Türkçe konuşulan iş yerlerinden ilanlar, işverenin iletişim bilgisiyle birlikte.</p>
+    </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(30,123,75,0.2)">🩺</div>
+      <h3>Türkçe Konuşan Doktorlar</h3>
+      <p>Yeni açıldı. İlk isimleri üyeler ekliyor — tanıdığın bir hekim varsa sen de öner.</p>
+      <span class="coming">Yeni</span>
+    </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(27,58,140,0.25)">✏️</div>
+      <h3>Özel Ders</h3>
+      <p>Çocuğun için Nachhilfe ve Türkçe konuşan öğretmenler. Burası da yeni — ilk öğretmenleri birlikte ekliyoruz.</p>
+      <span class="coming">Yeni</span>
+    </div>
+
+    <div class="module-tile">
+      <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎬</div>
+      <h3>Videothek</h3>
+      <p>Kısa, Türkçe anlatım videoları. Okumaya vaktin yoksa izle.</p>
+    </div>
+
   </div>
 </section>
 
@@ -1067,10 +1114,10 @@
   <div class="waitlist-left" style="max-width:640px;">
     <span class="section-tag">Katıl</span>
     <h2>Aramıza<br>hoş geldin.</h2>
-    <p style="margin-bottom:32px;">Ücretsiz hesabını oluştur ve gurbetteki komşularınla hemen bağlan. Topluluğumuz güvene dayalı — herkes gerçek adıyla katılır.</p>
+    <p style="margin-bottom:32px;">Ücretsiz hesabını oluştur. Topluluğumuz güvene dayalı: herkes gerçek adıyla katılır ve her başvuru tek tek okunur.</p>
     <div class="trust-list" style="display:inline-flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:32px;">
-      <div class="trust-item"><div class="trust-text">✓ Ücretsiz kayıt, temel kullanım her zaman ücretsiz</div></div>
-      <div class="trust-item"><div class="trust-text">✓ Kaydolduktan hemen sonra kullanmaya başla</div></div>
+      <div class="trust-item"><div class="trust-text">✓ Kayıt ücretsiz — topluluğun tamamı ücretsiz</div></div>
+      <div class="trust-item"><div class="trust-text">✓ Başvurun bir insan tarafından incelenir, onaylanınca haber veririz</div></div>
       <div class="trust-item"><div class="trust-text">✓ Kişisel bilgilerin asla üçüncü şahıslarla paylaşılmaz</div></div>
     </div>
     <div>
