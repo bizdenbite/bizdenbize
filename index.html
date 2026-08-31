@@ -27,7 +27,7 @@
   <link rel="canonical" href="https://bizdenbize.com">
   <meta name="description" content="Gurbetteki İyilerin Dijital Mahallesi. Almanya'daki Türk topluluğu için Türkçe platform — bizdenbize.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --red:    #D42B2B;
@@ -144,14 +144,24 @@
     }
     .hp-label {
       display: block; font-size: 12px; color: var(--muted);
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
+    /* The phrase is a mirror — you give, you receive — so the two halves are
+       set as an offset couplet rather than two stacked lines. The indent and
+       the colour shift carry the "return"; without them this reads as a
+       smaller, weaker echo of the h1 directly above it. */
     .hp-text {
       font-family: 'Playfair Display', serif;
-      font-size: 34px; font-weight: 700; line-height: 1.18;
+      font-size: clamp(32px, 3.6vw, 46px);
+      font-weight: 700; line-height: 1.04;
+      letter-spacing: -0.8px;
       color: var(--ink); margin: 0;
     }
-    @media (max-width: 480px) { .hp-text { font-size: 28px; } }
+    .hp-give, .hp-get { display: block; }
+    .hp-get { margin-left: 1.15em; color: var(--red); }
+    @media (max-width: 480px) {
+      .hp-get { margin-left: .7em; }
+    }
 
     .hero-right {
       background:var(--deep, #002266);
@@ -389,7 +399,7 @@
     }
     .modal h3 {
       font-family: 'Playfair Display', serif;
-      font-size: 26px; font-weight: 700; margin-bottom: 8px;
+      font-size: 24px; font-weight: 700; margin-bottom: 8px;
     }
     .modal p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
     .invite-code-display {
@@ -399,7 +409,7 @@
     }
     .invite-code {
       font-family: 'Playfair Display', serif;
-      font-size: 32px; font-weight: 900;
+      font-size: 34px; font-weight: 900;
       letter-spacing: 6px; color: var(--ink);
     }
     .copy-btn {
@@ -594,13 +604,13 @@
     .rung-body { flex: 1; }
     .rung-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
     .rung-icon { font-size: 22px; }
-    .rung-head h3 { font-size: 19px; color: var(--ink); margin: 0; }
-    .rung-badge { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .rung-head h3 { font-size: 18px; color: var(--ink); margin: 0; }
+    .rung-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
     .badge-free { background: rgba(212,43,43,.1); color: var(--red); }
     .badge-soon { background: rgba(138,120,105,.15); color: var(--muted); }
     .badge-gold { background: rgba(201,168,76,.18); color: #9A7D2E; }
     .rung-soon { opacity: .82; }
-    .rung-body p { font-size: 14.5px; line-height: 1.65; color: var(--muted); margin: 0; }
+    .rung-body p { font-size: 14px; line-height: 1.65; color: var(--muted); margin: 0; }
 
     .trust-fineprint { display: flex; flex-direction: column; gap: 8px; padding: 20px 22px; background: rgba(255,255,255,.6); border: 1px solid var(--sand); border-radius: 14px; margin-bottom: 32px; }
     .trust-fineprint span { font-size: 13px; color: var(--muted); line-height: 1.5; }
@@ -679,7 +689,7 @@
     <p style="font-size:14px;color:var(--muted);margin-top:14px;">Hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:700;text-decoration:none;">Giriş yap →</a></p>
     <div class="hero-principle">
       <span class="hp-label">Prensibimiz</span>
-      <p class="hp-text">İyilik yap.<br>İyilik bul.</p>
+      <p class="hp-text"><span class="hp-give">İyilik yap.</span><span class="hp-get">İyilik bul.</span></p>
     </div>
   </div>
 
@@ -688,7 +698,7 @@
     <div class="hero-cards" id="hero-cards">
       <!-- Illustrative until there are enough real public listings;
            replaced at runtime by loadRealHeroCards() below. -->
-      <div id="hero-cards-label" style="align-self:flex-end;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:2px;">Örnek</div>
+      <div id="hero-cards-label" style="align-self:flex-end;font-size: 10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:2px;">Örnek</div>
       <div class="preview-card">
         <div class="card-header">
           <div class="avatar" style="background:rgba(192,57,43,0.3);color:#E8393A">AY</div>
@@ -1055,7 +1065,7 @@
         <div style="grid-column:1/-1;text-align:center;padding:48px 24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
           <div style="font-size:34px;margin-bottom:12px;">🎓</div>
           <div style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px;">Uzman ekibimizi kuruyoruz</div>
-          <p style="font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:460px;margin:0 auto 20px;">Hukuk, sağlık, finans ve vize alanlarında Türkçe konuşan uzmanları aramıza katıyoruz. Siz de bu alanlarda çalışıyorsanız başvurabilirsiniz.</p>
+          <p style="font-size: 13px;color:rgba(255,255,255,.6);line-height:1.7;max-width:460px;margin:0 auto 20px;">Hukuk, sağlık, finans ve vize alanlarında Türkçe konuşan uzmanları aramıza katıyoruz. Siz de bu alanlarda çalışıyorsanız başvurabilirsiniz.</p>
           <a href="uzman-basvuru.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;background:var(--red,#D42B2B);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;font-family:'Instrument Sans',sans-serif;">🎓 Uzman Olarak Kayıt Ol →</a>
         </div>`;
       return;
