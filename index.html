@@ -138,15 +138,20 @@
     .btn-secondary svg { transition: transform .2s; }
     .btn-secondary:hover svg { transform: translateX(3px); }
 
-    .hero-stats {
-      display: flex; gap: 32px; margin-top: 52px;
-      padding-top: 36px; border-top: 1px solid var(--sand);
+    .hero-principle {
+      margin-top: 52px; padding-top: 36px;
+      border-top: 1px solid var(--sand);
     }
-    .stat-val {
+    .hp-label {
+      display: block; font-size: 12px; color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .hp-text {
       font-family: 'Playfair Display', serif;
-      font-size: 28px; font-weight: 700; color: var(--ink);
+      font-size: 34px; font-weight: 700; line-height: 1.18;
+      color: var(--ink); margin: 0;
     }
-    .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 480px) { .hp-text { font-size: 28px; } }
 
     .hero-right {
       background:var(--deep, #002266);
@@ -672,19 +677,9 @@
       </a>
     </div>
     <p style="font-size:14px;color:var(--muted);margin-top:14px;">Hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:700;text-decoration:none;">Giriş yap →</a></p>
-    <div class="hero-stats">
-      <div>
-        <div class="stat-val">Türkçe</div>
-        <div class="stat-label">Baştan sona</div>
-      </div>
-      <div>
-        <div class="stat-val">Ücretsiz</div>
-        <div class="stat-label">Tüm topluluk özellikleri</div>
-      </div>
-      <div>
-        <div class="stat-val">Almanya'dan</div>
-        <div class="stat-label">Başlıyoruz</div>
-      </div>
+    <div class="hero-principle">
+      <span class="hp-label">Prensibimiz</span>
+      <p class="hp-text">İyilik yap.<br>İyilik bul.</p>
     </div>
   </div>
 
