@@ -179,12 +179,13 @@
       margin: 38px 0 0; padding-top: 30px;
       border-top: 1px solid var(--sand);
     }
-    .mf-note {
-      font-size: 14px; line-height: 1.65; color: var(--muted);
-      margin: 26px 0 0; padding-left: 16px;
-      border-left: 2px solid var(--sand);
+    .ai-receipt {
+      font-size: 14px; line-height: 1.65; color: rgba(255,255,255,.6);
+      max-width: 620px; margin: 0 auto 34px; padding-left: 16px;
+      text-align: left;
+      border-left: 2px solid rgba(255,255,255,.2);
     }
-    .mf-note a { color: var(--red); text-decoration: underline; text-underline-offset: 2px; }
+    .ai-receipt a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
     @media (max-width: 768px) {
       .manifesto { padding: 76px 24px; }
       .mf-story, .mf-close { font-size: 17px; }
@@ -228,18 +229,25 @@
       .vi-new { font-size: 24px; }
     }
 
-    .hero-faq { margin: 30px 0 0; padding: 26px 0 0; border-top: 1px solid var(--sand); }
-    .hero-faq dt {
+    .faq-section { padding: 72px 80px; background: var(--white); border-bottom: 1px solid var(--sand); }
+    .faq-inner { max-width: 1100px; margin: 0 auto; }
+    .faq-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 48px; margin: 0; }
+    .faq-item { break-inside: avoid; }
+    @media (max-width: 820px) {
+      .faq-section { padding: 56px 24px; }
+      .faq-list { grid-template-columns: 1fr; }
+    }
+    .faq-list dt {
       font-size: 14px; font-weight: 600; color: var(--ink);
       margin-bottom: 4px;
     }
-    .hero-faq dd {
+    .faq-list dd {
       margin: 0 0 18px; padding: 0;
       font-size: 14px; line-height: 1.6; color: var(--muted);
       max-width: 430px;
     }
-    .hero-faq dd:last-child { margin-bottom: 0; }
-    .hero-faq dd a { color: var(--red); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+    .faq-list dd:last-child { margin-bottom: 0; }
+    .faq-list dd a { color: var(--red); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 
     .hero-principle {
       margin-top: 52px; padding-top: 36px;
@@ -789,35 +797,7 @@
     </div>
     <p style="font-size:14px;color:var(--muted);margin-top:14px;">Hesabın var mı? <a href="login.html" style="color:var(--red);font-weight:700;text-decoration:none;">Giriş yap →</a></p>
 
-    <!-- Bir ziyaretçinin ilk üç sorusu. Cevaplar aşağıdaki bölümlerde
-         detaylanıyor ama burada, kaydolmadan önce görülmeli.
-         Her ifade doğrulanabilir: "%100 doğrulanmış profil" ve "GDPR uyumlu"
-         gibi cümleler bilerek kullanılmadı — e-posta doğrulaması henüz açık
-         değil ve uyumluluk beyanı hukuki bir iddiadır. -->
-    <dl class="hero-faq">
-      <dt>Sitenin amacı nedir?</dt>
-      <dd>Gurbette hayatını kolaylaştırmak için kurulmuş dijital bir mahalle.
-        Güvenilir bir ortamda: istersen mahalle komşularına danışırsın, istersen
-        yapay zekâdan destek alırsın, istersen ücretini ödeyip özenle seçilmiş
-        uzmanlara sorarsın.
-        <br><br>
-        Ha, satacak ya da hediye edecek bir şeyin mi var? Paylaşacak bir bilgin,
-        duyuracak bir etkinliğin mi var? Tanıtmak istediğin bir işletmen mi var?
-        Onlar da burada.</dd>
 
-      <dt>Ücreti ne?</dt>
-      <dd>Topluluğun tamamı ücretsiz. Yalnızca uzman danışmanlığı ve işletme tanıtımı
-        ücretli olacak. Reklam yok, veri satışı yok.</dd>
-
-      <dt>Sitenin arkasında kimler var?</dt>
-      <dd>Ekibin başında, 27 yıl önce mühendis göçmen olarak Almanya'ya gelmiş ve
-        dünyanın birçok yerinde çalışmış bir abla var. Diğer iyi insanları görmek için
-        <a href="hakkimizda.html">buraya bak</a>.</dd>
-
-      <dt>Nasıl çalışır?</dt>
-      <dd>Kaydol, e-postana gelen doğrulama bağlantısına tıkla, mahallene katıl.
-        Kayıt herkese açık ve ücretsiz.</dd>
-    </dl>
     <div class="hero-principle">
       <span class="hp-label">Prensibimiz</span>
       <p class="hp-text"><span class="hp-give">İyilik yap.</span><span class="hp-get">İyilik bul.</span></p>
@@ -887,12 +867,9 @@
     <p class="mf-line">Vizyonu ortak olanlar çabuk kaynaşır.</p>
     <p class="mf-line mf-accent">İyilik bulaşıcıdır.</p>
 
-    <p class="mf-story">Sana yapılan iyiliği bir gün başkasına yaparsın. Biz de o cümleyi
-      çoğaltmak için buradayız: yeni gelen biri aynı mektubun karşısında yalnız kalmasın diye.</p>
-
-    <p class="mf-story">Yapay zekâ da bunun bir parçası. İnsanın yerine geçmek için değil,
-      yükünü hafifletmek için. AbiBOT ilk soruyu karşılar; işin ucunda hayatını etkileyecek
-      bir karar varsa seni gerçek bir insana bağlar.</p>
+    <p class="mf-story">Yapay zekâ da bunun bir parçası — insanın yerine geçmek için değil,
+      yükünü hafifletmek için. AbiBOT ilk soruyu karşılar; iş ciddiye binince seni gerçek
+      bir insana bağlar.</p>
 
     <p class="mf-close">Biz, iyilerin olduğu bir dijital mahalle kurmak için yola çıktık.<br>
       <strong>Sen de katıl.</strong> Hem kendi hayatını hem başkalarının hayatını kolaylaştır.</p>
@@ -906,11 +883,26 @@
         aramıza katıl.</p>
     </div>
 
-    <p class="mf-note">Sözün arkası: AbiBOT bilmediğini uydurmaz, emin olmadığı bir rakamı ya da
-      kanun adını yazmaz. Sorularının metni saklanmaz. Verilerin Frankfurt'taki AB sunucularında
-      tutulur ve hangi hizmetin neyi işlediğini <a href="legal.html#privacy">gizlilik metnimizde</a>
-      tek tek yazdık.</p>
 
+
+  </div>
+</section>
+
+<section class="faq-section" id="sss-kisa">
+  <div class="faq-inner">
+  <dl class="faq-list">
+      <div class="faq-item"><dt>Sitenin amacı nedir?</dt><dd>Gurbette hayatını kolaylaştırmak için kurulmuş dijital bir mahalle.
+          İstersen komşularına danışırsın, istersen yapay zekâdan destek alırsın,
+          istersen özenle seçilmiş uzmanlara sorarsın.</dd></div>
+      <div class="faq-item"><dt>Ücreti ne?</dt><dd>Topluluğun tamamı ücretsiz. Yalnızca uzman danışmanlığı ve işletme tanıtımı
+          ücretli olacak. Reklam yok, veri satışı yok.</dd></div>
+      <div class="faq-item"><dt>Sitenin arkasında kimler var?</dt><dd>Ekibin başında, 27 yıl önce mühendis göçmen olarak Almanya'ya gelmiş ve
+          dünyanın birçok yerinde çalışmış bir abla var. Diğer iyi insanları görmek için
+          <a href="hakkimizda.html">buraya bak</a>.</dd></div>
+      <div class="faq-item"><dt>Nasıl çalışır?</dt><dd>Kaydol, e-postana gelen doğrulama bağlantısına tıkla, mahallene katıl.
+          Kayıt herkese açık ve ücretsiz.</dd></div>
+      
+    </dl>
   </div>
 </section>
 
@@ -947,6 +939,11 @@
     <p class="trust-ai-lead">
       AbiBOT, dünyanın en güvenlik odaklı yapay zeka şirketlerinden Anthropic'in <strong>Claude</strong> teknolojisiyle çalışır. İhtiyacına göre üç güvence seviyesi sunuyoruz — hızlı bir fikirden, gerçek uzman onayına kadar.
     </p>
+
+    <p class="ai-receipt">Sözün arkası: AbiBOT bilmediğini uydurmaz, emin olmadığı bir rakamı ya da
+      kanun adını yazmaz. Sorularının metni saklanmaz. Verilerin Frankfurt'taki AB sunucularında
+      tutulur ve hangi hizmetin neyi işlediğini <a href="legal.html#privacy">gizlilik metnimizde</a>
+      tek tek yazdık.</p>
 
     <div class="ladder">
       <div class="rung rung-live">
@@ -1017,76 +1014,76 @@
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(192,57,43,0.2)">🤖</div>
       <h3>AbiBOT</h3>
-      <p>Oturum izni, kira, sağlık, vergi, okul — yeni gelenlerin en çok takıldığı konularda Türkçe yol gösterir. Bilmediğini uydurmaz; ne zaman gerçek bir uzmana danışman gerektiğini söyler.</p>
+      <p>Oturum, kira, sağlık, vergi, okul. Türkçe yol gösterir, bilmediğini uydurmaz.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(201,168,76,0.2)">🏘️</div>
       <h3>Mahallem</h3>
-      <p>Şehrindeki Türklerle soru sor, deneyim paylaş, yardımlaş. Reklamsız, algoritmasız — sadece komşuluk.</p>
+      <p>Soru sor, deneyim paylaş, yardımlaş. Reklamsız, algoritmasız.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(27,58,140,0.25)">📚</div>
       <h3>Kütüphane</h3>
-      <p>Resmî kurumların güncel kaynakları, tek tek kontrol edilmiş halde. Yanlış bilgi aramakla vakit kaybetme.</p>
+      <p>Resmî kurumların kaynakları, tek tek kontrol edilmiş halde.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎉</div>
       <h3>Etkinlikler &amp; Webinarlar</h3>
-      <p>Buluşmalar, festivaller ve çevrim içi bilgilendirme oturumları. Kendi etkinliğini de duyurabilirsin.</p>
+      <p>Buluşmalar, festivaller, çevrim içi oturumlar. Kendi etkinliğini de duyur.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(201,168,76,0.2)">🛍️</div>
       <h3>İlan &amp; Alışveriş</h3>
-      <p>Ev eşyası, elektronik, araç. Konut ilanları ayrı bir bölümde. Mesajlaşma platform içinde kalır.</p>
+      <p>Ev eşyası, elektronik, araç, konut. Mesajlaşma platform içinde kalır.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(255,255,255,0.1)">🏢</div>
       <h3>Türk İşletmeleri</h3>
-      <p>Şehrindeki Türk esnafı, restoranlar, ustalar. Gerçek üyelerden gerçek yorumlar.</p>
+      <p>Şehrindeki esnaf, restoran ve ustalar. Gerçek üyelerden yorumlar.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(30,123,75,0.2)">👨‍⚖️</div>
       <h3>Türkçe Konuşan Uzmanlar</h3>
-      <p>Avukat, mali müşavir, danışman. Anadilinde sor, Türkçe cevap al. Tek ücretli hizmet bu.</p>
+      <p>Avukat, mali müşavir, danışman. Anadilinde sor, Türkçe cevap al.</p>
       <span class="coming" style="background:rgba(201,168,76,.18);color:var(--gold)">Ücretli</span>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(255,255,255,0.1)">🏡</div>
       <h3>Ev Takası</h3>
-      <p>Tatilde evini bir başka üyeyle takas et. Puan usulü çalışır, para el değiştirmez.</p>
+      <p>Evini başka bir üyeyle takas et. Puan usulü, para el değiştirmez.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(192,57,43,0.2)">💼</div>
       <h3>İş &amp; Güç</h3>
-      <p>Türkçe konuşulan iş yerlerinden ilanlar, işverenin iletişim bilgisiyle birlikte.</p>
+      <p>Türkçe konuşulan iş yerlerinden ilanlar, iletişim bilgisiyle.</p>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(30,123,75,0.2)">🩺</div>
       <h3>Türkçe Konuşan Doktorlar</h3>
-      <p>Yeni açıldı. İlk isimleri üyeler ekliyor — tanıdığın bir hekim varsa sen de öner.</p>
+      <p>Yeni açıldı. İlk isimleri üyeler ekliyor; sen de öner.</p>
       <span class="coming">Yeni</span>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(27,58,140,0.25)">✏️</div>
       <h3>Özel Ders</h3>
-      <p>Çocuğun için Nachhilfe ve Türkçe konuşan öğretmenler. Burası da yeni — ilk öğretmenleri birlikte ekliyoruz.</p>
+      <p>Nachhilfe ve Türkçe konuşan öğretmenler. Burası da yeni.</p>
       <span class="coming">Yeni</span>
     </div>
 
     <div class="module-tile">
       <div class="module-icon" style="background:rgba(255,255,255,0.1)">🎬</div>
       <h3>Videothek</h3>
-      <p>Kısa, Türkçe anlatım videoları. Okumaya vaktin yoksa izle.</p>
+      <p>Kısa Türkçe anlatım videoları. Okumaya vaktin yoksa izle.</p>
     </div>
 
   </div>
