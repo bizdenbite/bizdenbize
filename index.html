@@ -113,6 +113,9 @@
     }
     h1 em { color: var(--red); font-style: normal; }
     .hero-sub em { font-style: normal; font-weight: 600; color: var(--ink); }
+    /* Henüz var olmayan bir özellik: gelecek zamanda ve görsel olarak da
+       ayrı duruyor ki mevcut özelliklerle karışmasın. */
+    .hero-soon { display: block; margin-top: 8px; font-size: 15px; opacity: .85; }
     .hero-sub {
       font-size: 17px; color: var(--muted); line-height: 1.65;
       max-width: 420px; margin-bottom: 44px;
@@ -778,9 +781,9 @@
   <div class="hero-left">
     <h1>Gurbetteki İyilerin<br><em>Dijital Mahallesi.</em></h1>
     <p class="hero-sub">
-      Almanya'da yaşayan iyi Türkler için bir dijital mahalle.
+      Almanya'da yaşayan iyi Türkler için kurulmuş bir dijital mahalle.
       Birbirine <em>köstek değil destek</em> olanların buluştuğu güvenli platform.
-      Baştan sona Türkçe.
+      <span class="hero-soon">Dijital Mahalle Muhtarlarımız da olacak yakında 😊</span>
     </p>
     <div class="hero-actions">
       <a href="login.html?tab=register" class="btn-primary">
