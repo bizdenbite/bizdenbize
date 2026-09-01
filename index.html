@@ -194,6 +194,32 @@
     /* The three questions a visitor arrives with, answered before the fold.
        A definition list, because that is literally what this is — the
        question is the term and the answer is the definition. */
+    /* ── Vizyon ────────────────────────────────────────────────────────
+       Eski tavsiye üstü çizili ve soluk, yenisi büyük ve vurgulu:
+       cümlenin değişimi görsel olarak da görünsün diye. */
+    .vision {
+      margin: 34px 0 0; padding: 26px 28px;
+      background: #fff; border-radius: 14px;
+      border-left: 3px solid var(--red);
+    }
+    .vi-lead { font-size: 14px; color: var(--muted); margin: 0 0 16px; }
+    .vi-old {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; line-height: 1.35; margin: 0 0 8px;
+      color: var(--muted); opacity: .75;
+    }
+    .vi-old s { text-decoration-thickness: 2px; }
+    .vi-new {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700; line-height: 1.3;
+      color: var(--red); margin: 0;
+    }
+    @media (max-width: 768px) {
+      .vision { padding: 22px 20px; }
+      .vi-old { font-size: 17px; }
+      .vi-new { font-size: 24px; }
+    }
+
     .hero-faq { margin: 30px 0 0; padding: 26px 0 0; border-top: 1px solid var(--sand); }
     .hero-faq dt {
       font-size: 14px; font-weight: 600; color: var(--ink);
@@ -859,6 +885,12 @@
     <p class="mf-story">Yapay zekâ da bunun bir parçası. İnsanın yerine geçmek için değil,
       yükünü hafifletmek için. AbiBOT ilk soruyu karşılar; işin ucunda hayatını etkileyecek
       bir karar varsa seni gerçek bir insana bağlar.</p>
+
+    <div class="vision">
+      <p class="vi-lead">Bir gün şu tavsiyenin verildiğini duymak istiyoruz:</p>
+      <p class="vi-old"><s>«Bu iş için Türklerden uzak dur.»</s></p>
+      <p class="vi-new">«Bu iş için Türkleri bul.»</p>
+    </div>
 
     <p class="mf-close">Biz, iyilerin olduğu bir dijital mahalle kurmak için yola çıktık.<br>
       <strong>Sen de katıl.</strong> Hem kendi hayatını hem başkalarının hayatını kolaylaştır.</p>

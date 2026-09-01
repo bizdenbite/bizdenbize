@@ -129,6 +129,37 @@
       .fo-photo { width: 72px; height: 72px; margin: 0; }
       .fo-bio { margin-top: 10px; padding-top: 10px; }
     }
+
+    /* ── Vizyon ────────────────────────────────────────────────────────
+       Eski tavsiye üstü çizili ve soluk; yenisi büyük ve vurgulu.
+       Cümlenin değişimi görsel olarak da görünsün diye. */
+    .vision {
+      margin: 22px 0 34px; padding: 26px 28px;
+      background: var(--warm, #EDE6DC); border-radius: 14px;
+      border-left: 3px solid var(--red, #D42B2B);
+    }
+    .vi-lead { font-size: 14px; color: var(--muted, #6B6259); margin: 0 0 16px; }
+    .vi-old {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; line-height: 1.35; margin: 0 0 8px;
+      color: var(--muted, #6B6259); opacity: .75;
+    }
+    .vi-old s { text-decoration-thickness: 2px; }
+    .vi-new {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700; line-height: 1.3;
+      color: var(--red, #D42B2B); margin: 0;
+    }
+    .vi-note {
+      font-size: 14px; line-height: 1.65; color: var(--muted, #6B6259);
+      margin: 18px 0 0; padding-top: 16px;
+      border-top: 1px solid var(--sand, #E0D6C8);
+    }
+    @media (max-width: 600px) {
+      .vision { padding: 22px 20px; }
+      .vi-old { font-size: 17px; }
+      .vi-new { font-size: 23px; }
+    }
   </style>
   <link rel="stylesheet" href="brand.css">
 </head>
@@ -298,6 +329,16 @@
         </figcaption>
       </figure>
 
+    </div>
+
+    <h2 class="letter-h">Vizyonumuz</h2>
+
+    <div class="vision">
+      <p class="vi-lead">Bir gün şu tavsiyenin verildiğini duymak istiyoruz:</p>
+      <p class="vi-old"><s>«Bu iş için Türklerden uzak dur.»</s></p>
+      <p class="vi-new">«Bu iş için Türkleri bul.»</p>
+      <p class="vi-note">Bu cümlenin değişmesine katkıda bulunmak — projeyi yapanların
+        ortak vizyonu bu.</p>
     </div>
 
     <h2 class="letter-h">Bu Yolculukta Bize Katılın</h2>
