@@ -2063,11 +2063,11 @@
         return;
       }
 
-      // Uyelik henuz onaylanmamis
+      // Hesap henuz aktif degil (e-posta dogrulanmamis)
       if (r.status === 403) {
         removeTyping();
         messageHistory.pop();
-        addMessage('assistant', 'Hesabın henüz onaylanmadı. AbiBOT, onaylı üyelere açık. Onay sonrası burada görüşürüz.', false);
+        addMessage('assistant', 'Hesabın henüz aktif değil. E-posta adresine gönderdiğimiz doğrulama bağlantısına tıkladıktan sonra AbiBOT\'u kullanabilirsin.', false);
         isLoading = false;
         document.getElementById('send-btn').disabled = false;
         return;
