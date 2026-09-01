@@ -477,9 +477,8 @@
       }
       if (pass.length < 8) { document.getElementById('reg-password').classList.add('error'); valid = false; }
       document.getElementById('reg-join-err').style.display = 'none';
-      if (!challenges) { document.getElementById('reg-challenges').classList.add('error'); valid = false; }
-      if (!reason)     { document.getElementById('reg-reason').classList.add('error'); valid = false; }
-      if (!source)     { document.getElementById('reg-source').classList.add('error'); valid = false; }
+      // Bu üç alan artık isteğe bağlı: onay kuyruğu kaldırıldığı için
+      // vetting amacı kalmadı, yalnızca analiz için soruluyorlar.
       if (!rulesOk || !challenges || !reason || !source) {
         document.getElementById('reg-join-err').style.display = 'block'; valid = false;
       }
@@ -564,8 +563,8 @@
       if (data.session) { try { await supabase.auth.signOut(); } catch (e) {} }
 
       icon.textContent = '⏳';
-      title.textContent = 'Kaydın alındı!';
-      sub.textContent = 'Hesabın ekibimiz tarafından kısa sürede incelenip onaylanacak. Onaylandığında e-posta ile haber vereceğiz — sonra giriş yapıp keşfetmeye başlayabilirsin.';
+      title.textContent = 'Neredeyse tamam!';
+      sub.textContent = 'E-posta adresine bir doğrulama bağlantısı gönderdik. Bağlantıya tıkladıktan sonra giriş yapıp mahallene katılabilirsin. E-posta birkaç dakika içinde gelmezse spam klasörüne bakmayı unutma.';
       goBtn.textContent = 'Giriş sayfasına dön';
       goBtn.removeAttribute('href');
       goBtn.onclick = () => { location.reload(); };
@@ -858,8 +857,8 @@
       </div>
 
       <div id="login-pending-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">⏳ Hesabın onay bekliyor</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Kaydın alındı! Ekibimiz hesabını en kısa sürede inceleyip onaylayacak. Onaylandığında e-posta ile haber vereceğiz — sonra buradan giriş yapabilirsin.</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">⏳ Hesabın henüz aktif değil</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Önce e-posta adresine gönderdiğimiz doğrulama bağlantısına tıklaman gerekiyor. Bağlantıyı bulamıyorsan spam klasörüne bak; sorun devam ederse <a href="mailto:support@bizdenbize.com" style="color:var(--red);">support@bizdenbize.com</a> adresine yaz.</div>
         <button type="button" onclick="(async()=>{await supabase.auth.signOut();location.reload();})()" style="width:100%;padding:9px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
       </div>
 
@@ -935,16 +934,22 @@
       </div>
 
 
+      <p style="font-size:13px;line-height:1.6;color:#6B6259;margin:6px 0 14px;padding:12px 14px;background:#F5F0E8;border-radius:10px;">
+        Aşağıdaki üç soru <strong>zorunlu değil</strong>. Cevaplarsan, topluluğu kimlerin
+        kullandığını ve neye ihtiyaç duyulduğunu anlamamıza yardımcı olursun. Yanıtların
+        herkese açık değildir; profilinde görünmez.
+      </p>
+
       <div class="form-group">
-        <label>Almanya'da şu anda karşılaştığın zorluklar neler? *</label>
+        <label>Almanya'da şu anda karşılaştığın zorluklar neler? <span style="font-weight:400;color:#8A7F72;">(isteğe bağlı)</span></label>
         <textarea id="reg-challenges" rows="2" placeholder="Örn. dil, iş, bürokrasi, yalnızlık…" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #E0D8CC;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1208;resize:vertical;"></textarea>
       </div>
       <div class="form-group">
-        <label>BizdenBize'ye neden katılmak istiyorsun? *</label>
+        <label>BizdenBize'ye neden katılmak istiyorsun? <span style="font-weight:400;color:#8A7F72;">(isteğe bağlı)</span></label>
         <textarea id="reg-reason" rows="2" placeholder="Bize kısaca anlat…" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #E0D8CC;border-radius:10px;font-family:inherit;font-size:14px;color:#1A1208;resize:vertical;"></textarea>
       </div>
       <div class="form-group">
-        <label>Bizi nereden duydun? *</label>
+        <label>Bizi nereden duydun? <span style="font-weight:400;color:#8A7F72;">(isteğe bağlı)</span></label>
         <input type="text" id="reg-source" placeholder="Örn. bir arkadaş, Instagram, Google…">
       </div>
       <div class="form-group" style="display:flex;flex-direction:row;align-items:flex-start;gap:8px;">
