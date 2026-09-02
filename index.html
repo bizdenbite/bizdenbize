@@ -317,7 +317,7 @@
     }
 
     /* ── SECTION: HOW IT WORKS ── */
-    .section { padding: 100px 80px; }
+    .section { padding: 72px 80px; }
     .section-tag {
       font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--red);
@@ -333,21 +333,27 @@
       font-size: 16px; color: var(--muted); line-height: 1.6;
       max-width: 520px; margin-bottom: 60px;
     }
+
+    /* "Güven ile başlar" bilerek sıkı tutuldu: üç kısa adım, sayfanın en çok
+       yer kaplayan bölümü olmamalı. Numara başlıkla aynı satırda. */
+    #nasil-calisir { padding: 54px 80px; }
+    #nasil-calisir h2 { font-size: clamp(26px, 3vw, 34px); }
+    #nasil-calisir .section-sub { margin-bottom: 28px; max-width: 640px; }
+    #nasil-calisir .steps { gap: 18px; }
+    .step-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+    .step-head .step-num { margin-bottom: 0; font-size: 16px; }
+    .step-head h3 { margin-bottom: 0; font-size: 16px; }
+    @media (max-width: 768px) { #nasil-calisir { padding: 42px 24px; } }
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
     .step {
-      padding: 36px 32px;
-      background: var(--white);
-      border: 1px solid var(--warm);
-      border-radius: 16px;
-      position: relative;
-      transition: transform .2s, box-shadow .2s;
+      padding: 0 24px 0 22px;
+      border-left: 2px solid var(--warm);
     }
-    .step:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(26,18,8,0.08); }
     .step-num {
       font-family: 'Playfair Display', serif;
-      font-size: 48px; font-weight: 900;
-      color: var(--warm); line-height: 1;
-      margin-bottom: 20px;
+      font-size: 20px; font-weight: 900;
+      color: var(--red); line-height: 1;
+      margin-bottom: 8px;
     }
     .step h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
     .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
@@ -905,18 +911,16 @@
   </p>
   <div class="steps">
     <div class="step fade-up">
-      <div class="step-num">01</div>
-      <h3>Kaydol</h3>
-      <p>Adın, e-postan ve bir şifre. Kayıt herkese açık ve ücretsiz.</p>
+      <div class="step-head"><span class="step-num">01</span><h3>Gerçek adınla kaydol</h3></div>
+      <p>Adın, e-postan ve bir şifre. Takma ad değil, gerçek adını kullanmanı
+        istiyoruz — bu mahalle, birbirini tanıyan insanların yeri.</p>
     </div>
     <div class="step fade-up" style="transition-delay:.1s">
-      <div class="step-num">02</div>
-      <h3>E-postanı doğrula</h3>
+      <div class="step-head"><span class="step-num">02</span><h3>E-postanı doğrula</h3></div>
       <p>Adresine bir bağlantı gönderiyoruz. Tıkladığın anda hesabın açılır — böylece herkes gerçek bir e-posta adresiyle katılmış olur.</p>
     </div>
     <div class="step fade-up" style="transition-delay:.2s">
-      <div class="step-num">03</div>
-      <h3>Mahallene katıl</h3>
+      <div class="step-head"><span class="step-num">03</span><h3>Mahallene katıl</h3></div>
       <p>Sonrası senin: soru sor, ilan ver, etkinliğe git, komşularını tanı.</p>
     </div>
   </div>
