@@ -166,13 +166,15 @@
       margin: 0 0 22px;
     }
     .mf-story em { font-style: normal; color: var(--red); }
+    /* NOT: .trust-ai-section arka planı var(--cream) — açık renk.
+       Bu blok önce koyu zemin için yazılmıştı ve beyaz metin görünmüyordu. */
     .ai-receipt {
-      font-size: 14px; line-height: 1.65; color: rgba(255,255,255,.6);
+      font-size: 14px; line-height: 1.65; color: var(--muted);
       max-width: 620px; margin: 0 auto 34px; padding-left: 16px;
       text-align: left;
-      border-left: 2px solid rgba(255,255,255,.2);
+      border-left: 2px solid var(--sand);
     }
-    .ai-receipt a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+    .ai-receipt a { color: var(--red); text-decoration: underline; text-underline-offset: 2px; }
     @media (max-width: 768px) {
       .manifesto { padding: 76px 24px; }
       .mf-story,
@@ -215,14 +217,12 @@
       .vi-new { font-size: 24px; }
     }
 
-    .faq-section { padding: 72px 80px; background: var(--white); border-bottom: 1px solid var(--sand); }
-    .faq-inner { max-width: 1100px; margin: 0 auto; }
-    .faq-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 48px; margin: 0; }
-    .faq-item { break-inside: avoid; }
-    @media (max-width: 820px) {
-      .faq-section { padding: 56px 24px; }
-      .faq-list { grid-template-columns: 1fr; }
+    .faq-list {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 48px;
+      margin: 34px 0 0; padding-top: 28px; border-top: 1px solid var(--sand);
     }
+    .faq-item { break-inside: avoid; }
+    @media (max-width: 820px) { .faq-list { grid-template-columns: 1fr; gap: 18px; } }
     .faq-list dt {
       font-size: 14px; font-weight: 600; color: var(--ink);
       margin-bottom: 4px;
@@ -872,23 +872,7 @@
   </div>
 </section>
 
-<section class="faq-section" id="sss-kisa">
-  <div class="faq-inner">
-  <dl class="faq-list">
-      <div class="faq-item"><dt>Sitenin amacı nedir?</dt><dd>Gurbette hayatını kolaylaştırmak için kurulmuş dijital bir mahalle.
-          İstersen komşularına danışırsın, istersen yapay zekâdan destek alırsın,
-          istersen özenle seçilmiş uzmanlara sorarsın.</dd></div>
-      <div class="faq-item"><dt>Ücreti ne?</dt><dd>Topluluğun tamamı ücretsiz. Yalnızca uzman danışmanlığı ve işletme tanıtımı
-          ücretli olacak. Reklam yok, veri satışı yok.</dd></div>
-      <div class="faq-item"><dt>Sitenin arkasında kimler var?</dt><dd>Ekibin başında, 27 yıl önce mühendis göçmen olarak Almanya'ya gelmiş ve
-          dünyanın birçok yerinde çalışmış bir abla var. Diğer iyi insanları görmek için
-          <a href="hakkimizda.html">buraya bak</a>.</dd></div>
-      <div class="faq-item"><dt>Nasıl çalışır?</dt><dd>Kaydol, e-postana gelen doğrulama bağlantısına tıkla, mahallene katıl.
-          Kayıt herkese açık ve ücretsiz.</dd></div>
-      
-    </dl>
-  </div>
-</section>
+
 
 <section class="section" id="nasil-calisir">
   <span class="section-tag">Nasıl çalışır?</span>
@@ -911,6 +895,19 @@
       <p>Sonrası senin: soru sor, ilan ver, etkinliğe git, komşularını tanı.</p>
     </div>
   </div>
+
+  <dl class="faq-list">
+    <div class="faq-item">
+      <dt>Ücreti ne?</dt>
+      <dd>Topluluğun tamamı ücretsiz. Yalnızca uzman danışmanlığı ve işletme tanıtımı
+        ücretli olacak. Reklam yok, veri satışı yok.</dd>
+    </div>
+    <div class="faq-item">
+      <dt>Sitenin arkasında kimler var?</dt>
+      <dd>Ekibin başında, 27 yıl önce mühendis göçmen olarak Almanya'ya gelmiş bir abla
+        var. Diğer iyi insanları görmek için <a href="hakkimizda.html">buraya bak</a>.</dd>
+    </div>
+  </dl>
 </section>
 
 <!-- TRUST + AI -->
