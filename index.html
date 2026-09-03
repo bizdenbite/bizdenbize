@@ -256,6 +256,13 @@
       background: #fff; border: 1px solid var(--sand);
       border-radius: 16px; padding: 30px 32px;
     }
+    .qa-wide { grid-column: 1 / -1; }
+    .qa-wide p { max-width: 780px; }
+    .qa-note {
+      margin-top: 12px !important; font-weight: 600; color: var(--ink) !important;
+    }
+    @media (max-width: 820px) { .qa-wide { grid-column: auto; } }
+
     .qa-card h3 {
       font-family: 'Playfair Display', serif;
       font-size: 22px; font-weight: 700; color: var(--ink);
@@ -1208,6 +1215,17 @@
       <a class="faq-cta" href="hakkimizda.html">Ekibi tanı →</a>
     </div>
 
+
+    <div class="qa-card qa-wide">
+      <h3>İşletmen ya da hizmetin mi var?</h3>
+      <p>Dürüst çalışan ve kaliteli hizmet sunan bir işletmen varsa; özel ders
+        veriyorsan; hukuk, sigorta, finans, emlak, sağlık ya da göçmen bürokrasisi
+        alanında kurulu bir işin varsa; eleman arıyorsan ya da iş arıyorsan; evini
+        kiraya veriyorsan, ev arıyorsan ya da tatil evi takası yapmak istiyorsan —
+        <strong>bize yaz.</strong></p>
+      <p class="qa-note">Açılış kampanyasına özel fiyatlarla seni tanıtalım.</p>
+      <a class="faq-cta" href="iletisim.html">Bize yaz →</a>
+    </div>
   </div>
 </section>
 
