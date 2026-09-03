@@ -608,7 +608,14 @@
           headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
           body: JSON.stringify(payload)
         });
-        if(!r.ok) throw new Error(await r.text());
+        if(!r.ok){
+          // RLS ilan sayacını reddettiğinde ham hata yerine anlaşılır mesaj.
+          const t = await r.text();
+          if(r.status===403 || /row-level security|bb_can_create_listing/i.test(t)){
+            throw new Error('__LIMIT__');
+          }
+          throw new Error(t);
+        }
       }
 
       document.getElementById('post-modal').classList.remove('open');
@@ -616,7 +623,9 @@
       await loadListings();
       alert(clEditId ? 'İlanın güncellendi! ✓' : 'İlanın yayınlandı! ✓');
     }catch(e){
-      show('İlan kaydedilemedi. Lütfen tekrar dene.');
+      show(e && e.message==='__LIMIT__'
+        ? 'İlan sınırına ulaştın. Şu anda yayında 5 aktif ilanın var — düzenli ve yüksek sayıda ilan vermek artık kişisel değil ticari kullanım sayılıyor. Bir ilanını kaldırınca yeni ilan verebilirsin. İşletme olarak devam etmek istersen bize yaz: bizdenbize.com/iletisim.html'
+        : 'İlan kaydedilemedi. Lütfen tekrar dene.');
     }finally{
       if(btn){ btn.disabled=false; btn.textContent = clEditId ? 'Değişiklikleri Kaydet →' : 'İlanı Yayınla →'; }
     }
