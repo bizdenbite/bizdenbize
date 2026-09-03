@@ -52,7 +52,8 @@
     ['legal.html#terms',             'Kullanım Şartları'],
     ['legal.html#cookies',           'Çerez Politikası'],
     ['legal.html#impressum',         'Impressum'],
-    ['legal.html#section-listings',  'İlan Kuralları']
+    ['legal.html#section-listings',  'İlan Kuralları'],
+    ['ucretlendirme.html',           'Ücretlendirme']
   ];
 
   var SOCIAL = [

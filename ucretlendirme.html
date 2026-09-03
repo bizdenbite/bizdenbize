@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizdenBize — Ücretlendirme</title>
+  <meta name="description" content="BizdenBize'de ne ücretsiz, ne ücretli? Açık ve net.">
+  <meta property="og:title" content="BizdenBize — Ücretlendirme">
+  <meta property="og:description" content="İyilik arayan ve iyilik yapan ödemez. Kazanan ve tanıtım yapan öder.">
+  <meta property="og:image" content="https://bizdenbize.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#D42B2B;--navy:#003399;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6;}
+
+    nav{position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;
+        padding:0 24px;background:var(--cream);border-bottom:1px solid var(--warm);}
+    .nav-left{display:flex;align-items:center;gap:14px;}
+    .nav-logo-link{text-decoration:none;}
+    .bb-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--ink);}
+    .bb-logo span{color:var(--red);}
+    .nav-divider{width:1px;height:20px;background:var(--sand);}
+    .nav-title{font-size:14px;color:var(--muted);}
+    .nav-back{font-size:14px;color:var(--red);text-decoration:none;font-weight:600;}
+
+    .wrap{max-width:900px;margin:0 auto;padding:64px 24px 90px;}
+
+    .page-tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:14px;}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.1;letter-spacing:-1px;margin-bottom:18px;}
+    .lede{font-size:18px;color:var(--muted);max-width:640px;}
+
+    .rule-box{margin:36px 0 48px;padding:28px 30px;background:var(--warm);border-left:3px solid var(--red);border-radius:14px;}
+    .rule-box p{font-family:'Playfair Display',serif;font-size:clamp(20px,2.6vw,26px);line-height:1.35;font-weight:700;}
+    .rule-box small{display:block;margin-top:12px;font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:400;color:var(--muted);line-height:1.65;}
+
+    h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin:44px 0 8px;}
+    .sec-note{font-size:15px;color:var(--muted);margin-bottom:20px;}
+
+    .list{list-style:none;display:grid;gap:10px;}
+    .list li{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--white);border:1px solid var(--sand);border-radius:12px;font-size:15px;}
+    .list .mark{flex-shrink:0;font-weight:700;}
+    .free .mark{color:var(--green);}
+    .paid .mark{color:var(--red);}
+    .list b{font-weight:600;}
+    .list span.why{display:block;color:var(--muted);font-size:14px;margin-top:3px;}
+
+    .status{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;
+            letter-spacing:.05em;text-transform:uppercase;background:var(--warm);color:var(--muted);}
+
+    .callout{margin-top:52px;padding:30px 32px;background:var(--deep);color:#fff;border-radius:16px;}
+    .callout h2{color:#fff;margin-top:0;}
+    .callout p{color:rgba(255,255,255,.82);font-size:15px;}
+    .callout a{display:inline-block;margin-top:18px;padding:11px 22px;border-radius:999px;background:var(--red);color:#fff;
+               text-decoration:none;font-weight:600;font-size:14px;}
+
+    .foot-note{margin-top:44px;padding-top:22px;border-top:1px solid var(--sand);font-size:14px;color:var(--muted);}
+    .foot-note a{color:var(--red);}
+
+    @media(max-width:640px){
+      .wrap{padding:44px 20px 70px;}
+      .rule-box{padding:22px 20px;}
+      .callout{padding:24px 22px;}
+    }
+  </style>
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
+    <div class="nav-divider"></div>
+    <span class="nav-title">Ücretlendirme</span>
+  </div>
+  <a href="index.html" class="nav-back">← Geri dön</a>
+</nav>
+
+<div class="wrap">
+
+  <span class="page-tag">Açık ve net</span>
+  <h1>Ne ücretsiz,<br>ne ücretli?</h1>
+  <p class="lede">Bunu ilk günden yazmak istedik. Sonradan sürpriz çıkmasın diye.</p>
+
+  <div class="rule-box">
+    <p>İyilik arayan ve iyilik yapan ödemez.<br>Kazanan ve tanıtım yapan öder.</p>
+    <small>Kuralımız bu kadar basit. İyilik, karşılığında bir şey beklemeden yapılan
+      şeydir — ne isteyenden ne de yapandan para almayız. Bilgi, danışma ve komşuluk
+      her zaman ücretsizdir. Ücret yalnızca platformu ticari olarak kullananlardan,
+      yani kazanç sağlayan veya kendini tanıtan kişi ve işletmelerden alınır.</small>
+  </div>
+
+  <h2>Her zaman ücretsiz</h2>
+  <p class="sec-note">Bunlar için hiçbir zaman ücret istemeyeceğiz.</p>
+  <ul class="list free">
+    <li><span class="mark">✓</span><div><b>Üyelik</b><span class="why">Kayıt, profil, mesajlaşma.</span></div></li>
+    <li><span class="mark">✓</span><div><b>Mahallem</b><span class="why">Soru sormak, deneyim paylaşmak, yardımlaşmak.</span></div></li>
+    <li><span class="mark">✓</span><div><b>Kütüphane</b><span class="why">Kontrol edilmiş resmî kaynaklar ve rehberler.</span></div></li>
+    <li><span class="mark">✓</span><div><b>AbiBOT</b><span class="why">Günlük ücretsiz soru hakkı. Yapay zekâ her soruda bize maliyet çıkardığı için günlük bir sınır var; bu sınır kaldırmak için değil, kötüye kullanımı önlemek için.</span></div></li>
+    <li><span class="mark">✓</span><div><b>Etkinlikler ve webinarlar</b><span class="why">Ücretsiz etkinliklere katılmak ve kendi etkinliğini duyurmak.</span></div></li>
+    <li><span class="mark">✓</span><div><b>İş ilanlarına başvurmak</b><span class="why">İş arayan hiçbir zaman ödemez. Ödeme yapan, ilanı veren işverendir.</span></div></li>
+    <li><span class="mark">✓</span><div><b>Kişisel ilan vermek</b><span class="why">Evindeki eşyayı satmak, kiralamak, takas etmek. Ara sıra ilan veren bir üye için sınıra takılmak neredeyse imkânsızdır.</span></div></li>
+    <li><span class="mark">✓</span><div><b>İlk uzman görüşü</b><span class="why">Her üyenin bir ücretsiz uzman incelemesi hakkı vardır.</span></div></li>
+  </ul>
+
+  <h2>Ücretli olacak</h2>
+  <p class="sec-note">Bunların hiçbiri henüz yürürlükte değil. Başlamadan önce burada
+    duyuracağız ve fiyatları açıkça yazacağız.</p>
+  <ul class="list paid">
+    <li><span class="mark">€</span><div><b>İşletme tanıtımı <span class="status">Yakında</span></b><span class="why">Fotoğraflı işletme profili, çalışma saatleri, harita ve kategoride öne çıkma. Kazanç sağlayan bir işletme için reklam; bu yüzden ücretli.</span></div></li>
+    <li><span class="mark">€</span><div><b>Yoğun ilan kullanımı <span class="status">Yakında</span></b><span class="why">Düzenli ve yüksek sayıda ilan veriyorsan bu artık kişisel kullanım değil, ticari kullanımdır. Sınırın üstü ücretlidir.</span></div></li>
+    <li><span class="mark">€</span><div><b>İş ilanı yayınlamak <span class="status">Yakında</span></b><span class="why">İşveren olarak eleman arıyorsan ilan ücretlidir. Başvuranlar için ücretsizdir.</span></div></li>
+    <li><span class="mark">€</span><div><b>Uzman danışmanlığı <span class="status">Yakında</span></b><span class="why">İlk görüşten sonra uzmana sorduğun sorular ücretlidir. Uzman kazandıkça platform pay alır — uzman kazanmadan ödeme yapmaz.</span></div></li>
+    <li><span class="mark">€</span><div><b>Ücretli webinar <span class="status">Yakında</span></b><span class="why">Düzenleyen bir ücret belirlerse, o ücret düzenleyene aittir; platform pay alır.</span></div></li>
+  </ul>
+
+  <div class="callout">
+    <h2>Neden böyle?</h2>
+    <p>Amacımız para kazanmak değil, kaliteli ve güvenilir bir hizmeti ayakta tutmak.
+      Sunucular, yapay zekâ ve e-posta gönderimi gerçek para tutuyor. Bu maliyeti,
+      platformdan kazanç sağlayanların karşılamasını daha adil buluyoruz — gurbette
+      yolunu bulmaya çalışan birinin değil.</p>
+    <p style="margin-top:12px;">Reklam göstermiyoruz ve kişisel verilerini satmıyoruz.
+      Hiçbir zaman da yapmayacağız.</p>
+    <a href="iletisim.html">Sorun mu var? Bize yaz →</a>
+  </div>
+
+  <p class="foot-note">Ücretli hizmetler başladığında <a href="legal.html#terms">Kullanım
+    Şartları</a> ve <a href="legal.html#privacy">Gizlilik Politikası</a> da güncellenecek.
+    Bu sayfa son olarak Eylül 2026'da güncellendi.</p>
+
+</div>
+
+<script src="site-footer.js" defer></script>
+</body>
+</html>
