@@ -440,11 +440,14 @@
     if (!isRecoveryLink) {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Manual-approval gate: only approved accounts may enter. A pending (or
-        // otherwise non-approved) session lands on the awaiting-approval screen
-        // instead of being let into the app.
-        const { data: gp } = await supabase.from('profiles').select('status').eq('id', session.user.id).single();
-        if (gp && gp.status === 'approved') { window.location.replace('/mahallem.html'); }
+        // Status gate: approved accounts enter, everything else lands on the
+        // matching notice. (Signup now writes 'approved' directly, so 'pending'
+        // only appears for accounts changed by an admin.)
+        const { data: gp } = await supabase.from('profiles').select('status, onboarding_completed').eq('id', session.user.id).single();
+        // Same routing as doLogin(): a confirmed-but-unonboarded user must go
+        // through onboarding.html, not straight to the feed. The e-mail
+        // confirmation link lands here, so this is the first-entry path.
+        if (gp && gp.status === 'approved') { window.location.replace(gp.onboarding_completed ? '/mahallem.html' : '/onboarding.html'); }
         else if (gp && gp.status === 'banned') { document.getElementById('login-banned-msg').style.display='block'; await supabase.auth.signOut(); }
         else if (gp && gp.status === 'deactivated') { document.getElementById('login-deactivated-msg').style.display='block'; }
         else { document.getElementById('login-pending-msg').style.display='block'; }
