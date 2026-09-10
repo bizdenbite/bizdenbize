@@ -150,6 +150,17 @@
           <div class="hint" id="audio-hint">Kendi kaydını yükleyebilir ya da dışarıda barındırdığın bir dosyanın doğrudan bağlantısını yapıştırabilirsin.</div>
         </div>
 
+        <label for="f-author">Yazar adı</label>
+        <input type="text" id="f-author" placeholder="Boş bırak — yazı senin adına yayınlanır">
+        <div class="hint">Sadece konuk yazılarında doldur. Yazıyı yayınlayan hesap yine sensin; burası sadece görünen isim.</div>
+
+        <label for="f-authornote">Yazar hakkında (tek satır, isteğe bağlı)</label>
+        <input type="text" id="f-authornote" placeholder="Berlin'de yaşayan öğretmen">
+
+        <label for="f-tags">Etiketler</label>
+        <input type="text" id="f-tags" placeholder="gurbet, okul, çalışma izni">
+        <div class="hint">Virgülle ayır. Küçük harfe çevrilir, tekrarlar atılır — "Gurbet" ile "gurbet" aynı etiket olur.</div>
+
         <label for="f-cover">Kapak görseli (URL, isteğe bağlı)</label>
         <input type="text" id="f-cover" placeholder="https://…">
         <div class="hint" id="cover-hint" hidden>Boş bırakırsan YouTube'un kendi küçük resmi kullanılır.</div>
@@ -317,6 +328,16 @@
       }
     }
 
+    // Etiketler: küçük harf, kırpılmış, tekrarsız. Aynı etiketin
+    // üç yazımı olursa filtre işe yaramaz hale gelir.
+    function parseTags(raw) {
+      const seen = new Set();
+      return String(raw || '').split(',')
+        .map(t => t.trim().toLowerCase().replace(/\s+/g, ' '))
+        .filter(t => t && t.length <= 40 && !seen.has(t) && seen.add(t))
+        .slice(0, 12);
+    }
+
     function applyType() {
       const t = $('f-type').value;
       $('grp-video').hidden = t !== 'video';
@@ -395,7 +416,7 @@
 
     function clearForm() {
       EDIT_ID = null; slugTouched = false;
-      ['f-title','f-slug','f-cover','f-excerpt','f-body','f-video','f-audio','f-embed'].forEach(i => { $(i).value = ''; });
+      ['f-title','f-slug','f-cover','f-excerpt','f-body','f-video','f-audio','f-embed','f-tags','f-author','f-authornote'].forEach(i => { $(i).value = ''; });
       $('f-vertical').checked = false;
       $('f-welcome').checked = false;
       $('f-audiofile').value = '';
@@ -450,6 +471,9 @@
         excerpt: $('f-excerpt').value.trim() || null,
         cover_url: $('f-cover').value.trim() || null,
         category: $('f-cat').value.trim() || 'Genel',
+        tags: parseTags($('f-tags').value),
+        author_name: $('f-author').value.trim() || null,
+        author_note: $('f-authornote').value.trim() || null,
         is_published: publish
       };
 
@@ -492,7 +516,7 @@
     async function loadPosts() {
       const box = $('posts-list');
       const res = await sb.from('blog_posts')
-        .select('id,slug,title,category,is_published,published_at,created_at,comment_count,media_type')
+        .select('id,slug,title,category,is_published,published_at,created_at,comment_count,media_type,author_name')
         .order('created_at', { ascending: false });
       if (res.error) { box.innerHTML = '<div class="empty">Yazılar yüklenemedi.</div>'; return; }
       const rows = res.data || [];
@@ -504,7 +528,7 @@
             <h3>${esc(p.title)}</h3>
             <div class="meta">
               <span class="pill ${p.is_published ? 'pub' : 'draft'}">${p.is_published ? 'Yayında' : 'Taslak'}</span>
-              &nbsp;${({ video: '🎬', audio: '🎧' })[p.media_type] || '📄'} ${esc(p.category || 'Genel')} · ${esc(trDate(p.published_at || p.created_at))} · 💬 ${Number(p.comment_count) || 0}
+              &nbsp;${({ video: '🎬', audio: '🎧' })[p.media_type] || '📄'} ${esc(p.category || 'Genel')}${p.author_name ? ' · 👤 ' + esc(p.author_name) : ''} · ${esc(trDate(p.published_at || p.created_at))} · 💬 ${Number(p.comment_count) || 0}
             </div>
           </div>
           <div class="row">
@@ -530,6 +554,9 @@
         $('f-title').value = p.title || '';
         $('f-slug').value = p.slug || '';
         $('f-cat').value = p.category || 'Genel';
+        $('f-tags').value = (p.tags || []).join(', ');
+        $('f-author').value = p.author_name || '';
+        $('f-authornote').value = p.author_note || '';
         $('f-cover').value = p.cover_url || '';
         $('f-excerpt').value = p.excerpt || '';
         $('f-body').value = p.body || '';

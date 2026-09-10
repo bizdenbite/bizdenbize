@@ -56,6 +56,7 @@
     .post-card h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 19px; line-height: 1.3; margin-bottom: 8px; }
     .post-card p { font-size: 13.5px; color: var(--muted); line-height: 1.6; flex: 1; }
     .post-thumb-wrap { position: relative; }
+    .cover-fallback { display: flex; align-items: center; justify-content: center; font-size: 34px; color: var(--sand); }
     .badge { position: absolute; top: 10px; left: 10px; background: rgba(26,18,8,.82); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px; letter-spacing: .03em; }
     .post-meta { display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(212,197,169,.4); }
 
@@ -82,7 +83,7 @@
     <span style="font-size:13px;color:var(--muted);font-weight:500;">Görüşler</span>
     <a href="mahallem.html" class="nav-primary-link">🏘️ Mahallem</a>
     <a href="abibot.html" class="nav-primary-link">🤖 AbiBOT</a>
-    <a href="videolar.html" class="nav-primary-link">🎬 Videothek</a>
+    <a href="classifieds.html" class="nav-primary-link">🛍️ İlanlar</a>
     <span class="nav-spacer"></span>
     <a href="profile.html" class="nav-avatar" id="nav-avatar">?</a>
   </nav>
@@ -94,6 +95,7 @@
   </div>
 
   <div class="wrap">
+    <div id="tagbar"></div>
     <div id="types" class="cats"></div>
     <div id="cats" class="cats" hidden></div>
     <div id="post-content">
@@ -123,6 +125,7 @@
     let POSTS = [];
     let ACTIVE = 'Hepsi';
     let TYPE = 'hepsi';
+    const TAG = (new URLSearchParams(location.search).get('tag') || '').toLowerCase();
 
     const TYPES = [
       ['hepsi', 'Hepsi'],
@@ -152,7 +155,7 @@
       const el = document.getElementById('post-content');
       try {
         const res = await sb.from('blog_posts')
-          .select('slug,title,excerpt,cover_url,category,published_at,comment_count,media_type,youtube_id,is_vertical,duration_seconds')
+          .select('slug,title,excerpt,cover_url,category,published_at,comment_count,media_type,youtube_id,is_vertical,duration_seconds,tags,author_name')
           .eq('is_published', true)
           .order('published_at', { ascending: false, nullsFirst: false });
         if (res.error) throw res.error;
@@ -201,9 +204,16 @@
 
     function render() {
       const el = document.getElementById('post-content');
+      const tb = document.getElementById('tagbar');
+      tb.innerHTML = TAG
+        ? `<div style="margin-bottom:18px;font-size:13.5px;color:var(--muted);">
+             Etiket: <strong style="color:var(--ink);">#${esc(TAG)}</strong>
+             &nbsp;<a href="blog.html" style="color:var(--red);font-weight:600;">× temizle</a>
+           </div>` : '';
       const list = POSTS
         .filter(p => ACTIVE === 'Hepsi' || (p.category || 'Genel') === ACTIVE)
-        .filter(p => TYPE === 'hepsi' || (p.media_type || 'text') === TYPE);
+        .filter(p => TYPE === 'hepsi' || (p.media_type || 'text') === TYPE)
+        .filter(p => !TAG || (p.tags || []).includes(TAG));
 
       if (!list.length) {
         el.innerHTML = '<div class="empty"><div class="big">🔍</div>Bu seçimde henüz içerik yok.</div>';
@@ -216,14 +226,17 @@
             const c = coverFor(p);
             const b = BADGE[p.media_type] ? `<span class="badge">${BADGE[p.media_type]}</span>` : '';
             if (!c) return b ? `<div class="post-thumb-wrap">${b}</div>` : '';
-            return `<div class="post-thumb-wrap"><img class="post-cover" src="${esc(c)}" alt="" loading="lazy">${b}</div>`;
+            const fallback = p.media_type === 'video' ? '🎬' : '🎧';
+            return `<div class="post-thumb-wrap">
+              <img class="post-cover" src="${esc(c)}" alt="" loading="lazy"
+                   onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'post-cover cover-fallback',textContent:'${fallback}'}))">${b}</div>`;
           })()}
           <div class="post-body">
             <div class="post-cat">${esc(p.category || 'Genel')}</div>
             <h2>${esc(p.title)}</h2>
             ${p.excerpt ? `<p>${esc(p.excerpt)}</p>` : ''}
             <div class="post-meta">
-              <span>${esc(trDate(p.published_at))}</span>
+              <span>${p.author_name ? esc(p.author_name) + ' · ' : ''}${esc(trDate(p.published_at))}</span>
               ${mins(p.duration_seconds) ? `<span>🎧 ${mins(p.duration_seconds)}</span>` : ''}
               <span>💬 ${Number(p.comment_count) || 0}</span>
             </div>
