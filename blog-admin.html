@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Görüşler Yönetimi — BizdenBize</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="auth-gate.js"></script>
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+    a { color: inherit; }
+
+    nav { position: sticky; top: 0; z-index: 200; background: rgba(250,247,242,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,.4); height: 58px; display: flex; align-items: center; padding: 0 16px 0 12px; gap: 10px; }
+    .nav-logo-link { display: flex; align-items: center; }
+    .nav-spacer { flex: 1; }
+    .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; font-weight: 500; }
+
+    .wrap { max-width: 900px; margin: 0 auto; padding: 26px 20px 70px; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .sub { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; line-height: 1.6; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+    .tab { border: 1px solid var(--sand); background: var(--white); border-radius: 999px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; }
+    .tab.on { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+    .card { background: var(--white); border: 1px solid rgba(212,197,169,.6); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    input[type=text], textarea, select {
+      width: 100%; padding: 11px 13px; border: 1px solid var(--sand); border-radius: 10px;
+      font-family: inherit; font-size: 15px; background: var(--cream); color: var(--ink); margin-bottom: 16px;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--red); }
+    textarea { line-height: 1.65; resize: vertical; }
+    #f-body { min-height: 320px; font-size: 15.5px; }
+    .hint { font-size: 12px; color: var(--muted); margin: -12px 0 16px; line-height: 1.5; }
+
+    .btn { border: none; border-radius: 9px; padding: 11px 20px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; background: var(--red); color: var(--white); }
+    .btn:hover { background: var(--red2); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .btn-ghost { background: none; border: 1px solid var(--sand); color: var(--muted); }
+    .btn-ghost:hover { background: var(--warm); }
+    .btn-sm { padding: 7px 12px; font-size: 12.5px; border-radius: 7px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .msg { font-size: 13.5px; margin-top: 12px; line-height: 1.5; }
+    .msg.err { color: var(--red); }
+    .msg.ok { color: #1E7B4B; }
+
+    .p-row { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid rgba(212,197,169,.5); }
+    .p-row:last-child { border-bottom: none; }
+    .p-info { flex: 1; min-width: 0; }
+    .p-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .p-info .meta { font-size: 12.5px; color: var(--muted); }
+    .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+    .pill.pub { background: #E6F4EC; color: #1E7B4B; }
+    .pill.draft { background: var(--warm); color: var(--muted); }
+
+    .c-item { border: 1px solid rgba(212,197,169,.55); border-radius: 11px; padding: 14px 16px; margin-bottom: 12px; }
+    .c-item.hid { background: #FFF6F6; border-color: #F0C9C9; }
+    .c-top { font-size: 13px; color: var(--muted); margin-bottom: 7px; }
+    .c-top b { color: var(--ink); }
+    .c-body { font-size: 14.5px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 11px; }
+
+    .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 40px 20px; }
+    .denied { max-width: 460px; margin: 80px auto; text-align: center; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+    @media (max-width: 600px) { .wrap { padding: 20px 14px 60px; } .card { padding: 16px; } }
+  </style>
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+  <nav>
+    <a href="mahallem.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
+    <span style="color:var(--sand);">|</span>
+    <span style="font-size:13px;color:var(--muted);font-weight:500;">Blog Yönetimi</span>
+    <span class="nav-spacer"></span>
+    <a href="blog.html" class="nav-link">Blogu gör →</a>
+  </nav>
+
+  <div id="app" hidden class="wrap">
+    <h1>Görüşler Yönetimi</h1>
+    <div class="sub">Yazı, video ve ses kayıtlarını buradan yayınlarsın; yorumları buradan denetlersin.</div>
+
+    <div class="tabs">
+      <button class="tab on" data-tab="write">✍️ İçerik Ekle</button>
+      <button class="tab" data-tab="posts">📄 İçerikler</button>
+      <button class="tab" data-tab="mod">💬 Yorumlar</button>
+    </div>
+
+    <!-- ── YAZI YAZ ─────────────────────────────────────────── -->
+    <div id="tab-write">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+          <strong id="edit-label" style="font-size:15px;">Yeni içerik</strong>
+          <button class="btn btn-ghost btn-sm" id="btn-new" hidden>+ Yeni yazıya geç</button>
+        </div>
+
+        <label for="f-type">İçerik türü</label>
+        <select id="f-type">
+          <option value="text">📄 Yazı</option>
+          <option value="video">🎬 Video (YouTube)</option>
+          <option value="audio">🎧 Ses kaydı</option>
+        </select>
+
+        <label for="f-title">Başlık</label>
+        <input type="text" id="f-title" placeholder="Örn: Almanya'da ilk yıl: kimse söylemiyor ama…">
+
+        <label for="f-slug">Adres (slug)</label>
+        <input type="text" id="f-slug" placeholder="almanyada-ilk-yil">
+        <div class="hint">Başlıktan otomatik doldurulur. Yayınlandıktan sonra değiştirirsen eski link kırılır.</div>
+
+        <label for="f-cat">Kategori</label>
+        <input type="text" id="f-cat" placeholder="Genel" value="Genel">
+
+        <div id="grp-video" hidden>
+          <label for="f-video">YouTube bağlantısı</label>
+          <input type="text" id="f-video" placeholder="https://youtube.com/watch?v=… veya /shorts/…">
+          <div class="hint">Bağlantıyı yapıştır — video kimliği kendiliğinden çıkarılır.</div>
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:500;margin-bottom:12px;">
+            <input type="checkbox" id="f-vertical" style="width:auto;margin:0;"> Dikey video (Shorts)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:500;margin-bottom:16px;">
+            <input type="checkbox" id="f-welcome" style="width:auto;margin:0;"> Bu, "Hoş geldin" videosu olsun
+          </label>
+        </div>
+
+        <div id="grp-audio" hidden>
+          <label for="f-embed">Podcast platformu bağlantısı</label>
+          <input type="text" id="f-embed" placeholder="https://open.spotify.com/episode/… veya Apple Podcasts bağlantısı">
+          <div class="hint" id="embed-state">Spotify, Apple Podcasts, Buzzsprout, Transistor, Captivate, Podbean, RedCircle, SoundCloud.
+            Paylaş bağlantısını yapıştırman yeter — gömme adresine kendiliğinden çevrilir.</div>
+
+          <label style="margin-top:6px;">…ya da kendi dosyanı yükle</label>
+          <div style="border:1px dashed var(--sand);border-radius:11px;padding:16px;margin-bottom:12px;background:var(--cream);">
+            <input type="file" id="f-audiofile" accept="audio/*" style="font-family:inherit;font-size:13.5px;width:100%;margin-bottom:10px;">
+            <div class="row">
+              <button class="btn btn-ghost btn-sm" id="btn-upload" type="button">⬆ Yükle</button>
+              <span id="up-state" style="font-size:12.5px;color:var(--muted);"></span>
+            </div>
+          </div>
+          <label for="f-audio">Ses dosyası bağlantısı</label>
+          <input type="text" id="f-audio" placeholder="Yükleyince kendiliğinden dolar — ya da dış bağlantı yapıştır">
+          <div class="hint" id="audio-hint">Kendi kaydını yükleyebilir ya da dışarıda barındırdığın bir dosyanın doğrudan bağlantısını yapıştırabilirsin.</div>
+        </div>
+
+        <label for="f-cover">Kapak görseli (URL, isteğe bağlı)</label>
+        <input type="text" id="f-cover" placeholder="https://…">
+        <div class="hint" id="cover-hint" hidden>Boş bırakırsan YouTube'un kendi küçük resmi kullanılır.</div>
+
+        <label for="f-excerpt">Özet / açıklama (liste sayfasında görünür)</label>
+        <textarea id="f-excerpt" rows="2" placeholder="Bir iki cümle."></textarea>
+
+        <label for="f-body" id="body-label">Yazı</label>
+        <textarea id="f-body" placeholder="Yazını buraya yaz…"></textarea>
+        <div class="hint">
+          Paragraf için bir boş satır bırak. <b>## Başlık</b> ve <b>### Alt başlık</b>, madde için satır başına <b>- </b>,
+          alıntı için <b>&gt; </b>, kalın için <b>**kelime**</b>. Link yazarsan kendiliğinden tıklanır.
+        </div>
+
+        <div class="row">
+          <button class="btn" id="btn-save-draft">Taslak Olarak Kaydet</button>
+          <button class="btn" id="btn-publish">Yayınla</button>
+          <button class="btn btn-ghost" id="btn-preview" hidden>Önizle</button>
+        </div>
+        <div class="msg" id="write-msg"></div>
+      </div>
+    </div>
+
+    <!-- ── YAZILAR ──────────────────────────────────────────── -->
+    <div id="tab-posts" hidden>
+      <div class="card" id="posts-list"><div class="empty">Yükleniyor…</div></div>
+    </div>
+
+    <!-- ── YORUM DENETİMİ ───────────────────────────────────── -->
+    <div id="tab-mod" hidden>
+      <div class="card">
+        <div class="row" style="margin-bottom:14px;">
+          <button class="tab on btn-sm" id="mf-visible" data-f="visible">Görünür</button>
+          <button class="tab btn-sm" id="mf-hidden" data-f="hidden">Gizlenmiş</button>
+        </div>
+        <div id="mod-list"><div class="empty">Yükleniyor…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="denied" class="denied" hidden>
+    Bu sayfa yalnızca yöneticiler içindir.<br>
+    <a href="mahallem.html" style="color:var(--red);font-weight:600;">Mahalleme dön</a>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const sb = createClient(SB_URL, SB_KEY);
+
+    let ME = null, EDIT_ID = null, MOD_FILTER = 'visible';
+
+    // YouTube bağlantısının her biçiminden 11 haneli kimliği çıkarır.
+    // admin.html'deki Videothek formuyla aynı kural.
+    function ytId(url) {
+      const m = String(url || '').match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+      if (m) return m[1];
+      return /^[A-Za-z0-9_-]{11}$/.test(String(url || '').trim()) ? String(url).trim() : '';
+    }
+
+    // Tanınan podcast platformları. Buraya olmayan bir adres
+    // gömülmez — rastgele bir siteyi iframe'e almak, sayfayı
+    // o sitenin insafına bırakmak demektir.
+    const EMBED_HOSTS = [
+      { host: /^open\.spotify\.com$/,        height: 232, name: 'Spotify' },
+      { host: /^embed\.podcasts\.apple\.com$/, height: 175, name: 'Apple Podcasts' },
+      { host: /^(www\.)?buzzsprout\.com$/,   height: 200, name: 'Buzzsprout' },
+      { host: /^share\.transistor\.fm$/,     height: 180, name: 'Transistor' },
+      { host: /^player\.captivate\.fm$/,     height: 170, name: 'Captivate' },
+      { host: /^(www\.)?podbean\.com$/,      height: 150, name: 'Podbean' },
+      { host: /^player\.redcircle\.com$/,    height: 180, name: 'RedCircle' },
+      { host: /^w\.soundcloud\.com$/,        height: 166, name: 'SoundCloud' },
+      { host: /^(www\.)?youtube-nocookie\.com$/, height: 200, name: 'YouTube' }
+    ];
+
+    // Paylaş bağlantısı ile gömme bağlantısı aynı şey değil.
+    // Kullanıcı hangisini yapıştırırsa yapıştırsın çalışsın diye
+    // yaygın olanları burada çeviriyoruz.
+    function toEmbed(raw) {
+      const s = String(raw || '').trim();
+      if (!s) return null;
+      let u;
+      try { u = new URL(s); } catch (e) { return null; }
+      if (u.protocol !== 'https:') return null;
+
+      // open.spotify.com/episode/ID → /embed/episode/ID
+      if (/^open\.spotify\.com$/.test(u.hostname) && !u.pathname.startsWith('/embed/')) {
+        u.pathname = '/embed' + u.pathname;
+      }
+      // podcasts.apple.com/... → embed.podcasts.apple.com/...
+      if (/^(www\.)?podcasts\.apple\.com$/.test(u.hostname)) {
+        u.hostname = 'embed.podcasts.apple.com';
+      }
+      const match = EMBED_HOSTS.find(h => h.host.test(u.hostname));
+      if (!match) return null;
+      return { url: u.toString(), height: match.height, name: match.name };
+    }
+
+    // Dosya adı: Türkçe karakter ve boşluk Storage yolunda sorun
+    // çıkarır; başlıktan sadeleştirip zaman damgası ekliyoruz.
+    function audioPath(file, title) {
+      const ext = (file.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const base = slugify(title) || 'kayit';
+      return `${base}-${Date.now()}.${ext}`;
+    }
+
+    // Süreyi tarayıcı okur — elle girilen süre er geç yanlış olur.
+    function readDuration(file) {
+      return new Promise(resolve => {
+        try {
+          const el = document.createElement('audio');
+          const url = URL.createObjectURL(file);
+          const done = v => { URL.revokeObjectURL(url); resolve(v); };
+          el.preload = 'metadata';
+          el.onloadedmetadata = () => done(isFinite(el.duration) ? Math.round(el.duration) : null);
+          el.onerror = () => done(null);
+          el.src = url;
+          setTimeout(() => done(null), 8000);
+        } catch (e) { resolve(null); }
+      });
+    }
+
+    let UP_DURATION = null;
+
+    async function uploadAudio() {
+      const input = $('f-audiofile');
+      const state = $('up-state');
+      const btn = $('btn-upload');
+      const file = input.files && input.files[0];
+
+      if (!file) { state.textContent = 'Önce bir dosya seç.'; return; }
+      if (!/^audio\//.test(file.type)) { state.textContent = 'Bu bir ses dosyası değil.'; return; }
+      if (file.size > 100 * 1024 * 1024) {
+        state.textContent = `Dosya çok büyük (${(file.size / 1048576).toFixed(0)} MB). Sınır 100 MB.`;
+        return;
+      }
+
+      btn.disabled = true;
+      state.textContent = `Yükleniyor… (${(file.size / 1048576).toFixed(1)} MB) — sekmeyi kapatma.`;
+      try {
+        const path = audioPath(file, $('f-title').value);
+        const up = await sb.storage.from('podcasts')
+          .upload(path, file, { upsert: false, contentType: file.type, cacheControl: '3600' });
+        if (up.error) throw up.error;
+
+        const { data } = sb.storage.from('podcasts').getPublicUrl(path);
+        if (!data?.publicUrl) throw new Error('public URL alınamadı');
+
+        $('f-audio').value = data.publicUrl;
+        UP_DURATION = await readDuration(file);
+        state.textContent = UP_DURATION
+          ? `Yüklendi ✓ — ${Math.round(UP_DURATION / 60)} dk`
+          : 'Yüklendi ✓';
+      } catch (e) {
+        console.error('audio upload failed:', e);
+        const m = String(e?.message || '');
+        state.textContent = /row-level security|Unauthorized|403/i.test(m)
+          ? 'Yükleme reddedildi — podcasts bucket kurulmuş ve yönetici olarak giriş yapmış olmalısın.'
+          : /Payload too large|413/i.test(m)
+            ? 'Dosya, projenin yükleme sınırını aşıyor (Storage → Settings).'
+            : 'Yüklenemedi: ' + m;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function applyType() {
+      const t = $('f-type').value;
+      $('grp-video').hidden = t !== 'video';
+      $('grp-audio').hidden = t !== 'audio';
+      $('cover-hint').hidden = t !== 'video';
+      $('body-label').textContent = t === 'text' ? 'Yazı' : 'Ek metin (isteğe bağlı)';
+      $('f-body').placeholder = t === 'text'
+        ? 'Yazını buraya yaz…'
+        : 'İstersen video/ses altına metin ekle. Boş kalabilir.';
+    }
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    function trDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('tr-TR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+      catch (e) { return '—'; }
+    }
+
+    // Türkçe karakterler URL'de bozulur; slug'da elle karşılıyoruz.
+    function slugify(t) {
+      const map = { 'ç':'c','ğ':'g','ı':'i','İ':'i','ö':'o','ş':'s','ü':'u','Ç':'c','Ğ':'g','Ö':'o','Ş':'s','Ü':'u' };
+      return String(t || '').replace(/[çğıİöşüÇĞÖŞÜ]/g, c => map[c] || c)
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 80);
+    }
+
+    function friendlyError(e) {
+      const code = e?.code || '';
+      if (code === '42501' || /row-level security/i.test(e?.message || '')) {
+        return 'Yetki reddedildi. Yönetici hesabıyla giriş yaptığından emin ol.';
+      }
+      if (code === '23505') return 'Bu adres (slug) zaten kullanılıyor. Başka bir tane seç.';
+      if (code === '23514') return 'Seçilen tür için zorunlu alan eksik: yazıda gövde, videoda YouTube bağlantısı, seste podcast bağlantısı ya da yüklenmiş dosya gerekir.';
+      return 'Kaydedilemedi: ' + (e?.message || 'bilinmeyen hata');
+    }
+
+    function setMsg(el, text, kind) {
+      el.className = 'msg' + (kind ? ' ' + kind : '');
+      el.textContent = text;
+    }
+
+    // ── sekmeler ──
+    document.querySelectorAll('.tab[data-tab]').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.tab[data-tab]').forEach(x => x.classList.toggle('on', x === b));
+        ['write','posts','mod'].forEach(t => { $('tab-' + t).hidden = (t !== b.dataset.tab); });
+        if (b.dataset.tab === 'posts') loadPosts();
+        if (b.dataset.tab === 'mod') loadMod();
+      });
+    });
+
+    $('f-type').addEventListener('change', applyType);
+    $('btn-upload').addEventListener('click', uploadAudio);
+    $('f-embed').addEventListener('input', () => {
+      const st = $('embed-state');
+      const v = $('f-embed').value.trim();
+      if (!v) { st.textContent = 'Spotify, Apple Podcasts, Buzzsprout, Transistor, Captivate, Podbean, RedCircle, SoundCloud.'; st.style.color = ''; return; }
+      const em = toEmbed(v);
+      st.textContent = em ? `${em.name} tanındı ✓` : 'Bu adres tanınmadı — platformun paylaş bağlantısını yapıştır (https ile).';
+      st.style.color = em ? '#1E7B4B' : 'var(--red)';
+    });
+    $('f-audiofile').addEventListener('change', () => { $('up-state').textContent = ''; });
+
+    // ── başlıktan slug ──
+    let slugTouched = false;
+    $('f-slug').addEventListener('input', () => { slugTouched = true; });
+    $('f-title').addEventListener('input', () => {
+      if (!slugTouched && !EDIT_ID) $('f-slug').value = slugify($('f-title').value);
+    });
+
+    function clearForm() {
+      EDIT_ID = null; slugTouched = false;
+      ['f-title','f-slug','f-cover','f-excerpt','f-body','f-video','f-audio','f-embed'].forEach(i => { $(i).value = ''; });
+      $('f-vertical').checked = false;
+      $('f-welcome').checked = false;
+      $('f-audiofile').value = '';
+      $('up-state').textContent = '';
+      UP_DURATION = null;
+      $('f-type').value = 'text';
+      applyType();
+      $('f-cat').value = 'Genel';
+      $('edit-label').textContent = 'Yeni içerik';
+      $('btn-new').hidden = true;
+      $('btn-preview').hidden = true;
+      setMsg($('write-msg'), '');
+    }
+    $('btn-new').addEventListener('click', clearForm);
+
+    async function save(publish) {
+      const msg = $('write-msg');
+      const type  = $('f-type').value;
+      // Düzenlemede dosyaya dokunulmadıysa kayıtlı süreyi koru.
+      if (type === 'audio' && UP_DURATION == null && EDIT_ID) {
+        const cur = await sb.from('blog_posts').select('duration_seconds').eq('id', EDIT_ID).maybeSingle();
+        UP_DURATION = cur.data?.duration_seconds ?? null;
+      }
+      const title = $('f-title').value.trim();
+      const body  = $('f-body').value.trim();
+      const yt    = ytId($('f-video').value);
+      const audio = $('f-audio').value.trim();
+      const embed = $('f-embed').value.trim();
+      let slug    = $('f-slug').value.trim() || slugify(title);
+
+      if (!title) { setMsg(msg, 'Başlık gerekli.', 'err'); return; }
+      if (!slug)  { setMsg(msg, 'Adres (slug) üretilemedi — elle yaz.', 'err'); return; }
+      if (type === 'text'  && !body)  { setMsg(msg, 'Yazı boş olamaz.', 'err'); return; }
+      if (type === 'video' && !yt)    { setMsg(msg, 'Geçerli bir YouTube bağlantısı gerekli.', 'err'); return; }
+      if (type === 'audio' && !audio && !embed) {
+        setMsg(msg, 'Podcast bağlantısı yapıştır ya da bir ses dosyası yükle.', 'err'); return;
+      }
+      if (type === 'audio' && embed && !toEmbed(embed)) {
+        setMsg(msg, 'Bu podcast adresi tanınmadı. Platformun paylaş bağlantısını (https) kullan.', 'err'); return;
+      }
+
+      const payload = {
+        title, slug,
+        media_type: type,
+        body: body || null,
+        youtube_id: type === 'video' ? yt : null,
+        audio_url:  type === 'audio' ? (audio || null) : null,
+        embed_url:  type === 'audio' ? (embed || null) : null,
+        duration_seconds: type === 'audio' ? UP_DURATION : null,
+        is_vertical: type === 'video' ? $('f-vertical').checked : false,
+        is_welcome:  type === 'video' ? $('f-welcome').checked : false,
+        excerpt: $('f-excerpt').value.trim() || null,
+        cover_url: $('f-cover').value.trim() || null,
+        category: $('f-cat').value.trim() || 'Genel',
+        is_published: publish
+      };
+
+      const btns = [$('btn-save-draft'), $('btn-publish')];
+      btns.forEach(b => { b.disabled = true; });
+      setMsg(msg, 'Kaydediliyor…');
+
+      try {
+        let res;
+        if (EDIT_ID) {
+          // published_at bir kere yazılır: yeniden yayınlamak tarihi kaydırmasın.
+          const cur = await sb.from('blog_posts').select('published_at').eq('id', EDIT_ID).single();
+          if (publish && !cur.data?.published_at) payload.published_at = new Date().toISOString();
+          res = await sb.from('blog_posts').update(payload).eq('id', EDIT_ID).select('id,slug').single();
+        } else {
+          payload.author_id = ME;
+          if (publish) payload.published_at = new Date().toISOString();
+          res = await sb.from('blog_posts').insert(payload).select('id,slug').single();
+        }
+        if (res.error) throw res.error;
+        if (!res.data?.id) throw new Error('no row returned');
+
+        EDIT_ID = res.data.id;
+        $('edit-label').textContent = 'Düzenleniyor: ' + title;
+        $('btn-new').hidden = false;
+        $('btn-preview').hidden = false;
+        $('btn-preview').onclick = () => window.open('blog-post.html?slug=' + encodeURIComponent(res.data.slug), '_blank');
+        setMsg(msg, publish ? 'Yayınlandı. ✓' : 'Taslak kaydedildi. ✓', 'ok');
+      } catch (e) {
+        console.error('save failed:', e);
+        setMsg(msg, friendlyError(e), 'err');
+      } finally {
+        btns.forEach(b => { b.disabled = false; });
+      }
+    }
+    $('btn-save-draft').addEventListener('click', () => save(false));
+    $('btn-publish').addEventListener('click', () => save(true));
+
+    // ── yazı listesi ──
+    async function loadPosts() {
+      const box = $('posts-list');
+      const res = await sb.from('blog_posts')
+        .select('id,slug,title,category,is_published,published_at,created_at,comment_count,media_type')
+        .order('created_at', { ascending: false });
+      if (res.error) { box.innerHTML = '<div class="empty">Yazılar yüklenemedi.</div>'; return; }
+      const rows = res.data || [];
+      if (!rows.length) { box.innerHTML = '<div class="empty">Henüz yazı yok.</div>'; return; }
+
+      box.innerHTML = rows.map(p => `
+        <div class="p-row">
+          <div class="p-info">
+            <h3>${esc(p.title)}</h3>
+            <div class="meta">
+              <span class="pill ${p.is_published ? 'pub' : 'draft'}">${p.is_published ? 'Yayında' : 'Taslak'}</span>
+              &nbsp;${({ video: '🎬', audio: '🎧' })[p.media_type] || '📄'} ${esc(p.category || 'Genel')} · ${esc(trDate(p.published_at || p.created_at))} · 💬 ${Number(p.comment_count) || 0}
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn btn-ghost btn-sm" data-act="edit" data-id="${p.id}">Düzenle</button>
+            <button class="btn btn-ghost btn-sm" data-act="toggle" data-id="${p.id}" data-pub="${p.is_published}">
+              ${p.is_published ? 'Yayından kaldır' : 'Yayınla'}</button>
+          </div>
+        </div>`).join('');
+
+      box.querySelectorAll('[data-act]').forEach(b => {
+        b.addEventListener('click', () => postAction(b.dataset.act, b.dataset.id, b.dataset.pub === 'true', b));
+      });
+    }
+
+    async function postAction(act, id, isPub, btn) {
+      if (act === 'edit') {
+        const res = await sb.from('blog_posts').select('*').eq('id', id).single();
+        if (res.error) { alert('Yazı açılamadı.'); return; }
+        const p = res.data;
+        EDIT_ID = p.id; slugTouched = true;
+        $('f-type').value = p.media_type || 'text';
+        applyType();
+        $('f-title').value = p.title || '';
+        $('f-slug').value = p.slug || '';
+        $('f-cat').value = p.category || 'Genel';
+        $('f-cover').value = p.cover_url || '';
+        $('f-excerpt').value = p.excerpt || '';
+        $('f-body').value = p.body || '';
+        $('f-video').value = p.youtube_id || '';
+        $('f-audio').value = p.audio_url || '';
+        $('f-embed').value = p.embed_url || '';
+        $('f-vertical').checked = !!p.is_vertical;
+        $('f-welcome').checked = !!p.is_welcome;
+        UP_DURATION = p.duration_seconds ?? null;
+        $('up-state').textContent = '';
+        $('edit-label').textContent = 'Düzenleniyor: ' + p.title;
+        $('btn-new').hidden = false;
+        $('btn-preview').hidden = false;
+        $('btn-preview').onclick = () => window.open('blog-post.html?slug=' + encodeURIComponent(p.slug), '_blank');
+        setMsg($('write-msg'), '');
+        document.querySelector('.tab[data-tab="write"]').click();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        const patch = { is_published: !isPub };
+        if (!isPub) {
+          const cur = await sb.from('blog_posts').select('published_at').eq('id', id).single();
+          if (!cur.data?.published_at) patch.published_at = new Date().toISOString();
+        }
+        const res = await sb.from('blog_posts').update(patch).eq('id', id).select('id');
+        if (res.error) throw res.error;
+        if (!res.data?.length) throw Object.assign(new Error('no rows affected'), { code: '42501' });
+        loadPosts();
+      } catch (e) {
+        console.error(e); alert(friendlyError(e)); btn.disabled = false;
+      }
+    }
+
+    // ── yorum denetimi ──
+    document.querySelectorAll('[data-f]').forEach(b => {
+      b.addEventListener('click', () => {
+        MOD_FILTER = b.dataset.f;
+        document.querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b));
+        loadMod();
+      });
+    });
+
+    async function loadMod() {
+      const box = $('mod-list');
+      box.innerHTML = '<div class="empty">Yükleniyor…</div>';
+
+      const res = await sb.from('blog_comments')
+        .select('id,post_id,user_id,body,status,created_at,hidden_at')
+        .eq('status', MOD_FILTER)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (res.error) { box.innerHTML = '<div class="empty">Yorumlar yüklenemedi.</div>'; return; }
+
+      const rows = res.data || [];
+      if (!rows.length) {
+        box.innerHTML = `<div class="empty">${MOD_FILTER === 'hidden' ? 'Gizlenmiş yorum yok.' : 'Henüz yorum yok.'}</div>`;
+        return;
+      }
+
+      const uids = Array.from(new Set(rows.map(r => r.user_id)));
+      const pids = Array.from(new Set(rows.map(r => r.post_id)));
+      const [pr, po] = await Promise.all([
+        sb.from('profiles').select('id,first_name,last_name').in('id', uids),
+        sb.from('blog_posts').select('id,title,slug').in('id', pids)
+      ]);
+      const people = {}; (pr.data || []).forEach(p => { people[p.id] = p; });
+      const posts  = {}; (po.data || []).forEach(p => { posts[p.id]  = p; });
+
+      box.innerHTML = rows.map(r => {
+        const p = people[r.user_id] || {};
+        const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Üye';
+        const post = posts[r.post_id] || {};
+        const hid = r.status === 'hidden';
+        return `
+          <div class="c-item${hid ? ' hid' : ''}">
+            <div class="c-top"><b>${esc(name)}</b> · ${esc(trDate(r.created_at))} ·
+              <a href="blog-post.html?slug=${encodeURIComponent(post.slug || '')}" target="_blank">${esc(post.title || 'yazı')}</a>
+              ${hid ? ` · gizlendi ${esc(trDate(r.hidden_at))}` : ''}</div>
+            <div class="c-body">${esc(r.body)}</div>
+            <div class="row">
+              ${hid
+                ? `<button class="btn btn-ghost btn-sm" data-m="show" data-id="${r.id}">↩︎ Geri getir</button>`
+                : `<button class="btn btn-ghost btn-sm" data-m="hide" data-id="${r.id}">🚫 Gizle</button>`}
+              <button class="btn btn-ghost btn-sm" data-m="del" data-id="${r.id}">🗑 Kalıcı sil</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      box.querySelectorAll('[data-m]').forEach(b => {
+        b.addEventListener('click', () => modAction(b.dataset.m, b.dataset.id, b));
+      });
+    }
+
+    async function modAction(act, id, btn) {
+      if (act === 'del' && !confirm('Kalıcı silinsin mi? Geri getirilemez.\n\nGizlemek genelde daha iyidir: gizlenen yorum kayıtta kalır, gerekirse sonra bakabilirsin.')) return;
+      btn.disabled = true;
+      try {
+        const res = act === 'del'
+          ? await sb.from('blog_comments').delete().eq('id', id).select('id')
+          : await sb.from('blog_comments').update({ status: act === 'hide' ? 'hidden' : 'visible' }).eq('id', id).select('id');
+        if (res.error) throw res.error;
+        if (!res.data?.length) throw Object.assign(new Error('no rows affected'), { code: '42501' });
+        loadMod();
+      } catch (e) {
+        console.error(e); alert(friendlyError(e)); btn.disabled = false;
+      }
+    }
+
+    // ── giriş kapısı (yalnızca arayüz; asıl koruma RLS'te) ──
+    (async function init() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { location.replace('login.html'); return; }
+      ME = session.user.id;
+      const p = await sb.from('profiles').select('is_admin').eq('id', ME).maybeSingle();
+      const ADMIN_ID = '3e96d976-5c3a-4270-af88-6172f1751f9a';
+      if (!(p.data?.is_admin || ME === ADMIN_ID)) { $('denied').hidden = false; return; }
+      $('app').hidden = false;
+      applyType();
+    })();
+  </script>
+</body>
+</html>

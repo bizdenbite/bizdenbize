@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Görüşler — BizdenBize</title>
+  <meta name="description" content="BizdenBize Görüşler — gurbet, uyum, iş, eğitim ve yaşam üzerine yazılar.">
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:image" content="https://bizdenbize.com/og-image.png">
+  <meta property="og:image:alt" content="BizdenBize — Gurbetteki İyilerin Dijital Mahallesi">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .nav-primary-link{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;}
+    .nav-primary-link:hover{background:rgba(212,197,169,.25);}
+    @media(max-width:640px){.nav-primary-link{font-size:0;gap:0;padding:9px 8px;}}
+
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF; --navy:#003399;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; }
+
+    nav { position: sticky; top: 0; z-index: 200; background: rgba(250,247,242,0.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,0.4); height: 58px; display: flex; align-items: center; padding: 0 16px 0 12px; gap: 10px; }
+    .nav-logo-link { display: flex; align-items: center; flex-shrink: 0; }
+    .nav-spacer { flex: 1; }
+    .nav-login { display:inline-flex; align-items:center; padding:8px 14px; border-radius:8px; background:var(--red); color:var(--white); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; text-decoration: none; }
+
+    .wrap { max-width: 720px; margin: 0 auto; padding: 34px 24px 60px; width: 100%; }
+    .back { font-size: 13px; color: var(--muted); text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    .back:hover { color: var(--ink); }
+
+    .p-cat { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+    .p-title { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; letter-spacing: -.5px; margin-bottom: 14px; }
+    .p-meta { font-size: 13px; color: var(--muted); padding-bottom: 22px; border-bottom: 1px solid var(--sand); margin-bottom: 26px; }
+    .p-cover { width: 100%; border-radius: 14px; margin-bottom: 26px; display: block; }
+
+    .p-media { margin-bottom: 26px; }
+    .p-embed { position: relative; aspect-ratio: 16/9; background: #000; border-radius: 14px; overflow: hidden; }
+    .p-embed.vertical { aspect-ratio: 9/16; max-width: 340px; margin: 0 auto; }
+    .p-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .p-audio { width: 100%; }
+    .p-audio-box { background: var(--white); border: 1px solid var(--sand); border-radius: 14px; padding: 18px; }
+    .p-body { font-size: 17px; line-height: 1.75; color: #2b2114; }
+    .p-body p { margin-bottom: 20px; }
+    .p-body h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); margin: 34px 0 14px; }
+    .p-body h3 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--ink); margin: 26px 0 10px; }
+    .p-body ul { margin: 0 0 20px 22px; }
+    .p-body li { margin-bottom: 8px; }
+    .p-body a { color: var(--red); }
+    .p-body blockquote { border-left: 3px solid var(--sand); padding: 4px 0 4px 16px; color: var(--muted); font-style: italic; margin-bottom: 20px; }
+
+    .c-sec { margin-top: 48px; padding-top: 30px; border-top: 1px solid var(--sand); }
+    .c-head { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 18px; }
+    .c-note { background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 18px 20px; font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .c-note a { color: var(--red); font-weight: 600; }
+
+    .c-form textarea { width: 100%; min-height: 96px; padding: 13px 14px; border: 1px solid var(--sand); border-radius: 11px; font-family: inherit; font-size: 15px; line-height: 1.55; resize: vertical; background: var(--white); color: var(--ink); }
+    .c-form textarea:focus { outline: none; border-color: var(--red); }
+    .c-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .c-count { font-size: 12px; color: var(--muted); }
+    .btn { border: none; border-radius: 9px; padding: 11px 20px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; background: var(--red); color: var(--white); }
+    .btn:hover { background: var(--red2); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 7px; }
+    .btn-ghost { background: none; border: 1px solid var(--sand); color: var(--muted); }
+    .btn-ghost:hover { background: var(--warm); }
+    .msg { font-size: 13.5px; margin-top: 10px; line-height: 1.5; }
+    .msg.err { color: var(--red); }
+    .msg.ok { color: #1E7B4B; }
+
+    .c-list { margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
+    .c-item { background: var(--white); border: 1px solid rgba(212,197,169,.55); border-radius: 12px; padding: 15px 17px; }
+    .c-item.hidden-c { background: #FFF6F6; border-color: #F0C9C9; }
+    .c-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .c-av { width: 30px; height: 30px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .c-name { font-size: 14px; font-weight: 600; }
+    .c-date { font-size: 12px; color: var(--muted); }
+    .c-body { font-size: 14.5px; line-height: 1.65; color: #2b2114; white-space: pre-wrap; word-wrap: break-word; }
+    .c-mod { display: flex; gap: 8px; margin-top: 11px; padding-top: 10px; border-top: 1px dashed rgba(212,197,169,.7); flex-wrap: wrap; align-items: center; }
+    .c-flag { font-size: 12px; color: var(--red); font-weight: 600; }
+
+    .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 40px 20px; }
+    .empty .big { font-size: 30px; margin-bottom: 10px; }
+
+    footer { background: var(--deep); color: rgba(255,255,255,.55); padding: 40px 24px 28px; margin-top: auto; text-align: center; }
+    footer .fmeta { font-size: 12px; color: rgba(255,255,255,.45); }
+    footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+
+    @media (max-width: 600px) { .wrap { padding: 22px 16px 48px; } .p-body { font-size: 16px; } }
+  </style>
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+  <nav>
+    <a href="mahallem.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
+    <span style="color:var(--sand);">|</span>
+    <span style="font-size:13px;color:var(--muted);font-weight:500;">Görüşler</span>
+    <a href="blog.html" class="nav-primary-link">✍️ Görüşler</a>
+    <a href="mahallem.html" class="nav-primary-link">🏘️ Mahallem</a>
+    <span class="nav-spacer"></span>
+    <a href="profile.html" class="nav-avatar" id="nav-avatar">?</a>
+  </nav>
+
+  <div class="wrap">
+    <a href="blog.html" class="back">← Tüm görüşler</a>
+    <div id="post-area">
+      <div class="empty"><div class="big">⏳</div>İçerik yükleniyor…</div>
+    </div>
+
+    <div class="c-sec" id="c-sec" hidden>
+      <div class="c-head" id="c-head">Yorumlar</div>
+      <div id="c-gate"></div>
+      <div id="c-list" class="c-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fmeta">© 2026 BizdenBize · <a href="hakkimizda.html">Hakkımızda</a> · <a href="iletisim.html">İletişim</a></div>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const sb = createClient(SB_URL, SB_KEY);
+    const MAX = 2000;
+
+    let POST = null, ME = null, IS_APPROVED = false, IS_ADMIN = false, SHOW_HIDDEN = false;
+
+    const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    function trDate(iso, withTime) {
+      if (!iso) return '';
+      try {
+        const o = { day: 'numeric', month: 'long', year: 'numeric' };
+        if (withTime) { o.hour = '2-digit'; o.minute = '2-digit'; }
+        return new Date(iso).toLocaleDateString('tr-TR', o);
+      } catch (e) { return ''; }
+    }
+
+    // Yazı gövdesi: ÖNCE kaçırılır, SONRA biçimlendirilir. Sıra
+    // önemli — tersi olsaydı yazıya HTML enjekte edilebilirdi.
+    function renderBody(raw) {
+      const blocks = esc(raw).split(/\n{2,}/);
+      return blocks.map(b => {
+        b = b.trim();
+        if (!b) return '';
+        if (b.startsWith('### ')) return `<h3>${b.slice(4)}</h3>`;
+        if (b.startsWith('## '))  return `<h2>${b.slice(3)}</h2>`;
+        if (b.startsWith('&gt; ')) return `<blockquote>${b.slice(5).replace(/\n&gt; ?/g, '<br>')}</blockquote>`;
+        if (/^[-*] /.test(b)) {
+          const items = b.split('\n').filter(l => /^[-*] /.test(l)).map(l => `<li>${inline(l.slice(2))}</li>`);
+          return `<ul>${items.join('')}</ul>`;
+        }
+        return `<p>${inline(b).replace(/\n/g, '<br>')}</p>`;
+      }).join('');
+    }
+
+    function inline(t) {
+      return t
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener nofollow">$1</a>');
+    }
+
+    function initials(p) {
+      return ((p?.first_name?.[0] || '') + (p?.last_name?.[0] || '')).toUpperCase() || '?';
+    }
+    const AVCOLORS = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+
+    function friendlyError(e) {
+      const code = e?.code || '';
+      if (code === '42501' || /row-level security/i.test(e?.message || '')) {
+        return 'Bu işlem için yetkin yok. Hesabın henüz onaylanmadıysa yorum yazamazsın — onaylandığında sana e-posta geliyor.';
+      }
+      if (code === '23514') return 'Yorum boş olamaz ve 2000 karakteri geçemez.';
+      return 'İşlem tamamlanamadı. Lütfen biraz sonra tekrar dene.';
+    }
+
+    // Tanınan podcast platformları. Buraya olmayan bir adres
+    // gömülmez — rastgele bir siteyi iframe'e almak, sayfayı
+    // o sitenin insafına bırakmak demektir.
+    const EMBED_HOSTS = [
+      { host: /^open\.spotify\.com$/,        height: 232, name: 'Spotify' },
+      { host: /^embed\.podcasts\.apple\.com$/, height: 175, name: 'Apple Podcasts' },
+      { host: /^(www\.)?buzzsprout\.com$/,   height: 200, name: 'Buzzsprout' },
+      { host: /^share\.transistor\.fm$/,     height: 180, name: 'Transistor' },
+      { host: /^player\.captivate\.fm$/,     height: 170, name: 'Captivate' },
+      { host: /^(www\.)?podbean\.com$/,      height: 150, name: 'Podbean' },
+      { host: /^player\.redcircle\.com$/,    height: 180, name: 'RedCircle' },
+      { host: /^w\.soundcloud\.com$/,        height: 166, name: 'SoundCloud' },
+      { host: /^(www\.)?youtube-nocookie\.com$/, height: 200, name: 'YouTube' }
+    ];
+
+    // Paylaş bağlantısı ile gömme bağlantısı aynı şey değil.
+    // Kullanıcı hangisini yapıştırırsa yapıştırsın çalışsın diye
+    // yaygın olanları burada çeviriyoruz.
+    function toEmbed(raw) {
+      const s = String(raw || '').trim();
+      if (!s) return null;
+      let u;
+      try { u = new URL(s); } catch (e) { return null; }
+      if (u.protocol !== 'https:') return null;
+
+      // open.spotify.com/episode/ID → /embed/episode/ID
+      if (/^open\.spotify\.com$/.test(u.hostname) && !u.pathname.startsWith('/embed/')) {
+        u.pathname = '/embed' + u.pathname;
+      }
+      // podcasts.apple.com/... → embed.podcasts.apple.com/...
+      if (/^(www\.)?podcasts\.apple\.com$/.test(u.hostname)) {
+        u.hostname = 'embed.podcasts.apple.com';
+      }
+      const match = EMBED_HOSTS.find(h => h.host.test(u.hostname));
+      if (!match) return null;
+      return { url: u.toString(), height: match.height, name: match.name };
+    }
+
+    // Üç tür içerik, tek sayfa. Video ve ses için gövde zorunlu değil —
+    // o zaman özet metni gövde yerine geçer.
+    function mediaBlock(p) {
+      if (p.media_type === 'video' && p.youtube_id) {
+        return `<div class="p-media"><div class="p-embed${p.is_vertical ? ' vertical' : ''}">
+          <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(p.youtube_id)}"
+            title="${esc(p.title)}" loading="lazy" allowfullscreen
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        </div></div>`;
+      }
+      if (p.media_type === 'audio' && p.embed_url) {
+        const em = toEmbed(p.embed_url);
+        if (em) {
+          return `<div class="p-media"><iframe src="${esc(em.url)}" height="${em.height}"
+            style="width:100%;border:0;border-radius:12px;" loading="lazy"
+            title="${esc(p.title)} — ${esc(em.name)}"
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe></div>`;
+        }
+        // Tanınmayan adres gömülmez; bağlantı olarak veriyoruz.
+        return `<div class="p-media"><div class="p-audio-box">
+          <a href="${esc(p.embed_url)}" target="_blank" rel="noopener">🎧 Bölümü dinle →</a>
+        </div></div>`;
+      }
+      if (p.media_type === 'audio' && p.audio_url) {
+        return `<div class="p-media"><div class="p-audio-box">
+          <audio class="p-audio" controls preload="none" src="${esc(p.audio_url)}"></audio>
+          ${(() => { const n = Number(p.duration_seconds);
+            return n > 0 ? `<div style="font-size:12.5px;color:var(--muted);margin-top:9px;">🎧 ${n < 60 ? n + ' sn' : Math.round(n / 60) + ' dk'}</div>` : ''; })()}
+        </div></div>`;
+      }
+      return p.cover_url ? `<img class="p-cover" src="${esc(p.cover_url)}" alt="">` : '';
+    }
+
+    async function loadPost() {
+      const slug = new URLSearchParams(location.search).get('slug');
+      const area = document.getElementById('post-area');
+      if (!slug) { area.innerHTML = '<div class="empty"><div class="big">🔍</div>İçerik bulunamadı.</div>'; return; }
+
+      const res = await sb.from('blog_posts')
+        .select('id,slug,title,excerpt,body,cover_url,category,published_at,is_published,media_type,youtube_id,audio_url,embed_url,is_vertical,duration_seconds')
+        .eq('slug', slug).maybeSingle();
+
+      if (res.error || !res.data) {
+        area.innerHTML = '<div class="empty"><div class="big">🔍</div>Bu içerik bulunamadı ya da yayından kaldırıldı.</div>';
+        return;
+      }
+      POST = res.data;
+      document.title = `${POST.title} — BizdenBize`;
+
+      area.innerHTML = `
+        <div class="p-cat">${esc(POST.category || 'Genel')}${POST.is_published ? '' : ' · TASLAK'}</div>
+        <h1 class="p-title">${esc(POST.title)}</h1>
+        <div class="p-meta">${esc(trDate(POST.published_at))}</div>
+        ${mediaBlock(POST)}
+        ${POST.body ? `<div class="p-body">${renderBody(POST.body)}</div>`
+                    : (POST.excerpt ? `<div class="p-body"><p>${esc(POST.excerpt)}</p></div>` : '')}`;
+
+      document.getElementById('c-sec').hidden = false;
+      loadComments();
+    }
+
+    async function loadSession() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      ME = session.user.id;
+      const p = await sb.from('profiles').select('status,is_admin,first_name,last_name,avatar_url').eq('id', ME).maybeSingle();
+      if (p.data) {
+        IS_APPROVED = p.data.status === 'approved';
+        IS_ADMIN = !!p.data.is_admin;
+        const av = document.getElementById('nav-avatar');
+        if (av) {
+          if (p.data.avatar_url) av.innerHTML = `<img src="${esc(p.data.avatar_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          else {
+            const i = initials(p.data);
+            av.textContent = i;
+            av.style.background = AVCOLORS[i.charCodeAt(0) % AVCOLORS.length];
+          }
+        }
+      }
+      if (!ME) return;
+    }
+
+    function renderGate() {
+      const g = document.getElementById('c-gate');
+      if (!ME) {
+        g.innerHTML = `<div class="c-note">Yorum yazmak ve okumak için üye girişi gerekiyor.
+          <a href="login.html">Giriş yap</a> ya da katılım isteği gönder.</div>`;
+        return;
+      }
+      if (!IS_APPROVED) {
+        g.innerHTML = `<div class="c-note">Hesabın henüz onay bekliyor. Onaylandığında yorum yazabilirsin —
+          her yeni üyeyi elle onaylıyoruz, bu yüzden biraz sürebilir.</div>`;
+        return;
+      }
+      g.innerHTML = `
+        <div class="c-form">
+          <textarea id="c-input" maxlength="${MAX}" placeholder="Görüşünü yaz… Saygılı ve konuya dair olsun."></textarea>
+          <div class="c-row">
+            <button class="btn" id="c-send">Yorumu Gönder</button>
+            <span class="c-count" id="c-count">0 / ${MAX}</span>
+            ${IS_ADMIN ? `<span style="flex:1"></span>
+              <button class="btn btn-sm btn-ghost" id="c-toggle-hidden">${SHOW_HIDDEN ? 'Gizlenenleri gizle' : 'Gizlenenleri göster'}</button>` : ''}
+          </div>
+          <div class="msg" id="c-msg"></div>
+        </div>`;
+
+      const input = document.getElementById('c-input');
+      const count = document.getElementById('c-count');
+      input.addEventListener('input', () => { count.textContent = `${input.value.length} / ${MAX}`; });
+      document.getElementById('c-send').addEventListener('click', submitComment);
+      const t = document.getElementById('c-toggle-hidden');
+      if (t) t.addEventListener('click', () => { SHOW_HIDDEN = !SHOW_HIDDEN; renderGate(); loadComments(); });
+    }
+
+    async function submitComment() {
+      const input = document.getElementById('c-input');
+      const btn = document.getElementById('c-send');
+      const msg = document.getElementById('c-msg');
+      const body = (input.value || '').trim();
+      msg.className = 'msg'; msg.textContent = '';
+
+      if (!body) { msg.className = 'msg err'; msg.textContent = 'Önce bir şeyler yaz.'; return; }
+      if (body.length > MAX) { msg.className = 'msg err'; msg.textContent = `En fazla ${MAX} karakter.`; return; }
+
+      btn.disabled = true; btn.textContent = 'Gönderiliyor…';
+      try {
+        // .select() şart: dönen satırı görmeden "başarılı" demeyiz.
+        const res = await sb.from('blog_comments')
+          .insert({ post_id: POST.id, user_id: ME, body })
+          .select('id').single();
+        if (res.error) throw res.error;
+        if (!res.data?.id) throw new Error('no row returned');
+
+        input.value = '';
+        document.getElementById('c-count').textContent = `0 / ${MAX}`;
+        msg.className = 'msg ok'; msg.textContent = 'Yorumun yayınlandı.';
+        loadComments();
+      } catch (e) {
+        console.error('comment insert failed:', e);
+        msg.className = 'msg err'; msg.textContent = friendlyError(e);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Yorumu Gönder';
+      }
+    }
+
+    async function loadComments() {
+      const list = document.getElementById('c-list');
+      renderGate();
+
+      if (!ME || !IS_APPROVED) { list.innerHTML = ''; return; }
+
+      let q = sb.from('blog_comments')
+        .select('id,user_id,body,status,created_at,hidden_at')
+        .eq('post_id', POST.id)
+        .order('created_at', { ascending: false });
+      if (!(IS_ADMIN && SHOW_HIDDEN)) q = q.eq('status', 'visible');
+
+      const res = await q;
+      if (res.error) {
+        console.error('comment load failed:', res.error);
+        list.innerHTML = '<div class="empty">Yorumlar yüklenemedi.</div>';
+        return;
+      }
+      const rows = res.data || [];
+      document.getElementById('c-head').textContent =
+        `Yorumlar (${rows.filter(r => r.status === 'visible').length})`;
+
+      if (!rows.length) {
+        list.innerHTML = '<div class="empty"><div class="big">💬</div>Henüz yorum yok. İlk sen yaz.</div>';
+        return;
+      }
+
+      // İsimler ayrı sorguda — yorum tablosunda isim tutmuyoruz,
+      // üye adını değiştirirse eski ad yorumda kalmasın diye.
+      const ids = Array.from(new Set(rows.map(r => r.user_id)));
+      const pr = await sb.from('profiles').select('id,first_name,last_name,avatar_url').in('id', ids);
+      const people = {};
+      (pr.data || []).forEach(p => { people[p.id] = p; });
+
+      list.innerHTML = rows.map(r => {
+        const p = people[r.user_id] || {};
+        const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Üye';
+        const i = initials(p);
+        const isHidden = r.status === 'hidden';
+        return `
+          <div class="c-item${isHidden ? ' hidden-c' : ''}">
+            <div class="c-top">
+              <div class="c-av" style="background:${p.avatar_url ? 'transparent' : AVCOLORS[i.charCodeAt(0) % AVCOLORS.length]}">
+                ${p.avatar_url ? `<img src="${esc(p.avatar_url)}" style="width:100%;height:100%;object-fit:cover;">` : esc(i)}
+              </div>
+              <span class="c-name">${esc(name)}</span>
+              <span class="c-date">${esc(trDate(r.created_at, true))}</span>
+              ${isHidden ? '<span class="c-flag">· gizlendi</span>' : ''}
+            </div>
+            <div class="c-body">${esc(r.body)}</div>
+            ${IS_ADMIN ? `
+              <div class="c-mod">
+                ${isHidden
+                  ? `<button class="btn btn-sm btn-ghost" data-act="show" data-id="${r.id}">↩︎ Geri getir</button>`
+                  : `<button class="btn btn-sm btn-ghost" data-act="hide" data-id="${r.id}">🚫 Gizle</button>`}
+                <button class="btn btn-sm btn-ghost" data-act="del" data-id="${r.id}">🗑 Kalıcı sil</button>
+              </div>` : ''}
+          </div>`;
+      }).join('');
+
+      list.querySelectorAll('[data-act]').forEach(b => {
+        b.addEventListener('click', () => moderate(b.dataset.act, b.dataset.id, b));
+      });
+    }
+
+    async function moderate(act, id, btn) {
+      if (act === 'del' && !confirm('Bu yorum kalıcı olarak silinecek ve geri getirilemeyecek.\n\nSadece gizlemek genelde daha iyidir — gizlenen yorum kayıtta kalır.\n\nYine de silinsin mi?')) return;
+
+      const original = btn.textContent;
+      btn.disabled = true; btn.textContent = '…';
+      try {
+        let res;
+        if (act === 'del') {
+          res = await sb.from('blog_comments').delete().eq('id', id).select('id');
+        } else {
+          res = await sb.from('blog_comments')
+            .update({ status: act === 'hide' ? 'hidden' : 'visible' })
+            .eq('id', id).select('id');
+        }
+        if (res.error) throw res.error;
+        // RLS 200 + sıfır satır döndürebilir: "başarılı" görünüp
+        // hiçbir şey yapmamış olur. Satır saymadan güvenmiyoruz.
+        if (!res.data || !res.data.length) throw Object.assign(new Error('no rows affected'), { code: '42501' });
+        loadComments();
+      } catch (e) {
+        console.error('moderation failed:', e);
+        alert(friendlyError(e));
+        btn.disabled = false; btn.textContent = original;
+      }
+    }
+
+    (async function init() {
+      await loadSession();
+      await loadPost();
+    })();
+  </script>
+  <script type="module" src="nav-msg-badge.js"></script>
+  <script src="legal-footer.js" defer></script>
+  <script src="site-footer.js" defer></script>
+</body>
+</html>

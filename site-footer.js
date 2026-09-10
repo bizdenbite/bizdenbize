@@ -15,6 +15,8 @@
    - Skips pages that opt out with <body data-no-footer> (the chat
      and admin layouts, where a page-bottom footer is never visible).
    - Self-contained inline styles: no dependency on per-page CSS.
+   - Carries the tagline "İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz"
+     and the descriptor line "Gurbetteki İyilerin Dijital Mahallesi".
    ============================================================ */
 (function () {
   'use strict';
@@ -31,7 +33,7 @@
     ['ev-takasi.html',   '🏡 Tatil Takası'],
     ['ogrenim.html',     '🎓 Öğrenim'],
     ['library.html',     '📚 Bilgi & Belge'],
-    ['videolar.html',    '🎬 Videothek'],
+    ['blog.html',        '✍️ Görüşler'],
     ['abibot.html',      '🤖 AbiBOT']
   ];
 
@@ -93,6 +95,9 @@
             'font-family:Georgia,\'Times New Roman\',serif;font-weight:700;font-size:22px;line-height:1;' +
             'letter-spacing:-.3px;color:#FFCC00;white-space:nowrap;">Bizden<span style="color:#FFFFFF;">Bize</span></span>' +
           '</a>' +
+          // Tagline: defined once here so it cannot drift across pages again.
+          '<div style="font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.6;' +
+            'letter-spacing:.2px;margin:0 0 12px;">İyilerle Birlikte Gurbet Hayatını Kolaylaştırıyoruz</div>' +
           // Germany-first: the old copy said "Avrupa'daki Türk topluluğu",
           // which promised a reach the platform doesn't have yet.
           '<p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;max-width:320px;margin:0 0 18px;">' +
@@ -115,7 +120,7 @@
 
       '<div style="max-width:1160px;margin:36px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);' +
         'display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.35);">' +
-        '<span>© ' + YEAR + ' BizdenBize · Gurbette hayat el ele daha kolay.</span>' +
+        '<span>© ' + YEAR + ' BizdenBize · Gurbetteki İyilerin Dijital Mahallesi.</span>' +
         '<span>BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</span>' +
       '</div>' +
 
