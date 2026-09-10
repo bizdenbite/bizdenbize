@@ -21,6 +21,22 @@
 (function () {
   'use strict';
 
+  // ── Keşfet menüsü ──────────────────────────────────────────
+  // Menü kendi dosyasında (site-kesfet.js). Neden BURADAN
+  // yükleniyor: bu dosya zaten 29 sayfada var, menünün olduğu
+  // sayfaların hepsini kapsıyor. Aksi halde aynı script etiketi
+  // 20 sayfaya elle eklenecekti — menünün 40 yere kopyalanmış
+  // olmasının sebebi de tam olarak buydu.
+  // Bir sayfaya doğrudan eklemek istersen:
+  //   <script src="site-kesfet.js" defer></script>
+  // İki kez yüklenmesi sorun değil, dosya kendini bir kez kurar.
+  if (!document.querySelector('script[src*="site-kesfet.js"]')) {
+    var k = document.createElement('script');
+    k.src = 'site-kesfet.js';
+    k.defer = true;
+    document.head.appendChild(k);
+  }
+
   var YEAR = 2026;
 
   var PLATFORM = [
