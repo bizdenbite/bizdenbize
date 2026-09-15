@@ -230,7 +230,9 @@
         || (p.media_type === 'video' && p.youtube_id
               ? `https://i.ytimg.com/vi/${encodeURIComponent(p.youtube_id)}/maxresdefault.jpg`
               : 'https://bizdenbize.com/og-image.png');
-      const url = `https://bizdenbize.com/blog-post.html?slug=${encodeURIComponent(p.slug)}`;
+      // Paylaşılabilir adres: sunucu bu adreste meta etiketlerini
+      // hazır gönderiyor, WhatsApp önizlemesi buradan çalışıyor.
+      const url = `https://bizdenbize.com/gorus/${encodeURIComponent(p.slug)}`;
 
       const set = (sel, attr, val) => {
         let el = document.head.querySelector(sel);
@@ -289,7 +291,12 @@
     }
 
     async function loadPost() {
-      const slug = new URLSearchParams(location.search).get('slug');
+      // Üç kaynak: ?slug=… (eski bağlantılar), sunucunun bıraktığı
+      // <meta name="bb-slug"> ve /gorus/<slug> adresi.
+      const slug = new URLSearchParams(location.search).get('slug')
+        || (document.querySelector('meta[name="bb-slug"]')?.content || '').trim()
+        || (location.pathname.match(/\/gorus\/([A-Za-z0-9-]+)/) || [])[1]
+        || '';
       const area = document.getElementById('post-area');
       if (!slug) { area.innerHTML = '<div class="empty"><div class="big">🔍</div>İçerik bulunamadı.</div>'; return; }
 

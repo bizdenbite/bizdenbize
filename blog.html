@@ -221,7 +221,7 @@
       }
 
       el.innerHTML = `<div class="post-grid">${list.map(p => `
-        <a class="post-card" href="blog-post.html?slug=${encodeURIComponent(p.slug)}">
+        <a class="post-card" href="/gorus/${encodeURIComponent(p.slug)}">
           ${(() => {
             const c = coverFor(p);
             const b = BADGE[p.media_type] ? `<span class="badge">${BADGE[p.media_type]}</span>` : '';
