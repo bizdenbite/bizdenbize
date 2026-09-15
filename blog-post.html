@@ -119,6 +119,9 @@
       <div id="c-gate"></div>
       <div id="c-list" class="c-list"></div>
     </div>
+
+    <!-- Bülten kaydı — içerik newsletter-form.js'ten gelir -->
+    <div data-bb-newsletter></div>
   </div>
 
   <footer>
@@ -359,8 +362,9 @@
         return;
       }
       if (!IS_APPROVED) {
-        g.innerHTML = `<div class="c-note">Hesabın henüz onay bekliyor. Onaylandığında yorum yazabilirsin —
-          her yeni üyeyi elle onaylıyoruz, bu yüzden biraz sürebilir.</div>`;
+        // Elle onay kaldırıldı: eksik olan tek şey e-posta doğrulaması.
+        g.innerHTML = `<div class="c-note">Yorum yazabilmek için e-posta adresini doğrulaman gerekiyor.
+          Kayıt olurken gönderdiğimiz e-postadaki bağlantıya bas — gelmediyse spam klasörüne bak.</div>`;
         return;
       }
       g.innerHTML = `
@@ -512,6 +516,7 @@
   </script>
   <script type="module" src="nav-msg-badge.js"></script>
   <script src="legal-footer.js" defer></script>
+  <script src="newsletter-form.js" defer></script>
   <script src="site-footer.js" defer></script>
 </body>
 </html>

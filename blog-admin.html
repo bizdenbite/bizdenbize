@@ -92,6 +92,7 @@
       <button class="tab on" data-tab="write">✍️ İçerik Ekle</button>
       <button class="tab" data-tab="posts">📄 İçerikler</button>
       <button class="tab" data-tab="mod">💬 Yorumlar</button>
+      <button class="tab" data-tab="subs">📨 Gönderilenler <span id="subs-badge" style="background:var(--red);color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:4px;display:none;"></span></button>
     </div>
 
     <!-- ── YAZI YAZ ─────────────────────────────────────────── -->
@@ -187,6 +188,18 @@
     <!-- ── YAZILAR ──────────────────────────────────────────── -->
     <div id="tab-posts" hidden>
       <div class="card" id="posts-list"><div class="empty">Yükleniyor…</div></div>
+    </div>
+
+    <!-- ── OKUR GÖNDERİLERİ ─────────────────────────────────── -->
+    <div id="tab-subs" hidden>
+      <div class="card">
+        <div class="row" style="margin-bottom:14px;">
+          <button class="tab on btn-sm" data-s="new">Yeni</button>
+          <button class="tab btn-sm" data-s="accepted">Kabul edilen</button>
+          <button class="tab btn-sm" data-s="rejected">Reddedilen</button>
+        </div>
+        <div id="subs-list"><div class="empty">Yükleniyor…</div></div>
+      </div>
     </div>
 
     <!-- ── YORUM DENETİMİ ───────────────────────────────────── -->
@@ -389,9 +402,10 @@
     document.querySelectorAll('.tab[data-tab]').forEach(b => {
       b.addEventListener('click', () => {
         document.querySelectorAll('.tab[data-tab]').forEach(x => x.classList.toggle('on', x === b));
-        ['write','posts','mod'].forEach(t => { $('tab-' + t).hidden = (t !== b.dataset.tab); });
+        ['write','posts','mod','subs'].forEach(t => { $('tab-' + t).hidden = (t !== b.dataset.tab); });
         if (b.dataset.tab === 'posts') loadPosts();
         if (b.dataset.tab === 'mod') loadMod();
+        if (b.dataset.tab === 'subs') loadSubs();
       });
     });
 
@@ -668,6 +682,111 @@
       }
     }
 
+    // ── okur gönderileri ──
+    let SUB_FILTER = 'new';
+
+    document.querySelectorAll('[data-s]').forEach(b => {
+      b.addEventListener('click', () => {
+        SUB_FILTER = b.dataset.s;
+        document.querySelectorAll('[data-s]').forEach(x => x.classList.toggle('on', x === b));
+        loadSubs();
+      });
+    });
+
+    async function subsBadge() {
+      const r = await sb.from('blog_submissions')
+        .select('id', { count: 'exact', head: true }).eq('status', 'new');
+      const el = $('subs-badge');
+      if (r.count) { el.textContent = r.count; el.style.display = 'inline-block'; }
+      else { el.style.display = 'none'; }
+    }
+
+    async function loadSubs() {
+      const box = $('subs-list');
+      box.innerHTML = '<div class="empty">Yükleniyor…</div>';
+      const res = await sb.from('blog_submissions')
+        .select('*').eq('status', SUB_FILTER)
+        .order('created_at', { ascending: false }).limit(50);
+      if (res.error) { box.innerHTML = '<div class="empty">Gönderiler yüklenemedi.</div>'; return; }
+
+      const rows = res.data || [];
+      if (!rows.length) { box.innerHTML = '<div class="empty">Burada gönderi yok.</div>'; return; }
+
+      box.innerHTML = rows.map(r => `
+        <div class="c-item">
+          <div class="c-top"><b>${esc(r.author_name)}</b>
+            ${r.author_note ? ' · ' + esc(r.author_note) : ''} ·
+            <a href="mailto:${esc(r.author_email)}">${esc(r.author_email)}</a> ·
+            ${esc(trDate(r.created_at))} · ${Number(r.body?.length) || 0} karakter</div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:17px;margin:6px 0 8px;">${esc(r.title)}</h3>
+          <div class="c-body" style="max-height:170px;overflow:auto;">${esc(r.body)}</div>
+          <div class="row">
+            ${r.status === 'new' ? `
+              <button class="btn btn-sm" data-sub="accept" data-id="${r.id}">✓ Yazıya dönüştür</button>
+              <button class="btn btn-ghost btn-sm" data-sub="reject" data-id="${r.id}">Reddet</button>` : ''}
+            ${r.post_id ? `<span style="font-size:12.5px;color:var(--muted);align-self:center;">
+              Taslak oluşturuldu — "Yazılar" sekmesinde düzenle</span>` : ''}
+            <button class="btn btn-ghost btn-sm" data-sub="del" data-id="${r.id}">🗑 Sil</button>
+          </div>
+        </div>`).join('');
+
+      box.querySelectorAll('[data-sub]').forEach(b => {
+        b.addEventListener('click', () => subAction(b.dataset.sub, b.dataset.id, b));
+      });
+      subsBadge();
+    }
+
+    async function subAction(act, id, btn) {
+      if (act === 'del' && !confirm('Bu gönderi kalıcı olarak silinsin mi?')) return;
+      btn.disabled = true;
+      try {
+        if (act === 'del') {
+          const r = await sb.from('blog_submissions').delete().eq('id', id).select('id');
+          if (r.error) throw r.error;
+          if (!r.data?.length) throw Object.assign(new Error('no rows'), { code: '42501' });
+        } else if (act === 'reject') {
+          const r = await sb.from('blog_submissions')
+            .update({ status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: ME })
+            .eq('id', id).select('id');
+          if (r.error) throw r.error;
+          if (!r.data?.length) throw Object.assign(new Error('no rows'), { code: '42501' });
+        } else if (act === 'accept') {
+          // Gönderi ENTWURF olarak aktarılır. Yayına almak ayrı
+          // bir karar — burada hiçbir şey yayınlanmaz.
+          const g = await sb.from('blog_submissions').select('*').eq('id', id).single();
+          if (g.error) throw g.error;
+          const sub = g.data;
+
+          const base = slugify(sub.title) || 'yazi';
+          const p = await sb.from('blog_posts').insert({
+            title: sub.title,
+            slug: base + '-' + Date.now().toString().slice(-6),
+            body: sub.body,
+            media_type: 'text',
+            excerpt: sub.body.replace(/\s+/g, ' ').trim().slice(0, 180),
+            author_name: sub.author_name,
+            author_note: sub.author_note,
+            category: 'Okurdan',
+            is_published: false,
+            author_id: ME
+          }).select('id, slug').single();
+          if (p.error) throw p.error;
+
+          await sb.from('blog_submissions').update({
+            status: 'accepted', reviewed_at: new Date().toISOString(),
+            reviewed_by: ME, post_id: p.data.id
+          }).eq('id', id);
+
+          alert('Taslak oluşturuldu. Yazılar sekmesinde düzenleyip yayınlayabilirsin.');
+        }
+        loadSubs();
+      } catch (e) {
+        console.error('submission action failed:', e);
+        alert(friendlyError(e));
+        btn.disabled = false;
+      }
+    }
+
     // ── giriş kapısı (yalnızca arayüz; asıl koruma RLS'te) ──
     (async function init() {
       const { data: { session } } = await sb.auth.getSession();
@@ -678,6 +797,7 @@
       if (!(p.data?.is_admin || ME === ADMIN_ID)) { $('denied').hidden = false; return; }
       $('app').hidden = false;
       applyType();
+      subsBadge();
     })();
   </script>
 </body>

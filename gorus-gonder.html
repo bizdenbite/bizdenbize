@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yazı Gönder — BizdenBize Görüşler</title>
+  <meta name="description" content="Gurbet hayatına dair bir yazın mı var? BizdenBize Görüşler'de yayınlanması için gönder.">
+  <meta property="og:site_name" content="BizdenBize">
+  <meta property="og:title" content="Görüşler'e yazı gönder — BizdenBize">
+  <meta property="og:description" content="Gurbet hayatına dair bir yazın mı var? Bize gönder, okuyalım.">
+  <meta property="og:url" content="https://bizdenbize.com/gorus-gonder.html">
+  <meta property="og:image" content="https://bizdenbize.com/og-image.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#D42B2B; --red2:#E8393A; --cream:#FAF7F2; --warm:#F0EAE0;
+      --sand:#D4C5A9; --ink:#1A1208; --deep:#002266; --muted:#6B5E4E; --white:#FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Instrument Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; }
+
+    nav { position: sticky; top: 0; z-index: 200; background: rgba(250,247,242,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(212,197,169,.4); height: 58px; display: flex; align-items: center; padding: 0 16px 0 12px; gap: 10px; }
+    .nav-logo-link { display: flex; align-items: center; }
+    .nav-spacer { flex: 1; }
+    .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; font-weight: 500; }
+
+    .wrap { max-width: 720px; margin: 0 auto; padding: 34px 24px 60px; width: 100%; }
+    .back { font-size: 13px; color: var(--muted); text-decoration: none; display: inline-block; margin-bottom: 18px; }
+
+    h1 { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(26px, 5vw, 34px); line-height: 1.15; margin-bottom: 12px; }
+    .lead { font-size: 15.5px; line-height: 1.7; color: var(--muted); margin-bottom: 8px; }
+    .how { background: var(--white); border: 1px solid var(--sand); border-radius: 13px; padding: 18px 20px; margin: 22px 0 28px; }
+    .how h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+    .how ol { margin: 0 0 0 18px; font-size: 14px; line-height: 1.75; color: var(--ink); }
+
+    label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    input[type=text], input[type=email], textarea {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--sand); border-radius: 10px;
+      font-family: inherit; font-size: 15px; background: var(--white); color: var(--ink); margin-bottom: 16px;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--red); }
+    textarea { line-height: 1.7; resize: vertical; min-height: 280px; }
+    .hint { font-size: 12.5px; color: var(--muted); margin: -12px 0 16px; line-height: 1.55; }
+    .count { font-size: 12px; color: var(--muted); text-align: right; margin: -12px 0 16px; }
+
+    .consent { display: flex; gap: 10px; align-items: flex-start; background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 15px 16px; font-size: 13px; line-height: 1.65; color: var(--muted); margin-bottom: 20px; }
+    .consent input { margin: 2px 0 0; width: 17px; height: 17px; flex-shrink: 0; }
+    .consent a { color: var(--red); }
+
+    .btn { border: none; border-radius: 10px; padding: 13px 26px; font-family: inherit; font-size: 15px; font-weight: 600; background: var(--red); color: var(--white); cursor: pointer; }
+    .btn:hover { background: var(--red2); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .msg { font-size: 14px; line-height: 1.6; margin-top: 14px; }
+    .msg.err { color: var(--red); }
+
+    .done { text-align: center; background: var(--white); border: 1px solid var(--sand); border-radius: 16px; padding: 40px 28px; }
+    .done .mark { font-size: 42px; margin-bottom: 10px; }
+    .done h2 { font-family: 'Playfair Display', serif; font-size: 23px; margin-bottom: 12px; }
+    .done p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 22px; }
+    .done a.btn { text-decoration: none; display: inline-block; }
+
+    /* Falle für Spam-Skripte: für Menschen unsichtbar, Skripte
+       füllen sie trotzdem aus. */
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    footer { background: var(--deep); color: rgba(255,255,255,.55); padding: 36px 24px 26px; margin-top: auto; text-align: center; font-size: 12px; }
+    footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+
+    @media (max-width: 600px) { .wrap { padding: 22px 16px 48px; } }
+  </style>
+  <link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+  <nav>
+    <a href="blog.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
+    <span style="color:var(--sand);">|</span>
+    <span style="font-size:13px;color:var(--muted);font-weight:500;">Yazı Gönder</span>
+    <span class="nav-spacer"></span>
+    <a href="blog.html" class="nav-link">Görüşler →</a>
+  </nav>
+
+  <div class="wrap">
+    <a href="blog.html" class="back">← Görüşler</a>
+
+    <div id="form-area">
+      <h1>Senin de söyleyecek bir şeyin var mı?</h1>
+      <p class="lead">Gurbet hayatına, uyuma, işe, okula, aileye dair yaşadığın ve yazıya döktüğün
+        bir şey varsa bize gönder. Başkasının aynı şeyi yaşarken okuduğunda işine yarayacak
+        her yazı buraya uygundur.</p>
+
+      <div class="how">
+        <h2>Nasıl işliyor</h2>
+        <ol>
+          <li>Yazını bu formla gönderiyorsun.</li>
+          <li>Ekip okuyor. Uygun bulursak seninle e-posta ile iletişime geçiyoruz.</li>
+          <li>Yayınlanırsa yazının altında senin adın yazar — bizim değil.</li>
+        </ol>
+      </div>
+
+      <label for="f-name">Adın</label>
+      <input type="text" id="f-name" maxlength="80" placeholder="Yazının altında görünecek isim" autocomplete="name">
+
+      <label for="f-email">E-posta adresin</label>
+      <input type="email" id="f-email" maxlength="254" placeholder="sana buradan dönüş yapacağız" autocomplete="email">
+      <div class="hint">Yayınlanmaz, sadece seninle iletişim için kullanılır.</div>
+
+      <label for="f-note">Kendini bir cümlede tanıt (isteğe bağlı)</label>
+      <input type="text" id="f-note" maxlength="120" placeholder="Berlin'de yaşayan öğretmen">
+
+      <label for="f-title">Yazının başlığı</label>
+      <input type="text" id="f-title" maxlength="200" placeholder="Kısa ve net olsun">
+
+      <label for="f-body">Yazın</label>
+      <textarea id="f-body" maxlength="40000" placeholder="Buraya yaz ya da yazdığın metni yapıştır…"></textarea>
+      <div class="count" id="f-count">0 karakter</div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="f-website">Website</label>
+        <input type="text" id="f-website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" id="f-ok">
+        <span>Bu yazının bana ait olduğunu, başka bir yerden kopyalanmadığını ve
+          BizdenBize'de adımla yayınlanmasına izin verdiğimi onaylıyorum. Yazının
+          yayınlanacağının garantisi olmadığını, ekibin küçük düzeltmeler
+          yapabileceğini biliyorum. <a href="legal.html" target="_blank">Gizlilik</a></span>
+      </label>
+
+      <button class="btn" id="f-send" type="button">Yazıyı Gönder</button>
+      <div class="msg" id="f-msg"></div>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 BizdenBize · <a href="legal.html">Yasal</a> · <a href="iletisim.html">İletişim</a>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
+    const SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+    const sb = createClient(SB_URL, SB_KEY);
+
+    const CONSENT = 'Yazının kendisine ait olduğunu, kopyalanmadığını ve adıyla ' +
+      'yayınlanmasına izin verdiğini onayladı.';
+
+    const $ = id => document.getElementById(id);
+    const MIN = 200;
+
+    $('f-body').addEventListener('input', () => {
+      const n = $('f-body').value.trim().length;
+      $('f-count').textContent = n < MIN
+        ? `${n} karakter — en az ${MIN} gerekli`
+        : `${n} karakter`;
+    });
+
+    function say(text, kind) {
+      const m = $('f-msg');
+      m.className = 'msg' + (kind ? ' ' + kind : '');
+      m.textContent = text;
+    }
+
+    async function send() {
+      const name  = $('f-name').value.trim();
+      const email = $('f-email').value.trim().toLowerCase();
+      const note  = $('f-note').value.trim();
+      const title = $('f-title').value.trim();
+      const body  = $('f-body').value.trim();
+
+      say('');
+      if (!name)  { say('Adını yazar mısın?', 'err'); $('f-name').focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+        say('Geçerli bir e-posta adresi gerekli.', 'err'); $('f-email').focus(); return; }
+      if (title.length < 5)  { say('Başlık biraz daha uzun olsun.', 'err'); $('f-title').focus(); return; }
+      if (body.length < MIN) { say(`Yazı en az ${MIN} karakter olmalı. Şu an ${body.length}.`, 'err'); $('f-body').focus(); return; }
+      if (!$('f-ok').checked) { say('Göndermek için onay kutusunu işaretle.', 'err'); return; }
+
+      // Spam-Falle: nur Skripte füllen dieses Feld aus. Nach außen
+      // tun wir so, als wäre alles gut — sonst lernt das Skript dazu.
+      if ($('f-website').value) { showDone(); return; }
+
+      const btn = $('f-send');
+      btn.disabled = true; btn.textContent = 'Gönderiliyor…';
+
+      try {
+        const res = await sb.from('blog_submissions').insert({
+          author_name: name, author_email: email,
+          author_note: note || null,
+          title, body, consent_text: CONSENT
+        }).select('id').single();
+
+        if (res.error) throw res.error;
+        if (!res.data?.id) throw new Error('kayıt dönmedi');
+        showDone();
+      } catch (e) {
+        console.error('submission failed:', e);
+        const m = String(e?.message || '');
+        say(/rate_limit/.test(m)
+              ? 'Şu an çok fazla gönderi var. Biraz sonra tekrar dener misin?'
+              : /row-level security/i.test(m)
+                ? 'Gönderi kabul edilmedi. Alanları bir kontrol eder misin?'
+                : 'Gönderilemedi. Biraz sonra tekrar dener misin?', 'err');
+        btn.disabled = false; btn.textContent = 'Yazıyı Gönder';
+      }
+    }
+
+    function showDone() {
+      $('form-area').innerHTML = `
+        <div class="done">
+          <div class="mark">📨</div>
+          <h2>Yazın bize ulaştı</h2>
+          <p>Okuyacağız. Uygun bulursak yazdığın e-posta adresinden sana döneceğiz.<br>
+             Her yazıyı yayınlayamıyoruz — ama hepsini okuyoruz.</p>
+          <a class="btn" href="blog.html">Görüşler'e dön</a>
+        </div>`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    $('f-send').addEventListener('click', send);
+  </script>
+  <script src="site-footer.js" defer></script>
+</body>
+</html>
