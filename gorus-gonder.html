@@ -84,7 +84,9 @@
   <div class="wrap">
     <a href="blog.html" class="back">← Görüşler</a>
 
-    <div id="form-area">
+    <div id="gate" hidden></div>
+
+    <div id="form-area" hidden>
       <h1>Senin de söyleyecek bir şeyin var mı?</h1>
       <p class="lead">Gurbet hayatına, uyuma, işe, okula, aileye dair yaşadığın ve yazıya döktüğün
         bir şey varsa bize gönder. Başkasının aynı şeyi yaşarken okuduğunda işine yarayacak
@@ -93,18 +95,17 @@
       <div class="how">
         <h2>Nasıl işliyor</h2>
         <ol>
-          <li>Yazını bu formla gönderiyorsun.</li>
+          <li>Üye girişi yapıp yazını bu formla gönderiyorsun.</li>
           <li>Ekip okuyor. Uygun bulursak seninle e-posta ile iletişime geçiyoruz.</li>
           <li>Yayınlanırsa yazının altında senin adın yazar — bizim değil.</li>
         </ol>
       </div>
 
-      <label for="f-name">Adın</label>
-      <input type="text" id="f-name" maxlength="80" placeholder="Yazının altında görünecek isim" autocomplete="name">
+      <div id="who" style="background:var(--white);border:1px solid var(--sand);border-radius:11px;
+        padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--muted);"></div>
 
-      <label for="f-email">E-posta adresin</label>
-      <input type="email" id="f-email" maxlength="254" placeholder="sana buradan dönüş yapacağız" autocomplete="email">
-      <div class="hint">Yayınlanmaz, sadece seninle iletişim için kullanılır.</div>
+      <label for="f-name">Yazının altında görünecek isim</label>
+      <input type="text" id="f-name" maxlength="80" placeholder="Adın" autocomplete="name">
 
       <label for="f-note">Kendini bir cümlede tanıt (isteğe bağlı)</label>
       <input type="text" id="f-note" maxlength="120" placeholder="Berlin'de yaşayan öğretmen">
@@ -149,6 +150,57 @@
 
     const $ = id => document.getElementById(id);
     const MIN = 200;
+    const esc = t => String(t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    let ME = null, MY_EMAIL = '';
+
+    // Einsenden nur mit Konto. Die Seite prüft das nur für die
+    // Anzeige — verbindlich ist die RLS-Regel in der Datenbank.
+    async function gate() {
+      const { data: { session } } = await sb.auth.getSession();
+      const g = $('gate');
+
+      if (!session) {
+        g.hidden = false;
+        g.innerHTML = `
+          <h1>Yazını göndermek için giriş yap</h1>
+          <p class="lead">Gönderilen yazılar üye hesabına bağlı. Böylece sana dönüş
+            yapabiliyoruz ve yazının kime ait olduğu belli oluyor.</p>
+          <p style="margin-top:22px;">
+            <a class="btn" style="text-decoration:none;display:inline-block;"
+               href="login.html">Giriş yap / Kayıt ol</a></p>
+          <p class="lead" style="margin-top:18px;font-size:14px;">
+            Hesabın yok mu? Kayıt olmak birkaç dakika sürüyor ve ücretsiz.
+            Giriş yaptıktan sonra bu sayfaya geri dönüp yazını gönderebilirsin.</p>`;
+        return false;
+      }
+
+      ME = session.user.id;
+      MY_EMAIL = session.user.email || '';
+
+      const p = await sb.from('profiles')
+        .select('first_name,last_name,status').eq('id', ME).maybeSingle();
+
+      if (p.data?.status !== 'approved') {
+        g.hidden = false;
+        g.innerHTML = `
+          <h1>Önce e-posta adresini doğrula</h1>
+          <p class="lead">Hesabın henüz etkin değil. Kayıt olurken gönderdiğimiz
+            e-postadaki bağlantıya bastıktan sonra yazı gönderebilirsin —
+            gelmediyse spam klasörüne bakmayı unutma.</p>
+          <p style="margin-top:22px;">
+            <a class="btn" style="text-decoration:none;display:inline-block;"
+               href="blog.html">Görüşler'e dön</a></p>`;
+        return false;
+      }
+
+      const name = [p.data.first_name, p.data.last_name].filter(Boolean).join(' ');
+      $('f-name').value = name;
+      $('who').innerHTML = `Gönderen: <strong style="color:var(--ink);">${esc(name || 'Üye')}</strong>
+        · ${esc(MY_EMAIL)}<br>Dönüşü bu adrese yapacağız.`;
+      $('form-area').hidden = false;
+      return true;
+    }
 
     $('f-body').addEventListener('input', () => {
       const n = $('f-body').value.trim().length;
@@ -165,15 +217,13 @@
 
     async function send() {
       const name  = $('f-name').value.trim();
-      const email = $('f-email').value.trim().toLowerCase();
+      const email = MY_EMAIL;
       const note  = $('f-note').value.trim();
       const title = $('f-title').value.trim();
       const body  = $('f-body').value.trim();
 
       say('');
       if (!name)  { say('Adını yazar mısın?', 'err'); $('f-name').focus(); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
-        say('Geçerli bir e-posta adresi gerekli.', 'err'); $('f-email').focus(); return; }
       if (title.length < 5)  { say('Başlık biraz daha uzun olsun.', 'err'); $('f-title').focus(); return; }
       if (body.length < MIN) { say(`Yazı en az ${MIN} karakter olmalı. Şu an ${body.length}.`, 'err'); $('f-body').focus(); return; }
       if (!$('f-ok').checked) { say('Göndermek için onay kutusunu işaretle.', 'err'); return; }
@@ -187,6 +237,7 @@
 
       try {
         const res = await sb.from('blog_submissions').insert({
+          user_id: ME,
           author_name: name, author_email: email,
           author_note: note || null,
           title, body, consent_text: CONSENT
@@ -199,7 +250,7 @@
         console.error('submission failed:', e);
         const m = String(e?.message || '');
         say(/rate_limit/.test(m)
-              ? 'Şu an çok fazla gönderi var. Biraz sonra tekrar dener misin?'
+              ? 'Bir saat içinde en fazla 5 yazı gönderebilirsin.'
               : /row-level security/i.test(m)
                 ? 'Gönderi kabul edilmedi. Alanları bir kontrol eder misin?'
                 : 'Gönderilemedi. Biraz sonra tekrar dener misin?', 'err');
@@ -220,6 +271,7 @@
     }
 
     $('f-send').addEventListener('click', send);
+    gate();
   </script>
   <script src="site-footer.js" defer></script>
 </body>
