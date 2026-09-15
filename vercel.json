@@ -29,6 +29,10 @@
     {
       "src": "icons/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -69,6 +73,14 @@
     {
       "src": "/premium",
       "dest": "/premium.html"
+    },
+    {
+      "src": "/gorus/(?<slug>[A-Za-z0-9-]+)",
+      "dest": "/api/gorus?slug=$slug"
+    },
+    {
+      "src": "/gorus",
+      "dest": "/api/gorus"
     },
     {
       "handle": "filesystem"
