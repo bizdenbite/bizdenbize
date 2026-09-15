@@ -500,7 +500,7 @@
         $('edit-label').textContent = 'Düzenleniyor: ' + title;
         $('btn-new').hidden = false;
         $('btn-preview').hidden = false;
-        $('btn-preview').onclick = () => window.open('blog-post.html?slug=' + encodeURIComponent(res.data.slug), '_blank');
+        $('btn-preview').onclick = () => window.open('/gorus/' + encodeURIComponent(res.data.slug), '_blank');
         setMsg(msg, publish ? 'Yayınlandı. ✓' : 'Taslak kaydedildi. ✓', 'ok');
       } catch (e) {
         console.error('save failed:', e);
@@ -570,7 +570,7 @@
         $('edit-label').textContent = 'Düzenleniyor: ' + p.title;
         $('btn-new').hidden = false;
         $('btn-preview').hidden = false;
-        $('btn-preview').onclick = () => window.open('blog-post.html?slug=' + encodeURIComponent(p.slug), '_blank');
+        $('btn-preview').onclick = () => window.open('/gorus/' + encodeURIComponent(p.slug), '_blank');
         setMsg($('write-msg'), '');
         document.querySelector('.tab[data-tab="write"]').click();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -636,7 +636,7 @@
         return `
           <div class="c-item${hid ? ' hid' : ''}">
             <div class="c-top"><b>${esc(name)}</b> · ${esc(trDate(r.created_at))} ·
-              <a href="blog-post.html?slug=${encodeURIComponent(post.slug || '')}" target="_blank">${esc(post.title || 'yazı')}</a>
+              <a href="/gorus/${encodeURIComponent(post.slug || '')}" target="_blank">${esc(post.title || 'yazı')}</a>
               ${hid ? ` · gizlendi ${esc(trDate(r.hidden_at))}` : ''}</div>
             <div class="c-body">${esc(r.body)}</div>
             <div class="row">
