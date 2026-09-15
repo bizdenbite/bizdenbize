@@ -58,9 +58,9 @@
   function markup() {
     return '' +
       '<h3>Yeni yazılardan haberdar ol</h3>' +
-      '<p class="bbn-lead">Bunun sonuna yeni blogdan ve mahalledeki gelişmelerden ' +
-        'haberdar olmak için kayıt ol. Ne sıklıkta yazarsak o kadar — reklam yok, ' +
-        'adresin kimseyle paylaşılmaz.</p>' +
+      '<p class="bbn-lead">Yeni yazılardan ve mahalledeki gelişmelerden haberdar olmak ' +
+        'için kayıt ol. Ne sıklıkta yazarsak o kadar — reklam yok, adresin ' +
+        'kimseyle paylaşılmaz.</p>' +
       '<div class="bbn-row">' +
         '<input type="email" id="bbn-email" placeholder="e-posta adresin" ' +
           'autocomplete="email" inputmode="email" maxlength="254">' +
