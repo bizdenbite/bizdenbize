@@ -1,0 +1,86 @@
+<!-- ============================================================
+     BizdenBize · Bülten — Double-Opt-In Bestätigungsmail
+     In Brevo unter "HTML custom code" komplett einfügen.
+
+     WICHTIG: Der Knopf verweist auf {{ doubleoptin }}.
+     Diesen Platzhalter NICHT verändern und NICHT in sichtbaren
+     Text umwandeln — Brevo ersetzt ihn beim Versand durch den
+     persönlichen Bestätigungslink. Ohne ihn kann niemand
+     bestätigen und Brevo lehnt die Vorlage als DOI-Vorlage ab.
+
+     Tabellen-Layout und Inline-Styles sind in E-Mails Pflicht:
+     Outlook und Gmail werfen <div>-Layouts und <style>-Blöcke
+     unterschiedlich weit weg.
+     ============================================================ -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background:#FAF7F2;margin:0;padding:28px 12px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:520px;background:#ffffff;border:1px solid #D4C5A9;border-radius:14px;">
+        <tr>
+          <td align="center" style="padding:28px 24px 8px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+              <tr>
+                <td style="background:#003399;border-radius:6px;padding:8px 16px;
+                           font-family:Georgia,'Times New Roman',serif;font-weight:700;
+                           font-size:24px;letter-spacing:-.3px;color:#ffffff;line-height:1.1;">
+                  <span style="color:#FFCC00;">Bizden</span>Bize
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:22px 30px 0;font-family:Georgia,'Times New Roman',serif;">
+            <h1 style="margin:0 0 14px;font-size:22px;line-height:1.3;color:#1A1208;font-weight:700;">
+              Son bir adım kaldı
+            </h1>
+            <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#3b2f20;">
+              BizdenBize bültenine kayıt olmak istedin. Kaydı tamamlamak için aşağıdaki
+              düğmeye bas. Bu adımı atmazsan sana hiçbir e-posta göndermeyiz.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Der Bestätigungsknopf. {{ doubleoptin }} steht im href,
+             nicht im Text. -->
+        <tr>
+          <td align="center" style="padding:6px 30px 24px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background:#D42B2B;border-radius:9px;">
+                  <a href="{{ doubleoptin }}"
+                     style="display:inline-block;padding:14px 30px;font-family:Georgia,'Times New Roman',serif;
+                            font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">
+                    Kaydımı onayla
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:0 30px 24px;font-family:Georgia,'Times New Roman',serif;">
+            <p style="margin:0;font-size:13px;line-height:1.7;color:#6B5E4E;">
+              Bu kaydı sen yapmadıysan bu e-postayı yok sayman yeterli — hiçbir şey olmaz.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:16px 30px 24px;border-top:1px solid #E8E0D2;
+                     font-family:Georgia,'Times New Roman',serif;">
+            <p style="margin:0;font-size:12px;line-height:1.7;color:#9a8f80;">
+              BizdenBize · Gurbetteki İyilerin Dijital Mahallesi<br>
+              <a href="https://bizdenbize.com/legal.html" style="color:#9a8f80;">Gizlilik</a> ·
+              <a href="https://bizdenbize.com/blog.html" style="color:#9a8f80;">Görüşler</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
