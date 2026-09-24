@@ -44,6 +44,11 @@
     '.bbn-msg.err{color:var(--red,#D42B2B);}',
     '.bbn-msg.ok{color:#1E7B4B;}',
     '.bbn-done{text-align:center;padding:8px 0;}',
+    '.bbn-ok-bar{background:#E6F4EC;border:1px solid #9FCFB4;border-radius:12px;',
+      'padding:15px 18px;margin:0 0 26px;display:flex;gap:11px;align-items:flex-start;}',
+    '.bbn-ok-bar .m{font-size:20px;line-height:1.3;flex-shrink:0;}',
+    '.bbn-ok-bar strong{display:block;font-size:15px;color:#14603A;margin-bottom:3px;}',
+    '.bbn-ok-bar span{font-size:13.5px;line-height:1.6;color:#2f6b4d;}',
     '.bbn-done .bbn-mark{font-size:34px;margin-bottom:6px;}'
   ].join('');
 
@@ -146,10 +151,43 @@
     });
   }
 
+  // Nach dem Klick im Bestätigungslink leitet Brevo hierher
+  // zurück. Ohne Rückmeldung fragt sich die Person, ob es
+  // geklappt hat — und trägt sich im Zweifel ein zweites Mal ein.
+  function confirmed() {
+    try {
+      return new URLSearchParams(location.search).get('bulten') === 'onaylandi';
+    } catch (e) { return false; }
+  }
+
+  function showConfirmation(boxes) {
+    var bar = document.createElement('div');
+    bar.className = 'bbn-ok-bar';
+    bar.innerHTML =
+      '<span class="m">✅</span><div><strong>Kaydın onaylandı</strong>' +
+      '<span>Bundan sonra yeni yazılardan ve mahalledeki gelişmelerden haberdar ' +
+      'olacaksın. Çıkmak istersen her e-postanın altında bir bağlantı var.</span></div>';
+
+    // Oben in den Inhalt, nicht unten beim Formular: wer gerade
+    // bestätigt hat, landet am Seitenanfang.
+    var host = document.querySelector('.wrap') || document.body;
+    host.insertBefore(bar, host.firstChild);
+
+    // Und das Formular nicht mehr anbieten — sich direkt nach der
+    // Bestätigung erneut zur Anmeldung aufgefordert zu sehen,
+    // verwirrt nur.
+    boxes.forEach(function (b) {
+      b.dataset.bbnReady = '1';
+      b.className = '';
+      b.innerHTML = '';
+    });
+  }
+
   function init() {
     var boxes = document.querySelectorAll('[data-bb-newsletter]');
-    if (!boxes.length) return;
     styles();
+    if (confirmed()) { showConfirmation(boxes); return; }
+    if (!boxes.length) return;
     boxes.forEach(attach);
   }
 
