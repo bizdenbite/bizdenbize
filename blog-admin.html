@@ -162,8 +162,17 @@
         <input type="text" id="f-tags" placeholder="gurbet, okul, çalışma izni">
         <div class="hint">Virgülle ayır. Küçük harfe çevrilir, tekrarlar atılır — "Gurbet" ile "gurbet" aynı etiket olur.</div>
 
-        <label for="f-cover">Kapak görseli (URL, isteğe bağlı)</label>
-        <input type="text" id="f-cover" placeholder="https://…">
+        <label>Kapak görseli (isteğe bağlı)</label>
+        <div style="border:1px dashed var(--sand);border-radius:11px;padding:14px;margin-bottom:12px;background:var(--cream);">
+          <input type="file" id="f-coverfile" accept="image/*" style="font-family:inherit;font-size:13.5px;width:100%;margin-bottom:10px;">
+          <div class="row">
+            <button class="btn btn-ghost btn-sm" id="btn-cover-upload" type="button">⬆ Görseli Yükle</button>
+            <span id="cover-state" style="font-size:12.5px;color:var(--muted);"></span>
+          </div>
+          <img id="cover-preview" alt="" hidden
+               style="display:block;max-width:100%;max-height:170px;border-radius:9px;margin-top:12px;">
+        </div>
+        <input type="text" id="f-cover" placeholder="Yükleyince kendiliğinden dolar — ya da bir adres yapıştır">
         <div class="hint" id="cover-hint" hidden>Boş bırakırsan YouTube'un kendi küçük resmi kullanılır.</div>
 
         <label for="f-excerpt">Özet / açıklama (liste sayfasında görünür)</label>
@@ -351,6 +360,62 @@
         .slice(0, 12);
     }
 
+    // Dateiname: Türkische Zeichen und Leerzeichen machen in
+    // Storage-Pfaden Ärger — aus dem Titel ableiten und
+    // Zeitstempel anhängen, damit nichts überschrieben wird.
+    function coverPath(file, title) {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const base = slugify(title) || 'gorsel';
+      return `${base}-${Date.now()}.${ext}`;
+    }
+
+    function showCoverPreview(url) {
+      const img = $('cover-preview');
+      if (!url) { img.hidden = true; img.removeAttribute('src'); return; }
+      img.src = url;
+      img.hidden = false;
+    }
+
+    async function uploadCover() {
+      const input = $('f-coverfile');
+      const state = $('cover-state');
+      const btn = $('btn-cover-upload');
+      const file = input.files && input.files[0];
+
+      if (!file) { state.textContent = 'Önce bir görsel seç.'; return; }
+      if (!/^image\//.test(file.type)) { state.textContent = 'Bu bir görsel dosyası değil.'; return; }
+      if (file.size > 5 * 1024 * 1024) {
+        state.textContent = `Görsel çok büyük (${(file.size / 1048576).toFixed(1)} MB). Sınır 5 MB.`;
+        return;
+      }
+
+      btn.disabled = true;
+      state.textContent = 'Yükleniyor…';
+      try {
+        const path = coverPath(file, $('f-title').value);
+        const up = await sb.storage.from('blog-images')
+          .upload(path, file, { upsert: false, contentType: file.type, cacheControl: '3600' });
+        if (up.error) throw up.error;
+
+        const { data } = sb.storage.from('blog-images').getPublicUrl(path);
+        if (!data?.publicUrl) throw new Error('public URL alınamadı');
+
+        $('f-cover').value = data.publicUrl;
+        showCoverPreview(data.publicUrl);
+        state.textContent = 'Yüklendi ✓';
+      } catch (e) {
+        console.error('cover upload failed:', e);
+        const m = String(e?.message || '');
+        state.textContent = /row-level security|Unauthorized|403/i.test(m)
+          ? 'Yükleme reddedildi — blog-images kovası kurulmuş olmalı ve yönetici olarak giriş yapmalısın.'
+          : /Payload too large|413/i.test(m)
+            ? 'Görsel, projenin yükleme sınırını aşıyor (Storage → Settings).'
+            : 'Yüklenemedi: ' + m;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     function applyType() {
       const t = $('f-type').value;
       $('grp-video').hidden = t !== 'video';
@@ -411,6 +476,10 @@
 
     $('f-type').addEventListener('change', applyType);
     $('btn-upload').addEventListener('click', uploadAudio);
+    $('btn-cover-upload').addEventListener('click', uploadCover);
+    $('f-coverfile').addEventListener('change', () => { $('cover-state').textContent = ''; });
+    // Auch eine von Hand eingefügte Adresse soll die Vorschau zeigen.
+    $('f-cover').addEventListener('input', () => showCoverPreview($('f-cover').value.trim()));
     $('f-embed').addEventListener('input', () => {
       const st = $('embed-state');
       const v = $('f-embed').value.trim();
@@ -431,6 +500,9 @@
     function clearForm() {
       EDIT_ID = null; slugTouched = false;
       ['f-title','f-slug','f-cover','f-excerpt','f-body','f-video','f-audio','f-embed','f-tags','f-author','f-authornote'].forEach(i => { $(i).value = ''; });
+      $('f-coverfile').value = '';
+      $('cover-state').textContent = '';
+      showCoverPreview('');
       $('f-vertical').checked = false;
       $('f-welcome').checked = false;
       $('f-audiofile').value = '';
@@ -572,6 +644,8 @@
         $('f-author').value = p.author_name || '';
         $('f-authornote').value = p.author_note || '';
         $('f-cover').value = p.cover_url || '';
+        showCoverPreview(p.cover_url || '');
+        $('cover-state').textContent = '';
         $('f-excerpt').value = p.excerpt || '';
         $('f-body').value = p.body || '';
         $('f-video').value = p.youtube_id || '';
