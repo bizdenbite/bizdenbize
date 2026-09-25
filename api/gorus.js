@@ -78,6 +78,21 @@ function buildMeta(post, url) {
 // Kabuktaki mevcut etiketleri söküp yenilerini koyuyoruz.
 // Eskisi kalırsa robot ikisinden birini seçer — hangisini
 // seçeceği garanti değildir, o yüzden temizliyoruz.
+// <base href="/"> MUSS ganz oben im <head> stehen: die Regel
+// wirkt nur auf Verweise, die NACH ihr kommen. Steht sie unten,
+// bleibt alles darüber (z. B. brand.css) weiter kaputt.
+function injectBase(html) {
+  if (/<base\s/i.test(html)) return html;                 // schon vorhanden
+  // Nach der Zeichensatz-Angabe einsetzen, nicht davor: die muss
+  // ganz oben stehen, sonst kann der Browser türkische Zeichen
+  // kurzzeitig falsch deuten.
+  const charset = html.match(/<meta[^>]+charset[^>]*>/i);
+  if (charset) {
+    return html.replace(charset[0], charset[0] + '\n  <base href="/">');
+  }
+  return html.replace(/<head([^>]*)>/i, '<head$1>\n  <base href="/">');
+}
+
 function injectMeta(html, metaBlock) {
   let out = html
     .replace(/<title>[\s\S]*?<\/title>/i, '')
@@ -166,7 +181,10 @@ module.exports = async (req, res) => {
     const shell = await getShell(host);
     // Kabuk slug'ı adres çubuğundan okuyor; /gorus/<slug>
     // biçiminden de okuyabilsin diye bir ipucu bırakıyoruz.
-    const html = injectMeta(shell, metaBlock)
+    // Die Seite wird unter /gorus/<slug> ausgeliefert, verweist aber
+    // relativ auf ihre Dateien ("brand.css", "site-footer.js").
+    // Ohne <base> sucht der Browser sie unter /gorus/brand.css.
+    const html = injectBase(injectMeta(shell, metaBlock))
       .replace('</head>', '  <meta name="bb-slug" content="' + esc(slug) + '">\n</head>');
     res.status(200).send(html);
   } catch (e) {
