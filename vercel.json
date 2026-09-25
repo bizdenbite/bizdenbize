@@ -75,12 +75,12 @@
       "dest": "/premium.html"
     },
     {
-      "src": "/gorus/(?<slug>[A-Za-z0-9-]+)",
-      "dest": "/api/gorus?slug=$slug"
+      "src": "/gorus/([A-Za-z0-9-]+)",
+      "dest": "/api/gorus.js?slug=$1"
     },
     {
       "src": "/gorus",
-      "dest": "/api/gorus"
+      "dest": "/api/gorus.js"
     },
     {
       "handle": "filesystem"
