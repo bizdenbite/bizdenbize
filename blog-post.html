@@ -55,6 +55,17 @@
     .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 28px; }
     .tag { background: var(--white); border: 1px solid var(--sand); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--muted); text-decoration: none; }
     .tag:hover { border-color: var(--red); color: var(--red); }
+    .share { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--sand); }
+    .share-label { font-size: 13px; color: var(--muted); margin-bottom: 11px; }
+    .share-row { display: flex; gap: 9px; flex-wrap: wrap; }
+    .sbtn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--sand);
+      background: var(--white); border-radius: 10px; padding: 9px 15px; font-family: inherit;
+      font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; text-decoration: none; }
+    .sbtn:hover { background: var(--warm); border-color: var(--muted); }
+    .sbtn.wa { background: #25D366; border-color: #25D366; color: #fff; }
+    .sbtn.wa:hover { background: #1FAF52; border-color: #1FAF52; }
+    .sbtn .e { font-size: 15px; line-height: 1; }
+
     .c-sec { margin-top: 48px; padding-top: 30px; border-top: 1px solid var(--sand); }
     .c-head { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 18px; }
     .c-note { background: var(--white); border: 1px solid var(--sand); border-radius: 12px; padding: 18px 20px; font-size: 14px; color: var(--muted); line-height: 1.6; }
@@ -224,6 +235,66 @@
       return { url: u.toString(), height: match.height, name: match.name };
     }
 
+    // Teilen. Die Adresse wird IMMER aus BB_SITE gebaut, nie aus
+    // location.origin: auf einer Vercel-Vorschauadresse würde sonst
+    // ein Link wie bizdenbize-xyz.vercel.app in die WhatsApp-Gruppe
+    // wandern, den später niemand mehr öffnen kann.
+    const BB_SITE = 'https://bizdenbize.com';
+
+    function shareUrl(p) {
+      return `${BB_SITE}/gorus/${encodeURIComponent(p.slug)}`;
+    }
+
+    function shareText(p) {
+      const t = p.title || 'BizdenBize';
+      return `${t}\n\nBizdenBize'de oku:\n${shareUrl(p)}`;
+    }
+
+    function shareBlock() {
+      // navigator.share gibt es fast nur auf dem Handy — und genau
+      // dort ist es der beste Weg, weil es die installierten Apps
+      // anbietet. Am Rechner blenden wir den Knopf aus.
+      const native = (typeof navigator !== 'undefined' && navigator.share)
+        ? '<button class="sbtn" id="sh-native" type="button"><span class="e">📤</span>Paylaş</button>' : '';
+      return `
+        <div class="share">
+          <div class="share-label">Bu yazı işine yarar dediğin biri var mı?</div>
+          <div class="share-row">
+            <button class="sbtn wa" id="sh-wa" type="button"><span class="e">💬</span>WhatsApp'ta paylaş</button>
+            <button class="sbtn" id="sh-copy" type="button"><span class="e">🔗</span>Bağlantıyı kopyala</button>
+            ${native}
+          </div>
+        </div>`;
+    }
+
+    function wireShare(p) {
+      const wa = document.getElementById('sh-wa');
+      if (wa) wa.addEventListener('click', () => {
+        window.open('https://wa.me/?text=' + encodeURIComponent(shareText(p)), '_blank', 'noopener');
+      });
+
+      const cp = document.getElementById('sh-copy');
+      if (cp) cp.addEventListener('click', async () => {
+        const url = shareUrl(p);
+        try {
+          await navigator.clipboard.writeText(url);
+          cp.innerHTML = '<span class="e">✅</span>Kopyalandı';
+          setTimeout(() => { cp.innerHTML = '<span class="e">🔗</span>Bağlantıyı kopyala'; }, 2000);
+        } catch (e) {
+          // Zwischenablage verweigert (älterer Browser, kein HTTPS):
+          // dann die Adresse zeigen, statt so zu tun als wäre kopiert.
+          window.prompt('Bağlantıyı kopyala:', url);
+        }
+      });
+
+      const nb = document.getElementById('sh-native');
+      if (nb) nb.addEventListener('click', async () => {
+        try {
+          await navigator.share({ title: p.title, text: p.excerpt || p.title, url: shareUrl(p) });
+        } catch (e) { /* abgebrochen — nichts zu tun */ }
+      });
+    }
+
     // Beitragsbezogene Meta-Angaben. Google rendert JavaScript und
     // liest das hier — WhatsApp und Facebook NICHT. Deren Vorschau
     // bleibt die allgemeine, bis die Meta-Tags serverseitig kommen.
@@ -325,8 +396,10 @@
         ${POST.author_name ? `<div style="margin-top:26px;padding:13px 16px;background:var(--white);border:1px solid var(--sand);border-radius:11px;font-size:13px;color:var(--muted);line-height:1.6;">
           Bu bir konuk yazısıdır. Görüşler yazara aittir.</div>` : ''}
         ${(POST.tags && POST.tags.length) ? `<div class="tags">${POST.tags.map(t =>
-            `<a class="tag" href="blog.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div>` : ''}`;
+            `<a class="tag" href="blog.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div>` : ''}
+        ${shareBlock()}`;
 
+      wireShare(POST);
       setMeta(POST);
 
       document.getElementById('c-sec').hidden = false;
