@@ -245,9 +245,12 @@
       return `${BB_SITE}/gorus/${encodeURIComponent(p.slug)}`;
     }
 
+    // Nur die Adresse. WhatsApp baut daraus selbst die Karte mit
+    // Titel, Beschreibung und Bild — ein mitgeschickter Titel stünde
+    // dann doppelt da. Den begleitenden Satz schreibt die Person
+    // selbst, mit ihren eigenen Worten.
     function shareText(p) {
-      const t = p.title || 'BizdenBize';
-      return `${t}\n\nBizdenBize'de oku:\n${shareUrl(p)}`;
+      return shareUrl(p);
     }
 
     function shareBlock() {
