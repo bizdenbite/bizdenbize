@@ -354,6 +354,61 @@
     // Make available globally for onclick handlers
     window._supabase = supabase;
 
+    // ── WOHIN NACH DEM LOGIN? ─────────────────────────────────
+    // auth-gate.js legt seit jeher in sessionStorage ab, wohin
+    // jemand wollte, als er auf einer geschützten Seite abgewiesen
+    // wurde — gelesen hat das bisher niemand. Jeder landete in
+    // Mahallem und musste den Weg zurück selbst suchen.
+    //
+    // SICHERHEIT: Ein Login, der ein ungeprüftes Ziel anspringt,
+    // ist eine offene Weiterleitung. login.html?next=https://…
+    // würde die Person nach erfolgreichem Login auf eine fremde
+    // Seite schicken, die wie BizdenBize aussieht — der klassische
+    // Phishing-Aufbau. Deshalb eine POSITIVLISTE: erlaubt ist nur
+    // ein seiteneigener Pfad, nichts anderes kommt durch.
+    function safeNext(raw) {
+      if (!raw) return null;
+      const v = String(raw).trim();
+      if (!v) return null;
+
+      // Alles, was aus der eigenen Seite herausführen könnte.
+      if (v.includes(':') || v.includes('//') || v.includes('\\') || v.includes('..')) return null;
+
+      // Zurück auf login.html wäre eine Schleife.
+      if (/^\/?login\.html/i.test(v)) return null;
+
+      // Erlaubt: seite.html (optional mit ?query und #anker)
+      //      oder /gorus/<slug>
+      const page  = /^\/?[a-z0-9-]+\.html(\?[^#\s]*)?(#[\w-]*)?$/i;
+      const gorus = /^\/gorus\/[A-Za-z0-9-]+\/?$/;
+      if (!page.test(v) && !gorus.test(v)) return null;
+
+      return v.startsWith('/') ? v : '/' + v;
+    }
+
+    function nextTarget() {
+      let raw = null;
+      try { raw = new URLSearchParams(window.location.search).get('next'); } catch (e) {}
+      if (!raw) {
+        try { raw = window.sessionStorage.getItem('bb_redirect_after_login'); } catch (e) {}
+      }
+      const safe = safeNext(raw);
+      // Einmal benutzen, dann weg: ein liegengebliebenes Ziel darf
+      // den nächsten Login nicht entführen.
+      try { window.sessionStorage.removeItem('bb_redirect_after_login'); } catch (e) {}
+      return safe;
+    }
+
+    // Onboarding hat Vorrang — wer es noch nicht durchlaufen hat,
+    // muss dorthin, egal woher er kam.
+    function goAfterLogin(onboardingCompleted) {
+      // In BEIDEN Fällen einlesen, damit kein Ziel liegenbleibt und
+      // Wochen später einen fremden Login umleitet.
+      const ziel = nextTarget();
+      if (!onboardingCompleted) { window.location.replace('/onboarding.html'); return; }
+      window.location.replace(ziel || '/mahallem.html');
+    }
+
     // ── PASSWORD RECOVERY (arriving from the reset-password email link) ──
     // A recovery link logs the user in (that's how Supabase recovery works),
     // so it looks identical to a normal session to the "already logged in?"
@@ -447,7 +502,7 @@
         // Same routing as doLogin(): a confirmed-but-unonboarded user must go
         // through onboarding.html, not straight to the feed. The e-mail
         // confirmation link lands here, so this is the first-entry path.
-        if (gp && gp.status === 'approved') { window.location.replace(gp.onboarding_completed ? '/mahallem.html' : '/onboarding.html'); }
+        if (gp && gp.status === 'approved') { goAfterLogin(gp.onboarding_completed); }
         else if (gp && gp.status === 'banned') { document.getElementById('login-banned-msg').style.display='block'; await supabase.auth.signOut(); }
         else if (gp && gp.status === 'deactivated') { document.getElementById('login-deactivated-msg').style.display='block'; }
         else { document.getElementById('login-pending-msg').style.display='block'; }
@@ -676,7 +731,7 @@
 
       // First login after approval goes through onboarding; everyone else
       // straight to the feed. onboarding.html sets the flag when it finishes.
-      window.location.replace(profile.onboarding_completed ? '/mahallem.html' : '/onboarding.html');
+      goAfterLogin(profile.onboarding_completed);
     };
 
     // ── REACTIVATE (from the deactivated-account message) ──
@@ -692,7 +747,7 @@
         if (error) throw error;
         localStorage.setItem('bb_auth_token', session.access_token);
         localStorage.setItem('bb_user', JSON.stringify({ id: session.user.id, email: session.user.email }));
-        window.location.replace('/mahallem.html');
+        window.location.replace(nextTarget() || '/mahallem.html');
       } catch(e) {
         btn.disabled = false; btn.textContent = 'Hesabımı Yeniden Aktive Et';
         alert('Hata: ' + (e.message || 'Lütfen tekrar deneyin.'));
