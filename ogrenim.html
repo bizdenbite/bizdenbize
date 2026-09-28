@@ -41,15 +41,6 @@
     .hero h1 em { color: var(--gold); font-style: normal; }
     .hero-sub { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.6; margin-bottom: 28px; }
 
-    /* COUNTRY TABS */
-    .country-tabs { display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; overflow-x: auto; scrollbar-width: none; }
-    .country-tabs::-webkit-scrollbar { display: none; }
-    .country-tab { display: flex; align-items: center; gap: 7px; padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; font-family: inherit; color: rgba(255,255,255,.45); transition: all .2s; white-space: nowrap; border-bottom: 3px solid transparent; flex-shrink: 0; }
-    .country-tab:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.05); }
-    .country-tab.active { color: var(--white); border-bottom-color: var(--gold); background: rgba(255,255,255,.07); }
-    .country-tab .flag { font-size: 18px; }
-    .country-tab .count { font-size: 10px; background: rgba(255,255,255,.1); padding: 1px 6px; border-radius: 10px; margin-left: 2px; }
-    .country-tab.active .count { background: rgba(201,168,76,.25); color: var(--gold); }
 
     /* PAGE BODY */
     .page-body { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
@@ -253,13 +244,6 @@
     .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 
   
-    /* ── COUNTRY BAR ── */
-    .cbar-btn { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px; }
-    .cbar-btn:hover { border-color:rgba(255,255,255,.5);color:#fff; }
-    .cbar-btn.active { border-color:var(--red);background:var(--red);color:#fff; }
-    .cbar-soon { opacity:.45;cursor:default!important; }
-    .cbar-soon:hover { border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.6)!important; }
-    .cbar-soon-badge { font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600; }
 
   </style>
 <script>
@@ -292,25 +276,6 @@
       if (item.querySelector('a.active')) item.querySelector('.nav-item-btn').classList.add('active');
     });
   })();
-
-  function setCbarCountry(c, btn) {
-    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (typeof renderDoctors === 'function') renderDoctors();
-    if (typeof renderSwaps === 'function') renderSwaps();
-    if (typeof render === 'function') render();
-    if (typeof renderListings === 'function') renderListings();
-  }
-  function showYakinda() {
-    if (document.getElementById('yakinda-toast')) return;
-    const tip = document.createElement('div');
-    tip.id = 'yakinda-toast';
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-    tip.textContent = 'Bu ulke yakinda ekleniyor!';
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 2500);
-  }
-
   </script>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -466,34 +431,13 @@
     }
   })();
 </script>
-</div>
 
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-tag">✦ Ücretsiz · Doğrulanmış</div>
     <h1>Avrupa'da <em>Öğrenim</em></h1>
-    <p class="hero-sub">Yaşadığın ülkeyi seç — dil kurslarından üniversiteye, diploma denkliğinden Ausbildung'a tüm kaynaklar seni bekliyor.</p>
-    <div class="country-tabs" id="country-tabs">
-      <button class="country-tab active" data-country="de" onclick="setCountry('de',this)"><span class="flag">🇩🇪</span> Almanya <span class="count" id="cnt-de"></span></button>
-      <button class="country-tab" data-country="nl" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇳🇱</span> Hollanda <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-nl"></span></button>
-      <button class="country-tab" data-country="be" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇧🇪</span> Belçika <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-be"></span></button>
-      <button class="country-tab" data-country="at" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇦🇹</span> Avusturya <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-at"></span></button>
-      <button class="country-tab" data-country="gb" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇬🇧</span> İngiltere <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-gb"></span></button>
-      <button class="country-tab" data-country="fr" onclick="showYakinda()" style="opacity:.5;cursor:default;"><span class="flag">🇫🇷</span> Fransa <span style="font-size:9px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;margin-left:2px;">Yakında</span> <span class="count" id="cnt-fr"></span></button>
-    </div>
+    <p class="hero-sub">Almanya'da dil kurslarından üniversiteye, diploma denkliğinden Ausbildung'a kadar tüm kaynaklar bir arada.</p>
   </div>
-</div>
-
-<!-- COUNTRY BAR -->
-<div id="country-bar" style="background:var(--ink);border-bottom:none;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
-  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
-  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
-  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
 </div>
 
 <div class="page-body" id="page-body"></div>
@@ -563,12 +507,6 @@ const resources = [
 
 let activeCountry = 'de';
 let activeTopic = 'all';
-
-// Count per country
-['de','nl','be','at','gb','fr'].forEach(c => {
-  const el = document.getElementById('cnt-'+c);
-  if (el) el.textContent = resources.filter(r => r.country === c).length;
-});
 function setTopic(t, btn) {
   activeTopic = t;
   document.querySelectorAll('.topic-pill').forEach(b => b.classList.remove('active'));
@@ -736,11 +674,6 @@ render();
           <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px;">Ülke</label>
           <select id="sug-country" style="width:100%;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream);outline:none;cursor:pointer;">
             <option value="de">🇩🇪 Almanya</option>
-            <option value="nl">🇳🇱 Hollanda</option>
-            <option value="be">🇧🇪 Belçika</option>
-            <option value="at">🇦🇹 Avusturya</option>
-            <option value="gb">🇬🇧 İngiltere</option>
-            <option value="fr">🇫🇷 Fransa</option>
             <option value="eu">🇪🇺 Tüm AB</option>
           </select>
         </div>
