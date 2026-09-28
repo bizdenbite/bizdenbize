@@ -768,7 +768,14 @@ render();
     try {
       await sbPost('suggestions', suggestion);
     } catch(e) {
+      // Vorher wurde der Fehler nur in die Konsole geschrieben und trotzdem
+      // "Öneriniz iletildi" angezeigt. Der Nutzer glaubte dann, sein
+      // Vorschlag sei angekommen, obwohl nichts gespeichert wurde.
+      // library.html macht es an derselben Stelle richtig; hier genauso.
       console.error('Suggestion insert error:', e);
+      err.innerHTML = 'Öneriniz kaydedilemedi, lütfen tekrar deneyin.<br><span style="font-size:11px;opacity:.75;">' + (e.message || '') + '</span>';
+      err.style.display = 'block';
+      return;
     }
     showSuccess();
   }
