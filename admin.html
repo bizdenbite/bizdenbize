@@ -452,6 +452,8 @@
         <button class="tab-btn" onclick="showTab('reviews', this)">⭐ Değerlendirmeler</button>
         <button class="tab-btn" onclick="showTab('doctors', this)">🏥 Doktorlar</button>
         <button class="tab-btn" onclick="showTab('tutors', this)">📚 Öğretmenler</button>
+        <button class="tab-btn" onclick="showTab('seekers', this)">🔍 Ders Arayanlar</button>
+        <button class="tab-btn" onclick="showTab('suggestions', this)">💡 Öneriler</button>
       </div>
       <div class="tab-pane active" id="tab-listings">
         <div class="card">
@@ -490,6 +492,22 @@
           <table>
             <thead><tr><th>Öğretmen / İletişim</th><th>Ders</th><th>Şehir</th><th>Fiyat</th><th>Durum</th><th>İşlem</th></tr></thead>
             <tbody id="tutors-tbody"><tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-seekers">
+        <div class="card">
+          <table>
+            <thead><tr><th>Veli / İletişim</th><th>Ders</th><th>Seviye</th><th>Şehir</th><th>Bütçe</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <tbody id="seekers-tbody"><tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tab-pane" id="tab-suggestions">
+        <div class="card">
+          <table>
+            <thead><tr><th>Başlık / Link</th><th>Sayfa</th><th>Konu</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
+            <tbody id="suggestions-tbody"><tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1144,12 +1162,17 @@
 
   async function loadContent() {
     try {
-      const [listings, swaps, reviews, doctors, tutors] = await Promise.all([
+      const [listings, swaps, reviews, doctors, tutors, seekers, suggestions] = await Promise.all([
         sb('listings?select=*&order=created_at.desc'),
         sb('swap_offers?select=*&order=created_at.desc'),
         sb('swap_reviews?select=*&order=created_at.desc'),
         sb('doctors?select=*'),
-        sb('tutors?select=*')
+        sb('tutors?select=*'),
+        // Diese beiden einzeln abfangen: laeuft admin_oneriler_arayanlar.sql
+        // noch nicht, wuerde Promise.all abbrechen und die ganze Seite
+        // bliebe leer — auch Ilanlar, Takas, Doktoren und Oegretmenler.
+        sb('seeker_requests?select=*&order=created_at.desc').catch(e => ({ __error: e.message })),
+        sb('suggestions?select=*&order=created_at.desc').catch(e => ({ __error: e.message }))
       ]);
 
       document.getElementById('listings-tbody').innerHTML = listings.length ? listings.map(l => `
@@ -1197,6 +1220,66 @@
         </tr>`;
       }).join('') : `<tr class="loading-row"><td colspan="6">Kayıt bulunamadı.</td></tr>`;
 
+      // Ders Arayanlar — Anzeigen von Eltern. Gehen ungeprueft live,
+      // deshalb muss man sie wenigstens zurueckziehen koennen.
+      const seekRow = document.getElementById('seekers-tbody');
+      if (seekers && seekers.__error) {
+        seekRow.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--red);">Liste okunamadı: ${escH(seekers.__error)}<br><span style="font-size:11px;">admin_oneriler_arayanlar.sql çalıştırıldı mı?</span></td></tr>`;
+      } else {
+        const sk = Array.isArray(seekers) ? seekers : [];
+        seekRow.innerHTML = sk.length ? sk.map(r => {
+          const live = r.active !== false;
+          return `
+        <tr>
+          <td><div style="font-weight:600;">${escH(r.parent_name || '—')}</div><div style="font-size:11px;color:var(--muted);">${escH(r.contact || '')}</div></td>
+          <td style="font-size:12px;">${escH(r.subject || '—')}</td>
+          <td style="font-size:12px;">${escH(r.level || '—')}</td>
+          <td>${escH(r.city || '—')}</td>
+          <td style="font-size:12px;">${escH(r.budget || '—')}</td>
+          <td>${live ? '<span class="badge badge-green">✓ Yayında</span>' : '<span class="badge badge-gold">🙈 Gizli</span>'}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-sm btn-muted" onclick="toggleSeeker('${r.id}', ${live ? 'false' : 'true'})">${live ? '🙈 Gizle' : '✅ Yayınla'}</button>
+              <button class="btn btn-sm btn-red" onclick="deleteContent('seeker_requests','${r.id}')">🗑 Sil</button>
+            </div>
+          </td>
+        </tr>`;
+        }).join('') : `<tr class="loading-row"><td colspan="7">Kayıt bulunamadı.</td></tr>`;
+      }
+
+      // Öneriler — Nutzer bekommen "sayfaya ekleyeceğiz" zu lesen.
+      // Hier ist der Ort, an dem dieses Versprechen eingeloest wird.
+      const sugRow = document.getElementById('suggestions-tbody');
+      if (suggestions && suggestions.__error) {
+        sugRow.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--red);">Liste okunamadı: ${escH(suggestions.__error)}<br><span style="font-size:11px;">admin_oneriler_arayanlar.sql çalıştırıldı mı?</span></td></tr>`;
+      } else {
+        const sg = Array.isArray(suggestions) ? suggestions : [];
+        const open = sg.filter(x => x.status !== 'done').length;
+        const badge = document.getElementById('nav-badge-suggestions');
+        if (badge) { badge.textContent = open; badge.style.display = open ? '' : 'none'; }
+        sugRow.innerHTML = sg.length ? sg.map(x => {
+          const done = x.status === 'done';
+          return `
+        <tr${done ? ' style="opacity:.55;"' : ''}>
+          <td>
+            <div style="font-weight:600;">${escH(x.title || '—')}</div>
+            ${x.url ? `<a href="${escH(x.url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--indigo,#4338CA);word-break:break-all;">${escH(x.url)}</a>` : ''}
+            ${x.description ? `<div style="font-size:11px;color:var(--muted);margin-top:3px;">${escH(x.description)}</div>` : ''}
+          </td>
+          <td style="font-size:12px;">${escH(x.page || '—')}</td>
+          <td style="font-size:12px;">${escH(x.topic || x.cat || '—')}</td>
+          <td>${done ? '<span class="badge badge-green">✓ İşlendi</span>' : '<span class="badge badge-gold">⏳ Yeni</span>'}</td>
+          <td style="font-size:11px;color:var(--muted);">${fmtDate(x.created_at)}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-sm btn-muted" onclick="markSuggestion('${x.id}', ${done ? 'false' : 'true'})">${done ? '↩︎ Geri al' : '✓ İşlendi'}</button>
+              <button class="btn btn-sm btn-red" onclick="deleteContent('suggestions','${x.id}')">🗑 Sil</button>
+            </div>
+          </td>
+        </tr>`;
+        }).join('') : `<tr class="loading-row"><td colspan="6">Henüz öneri yok.</td></tr>`;
+      }
+
     } catch(e) { console.error('Content load error:', e); }
   }
 
@@ -1205,6 +1288,22 @@
     try { await sb(`${table}?id=eq.${id}`, { method:'DELETE' }); loadContent(); toast('Kayıt silindi.'); }
     catch(e) { toast('Silme hatası.', false); }
   }
+
+  window.toggleSeeker = async function(id, makeActive) {
+    try {
+      await sb(`seeker_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: makeActive }) });
+      toast(makeActive ? 'İlan yeniden yayında ✓' : 'İlan gizlendi.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
+  window.markSuggestion = async function(id, done) {
+    try {
+      await sb(`suggestions?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: done ? 'done' : 'new' }) });
+      toast(done ? 'Öneri işlendi olarak işaretlendi ✓' : 'Yeniden "yeni" olarak işaretlendi.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
 
   window.approveSwap = async function(id) {
     try {
