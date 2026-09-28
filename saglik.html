@@ -24,23 +24,6 @@
   document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('click',e=>{if(!e.target.closest('.nav-item')){document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.remove('open'));}});});
   function toggleMenu(){const hb=document.getElementById('hamburger'),menu=document.getElementById('mobile-menu');hb.classList.toggle('open');menu.classList.toggle('open');document.body.style.overflow=menu.classList.contains('open')?'hidden':'';}
   
-  function setCbarCountry(c, btn) {
-    document.querySelectorAll('.cbar-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (typeof renderDoctors === 'function') renderDoctors();
-    if (typeof renderSwaps === 'function') renderSwaps();
-    if (typeof render === 'function') render();
-    if (typeof renderListings === 'function') renderListings();
-  }
-  function showYakinda() {
-    if (document.getElementById('yakinda-toast')) return;
-    const tip = document.createElement('div');
-    tip.id = 'yakinda-toast';
-    tip.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1208;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;z-index:9999;white-space:nowrap;';
-    tip.textContent = 'Bu ulke yakinda ekleniyor!';
-    document.body.appendChild(tip);
-    setTimeout(() => tip.remove(), 2500);
-  }
 
   </script>
   <style>
@@ -197,6 +180,8 @@
     .tag-verified{background:rgba(8,145,178,.08);color:#0891B2;}
     .doctor-rating{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
     .doctor-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--warm);margin-top:auto;}
+    .btn-map{flex:1;padding:13px;background:#fff;color:var(--ink);border:1.5px solid var(--sand);border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+    .btn-map:hover{background:var(--warm);border-color:var(--muted);}
     .doctor-contact-btn{padding:7px 14px;background:#0891B2;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
     .disclaimer{font-size:10px;color:var(--sand);padding-top:5px;border-top:1px dashed var(--warm);}
 
@@ -242,7 +227,6 @@
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
     .btn-red{flex:1;padding:13px;background:#0891B2;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
     .btn-red:hover{background:#0E7490;}
-    .btn-wa{flex:1;padding:13px;background:#25D366;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
     .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
     .info-box{background:var(--warm);border-radius:10px;padding:12px 14px;}
     .info-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;}
@@ -252,12 +236,6 @@
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
   
     /* ── COUNTRY BAR ── */
-    .cbar-btn { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px; }
-    .cbar-btn:hover { border-color:rgba(255,255,255,.5);color:#fff; }
-    .cbar-btn.active { border-color:var(--red);background:var(--red);color:#fff; }
-    .cbar-soon { opacity:.45;cursor:default!important; }
-    .cbar-soon:hover { border-color:rgba(255,255,255,.2)!important;color:rgba(255,255,255,.6)!important; }
-    .cbar-soon-badge { font-size:9px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:1px 5px;border-radius:8px;font-weight:600; }
 
   </style>
   <link rel="stylesheet" href="brand.css">
@@ -459,17 +437,10 @@
   </div>
 </div>
 
-<!-- COUNTRY BAR -->
-<div id="country-bar" style="background:var(--ink);border-bottom:none;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:100;">
-  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-right:4px;">Ülke</span>
-  <button class="cbar-btn active" onclick="setCbarCountry('all',this)">Tümü</button>
-  <button class="cbar-btn" onclick="setCbarCountry('de',this)">🇩🇪 DE</button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇳🇱 NL <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇧🇪 BE <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇦🇹 AT <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇬🇧 GB <span class="cbar-soon-badge">Yakında</span></button>
-  <button class="cbar-btn cbar-soon" onclick="showYakinda()">🇫🇷 FR <span class="cbar-soon-badge">Yakında</span></button>
-</div>
+<!-- Die Länderleiste stand hier. Entfernt: sie filterte nichts — "Tümü"
+     und "DE" lösten dasselbe Neuzeichnen aus — und stellte fünf weitere
+     Länder als demnächst verfügbar dar, für die es keinen Termin gibt.
+     Alle Einträge liegen in Deutschland. -->
 
 <!-- PAGE BODY -->
 <div class="page-body" id="page-body"></div>
@@ -492,7 +463,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-red" id="dm-phone-btn">📞 Ara</button>
-      <button class="btn-wa" id="dm-wa-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>
+      <button class="btn-map" id="dm-map-btn">🗺️ Haritada ara</button>
     </div>
   </div>
 </div>
@@ -852,8 +823,18 @@ function openDoctorById(id) {
     <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${d.lang || (d.languages||[]).join(' / ') || '—'}</div></div>
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating || '—'} (${d.reviews||d.review_count||0})</div></div>`;
   document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
+  // Bewusst KEINE gespeicherte Website oder Adresse: eine Praxis zieht um
+  // oder wechselt die Domain, und ein veralteter Eintrag auf einer
+  // Gesundheitsseite ist schlechter als gar keiner. Die Kartensuche wird
+  // aus Name und Stadt gebaut und zeigt immer den heutigen Stand —
+  // Adresse, Öffnungszeiten, Telefon, Website.
+  document.getElementById('dm-map-btn').onclick = () => {
+    const q = [d.name, d.city, 'Almanya'].filter(Boolean).join(' ');
+    window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q),
+                '_blank', 'noopener');
+  };
+
   document.getElementById('dm-phone-btn').onclick = () => window.location.href = `tel:${d.phone}`;
-  document.getElementById('dm-wa-btn').onclick = () => window.open(`https://wa.me/${(d.phone||'').replace(/\s|\+|-/g,'')}?text=${encodeURIComponent(`Merhaba, BizdenBize üzerinden ${d.name} ile randevu/bilgi almak istiyorum.`)}`, '_blank');
   document.getElementById('doctor-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
