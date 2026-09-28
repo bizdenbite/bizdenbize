@@ -89,6 +89,25 @@
 
     /* BODY */
     .page-body{max-width:1100px;margin:0 auto;padding:28px 24px 80px;}
+    /* ── ÜCRETSIZ DESTEK ── */
+    .help-sec{margin-top:44px;padding-top:32px;border-top:1px solid var(--sand);}
+    .help-sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .help-sec-sub{font-size:13px;color:var(--muted);line-height:1.65;max-width:680px;margin-bottom:20px;}
+    .help-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+    .help-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:9px;}
+    .help-card.accent{border-left:4px solid var(--gold);}
+    .help-badge{align-self:flex-start;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:3px 9px;border-radius:20px;background:var(--warm);color:var(--muted);}
+    .help-badge.state{background:rgba(201,168,76,.22);color:#8A6F1F;}
+    .help-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.35;}
+    .help-text{font-size:13px;color:var(--ink);line-height:1.7;}
+    .help-how{font-size:12.5px;color:var(--muted);line-height:1.65;background:var(--cream);border-radius:9px;padding:10px 12px;}
+    .help-how b{color:var(--ink);}
+    .help-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:2px;}
+    .help-src{font-size:11px;color:var(--muted);}
+    .help-link{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--indigo);text-decoration:none;}
+    .help-link:hover{text-decoration:underline;}
+    .help-note{margin-top:16px;font-size:11.5px;color:var(--muted);line-height:1.65;background:var(--warm);border-radius:10px;padding:12px 14px;}
+    @media (min-width:760px){ .help-grid{grid-template-columns:1fr 1fr;} }
     .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
     .results-count{font-size:13px;color:var(--muted);}
     .results-count strong{color:var(--ink);}
@@ -326,6 +345,62 @@
     </div>
     <div class="seeker-grid" id="seeker-grid"></div>
   </div>
+
+  <!-- ÜCRETSIZ DESTEK IMKÂNLARI -->
+  <section class="help-sec">
+    <h2 class="help-sec-title">Ücretsiz Destek İmkânları</h2>
+    <p class="help-sec-sub">Özel ders verenlerin yanında, Almanya'da devletin ve derneklerin sunduğu ücretsiz destekler de var — birçok aile bunları bilmiyor. Aşağıdaki bilgiler kamuya açık resmî kaynaklardan derlendi. Başvuru ve güncel koşullar için doğrudan ilgili kuruma bakın.</p>
+
+    <div class="help-grid">
+
+      <article class="help-card accent">
+        <span class="help-badge state">Devlet ödüyor</span>
+        <h3 class="help-title">Nachhilfe masrafını devlet karşılıyor — „Bildung und Teilhabe"</h3>
+        <p class="help-text">Çocuğunuzun yaşadığı hanede <b>Bürgergeld, Sozialhilfe, Sozialgeld, Wohngeld, Kinderzuschlag</b> veya <b>Asylbewerberleistungen</b> alınıyorsa, okul için özel ders (<i>Lernförderung</i>) masrafları karşılanabiliyor. Eskiden „sınıf tekrarı riski" şartı vardı — bu şart kaldırıldı, yani notunu yükseltmek isteyen öğrenci de yararlanabiliyor. Okula devam eden öğrenciler için 25 yaşına kadar geçerli.</p>
+        <div class="help-how"><b>Nereye başvurulur:</b> Bürgergeld alıyorsanız Jobcenter'a; diğer durumlarda oturduğunuz yerin belediyesine (Stadt, Gemeinde ya da Landratsamt). Başvuru çocuk başına yapılır ve ücretsizdir.</div>
+        <div class="help-meta">
+          <span class="help-src">Kaynak: Familienportal (Bundesfamilienministerium)</span>
+          <a class="help-link" href="https://www.familienportal.de/familienportal/familienleistungen/bildung-und-teilhabe" target="_blank" rel="noopener">Resmî bilgi →</a>
+        </div>
+      </article>
+
+      <article class="help-card">
+        <span class="help-badge">Ücretsiz · Online</span>
+        <h3 class="help-title">Lern-Fair — birebir ücretsiz online ders</h3>
+        <p class="help-text">Gönüllü üniversite öğrencileri, Almanya'da yaşayan <b>7–27 yaş</b> arası öğrenci ve çıraklara birebir ücretsiz online ders veriyor. Dernek kendi ifadesiyle „kostenlose Nachhilfe für benachteiligte Schüler:innen und Azubis" sunuyor. Kayıt internetten yapılıyor.</p>
+        <div class="help-how"><b>Not:</b> Dersler Almanca yapılıyor. Kayıttan sonra öğrenciye uygun bir gönüllü eşleştiriliyor, bu biraz zaman alabiliyor.</div>
+        <div class="help-meta">
+          <span class="help-src">Kaynak: lern-fair.de</span>
+          <a class="help-link" href="https://app.lern-fair.de/registration" target="_blank" rel="noopener">Kayıt ol →</a>
+        </div>
+      </article>
+
+      <article class="help-card">
+        <span class="help-badge">Ücretsiz · Reklamsız</span>
+        <h3 class="help-title">Serlo — ücretsiz çalışma platformu</h3>
+        <p class="help-text">Kâr amacı gütmeyen <b>Serlo Education e.V.</b>'nin platformu: matematik ağırlıklı, ayrıca biyoloji, fizik, kimya ve bilişim. Üyelik gerekmiyor, reklam yok, tamamen ücretsiz. İçerik Vikipedi gibi gönüllüler tarafından yazılıyor ve serbest lisansla paylaşılıyor.</p>
+        <div class="help-how"><b>Ne işe yarar:</b> Konu anlatımı ve bol alıştırma — sınav öncesi tekrar veya öğretmenle çalışırken yanında kullanmak için. İçerik Almanca.</div>
+        <div class="help-meta">
+          <span class="help-src">Kaynak: de.serlo.org</span>
+          <a class="help-link" href="https://de.serlo.org/" target="_blank" rel="noopener">Platforma git →</a>
+        </div>
+      </article>
+
+      <article class="help-card">
+        <span class="help-badge">Gönüllü mentor</span>
+        <h3 class="help-title">LESEMENTOR — okuma ve dil desteği</h3>
+        <p class="help-text">Gönüllü okuma mentorları, çocuklarla <b>haftada bir saat, okulda birebir</b> çalışıyor: okuma alışkanlığı, kelime dağarcığı ve dil becerisi. Evde Türkçe konuşulan ailelerin çocukları için özellikle işe yarıyor.</p>
+        <div class="help-how"><b>Nasıl başvurulur:</b> Eşleştirmeyi okul yapıyor — önce sınıf öğretmeniyle konuşun. Bölgenizde dernek var mı diye merkezden sorabilirsiniz: <b>info@mentor-bundesverband.de</b> · <b>0221 168 447 44</b>. Mentorlar gönüllü çalışıyor; aileden katkı isteniyor mu, bunu dernek söylüyor.</div>
+        <div class="help-meta">
+          <span class="help-src">Kaynak: LESEMENTOR Bundesverband e.V.</span>
+          <a class="help-link" href="https://mentor-bundesverband.de/" target="_blank" rel="noopener">Dernek sayfası →</a>
+        </div>
+      </article>
+
+    </div>
+
+    <p class="help-note">⚠️ Bu kurumlar BizdenBize'nin parçası değil; hizmetlerinden ve koşullarından BizdenBize sorumlu değildir. Bilgiler Eylül 2026'da kurumların kendi sayfalarından derlendi — koşullar değişebilir, başvurmadan önce kontrol edin. Listede olmayan ve işinize yarayan bir destek biliyorsanız bize yazın, ekleyelim.</p>
+  </section>
 </div>
 
 <!-- TUTOR DETAIL MODAL -->
