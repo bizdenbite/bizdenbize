@@ -388,6 +388,7 @@
   let clAll=[];
   let currentCat = 'all';
   let currentLoc = 'all';
+  let currentPrice = 'all';
 
   async function loadListings(){
     const box=document.getElementById('listings-grid');
@@ -427,6 +428,17 @@
       rows = rows.filter(l => (l.city || '').trim().toLowerCase() === want.toLowerCase());
     }
 
+    if (currentPrice !== 'all') {
+      // price ist NULL, wenn der Anbieter "Pazarlık" gewaehlt hat. Solche
+      // Anzeigen haben keinen Preis und koennen in keiner Spanne liegen,
+      // deshalb fallen sie hier raus. Die Grenzen sind beidseitig
+      // einschliessend, genau wie die Beschriftung sie liest.
+      const [lo, hi] = currentPrice === '2000+'
+        ? [2000, Infinity]
+        : currentPrice.split('-').map(Number);
+      rows = rows.filter(l => l.price != null && l.price >= lo && l.price <= hi);
+    }
+
     const countEl=document.getElementById('cl-count');
     if(countEl) countEl.textContent = rows.length+' ilan';
     if(!rows.length){
@@ -438,6 +450,11 @@
 
   window.clFilterLoc = function(val) {
     currentLoc = val;
+    renderListings();
+  };
+
+  window.clFilterPrice = function(val) {
+    currentPrice = val;
     renderListings();
   };
 
