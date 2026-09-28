@@ -460,15 +460,39 @@
 <script>
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
-  const _SB_H = { 'apikey': _SB_KEY, 'Authorization': 'Bearer ' + _SB_KEY, 'Content-Type': 'application/json' };
+  // Das Zugangstoken der angemeldeten Person MUSS mitgeschickt werden.
+  // Vorher stand hier nur der öffentliche Schlüssel — für die Datenbank
+  // war damit jede Anfrage anonym, auch bei eingeloggtem Mitglied. Eine
+  // RLS-Regel für "authenticated" greift dann nie, und Supabase antwortet
+  // mit HTTP 200 und null Zeilen: kein Fehler, nur eine leere Seite.
+  //
+  // Die Kopfzeilen werden bei JEDEM Aufruf neu gebaut, nicht einmal beim
+  // Laden — sonst hinge ein abgelaufenes Token fest.
+  function _sbToken() {
+    try {
+      const raw = window.localStorage.getItem('sb-wxjudojlwksivhzjnmim-auth-token');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      const sess = (s && (s.currentSession || s)) || null;
+      return (sess && sess.access_token) ? sess.access_token : null;
+    } catch (e) { return null; }
+  }
+  function _sbHeaders(extra) {
+    const tok = _sbToken();
+    return Object.assign({
+      'apikey': _SB_KEY,
+      'Authorization': 'Bearer ' + (tok || _SB_KEY),
+      'Content-Type': 'application/json'
+    }, extra || {});
+  }
 
   async function sbGet(table, params) {
-    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _SB_H });
+    const r = await fetch(_SB_URL + '/rest/v1/' + table + '?' + params, { headers: _sbHeaders() });
     if (!r.ok) throw new Error('DB error: ' + r.status);
     return r.json();
   }
   async function sbPost(table, data) {
-    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: {..._SB_H, 'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    const r = await fetch(_SB_URL + '/rest/v1/' + table, { method:'POST', headers: _sbHeaders({ 'Prefer': 'return=minimal' }), body: JSON.stringify(data) });
     if (!r.ok) throw new Error('DB insert error: ' + r.status);
   }
 
