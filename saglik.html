@@ -573,15 +573,48 @@ let activeSection = 'doctors';
 let activeSpec = 'all';
 // Kaynak veride uzmanlık alanları Almanca yazılı; filtre butonları Türkçe.
 // Bu yüzden tam eşleşme değil, anahtar kelime eşleşmesi kullanıyoruz.
+// Fachgebiete stehen in ZWEI Sprachen in der Tabelle: importierte
+// Einträge tragen die deutsche Bezeichnung ("Gynäkologie"), das
+// Vorschlagsformular speichert die türkische ("Kadın Doğum").
+// Vorher standen hier nur deutsche Begriffe — jeder von Mitgliedern
+// vorgeschlagene Arzt war deshalb unter keinem Filter auffindbar.
+//
+// Damit nicht jede Schreibweise einzeln gepflegt werden muss, werden
+// Suchbegriff und Datenbankwert vorher auf reines ASCII gebracht:
+// "Kadın Doğum" und "Gynäkologie" werden zu "kadin dogum" und
+// "gynakologie". Die Stichwörter unten sind deshalb alle ohne
+// Sonderzeichen geschrieben.
+function normSpec(v) {
+  return String(v || '')
+    .replace(/[çÇ]/g, 'c').replace(/[ğĞ]/g, 'g')
+    .replace(/[ıİ]/g, 'i').replace(/[öÖ]/g, 'o')
+    .replace(/[şŞ]/g, 's').replace(/[üÜ]/g, 'u')
+    .replace(/[äÄ]/g, 'a').replace(/[ßẞ]/g, 'ss')
+    .toLowerCase()
+    .replace(/\u0307/g, '');   // Restpunkt, den manche Browser bei İ lassen
+}
+
 const SPEC_KEYWORDS = {
-  aile:     ['allgemeinmedizin', 'innere medizin', 'internist', 'hausarzt'],
-  kadin:    ['gynäk', 'gynak', 'geburtshilfe', 'pränatal'],
-  cocuk:    ['kinder', 'jugend'],
-  ruh:      ['psychiatrie', 'psychotherapie', 'psycholog', 'neurologie'],
-  kbb:      ['hals-nasen-ohren', 'hno'],
-  cilt:     ['dermatolog', 'hautarzt', 'venerolog'],
-  kalp:     ['kardiolog', 'herz'],
-  cerrahi:  ['chirurgie', 'orthopäd', 'orthopad', 'urolog', 'nephrolog', 'dialyse'],
+  aile:     ['allgemeinmedizin', 'innere medizin', 'internist', 'hausarzt',
+             'aile hekimi', 'dahiliye', 'ic hastalik', 'pratisyen'],
+  kadin:    ['gynak', 'geburtshilfe', 'pranatal',
+             'kadin dogum', 'jinekolog', 'dogum'],
+  cocuk:    ['kinder', 'jugend',
+             'cocuk', 'pediatri'],
+  ruh:      ['psychiatrie', 'psychotherapie', 'psycholog', 'neurologie',
+             'psikiyatr', 'psikolog', 'ruh sagligi', 'noroloji'],
+  kbb:      ['hals-nasen-ohren', 'hno',
+             'kbb', 'kulak burun bogaz'],
+  cilt:     ['dermatolog', 'hautarzt', 'venerolog',
+             'cilt', 'deri hastalik'],
+  kalp:     ['kardiolog', 'herz',
+             'kardiyolo', 'kalp'],
+  cerrahi:  ['chirurgie', 'orthopad', 'urolog', 'nephrolog', 'dialyse',
+             'cerrah', 'ortopedi', 'uroloji', 'nefroloji', 'diyaliz'],
+  dis:      ['zahnarzt', 'zahnmedizin', 'kieferorthopad', 'oralchirurgie',
+             'dis hekimi', 'dis doktoru', 'ortodonti'],
+  goz:      ['augenheilkunde', 'augenarzt', 'ophthalmolog',
+             'goz doktoru', 'goz hastalik', 'oftalmolo'],
 };
 let activeCity = '';
 
@@ -660,6 +693,8 @@ function render() {
         <button class="dir-filter-btn spec-btn" onclick="setSpec('cilt',this)">🧴 Cilt</button>
         <button class="dir-filter-btn spec-btn" onclick="setSpec('kalp',this)">❤️ Kalp</button>
         <button class="dir-filter-btn spec-btn" onclick="setSpec('cerrahi',this)">🦴 Cerrahi / Ortopedi</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('dis',this)">🦷 Diş</button>
+        <button class="dir-filter-btn spec-btn" onclick="setSpec('goz',this)">👁️ Göz</button>
       </div>
       <div class="results-bar">
         <div class="results-count" id="doc-count">Yükleniyor...</div>
@@ -726,7 +761,7 @@ async function renderDoctors() {
 
   const filtered = allDoctors.filter(d => {
     if (activeSpec === 'all') return true;
-    const s = String(d.spec || d.specialty || '').toLowerCase();
+    const s = normSpec(d.spec || d.specialty);
     const keys = SPEC_KEYWORDS[activeSpec];
     if (!keys) return s === activeSpec;          // eski davranış, yedek olarak
     return keys.some(k => s.includes(k));
