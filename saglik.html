@@ -436,7 +436,7 @@
       <a href="abibot.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🤖 AbiBOT'a Sor</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hstat-val" id="stat-doctors">—</div><div class="hstat-label">Topluluk Önerisi</div></div>
+      <div><div class="hstat-val" id="stat-doctors">—</div><div class="hstat-label">Listedeki Doktor</div></div>
       <div><div class="hstat-val">116117</div><div class="hstat-label">Resmî Doktor Arama</div></div>
       <div><div class="hstat-val">Ücretsiz</div><div class="hstat-label">Rehberler</div></div>
     </div>
@@ -644,7 +644,7 @@ function render() {
   const body = document.getElementById('page-body');
   if (activeSection === 'doctors') {
     body.innerHTML = `
-      <div class="section-header"><div class="section-title">🏥 Türkçe Konuşan Doktorlar</div><div class="section-sub">Topluluk üyelerimizin kendi deneyimlerine dayanarak önerdiği doktorlar</div></div>
+      <div class="section-header"><div class="section-title">🏥 Türkçe Konuşan Doktorlar</div><div class="section-sub">Kamuya açık kaynaklardan derlendi; üyelerimizin önerileriyle büyüyor</div></div>
 
       <div style="background:var(--warm);border:1px solid var(--sand);border-radius:14px;padding:20px 22px;margin-bottom:24px;">
         <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px;">
@@ -775,8 +775,9 @@ async function renderDoctors() {
       <div style="font-size:40px;margin-bottom:12px">🌱</div>
       <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;">Bu liste topluluğumuzla birlikte büyüyor</div>
       <p style="font-size:13.5px;line-height:1.6;max-width:440px;margin:0 auto 18px;">
-        Buradaki öneriler yalnızca üyelerimizin gerçekten gittiği doktorlardan oluşur — bu yüzden
-        yavaş büyür ama güvenilirdir. Memnun kaldığın bir doktor varsa toplulukla paylaş.
+        Bu listenin çekirdeği kamuya açık kaynaklardan derlendi — yani henüz kimsenin
+        tavsiyesi değil, sadece bir başlangıç. Asıl değeri, üyelerimizin kendi gittiği
+        doktorları eklemesiyle oluşacak. Memnun kaldığın bir doktor varsa toplulukla paylaş.
       </p>
       <p style="font-size:13px;line-height:1.6;max-width:440px;margin:0 auto;">
         Hemen bir doktor arıyorsan yukarıdaki <strong>resmî 116117 arama</strong> bağlantısını kullan —
