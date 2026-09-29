@@ -2,7 +2,7 @@
 // Include this in every HTML page: <script src="bizdenbize-client.js"></script>
 // Place BEFORE any page scripts
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { createClient } from '/supabase.js';
 
 // ── CONFIG ──────────────────────────────────────
 // Replace these with your actual Supabase project values

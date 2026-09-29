@@ -3,7 +3,7 @@
 // Self-contained: creates its own Supabase client and reads the logged-in
 // session from shared browser storage, so it works regardless of how each
 // page initialises Supabase. Injects its own CSS + badge element.
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { createClient } from '/supabase.js';
 
 const SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
 const SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
