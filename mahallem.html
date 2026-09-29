@@ -766,6 +766,7 @@
       <button class="loc-btn active" id="filter-city" data-tier="city">📍 —</button>
       <button class="loc-btn" data-tier="germany">🇩🇪 Almanya</button>
       <button class="loc-btn" data-tier="europe">🌍 Tüm Avrupa</button>
+      <button class="loc-btn" data-tier="komsularim">🏘️ Komşularım</button>
       <button class="loc-btn" data-tier="saved">🔖 Kaydettiklerim</button>
     </div>
 
@@ -1147,6 +1148,7 @@
   // Load all profiles for counts and new members
   const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at`, { headers });
   const allProfiles = await allRes.json();
+  window._allProfiles = allProfiles;
 
   // Load who the current user already follows, and their follower count
   // (for the "Takip Ediliyor" button state and the sidebar stat).
@@ -1156,6 +1158,7 @@
   ]);
   const myFollows = await myFollowsRes.json().catch(() => []);
   const myFollowingIds = new Set((Array.isArray(myFollows) ? myFollows : []).map(f => f.following_id));
+  window._myFollowingIds = myFollowingIds;
   const myFollowers = await myFollowersRes.json().catch(() => []);
   const sidebarConnEl = document.getElementById('sidebar-connections');
   if (sidebarConnEl) sidebarConnEl.textContent = Array.isArray(myFollowers) ? myFollowers.length : '—';
@@ -1433,11 +1436,64 @@
     );
   }
 
+  // Wer noch niemandem folgt, sieht hier keine leere Seite, sondern die
+  // Nachbarn aus der eigenen Stadt mit dem Folgen-Knopf. Der Reiter fuellt
+  // sich dadurch selbst — sonst waere er ausgerechnet fuer neue Mitglieder
+  // der leerste von allen.
+  function komsuBaslangic() {
+    const folgt = window._myFollowingIds && window._myFollowingIds.size > 0;
+    const alle  = Array.isArray(window._allProfiles) ? window._allProfiles : [];
+    const stadt = (city || '').toLowerCase();
+    const vorschlaege = alle
+      .filter(p => p.id !== user.id)
+      .filter(p => !(window._myFollowingIds && window._myFollowingIds.has(p.id)))
+      .filter(p => !stadt || (p.city || '').toLowerCase() === stadt)
+      .slice(0, 8);
+
+    const kopf = folgt
+      ? `<div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);margin-bottom:6px;">Komşularından henüz paylaşım yok</div>
+         <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Takip ettiklerin bir şey paylaştığında burada görünecek. Daha fazla komşu eklemek istersen:</p>`
+      : `<div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);margin-bottom:6px;">Henüz kimseyi takip etmiyorsun</div>
+         <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Birkaç komşu seç — paylaşımları bundan sonra burada toplanır.</p>`;
+
+    if (!vorschlaege.length) {
+      return `<div style="padding:32px 24px;">${kopf}
+        <div style="font-size:13px;color:var(--muted);">${stadt ? 'Şehrinde şu an başka üye görünmüyor.' : 'Yakın üyeleri görmek için profilinde şehrini belirt.'}</div>
+      </div>`;
+    }
+
+    const farben = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+    const zeilen = vorschlaege.map((m, i) => {
+      const ad  = `${m.first_name||''} ${m.last_name||''}`.trim() || 'Üye';
+      const bas = ((m.first_name?.[0]||'') + (m.last_name?.[0]||'')).toUpperCase() || '?';
+      const fb  = farben[i % farben.length];
+      const ort = m.city ? `${m.city}${m.country ? ', ' + m.country : ''}` : '';
+      const av  = m.avatar_url
+        ? `<img src="${escapeHtmlPost(m.avatar_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+        : bas;
+      return `<div class="nearby-user" style="padding:10px 0;border-bottom:1px solid var(--warm);">
+        <a href="profil.html?id=${m.id}" style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-decoration:none;color:inherit;">
+          <div class="nu-avatar" style="background:${fb}">${av}</div>
+          <div><div class="nu-name">${escapeHtmlPost(ad)}</div><div class="nu-city">${escapeHtmlPost(ort)}</div></div>
+        </a>
+        <button class="connect-btn" data-user-id="${m.id}" onclick="toggleFollow(this)">Takip Et</button>
+      </div>`;
+    }).join('');
+
+    return `<div style="padding:24px;">${kopf}${zeilen}
+      <button onclick="window.setFeedTier('komsularim')"
+        style="margin-top:18px;padding:10px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+        Takip ettiklerimi göster
+      </button>
+    </div>`;
+  }
+
   function renderFeedFromCache() {
     const el = document.getElementById('posts-feed');
     if (!el) return;
     const list = applyClientFilters(window._allPosts);
     if (!list.length) {
+      if (window._feedTier === 'komsularim') { el.innerHTML = komsuBaslangic(); return; }
       el.innerHTML = window._feedTier === 'saved'
         ? `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz kaydettiğiniz bir gönderi yok.</div>`
         : `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px;">Henüz paylaşım yok. İlk paylaşımı sen yap! 👋</div>`;
@@ -1457,6 +1513,30 @@
       const mineB = await r3.json();
       window._myBookmarkedPostIds = new Set((mineB||[]).map(x => x.post_id));
     } catch(e) { console.error('Bookmarks load error:', e); }
+
+    // Komşularım: Beiträge der Leute, denen man folgt.
+    // Die Folgen-Liste wird hier FRISCH geholt, nicht aus dem Zwischenspeicher:
+    // wer gerade eben im Startzustand jemandem gefolgt ist, soll ihn sofort sehen.
+    if (window._feedTier === 'komsularim') {
+      let ids = [];
+      try {
+        const rf = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/follows?select=following_id&follower_id=eq.${user.id}`, { headers });
+        const rows = await rf.json();
+        ids = Array.isArray(rows) ? rows.map(x => x.following_id).filter(Boolean) : [];
+        window._myFollowingIds = new Set(ids);
+      } catch(e) { console.error('Follows load error:', e); }
+
+      if (!ids.length) { window._allPosts = []; }
+      else {
+        try {
+          const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/posts?author_id=in.(${ids.join(',')})&select=*&order=created_at.desc&limit=50`, { headers });
+          const rows = await r.json();
+          window._allPosts = Array.isArray(rows) ? rows : [];
+        } catch(e) { console.error('Komşularım feed error:', e); window._allPosts = []; }
+      }
+      renderFeedFromCache();
+      return;
+    }
 
     if (window._feedTier === 'saved') {
       const ids = Array.from(window._myBookmarkedPostIds);
