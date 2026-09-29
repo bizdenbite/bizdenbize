@@ -5,9 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizdenBize — Uzmanlarımızdan Webinarlar</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <script>
+<script>
   function toggleDropdown(id,btn){const d=document.getElementById(id),o=d.classList.contains('open');document.querySelectorAll('.nav-dropdown').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(x=>x.classList.remove('open'));if(!o){d.classList.add('open');btn.classList.add('open');}}
   document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('click',e=>{if(!e.target.closest('.nav-item')){document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('open'));document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.remove('open'));}});});
   function toggleMenu(){const hb=document.getElementById('hamburger'),menu=document.getElementById('mobile-menu');hb.classList.toggle('open');menu.classList.toggle('open');document.body.style.overflow=menu.classList.contains('open')?'hidden':'';}
