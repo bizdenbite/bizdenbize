@@ -362,14 +362,27 @@
   }
 
   async function sb(path, opts = {}) {
-    try {
-      const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
-      if (!r.ok) return [];
-      const t = await r.text();
-      return t ? JSON.parse(t) : [];
-    } catch(e) {
-      return [];
+    // Vorher gab diese Funktion bei JEDEM Fehler ein leeres Array zurueck:
+    // bei 403, bei 500, bei Netzwerkausfall. Der Aufrufer konnte gar nicht
+    // merken, dass etwas schiefging — saveProfile() zeigte danach immer
+    // "Profil kaydedildi", auch wenn nichts gespeichert wurde.
+    const res = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : [];
+
+    // SESSIZ BASARISIZLIK KORUMASI
+    // Blockiert RLS eine Zeile, antwortet PostgREST mit 200 und einem
+    // LEEREN ARRAY — kein Fehler, nichts geaendert. hdrs() sendet
+    // Prefer: return=representation, ein erfolgreiches Schreiben gibt
+    // also immer mindestens eine Zeile zurueck. Leeres Array heisst:
+    // es wurde nichts geschrieben.
+    const method = (opts.method || 'GET').toUpperCase();
+    if ((method === 'PATCH' || method === 'DELETE') && Array.isArray(data) && data.length === 0) {
+      throw new Error('Veritabanında hiçbir kayıt değişmedi (yetki yok ya da kayıt bulunamadı). DEĞİŞİKLİK KAYDEDİLMEDİ.');
     }
+    return data;
   }
 
   function toast(msg, ok = true) {
@@ -620,7 +633,8 @@
       btn.closest('div').remove();
       toast('✅ İlanınız silindi');
     } catch (e) {
-      toast('Hata oluştu', false);
+      console.error('Silme hatası:', e);
+      toast('Silinemedi: ' + (e.message || 'bilinmeyen hata'), false);
     }
   };
 
@@ -673,7 +687,10 @@
       Object.assign(profile, payload);
       renderProfile();
       toast('✅ Profil kaydedildi!');
-    } catch(e) { toast('Hata oluştu.', false); }
+    } catch(e) {
+      console.error('Profil kaydetme hatası:', e);
+      toast('Kaydedilemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
     btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';
   }
 
@@ -686,7 +703,10 @@
       profile.languages = selectedLangs;
       profile.interests = selectedInterests;
       toast('✅ Tercihler kaydedildi!');
-    } catch(e) { toast('Hata oluştu.', false); }
+    } catch(e) {
+      console.error('Tercih kaydetme hatası:', e);
+      toast('Kaydedilemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
   }
 
   async function handleAvatarUpload(input) {
@@ -716,7 +736,10 @@
         } else {
           toast('Fotoğraf yüklenemedi.', false);
         }
-      } catch(e) { toast('Yükleme hatası.', false); }
+      } catch(e) {
+        console.error('Avatar hatası:', e);
+        toast('Yüklenemedi: ' + (e.message || 'bilinmeyen hata'), false);
+      }
     };
     reader.readAsDataURL(file);
   }
