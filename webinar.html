@@ -204,7 +204,7 @@
     .success-screen p{font-size:14px;color:var(--muted);line-height:1.6;}
   </style>
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { createClient } from '/supabase.js';
     const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
     window._authSb=_authSb;
     window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
@@ -250,7 +250,7 @@
   <script>
     function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
     document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
-    async function doLogout() { const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
+    async function doLogout() { const { createClient } = await import('/supabase.js'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
 
     // NOTE: window._authReady is created inside a deferred module script, which
     // browsers DEFER until after all regular scripts run. Checking for it
@@ -850,7 +850,7 @@ async function submitHost(){
 }
 
 async function initWebinars(){
-  const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const mod=await import('/supabase.js');
   sb=mod.createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
   const u=await sb.auth.getUser(); ME=(u&&u.data&&u.data.user)?u.data.user.id:null;
   if(ME){ try{ const p=await sb.from('profiles').select('first_name,last_name').eq('id',ME).maybeSingle(); if(p.data) MY_NAME=((p.data.first_name||'')+' '+(p.data.last_name||'')).trim(); }catch(_){} }

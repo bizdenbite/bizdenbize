@@ -111,7 +111,7 @@
     }
   </style>
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { createClient } from '/supabase.js';
     const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
     window._authSb=_authSb;
     window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
