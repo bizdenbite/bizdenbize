@@ -247,12 +247,13 @@
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">Şehir</label>
-          <input class="form-input" type="text" id="inp-city" placeholder="Berlin">
+          <input class="form-input" type="text" id="inp-city" placeholder="Şehir yaz ve listeden seç" autocomplete="new-password">
+          <div id="city-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Listeden seçersen ülke otomatik dolar.</div>
         </div>
       </div>
       <div class="form-group">
         <label class="form-label">Ülke</label>
-        <input class="form-input" type="text" id="inp-country" placeholder="Deutschland">
+        <input class="form-input" type="text" id="inp-country" placeholder="Deutschland" readonly style="background:var(--warm,#F0EAE0);cursor:not-allowed;">
       </div>
       <div class="form-group">
         <label class="form-label">Hakkımda</label>
@@ -671,6 +672,22 @@
   }
 
   async function saveProfile() {
+    // Von Hand getippte Staedte werden nicht gespeichert — genau so sind
+    // "Münih" und "Munich" entstanden. Den vorhandenen Wert unveraendert
+    // zu lassen ist erlaubt; nur neuer, unbestaetigter Text nicht.
+    const cityInp    = document.getElementById('inp-city');
+    const getippt    = (cityInp?.value || '').trim();
+    const gespeichert = (profile?.city || '').trim();
+    if (getippt && getippt !== gespeichert && getippt !== cityBestaetigt) {
+      const hint = document.getElementById('city-hint');
+      if (hint) {
+        hint.textContent = 'Lütfen şehri listeden seç — elle yazılan şehirler kaydedilmiyor.';
+        hint.style.color = 'var(--red,#D42B2B)';
+      }
+      cityInp.focus();
+      return;
+    }
+
     const btn = document.querySelector('.btn-save');
     btn.disabled = true; btn.textContent = 'Kaydediliyor...';
     try {
@@ -751,7 +768,61 @@
 // --- nav avatar menu + logout (was missing on this page) ---
     function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
     document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
+
+  // ── ORTSSUCHE ──────────────────────────────────────────────────────
+  // Dieselbe Google-Ortssuche wie im Onboarding, mit language=de.
+  //
+  // Vorher war die Stadt hier ein freies Textfeld. Was das Onboarding
+  // sauber gesetzt hatte, konnte hier jeder ueberschreiben — und weil
+  // der Stadtfilter exakt vergleicht, fanden sich Nachbarn dann nicht
+  // mehr. Jetzt gibt es nur noch einen Weg, eine Stadt einzutragen.
+  //
+  // Unterschied zum Onboarding: dort ist das Feld leer und wird beim
+  // Tippen geleert. Hier steht schon ein Wert drin, und wer nur seine
+  // Bio aendert, soll nicht seine Stadt verlieren. Deshalb wird nichts
+  // geleert — stattdessen wird beim Speichern geprueft.
+
+  let cityBestaetigt = null;   // zuletzt aus der Liste gewaehlter Name
+
+  window.initProfilePlaces = function () {
+    const input = document.getElementById('inp-city');
+    if (!input || !window.google || !google.maps || !google.maps.places) return;
+
+    // Chrome ignoriert autocomplete="off"; der readonly-Trick verhindert,
+    // dass der Browser seine eigene Vorschlagsliste darueberlegt.
+    input.setAttribute('readonly', true);
+    setTimeout(() => input.removeAttribute('readonly'), 500);
+
+    const ac = new google.maps.places.Autocomplete(input, {
+      types: ['(cities)'],
+      fields: ['address_components', 'name'],
+    });
+
+    google.maps.event.addListener(ac, 'place_changed', function () {
+      const place = ac.getPlace();
+      if (!place || !place.address_components) return;
+      let city = '', country = '';
+      place.address_components.forEach(c => {
+        if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
+        if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
+        if (c.types.includes('country')) country = c.long_name;
+      });
+      const name = city || place.name || '';
+      input.value = name;
+      cityBestaetigt = name;
+      const cEl = document.getElementById('inp-country');
+      if (cEl && country) cEl.value = country;
+      const hint = document.getElementById('city-hint');
+      if (hint) {
+        hint.textContent = '✓ ' + name + (country ? ', ' + country : '');
+        hint.style.color = 'var(--green,#1E7B4B)';
+      }
+    });
+
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  };
 </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&language=de&region=DE&callback=initProfilePlaces" async defer></script>
   <script src="legal-footer.js" defer></script>
   <script src="site-footer.js" defer></script>
 </body>
