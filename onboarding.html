@@ -819,8 +819,11 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
     const city    = document.getElementById('p-city').value.trim();
     const country = document.getElementById('p-country').value.trim();
 
-    // Enforce Google Maps selection
-    if (!city || !country) {
+    // Ortssuche erzwingen — aber nur, solange sie ueberhaupt laeuft.
+    // Ist sie ausgefallen, reicht der getippte Stadtname; das Land bleibt
+    // dann leer und kann spaeter im Profil ergaenzt werden.
+    const nurStadtNoetig = window._ortssucheAus === true;
+    if (nurStadtNoetig ? !city : (!city || !country)) {
       const input = document.getElementById('p-location-input');
       const status = document.getElementById('p-location-status');
       input.style.borderColor = 'var(--red)';
@@ -1029,7 +1032,7 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
         try {
           const { latitude, longitude } = pos.coords;
           const res = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=tr`
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=de`
           );
           const data = await res.json();
           const components = data.results?.[0]?.address_components || [];
@@ -1064,6 +1067,37 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
     );
   }
 
+  // Faellt Google aus — Werbeblocker, schlechtes Netz, erschoepfte Quota —,
+  // dann fuellt sich p-city nie, und saveProfile() laesst niemanden weiter.
+  // Eine Sackgasse ohne Ausgang, mitten im Onboarding.
+  //
+  // Deshalb: nach 5 Sekunden nachsehen. Ist Places bis dahin nicht da,
+  // wird das Feld zum normalen Textfeld und der getippte Ort zaehlt.
+  // Der Ortsname ist dann nicht normiert — aber ein Mensch, der nicht
+  // hereinkommt, ist schlimmer als ein Ortsname mit anderer Schreibweise.
+  window._ortssucheAus = false;
+
+  setTimeout(function () {
+    if (window.google && window.google.maps && window.google.maps.places) return;
+    window._ortssucheAus = true;
+    const input  = document.getElementById('p-location-input');
+    const status = document.getElementById('p-location-status');
+    if (input) {
+      input.placeholder = 'Şehrinizi yazın (ör. München)';
+      // Das oninput-Attribut leert p-city bei jedem Tastendruck — ohne
+      // Ortssuche wuerde der getippte Text damit nie ankommen.
+      input.removeAttribute('oninput');
+      input.addEventListener('input', function () {
+        document.getElementById('p-city').value = input.value.trim();
+      });
+    }
+    if (status) {
+      status.style.display = 'block';
+      status.style.color   = 'var(--muted, #6B5E4E)';
+      status.textContent   = 'Şehir arama şu an çalışmıyor — şehrini elle yazabilirsin. Ülkeyi daha sonra profilinden ekleyebilirsin.';
+    }
+  }, 5000);
+
   function initGooglePlaces() {
     // ── Panel 1: profile location input ──
     const input = document.getElementById('p-location-input');
@@ -1097,7 +1131,14 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
 
   }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initGooglePlaces" async defer></script>
+<!-- language=de&region=DE ist hier keine Kosmetik, sondern der Grund,
+     warum aus einer Stadt drei wurden: ohne Sprachangabe antwortet
+     Places in der Browsersprache. Ein tuerkischer Browser lieferte
+     "Münih", ein englischer "Munich", ein deutscher "München" — und
+     der Stadtfilter vergleicht exakt, also sahen sich diese Menschen
+     gegenseitig nicht als Nachbarn. Mit fester Sprache kommt immer
+     derselbe Name zurueck. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&language=de&region=DE&callback=initGooglePlaces" async defer></script>
 
 <!-- Impressumspflicht: reachable from every page -->
 <div style="max-width:1100px;margin:32px auto 0;padding:18px 24px 28px;border-top:1px solid rgba(0,0,0,.08);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:12px;color:#6B5E4E;"><a href="legal.html#impressum" style="color:#6B5E4E;text-decoration:none;">Impressum</a><span style="opacity:.45;">·</span><a href="legal.html#privacy" style="color:#6B5E4E;text-decoration:none;">Gizlilik</a><span style="opacity:.45;">·</span><a href="legal.html#terms" style="color:#6B5E4E;text-decoration:none;">Kullanım Şartları</a><span style="opacity:.45;">·</span><a href="legal.html#cookies" style="color:#6B5E4E;text-decoration:none;">Çerezler</a></div>
