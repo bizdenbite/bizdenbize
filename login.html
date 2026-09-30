@@ -604,16 +604,22 @@
       const sub   = document.querySelector('.success-sub');
       const goBtn = document.querySelector('.go-btn');
 
-      // Manual-approval flow: acknowledge the signup, fire the "request
-      // received / pending approval" email, and stop here. Approval is the
-      // gate — new signups are NOT sent into the app.
-      try {
-        await fetch(`${SUPABASE_URL}/functions/v1/notify-user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${data.session?.access_token || SUPABASE_ANON}` },
-          body: JSON.stringify({ type: 'signup_pending', user_id: data.user.id })
-        });
-      } catch (e) { console.warn('signup_pending email failed:', e); }
+      // Die "signup_pending"-Mail wird hier BEWUSST NICHT MEHR verschickt.
+      //
+      // Sie stammte aus der Zeit der manuellen Freischaltung und sagte:
+      // "Dein Konto wird geprueft. Wenn es freigeschaltet ist, bekommst du
+      // eine Willkommensmail — DANN kannst du dich anmelden."
+      //
+      // Der Trigger handle_new_user setzt status aber direkt auf 'approved'.
+      // Und die Willkommensmail wird erst beim ERSTEN LOGIN ausgeloest.
+      // Wer der Mail folgte, wartete also auf eine Nachricht, die nur kommt,
+      // wenn er genau das tut, was die Mail ihm gerade abgeraten hatte.
+      //
+      // Was der Mensch jetzt bekommt, reicht und stimmt:
+      //   1. Die Bestaetigungsmail von Supabase (aus signUp() mit
+      //      emailRedirectTo) — "bestaetige deine Adresse"
+      //   2. Den Bildschirmtext unten — "danach anmelden"
+      //   3. Die Willkommensmail beim ersten Login
 
       // Don't leave a new signup logged in (they'd only hit the pending wall).
       if (data.session) { try { await supabase.auth.signOut(); } catch (e) {} }
