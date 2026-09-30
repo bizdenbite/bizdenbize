@@ -151,11 +151,16 @@
         </div>
 
         <label for="f-author">Yazar adı</label>
-        <input type="text" id="f-author" placeholder="Boş bırak — yazı senin adına yayınlanır">
-        <div class="hint">Sadece konuk yazılarında doldur. Yazıyı yayınlayan hesap yine sensin; burası sadece görünen isim.</div>
+        <input type="text" id="f-author" placeholder="Naz van Norel">
+        <div class="hint">Her yazıda doldur — kendi yazın da olsa. Başlığın altında bu isim görünür. Boş bırakırsan yazıda hiç isim görünmez.</div>
 
         <label for="f-authornote">Yazar hakkında (tek satır, isteğe bağlı)</label>
         <input type="text" id="f-authornote" placeholder="Berlin'de yaşayan öğretmen">
+
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:500;margin-bottom:6px;">
+          <input type="checkbox" id="f-guest" style="width:auto;margin:0;"> Bu bir konuk yazısı (yazar ben değilim)
+        </label>
+        <div class="hint">Sadece işaretliyken yazının altına "Bu bir konuk yazısıdır. Görüşler yazara aittir." notu eklenir. Kendi yazılarında işaretleme.</div>
 
         <label for="f-tags">Etiketler</label>
         <input type="text" id="f-tags" placeholder="gurbet, okul, çalışma izni">
@@ -504,6 +509,7 @@
       showCoverPreview('');
       $('f-vertical').checked = false;
       $('f-welcome').checked = false;
+      $('f-guest').checked = false;
       $('f-audiofile').value = '';
       $('up-state').textContent = '';
       UP_DURATION = null;
@@ -559,6 +565,7 @@
         tags: parseTags($('f-tags').value),
         author_name: $('f-author').value.trim() || null,
         author_note: $('f-authornote').value.trim() || null,
+        is_guest: $('f-guest').checked,
         is_published: publish
       };
 
@@ -652,6 +659,7 @@
         $('f-embed').value = p.embed_url || '';
         $('f-vertical').checked = !!p.is_vertical;
         $('f-welcome').checked = !!p.is_welcome;
+        $('f-guest').checked = !!p.is_guest;
         UP_DURATION = p.duration_seconds ?? null;
         $('up-state').textContent = '';
         $('edit-label').textContent = 'Düzenleniyor: ' + p.title;

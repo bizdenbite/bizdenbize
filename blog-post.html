@@ -377,7 +377,7 @@
       if (!slug) { area.innerHTML = '<div class="empty"><div class="big">🔍</div>İçerik bulunamadı.</div>'; return; }
 
       const res = await sb.from('blog_posts')
-        .select('id,slug,title,excerpt,body,cover_url,category,published_at,is_published,media_type,youtube_id,audio_url,embed_url,is_vertical,duration_seconds,tags,author_name,author_note')
+        .select('id,slug,title,excerpt,body,cover_url,category,published_at,is_published,media_type,youtube_id,audio_url,embed_url,is_vertical,duration_seconds,tags,author_name,author_note,is_guest')
         .eq('slug', slug).maybeSingle();
 
       if (res.error || !res.data) {
@@ -395,7 +395,7 @@
         ${mediaBlock(POST)}
         ${POST.body ? `<div class="p-body">${renderBody(POST.body)}</div>`
                     : (POST.excerpt ? `<div class="p-body"><p>${esc(POST.excerpt)}</p></div>` : '')}
-        ${POST.author_name ? `<div style="margin-top:26px;padding:13px 16px;background:var(--white);border:1px solid var(--sand);border-radius:11px;font-size:13px;color:var(--muted);line-height:1.6;">
+        ${POST.is_guest ? `<div style="margin-top:26px;padding:13px 16px;background:var(--white);border:1px solid var(--sand);border-radius:11px;font-size:13px;color:var(--muted);line-height:1.6;">
           Bu bir konuk yazısıdır. Görüşler yazara aittir.</div>` : ''}
         ${(POST.tags && POST.tags.length) ? `<div class="tags">${POST.tags.map(t =>
             `<a class="tag" href="blog.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div>` : ''}
