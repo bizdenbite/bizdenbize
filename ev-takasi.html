@@ -1809,7 +1809,14 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 </script>
   <script type="module" src="nav-msg-badge.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&callback=initSwapPlaces" async defer></script>
+  <!-- language=de&region=DE ist hier keine Kosmetik: ohne diese beiden
+       Angaben liefert Google die Ortsnamen in der SPRACHE DES BROWSERS
+       zurueck. Ein tuerkisch eingestellter Browser schreibt dann
+       "Münih" statt "München" in dasselbe Feld, aus dem auch
+       onboarding.html und profile.html ihre Staedte beziehen — und
+       eine Stadt zerfaellt wieder in mehrere Schreibweisen, genau das,
+       was 04-staedte-vereinheitlichen.sql aufgeraeumt hat. -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&language=de&region=DE&callback=initSwapPlaces" async defer></script>
   <script src="smart-email.js"></script>
 </body>
 </html>
