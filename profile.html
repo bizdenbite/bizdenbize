@@ -253,7 +253,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Ülke</label>
-        <input class="form-input" type="text" id="inp-country" placeholder="Deutschland" readonly style="background:var(--warm,#F0EAE0);cursor:not-allowed;">
+        <input class="form-input" type="text" id="inp-country" placeholder="Almanya" readonly style="background:var(--warm,#F0EAE0);cursor:not-allowed;">
       </div>
       <div class="form-group">
         <label class="form-label">Hakkımda</label>
@@ -793,6 +793,45 @@
     input.setAttribute('readonly', true);
     setTimeout(() => input.removeAttribute('readonly'), 500);
 
+  // ── ÜLKE ADI: her yerde Türkçe ──
+  // Google'dan şehir adlarını doğru yazımla almak için dili Almancaya
+  // sabitledik (language=de). Yan etkisi: ülke adı da Almanca geliyor —
+  // "Deutschland". Platform baştan sona Türkçe olduğu için ülkeyi
+  // kaydetmeden önce Türkçeye çeviriyoruz. Tanımadığımız bir ülke
+  // gelirse Google'ın verdiği ad olduğu gibi kalır; uydurmuyoruz.
+  function ulkeAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'deutschland': 'Almanya', 'germany': 'Almanya', 'almanya': 'Almanya',
+      'österreich': 'Avusturya', 'osterreich': 'Avusturya', 'austria': 'Avusturya',
+      'schweiz': 'İsviçre', 'switzerland': 'İsviçre', 'suisse': 'İsviçre',
+      'niederlande': 'Hollanda', 'netherlands': 'Hollanda', 'holland': 'Hollanda',
+      'belgien': 'Belçika', 'belgium': 'Belçika', 'belgique': 'Belçika',
+      'frankreich': 'Fransa', 'france': 'Fransa',
+      'türkei': 'Türkiye', 'turkei': 'Türkiye', 'turkey': 'Türkiye',
+      'türkiye': 'Türkiye', 'turkiye': 'Türkiye',
+      'vereinigtes königreich': 'Birleşik Krallık', 'united kingdom': 'Birleşik Krallık',
+      'england': 'Birleşik Krallık',
+      'italien': 'İtalya', 'italy': 'İtalya', 'italia': 'İtalya',
+      'spanien': 'İspanya', 'spain': 'İspanya', 'españa': 'İspanya',
+      'schweden': 'İsveç', 'sweden': 'İsveç',
+      'dänemark': 'Danimarka', 'danemark': 'Danimarka', 'denmark': 'Danimarka',
+      'norwegen': 'Norveç', 'norway': 'Norveç',
+      'polen': 'Polonya', 'poland': 'Polonya',
+      'tschechien': 'Çekya', 'czechia': 'Çekya', 'czech republic': 'Çekya',
+      'luxemburg': 'Lüksemburg', 'luxembourg': 'Lüksemburg',
+      'griechenland': 'Yunanistan', 'greece': 'Yunanistan',
+      'portugal': 'Portekiz',
+      'ungarn': 'Macaristan', 'hungary': 'Macaristan',
+      'rumänien': 'Romanya', 'rumanien': 'Romanya', 'romania': 'Romanya',
+      'bulgarien': 'Bulgaristan', 'bulgaria': 'Bulgaristan',
+      'kanada': 'Kanada', 'canada': 'Kanada',
+      'vereinigte staaten von amerika': 'ABD', 'vereinigte staaten': 'ABD',
+      'united states': 'ABD', 'usa': 'ABD'
+    };
+    return harita[a] || String(ad || '').trim();
+  }
+
     const ac = new google.maps.places.Autocomplete(input, {
       types: ['(cities)'],
       fields: ['address_components', 'name'],
@@ -807,6 +846,7 @@
         if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
         if (c.types.includes('country')) country = c.long_name;
       });
+      country = ulkeAdiTr(country);
       const name = city || place.name || '';
       input.value = name;
       cityBestaetigt = name;

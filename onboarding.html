@@ -997,7 +997,49 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
   </script>
 <!-- Google Maps Places Autocomplete + GPS Detection -->
 <script>
+  // ── ÜLKE ADI: her yerde Türkçe ──
+  // Google'dan şehir adlarını doğru yazımla almak için dili Almancaya
+  // sabitledik (language=de). Yan etkisi: ülke adı da Almanca geliyor —
+  // "Deutschland". Platform baştan sona Türkçe olduğu için ülkeyi
+  // kaydetmeden önce Türkçeye çeviriyoruz. Tanımadığımız bir ülke
+  // gelirse Google'ın verdiği ad olduğu gibi kalır; uydurmuyoruz.
+  function ulkeAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'deutschland': 'Almanya', 'germany': 'Almanya', 'almanya': 'Almanya',
+      'österreich': 'Avusturya', 'osterreich': 'Avusturya', 'austria': 'Avusturya',
+      'schweiz': 'İsviçre', 'switzerland': 'İsviçre', 'suisse': 'İsviçre',
+      'niederlande': 'Hollanda', 'netherlands': 'Hollanda', 'holland': 'Hollanda',
+      'belgien': 'Belçika', 'belgium': 'Belçika', 'belgique': 'Belçika',
+      'frankreich': 'Fransa', 'france': 'Fransa',
+      'türkei': 'Türkiye', 'turkei': 'Türkiye', 'turkey': 'Türkiye',
+      'türkiye': 'Türkiye', 'turkiye': 'Türkiye',
+      'vereinigtes königreich': 'Birleşik Krallık', 'united kingdom': 'Birleşik Krallık',
+      'england': 'Birleşik Krallık',
+      'italien': 'İtalya', 'italy': 'İtalya', 'italia': 'İtalya',
+      'spanien': 'İspanya', 'spain': 'İspanya', 'españa': 'İspanya',
+      'schweden': 'İsveç', 'sweden': 'İsveç',
+      'dänemark': 'Danimarka', 'danemark': 'Danimarka', 'denmark': 'Danimarka',
+      'norwegen': 'Norveç', 'norway': 'Norveç',
+      'polen': 'Polonya', 'poland': 'Polonya',
+      'tschechien': 'Çekya', 'czechia': 'Çekya', 'czech republic': 'Çekya',
+      'luxemburg': 'Lüksemburg', 'luxembourg': 'Lüksemburg',
+      'griechenland': 'Yunanistan', 'greece': 'Yunanistan',
+      'portugal': 'Portekiz',
+      'ungarn': 'Macaristan', 'hungary': 'Macaristan',
+      'rumänien': 'Romanya', 'rumanien': 'Romanya', 'romania': 'Romanya',
+      'bulgarien': 'Bulgaristan', 'bulgaria': 'Bulgaristan',
+      'kanada': 'Kanada', 'canada': 'Kanada',
+      'vereinigte staaten von amerika': 'ABD', 'vereinigte staaten': 'ABD',
+      'united states': 'ABD', 'usa': 'ABD'
+    };
+    return harita[a] || String(ad || '').trim();
+  }
+
   function setLocation(city, country, source) {
+    // Hem Google listesinden seçim hem de GPS buraya uğruyor:
+    // tek çeviri noktası.
+    country = ulkeAdiTr(country);
     document.getElementById('p-city').value = city;
     document.getElementById('p-country').value = country;
 
