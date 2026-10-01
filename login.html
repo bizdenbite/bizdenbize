@@ -456,7 +456,7 @@
       if (error) {
         btn.classList.remove('loading');
         btn.textContent = 'Şifreyi Güncelle';
-        alert('Şifre güncellenemedi: ' + error.message);
+        alert('Şifre güncellenemedi. ' + hataMetni(error.message));
         return;
       }
 
@@ -555,8 +555,7 @@
         btn.classList.remove('loading');
         btn.textContent = 'Kayıt Ol';
         btn.style.background = 'var(--red)';
-        alert(error.message === 'User already registered'
-          ? 'Bu e-posta adresi zaten kayıtlı.' : 'Kayıt hatası: ' + error.message);
+        alert(hataMetni(error.message));
         return;
       }
 
@@ -632,6 +631,34 @@
       goBtn.onclick = () => { location.reload(); };
     };
 
+    // ── HATA METİNLERİ ──
+    // Supabase hataları İNGİLİZCE gelir ("Email not confirmed"). Tamamı
+    // Türkçe olan bir platformda kullanıcı bunu okuyamaz ve ne yapması
+    // gerektiğini anlayamaz. Burada tanıdığımız hatalar Türkçeye
+    // çevrilir; tanımadıklarımız için anlaşılır bir cümle gösterilir ve
+    // asıl metin konsola yazılır — hata ayıklarken kaybolmasın diye.
+    function hataMetni(msg) {
+      const m = String(msg || '').toLowerCase();
+      if (m.includes('invalid login credentials'))   return 'E-posta veya şifre hatalı.';
+      if (m.includes('email not confirmed'))         return 'E-posta adresin henüz doğrulanmadı. Sana gönderdiğimiz bağlantıya tıkla.';
+      if (m.includes('user already registered'))     return 'Bu e-posta adresi zaten kayıtlı.';
+      if (m.includes('user not found'))              return 'Bu e-posta adresiyle bir hesap bulunamadı.';
+      if (m.includes('password should be at least')) return 'Şifre en az 8 karakter olmalı.';
+      if (m.includes('new password should be different')) return 'Yeni şifre eskisinden farklı olmalı.';
+      if (m.includes('invalid email') || m.includes('unable to validate email'))
+                                                     return 'E-posta adresi geçersiz görünüyor.';
+      if (m.includes('for security purposes') || m.includes('rate limit') || m.includes('too many request'))
+                                                     return 'Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar dene.';
+      if (m.includes('expired') || m.includes('invalid token'))
+                                                     return 'Bağlantının süresi dolmuş. Lütfen yeniden dene.';
+      if (m.includes('signups not allowed') || m.includes('logins are disabled'))
+                                                     return 'Şu an bu yolla giriş yapılamıyor. Lütfen daha sonra tekrar dene.';
+      if (m.includes('failed to fetch') || m.includes('load failed') || m.includes('network'))
+                                                     return 'Bağlantı kurulamadı. İnternet bağlantını kontrol edip tekrar dene.';
+      console.error('Çevrilmemiş hata:', msg);
+      return 'Bir şeyler ters gitti. Lütfen tekrar dene; sorun sürerse support@bizdenbize.com adresine yaz.';
+    }
+
     // ── LOGIN ──
     window.doLogin = async function() {
       const email = document.getElementById('login-email').value.trim();
@@ -644,6 +671,7 @@
       document.getElementById('login-banned-msg').style.display = 'none';
       document.getElementById('login-deactivated-msg').style.display = 'none';
       document.getElementById('login-pending-msg').style.display = 'none';
+      document.getElementById('login-unconfirmed-msg').style.display = 'none';
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         document.getElementById('login-email-err').style.display = 'block';
@@ -662,8 +690,16 @@
 
       if (error) {
         btn.classList.remove('loading'); btn.textContent = 'Giriş Yap';
-        document.getElementById('login-error-text').textContent = error.message === 'Invalid login credentials'
-          ? '⚠️ E-posta veya şifre hatalı.' : '⚠️ Giriş hatası: ' + error.message;
+
+        // Doğrulanmamış e-posta, yanlış şifre DEĞİLDİR. Kullanıcı şifresini
+        // tekrar tekrar denemesin diye kendi kutusunu ve ne yapacağını
+        // gösteriyoruz. Oturum açılmadığı için burada "Çıkış Yap" düğmesi yok.
+        if (String(error.message || '').toLowerCase().includes('email not confirmed')) {
+          document.getElementById('login-unconfirmed-msg').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('login-error-text').textContent = '⚠️ ' + hataMetni(error.message);
         document.getElementById('login-error-msg').style.display = 'block';
         document.getElementById('login-email').classList.add('error');
         document.getElementById('login-password').classList.add('error');
@@ -772,7 +808,7 @@
           queryParams: { prompt: 'select_account' }
         }
       });
-      if (error) alert('Google ile giriş hatası: ' + error.message);
+      if (error) alert('Google ile giriş yapılamadı. ' + hataMetni(error.message));
     };
 
     // ── FORGOT PASSWORD ──
@@ -782,7 +818,7 @@
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://bizdenbize.com/login.html',
       });
-      if (error) { alert('Hata: ' + error.message); return; }
+      if (error) { alert(hataMetni(error.message)); return; }
       document.getElementById('forgot-form').style.display = 'none';
       document.querySelector('.tab-bar').style.display = 'none';
       document.getElementById('success-state').style.display = 'block';
@@ -922,6 +958,11 @@
         <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">⏳ Hesabın henüz aktif değil</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Önce e-posta adresine gönderdiğimiz doğrulama bağlantısına tıklaman gerekiyor. Bağlantıyı bulamıyorsan spam klasörüne bak; sorun devam ederse <a href="mailto:support@bizdenbize.com" style="color:var(--red);">support@bizdenbize.com</a> adresine yaz.</div>
         <button type="button" onclick="(async()=>{await supabase.auth.signOut();location.reload();})()" style="width:100%;padding:9px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
+      </div>
+
+      <div id="login-unconfirmed-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">📬 Önce e-postanı doğrula</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Kayıt olurken sana bir doğrulama bağlantısı gönderdik. Giriş yapabilmen için önce o bağlantıya tıklaman gerekiyor. E-postayı bulamıyorsan <strong>spam klasörüne</strong> bak; sorun sürerse <a href="mailto:support@bizdenbize.com" style="color:var(--red);">support@bizdenbize.com</a> adresine yaz.</div>
       </div>
 
       <button class="submit-btn" id="login-btn" onclick="doLogin()">
