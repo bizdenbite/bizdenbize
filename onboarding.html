@@ -639,7 +639,13 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
         </div>
         <div class="form-group full">
           <label>Konum</label>
-          <div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px 16px;margin-bottom:8px;" id="location-detected-bar" style="display:none;">
+          <!-- ACHTUNG: dieses Element hatte ZWEI style-Attribute. Der Browser
+               behaelt stillschweigend nur das erste, also wurde display:none
+               verworfen und der Kasten war von Anfang an sichtbar — mit der
+               Ueberschrift "Konumunuz tespit edildi" ueber dem Text
+               "Tespit ediliyor...". setLocation() blendet ihn ein, sobald
+               wirklich eine Stadt feststeht. Also: nur EIN style-Attribut. -->
+          <div id="location-detected-bar" style="display:none;background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px 16px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
               <div>
                 <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px;">Konumunuz tespit edildi</div>
