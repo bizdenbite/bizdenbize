@@ -1914,7 +1914,19 @@
       }
     } catch (e) {
       console.error('Follow toggle error:', e);
-      if (window.showToast) window.showToast('Şu anda bu işlemi yapamıyorsun. Günlük limit veya hesap kısıtlaması olabilir.');
+      // Eskiden burada "Günlük limit veya hesap kısıtlaması olabilir"
+      // yazıyordu. Bu UYDURMAYDI: sayfa hatanın sebebini bilmiyor, bir
+      // sebep uyduruyordu. Üye de "demek beklemem gerekiyor" deyip bir
+      // daha denemiyordu. Bildiğimiz tek durumu (24 saatte 20 takip
+      // sınırı) ayırıyoruz, gerisi için dürüst bir cümle kuruyoruz.
+      const metin = String(e && e.message || '');
+      let mesaj = 'Takip edilemedi. Birazdan tekrar dene; sorun sürerse support@bizdenbize.com adresine yaz.';
+      if (metin.includes('42501')) {
+        mesaj = 'Takip edilemedi. Bir günde en fazla 20 kişiyi takip edebilirsin — yarın kaldığın yerden devam edebilirsin.';
+      } else if (/failed to fetch|networkerror|load failed/i.test(metin)) {
+        mesaj = 'Bağlantı kurulamadı. İnternet bağlantını kontrol edip tekrar dene.';
+      }
+      if (window.showToast) window.showToast(mesaj);
     }
     btn.disabled = false;
   };
