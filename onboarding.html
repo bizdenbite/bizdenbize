@@ -1036,6 +1036,31 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
     return harita[a] || String(ad || '').trim();
   }
 
+  // ── ŞEHİR ADI: Türkçe yazılışı Almanca karşılığına çevirir ──
+  // Google'ın listesinde "Münih" gibi Türkçe adlar da çıkıyor ama bu
+  // kayıtlarda çoğu zaman adres bilgisi olmuyor. O yüzden adı kendimiz
+  // karşılıyoruz; böylece "Münih" yazan da "München" yazan da aynı
+  // mahalleye düşer. Tanımadığımız şehir olduğu gibi kalır.
+  function sehirAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'münih': 'München', 'munih': 'München', 'munich': 'München',
+      'kolonya': 'Köln', 'cologne': 'Köln', 'koln': 'Köln',
+      'nürnberg': 'Nürnberg', 'nurnberg': 'Nürnberg', 'nuremberg': 'Nürnberg',
+      'münster': 'Münster', 'munster': 'Münster',
+      'düsseldorf': 'Düsseldorf', 'dusseldorf': 'Düsseldorf',
+      'frankfurt': 'Frankfurt am Main',
+      'hanover': 'Hannover',
+      'viyana': 'Wien', 'vienna': 'Wien',
+      'zürih': 'Zürich', 'zurih': 'Zürich', 'zurich': 'Zürich',
+      'cenevre': 'Genf', 'geneva': 'Genf',
+      'brüksel': 'Brüssel', 'bruksel': 'Brüssel', 'brussels': 'Brüssel',
+      'lahey': 'Den Haag', 'the hague': 'Den Haag',
+      'amsterdam': 'Amsterdam'
+    };
+    return harita[a] || String(ad || '').trim();
+  }
+
   function setLocation(city, country, source) {
     // Hem Google listesinden seçim hem de GPS buraya uğruyor:
     // tek çeviri noktası.
@@ -1161,7 +1186,26 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
 
       google.maps.event.addListener(autocomplete, 'place_changed', function() {
         const place = autocomplete.getPlace();
-        if (!place.address_components) return;
+
+        // Google bazen SADECE adı döndürür, adres bilgisi olmadan — Türkçe
+        // yazılan "Münih" böyle geliyor. Eskiden burada sessizce çıkıyorduk:
+        // hiçbir şey olmuyor, hiçbir uyarı çıkmıyor, gizli şehir alanı boş
+        // kalıyordu — ve kişi kaydedemeyip kayıt adımını yarıda bırakıyordu.
+        if (!place || !place.address_components) {
+          const sadeAd = sehirAdiTr(place && place.name ? place.name : input.value);
+          if (sadeAd) {
+            setLocation(sadeAd, document.getElementById('p-country').value || '', 'manual');
+          } else {
+            const st = document.getElementById('p-location-status');
+            if (st) {
+              st.style.display = 'block';
+              st.style.color = 'var(--red)';
+              st.textContent = 'Şehir alınamadı — listeden bir şehir seç.';
+            }
+          }
+          return;
+        }
+
         let city = '', country = '';
         place.address_components.forEach(c => {
           if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
@@ -1171,7 +1215,7 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
           if (c.types.includes('country'))
             country = c.long_name;
         });
-        setLocation(city || place.name, country, 'manual');
+        setLocation(sehirAdiTr(city || place.name), country, 'manual');
       });
 
       input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
