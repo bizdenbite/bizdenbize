@@ -482,6 +482,7 @@
       <div><label class="field-label">Adres</label><input class="field-input" id="a-address" type="text" placeholder="Mustergasse 12, 85540 Haar bei München"></div>
       <div><label class="field-label">Sigorta</label><select class="field-input" id="a-insurance"><option>GKV (Yasal Sigorta)</option><option>PKV (Özel Sigorta)</option><option>Her İkisi</option></select></div>
       <div><label class="field-label">Neden Öneriyorsunuz?</label><textarea class="field-input" id="a-desc" rows="2" placeholder="Türkçe konuşuyor, sabırlı, iyi muamele ediyor..."></textarea></div>
+      <div id="a-draft-note" style="display:none;font-size:12px;color:var(--muted);padding:8px 12px;background:var(--cream);border-radius:8px;">📝 Yarım kalan öneriniz geri getirildi.</div>
       <div id="a-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
     </div>
     <div class="modal-footer" id="add-footer"><button class="btn-red" onclick="submitAdd()">Ekibe Gönder →</button></div>
@@ -840,7 +841,80 @@ function openDoctorById(id) {
 
 function closeDoctorModal() { document.getElementById('doctor-modal').classList.remove('open'); document.body.style.overflow = ''; }
 
-function openAddModal() { document.getElementById('add-modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+// ── ENTWURF SICHERN ────────────────────────────────────────
+// Das Formular "Doktor / Klinik Öner" hat sieben Felder. Wer
+// zwischendurch in der Praxis-Website nachsieht, wie der Arzt
+// genau heisst, kommt zurueck und hat alles verloren — und
+// tippt es meistens kein zweites Mal. Mahallem und Ev Takasi
+// sichern ihre Eingaben laengst; hier fehlte es.
+// Dieselbe Funktion, derselbe Dreitagesspeicher.
+function bbDraft(opts){
+  var TTL_MS = 1000*60*60*24*3; // 3 Tage
+  function read(){
+    try{
+      var raw=localStorage.getItem(opts.key);
+      if(!raw) return null;
+      var obj=JSON.parse(raw);
+      if(!obj || !obj.t || (Date.now()-obj.t)>TTL_MS){ localStorage.removeItem(opts.key); return null; }
+      return obj.v||null;
+    }catch(e){ return null; }
+  }
+  function write(){
+    try{
+      var v={};
+      opts.fields.forEach(function(f){
+        var el=document.getElementById(f.id);
+        if(!el) return;
+        v[f.id]=(f.type==='checkbox')?el.checked:el.value;
+      });
+      localStorage.setItem(opts.key, JSON.stringify({t:Date.now(), v:v}));
+    }catch(e){}
+  }
+  var timer=null;
+  function schedule(){ clearTimeout(timer); timer=setTimeout(write,500); }
+  opts.fields.forEach(function(f){
+    var el=document.getElementById(f.id);
+    if(!el) return;
+    el.addEventListener((f.type==='select'||f.type==='checkbox')?'change':'input', schedule);
+  });
+  return {
+    restore:function(){
+      var v=read(); if(!v) return false;
+      var any=false;
+      opts.fields.forEach(function(f){
+        var el=document.getElementById(f.id); if(!el) return;
+        var val=v[f.id];
+        if(val===undefined||val===null||val==='') return;
+        if(f.type==='checkbox'){ el.checked=!!val; } else { el.value=val; }
+        any=true;
+      });
+      return any;
+    },
+    clear:function(){ try{ localStorage.removeItem(opts.key); }catch(e){} }
+  };
+}
+
+var __doktorDraft = bbDraft({
+  key: 'bb_draft_doktor_oner',
+  fields: [
+    {id:'a-name',      type:'text'},
+    {id:'a-spec',      type:'select'},
+    {id:'a-city',      type:'text'},
+    {id:'a-phone',     type:'text'},
+    {id:'a-address',   type:'text'},
+    {id:'a-insurance', type:'select'},
+    {id:'a-desc',      type:'textarea'}
+  ]
+});
+
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Beim Oeffnen zurueckholen, was beim letzten Mal stehen blieb.
+  var wieder = __doktorDraft.restore();
+  var hinweis = document.getElementById('a-draft-note');
+  if (hinweis) hinweis.style.display = wieder ? 'block' : 'none';
+}
 function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('add-success').style.display = 'none'; document.getElementById('add-body').style.display = 'flex'; document.getElementById('add-footer').style.display = 'flex'; document.getElementById('a-error').style.display = 'none'; }
 async function submitAdd() {
   const name = document.getElementById('a-name').value.trim();
@@ -868,6 +942,15 @@ async function submitAdd() {
     errBox.style.display = 'block';
     return;
   }
+
+  // Erst NACH dem erfolgreichen Speichern loeschen. Schlaegt das
+  // Absenden fehl, bleibt der Entwurf stehen und ist nicht weg.
+  __doktorDraft.clear();
+  ['a-name','a-city','a-phone','a-address','a-desc'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var hinweis = document.getElementById('a-draft-note');
+  if (hinweis) hinweis.style.display = 'none';
 
   document.getElementById('add-body').style.display = 'none';
   document.getElementById('add-footer').style.display = 'none';
