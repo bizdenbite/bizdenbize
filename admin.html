@@ -1189,7 +1189,9 @@
         <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${r.comment||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
 
       document.getElementById('doctors-tbody').innerHTML = doctors.length ? doctors.map(d => `
-        <tr><td style="font-weight:600;">${d.name||'—'}</td><td>${d.specialty||'—'}</td><td>${d.city||'—'}</td><td>${(d.languages||[]).join(', ')||'—'}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+        <tr><td style="font-weight:600;">${d.name||'—'}${d.active === false ? ' <span class="badge badge-gold">⏳ Onay bekliyor</span>' : ' <span class="badge badge-green">✓ Yayında</span>'}</td><td>${d.specialty||'—'}</td><td>${d.city||'—'}</td><td>${(d.languages||[]).join(', ')||'—'}</td><td>${d.active === false
+            ? `<button class="btn btn-sm btn-green" onclick="toggleDoctor('${d.id}', true)">✅ Onayla</button>`
+            : `<button class="btn btn-sm btn-muted" onclick="toggleDoctor('${d.id}', false)">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
       document.getElementById('tutors-tbody').innerHTML = tutors.length ? tutors.map(t => {
         const isApproved = t.status === 'approved' || (t.active === true && t.status !== 'pending');
@@ -1286,6 +1288,18 @@
     try { await sb(`${table}?id=eq.${id}`, { method:'DELETE' }); loadContent(); toast('Kayıt silindi.'); }
     catch(e) { toast('Silme hatası.', false); }
   }
+
+  // Üyelerin önerdiği doktorlar active=false olarak kaydediliyor ve
+  // saglik.html yalnızca active=true olanları gösteriyor. Panelde ise
+  // SADECE silme vardı — yani öneriyi yayına almanın hiçbir yolu yoktu.
+  // "Onaylandıktan sonra dizine eklenecek" sözü karşılıksızdı.
+  window.toggleDoctor = async function(id, makeActive) {
+    try {
+      await sb(`doctors?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: makeActive }) });
+      toast(makeActive ? 'Doktor yayına alındı ✓' : 'Doktor listeden gizlendi.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
 
   window.toggleSeeker = async function(id, makeActive) {
     try {
