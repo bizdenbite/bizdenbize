@@ -462,7 +462,7 @@
           </select>
         </div>
       </div>
-      <div id="tm-price-input-wrap" style="display:none;"><label class="field-label">Saatlik Ücret</label><input class="field-input" id="tm-price" type="text" placeholder="€15/saat"></div>
+      <div id="tm-price-input-wrap" style="display:none;"><label class="field-label">Saatlik Ücret (€) *</label><input class="field-input" id="tm-price" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="25"><div class="hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Sadece sayı yaz — listede "25 €/saat" şeklinde görünür.</div></div>
       <div><label class="field-label">Kendinizi Tanıtın *</label><textarea class="field-input" id="tm-desc" rows="3" placeholder="Deneyim, eğitim geçmişi..."></textarea></div>
       <div><label class="field-label">İletişim *</label><input class="field-input" id="tm-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
       <div id="tm-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
@@ -750,6 +750,22 @@ async function submitTutor() {
     if (err) { err.textContent = 'Lütfen zorunlu alanları (*) doldurun.'; err.style.display = 'block'; }
     return; 
   }
+  // ÜCRET: ya "Ücretsiz" ya da saatlik ücret — sayı olarak.
+  // Eskiden burası serbest metindi ve listede yalnızca "5" yazıyordu:
+  // beş euro mu, beş ders mi, saatlik mi, belli değildi. Artık ya
+  // ücretsiz, ya da net bir saatlik ücret.
+  const ucretli = document.getElementById('tm-price-type').value === 'paid';
+  const ucretRaw = (document.getElementById('tm-price').value || '').replace(',', '.').trim();
+  const ucret = Number(ucretRaw);
+  if (ucretli && (!ucretRaw || !isFinite(ucret) || ucret <= 0)) {
+    if (err) { err.textContent = 'Saatlik ücreti sayı olarak yaz (örn. 25) ya da "Ücretsiz" seç.'; err.style.display = 'block'; }
+    const inp = document.getElementById('tm-price'); if (inp) inp.focus();
+    return;
+  }
+  const ucretEtiketi = ucretli
+    ? (Number.isInteger(ucret) ? ucret : ucret.toFixed(2)) + ' €/saat'
+    : 'Ücretsiz';
+
   if (err) err.style.display = 'none';
 
   const btn = document.querySelector('#tm-footer button');
@@ -769,8 +785,8 @@ async function submitTutor() {
       levels:      [document.getElementById('tm-level').value],
       city:        sehirAdiTr(document.getElementById('tm-city').value),
       format:      document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
-      price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
-      price_label: document.getElementById('tm-price-type').value === 'paid' ? (document.getElementById('tm-price').value.trim() || null) : 'Ücretsiz',
+      price_type:  ucretli ? 'paid' : 'free',
+      price_label: ucretEtiketi,
       active:      false,
       status:      'pending',
       user_id:     sessionUserId
