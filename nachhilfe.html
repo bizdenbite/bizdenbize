@@ -715,6 +715,31 @@ function togglePriceInput(v) {
   if (wrap) wrap.style.display = v === 'paid' ? 'block' : 'none'; 
 }
 
+  // ── ŞEHİR ADI: Türkçe yazılışı Almanca karşılığına çevirir ──
+  // Google'ın listesinde "Münih" gibi Türkçe adlar da çıkıyor ama bu
+  // kayıtlarda çoğu zaman adres bilgisi olmuyor. O yüzden adı kendimiz
+  // karşılıyoruz; böylece "Münih" yazan da "München" yazan da aynı
+  // mahalleye düşer. Tanımadığımız şehir olduğu gibi kalır.
+  function sehirAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'münih': 'München', 'munih': 'München', 'munich': 'München',
+      'kolonya': 'Köln', 'cologne': 'Köln', 'koln': 'Köln',
+      'nürnberg': 'Nürnberg', 'nurnberg': 'Nürnberg', 'nuremberg': 'Nürnberg',
+      'münster': 'Münster', 'munster': 'Münster',
+      'düsseldorf': 'Düsseldorf', 'dusseldorf': 'Düsseldorf',
+      'frankfurt': 'Frankfurt am Main',
+      'hanover': 'Hannover',
+      'viyana': 'Wien', 'vienna': 'Wien',
+      'zürih': 'Zürich', 'zurih': 'Zürich', 'zurich': 'Zürich',
+      'cenevre': 'Genf', 'geneva': 'Genf',
+      'brüksel': 'Brüssel', 'bruksel': 'Brüssel', 'brussels': 'Brüssel',
+      'lahey': 'Den Haag', 'the hague': 'Den Haag',
+      'amsterdam': 'Amsterdam'
+    };
+    return harita[a] || String(ad || '').trim();
+  }
+
 async function submitTutor() {
   const name    = document.getElementById('tm-name').value.trim();
   const desc    = document.getElementById('tm-desc').value.trim();
@@ -742,7 +767,7 @@ async function submitTutor() {
       contact,
       subject:     document.getElementById('tm-subject').value,
       levels:      [document.getElementById('tm-level').value],
-      city:        document.getElementById('tm-city').value.trim(),
+      city:        sehirAdiTr(document.getElementById('tm-city').value),
       format:      document.getElementById('tm-format').value === 'Online' ? 'online' : document.getElementById('tm-format').value === 'Her ikisi' ? 'both' : 'inperson',
       price_type:  document.getElementById('tm-price-type').value === 'free' ? 'free' : 'paid',
       price_label: document.getElementById('tm-price-type').value === 'paid' ? (document.getElementById('tm-price').value.trim() || null) : 'Ücretsiz',
@@ -868,7 +893,7 @@ async function submitSeek() {
   try {
     await sbPost('seeker_requests', {
       parent_name: name,
-      city:        document.getElementById('sk-city').value.trim() || null,
+      city:        sehirAdiTr(document.getElementById('sk-city').value) || null,
       subject:     document.getElementById('sk-subject').value,
       level:       document.getElementById('sk-level').value,
       budget:      document.getElementById('sk-budget').value,
