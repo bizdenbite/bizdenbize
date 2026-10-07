@@ -1161,7 +1161,13 @@
   async function loadContent() {
     try {
       const [listings, swaps, reviews, doctors, tutors, seekers, suggestions] = await Promise.all([
-        sb('listings?select=*&order=created_at.desc'),
+        // Der Reiter İlanlar las bis zum 7.10. die Tabelle "listings".
+        // Die echten Kleinanzeigen stehen aber in "classified_listings" —
+        // das ist die Tabelle, in die classifieds.html schreibt. Dadurch
+        // war KEINE einzige echte Anzeige im Panel zu sehen, geschweige
+        // denn zu verstecken oder zu loeschen. "listings" ist ein Rest,
+        // in den nur is-guc.html gelegentlich schreibt.
+        sb('classified_listings?select=*&order=created_at.desc').catch(e => ({ __error: e.message })),
         sb('swap_offers?select=*&order=created_at.desc'),
         sb('swap_reviews?select=*&order=created_at.desc'),
         sb('doctors?select=*'),
@@ -1173,14 +1179,19 @@
         sb('suggestions?select=*&order=created_at.desc').catch(e => ({ __error: e.message }))
       ]);
 
-      document.getElementById('listings-tbody').innerHTML = listings.length ? listings.map(l => `
+      document.getElementById('listings-tbody').innerHTML = listings.__error
+        ? `<tr class="loading-row"><td colspan="5" style="color:var(--red);">İlanlar okunamadı: ${String(listings.__error).replace(/</g,'&lt;')}</td></tr>`
+        : (listings.length ? listings.map(l => `
         <tr>
-          <td style="font-weight:600;">${l.title||'—'}</td>
+          <td style="font-weight:600;">${l.title||'—'}${l.active === false ? ' <span class="badge badge-muted">🙈 Gizli</span>' : ''}</td>
           <td><span class="badge badge-navy">${l.category||'—'}</span></td>
-          <td>${l.location||'—'}</td>
+          <td>${l.city || l.location || '—'}${l.price != null ? ` · <strong>${l.price} €</strong>` : ''}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(l.created_at)}</td>
-          <td><button class="btn btn-sm btn-red" onclick="deleteContent('listings','${l.id}')">🗑 Sil</button></td>
-        </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`;
+          <td>${l.active === false
+                ? `<button class="btn btn-sm btn-green" onclick="toggleListing('${l.id}', true)">↩︎ Geri getir</button>`
+                : `<button class="btn btn-sm btn-muted" onclick="toggleListing('${l.id}', false)">🙈 Gizle</button>`}
+              <button class="btn btn-sm btn-red" onclick="deleteContent('classified_listings','${l.id}')">🗑 Sil</button></td>
+        </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`);
 
       document.getElementById('swaps-tbody').innerHTML = swaps.length ? swaps.map(s => `
         <tr><td>${s.city||'—'} → ${s.destination||'—'}</td><td>${s.status === 'approved' ? '<span class="badge badge-green">✓ Yayında</span>' : s.status === 'rejected' ? '<span class="badge badge-red">✕ Reddedildi</span>' : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>'}${s.active === false ? ' <span class="badge badge-muted">🙈 Sahibi gizledi</span>' : ''}</td><td>${s.rooms||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td>${s.status !== 'approved' ? `<button class="btn btn-sm btn-green" onclick="approveSwap('${s.id}')">✅ Onayla</button>` : `<button class="btn btn-sm btn-muted" onclick="unapproveSwap('${s.id}')">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
@@ -1293,6 +1304,17 @@
   // saglik.html yalnızca active=true olanları gösteriyor. Panelde ise
   // SADECE silme vardı — yani öneriyi yayına almanın hiçbir yolu yoktu.
   // "Onaylandıktan sonra dizine eklenecek" sözü karşılıksızdı.
+  // Eine Anzeige vom Markt nehmen, ohne sie zu loeschen. Wichtig bei
+  // Streitfaellen: der Inhalt bleibt nachvollziehbar, ist aber nicht
+  // mehr oeffentlich.
+  window.toggleListing = async function(id, makeActive) {
+    try {
+      await sb(`classified_listings?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: makeActive }) });
+      toast(makeActive ? 'İlan yeniden yayında ✓' : 'İlan gizlendi.');
+      loadContent();
+    } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
   window.toggleDoctor = async function(id, makeActive) {
     try {
       await sb(`doctors?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ active: makeActive }) });
