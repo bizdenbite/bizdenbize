@@ -4,321 +4,297 @@
   <script src="auth-gate.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BizdenBize — Uzman Paneli</title>
-  <!-- Vorschau beim Teilen (WhatsApp, Facebook, LinkedIn). Ohne diese
-       Angaben zeigen Messenger nur einen nackten blauen Link. -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="BizdenBize">
-  <meta property="og:locale" content="tr_TR">
-  <meta property="og:title" content="BizdenBize — Uzman Paneli">
-  <meta property="og:description" content="Hukuk, vize, vergi, sigorta — Almanya'daki hayata dair sorularını Türkçe konuşan uzmanlara sor.">
-  <meta property="og:image" content="https://bizdenbize.com/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="BizdenBize — Gurbetteki İyilerin Dijital Mahallesi">
-  <meta property="og:url" content="https://bizdenbize.com/expert-panel.html">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="description" content="Hukuk, vize, vergi, sigorta — Almanya'daki hayata dair sorularını Türkçe konuşan uzmanlara sor.">
-<style>
-    :root{--red:#D42B2B;--navy:#003399;--navy2:#2348A8;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--white:#FFFFFF;--gold:#C9A84C;--green:#1E7B4B;}
+  <title>BizdenBize — Uzman Profili</title>
+<script src="platform-config.js"></script>
+  <style>
+    :root{--red:#D42B2B;--red2:#E8393A;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
+    /* NAV */
     nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
-    .nav-left{display:flex;align-items:center;gap:14px;}
-    .nav-logo-link{display:flex;align-items:center;text-decoration:none;}
-    .nav-logo-link img{height:44px;width:auto;}
-    .nav-divider{width:1px;height:18px;background:var(--sand);}
-    .nav-title{font-size:14px;font-weight:600;color:var(--muted);}
-    .nav-title span{color:var(--navy);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--red);}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
+    .nav-back:hover{background:var(--warm);color:var(--ink);}
     .nav-right{display:flex;align-items:center;gap:10px;}
-    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
 
-    .page{padding:78px 32px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
+    /* LAYOUT */
+    .page{padding:78px 24px 60px;max-width:860px;margin:0 auto;}
 
-    /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;grid-column:1/-1;}
-    .stat{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px 20px;}
-    .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);line-height:1;}
-    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
-    .stat.urgent{border-color:var(--red);background:rgba(212,43,43,.04);}
-    .stat.urgent .stat-val{color:var(--red);}
-    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)!important;}}
+    /* HERO */
+    .hero{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:32px;display:flex;gap:28px;align-items:flex-start;margin-bottom:20px;}
+    .hero-avatar{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Playfair Display',serif;}
+    .hero-info{flex:1;min-width:0;}
+    .hero-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+    .hero-title{font-size:15px;color:var(--muted);margin-bottom:12px;}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .badge-cat{background:rgba(27,58,140,.08);color:var(--navy);border:1px solid rgba(27,58,140,.15);}
+    .badge-lang{background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+    .hero-bio{font-size:14px;color:var(--muted);line-height:1.7;}
+    .hero-cta{margin-top:18px;}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:var(--red);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-primary:hover{background:var(--red2);}
 
-    /* Sidebar */
-    .sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:76px;}
-    .filter-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;}
-    .fc-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-    .filter-btn{width:100%;padding:9px 12px;border-radius:8px;border:none;background:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
-    .filter-btn:hover{background:var(--warm);color:var(--ink);}
-    .filter-btn.active{background:var(--navy);color:var(--white);}
-    .filter-count{font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;background:rgba(255,255,255,.2);}
-    .filter-btn:not(.active) .filter-count{background:var(--warm);color:var(--muted);}
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:20px 16px;text-align:center;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;line-height:1;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);}
+    .stat-stars{font-size:20px;line-height:1;margin-bottom:4px;}
 
-    /* Main */
-    .main{display:flex;flex-direction:column;gap:12px;}
-    .review-card{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;transition:box-shadow .2s;}
-    .review-card:hover{box-shadow:0 4px 20px rgba(26,18,8,.08);}
-    .review-card.urgent{border-color:var(--red);}
-    .rc-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--warm);cursor:pointer;}
-    .rc-cat{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-    .rc-info{flex:1;}
-    .rc-user{font-size:13px;font-weight:600;color:var(--ink);}
-    .rc-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;}
-    .rc-status{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;}
-    .status-pending{background:rgba(201,168,76,.15);color:#854F0B;}
-    .status-assigned{background:rgba(27,58,140,.1);color:var(--navy);}
-    .status-answered{background:rgba(30,123,75,.1);color:var(--green);}
-    .rc-time{font-size:11px;color:var(--muted);flex-shrink:0;}
+    /* REVIEWS SECTION */
+    .section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+    .review-list{display:flex;flex-direction:column;gap:10px;}
+    .review-item{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:16px 18px;}
+    .review-stars{font-size:16px;margin-bottom:6px;}
+    .review-comment{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic;}
+    .review-meta{font-size:11px;color:var(--sand);margin-top:8px;}
+    .review-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--warm);color:var(--muted);display:inline-block;margin-bottom:6px;}
 
-    .rc-body{padding:20px;}
-    .rc-section-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-    .rc-question{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:16px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
-    .rc-abibot{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;padding:12px;background:rgba(27,58,140,.04);border-radius:8px;border-left:3px solid rgba(27,58,140,.2);max-height:120px;overflow-y:auto;}
-    .rc-response-area{margin-top:4px;}
-    .response-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:10px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;transition:border-color .2s;line-height:1.6;}
-    .response-textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,58,140,.08);}
-    .rc-actions{display:flex;gap:8px;margin-top:10px;align-items:center;}
-    .submit-btn{padding:10px 24px;background:var(--green);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
-    .submit-btn:hover{opacity:.9;}
-    .submit-btn:disabled{background:var(--sand);cursor:not-allowed;}
-    .assign-btn{padding:10px 16px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:opacity .2s;}
-    .assign-btn:hover{opacity:.9;}
-    .close-btn{padding:10px 16px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;margin-left:auto;}
-    .close-btn:hover{border-color:var(--red);color:var(--red);}
+    /* EMPTY / LOADING */
+    /* Direct ask modal */
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--white);border-radius:20px;max-width:500px;width:92%;animation:popIn .3s ease;display:flex;flex-direction:column;max-height:92vh;}
+    @keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-head{padding:24px 24px 16px;border-bottom:1px solid var(--warm);flex-shrink:0;}
+    .modal-body{padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;}
+    .modal-foot{padding:16px 24px 24px;border-top:1px solid var(--warm);flex-shrink:0;}
+    .field-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+    .cat-select{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;}
+    .cat-select:focus{border-color:var(--ink);}
+    .question-ta{width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:120px;line-height:1.6;transition:border-color .2s;}
+    .question-ta:focus{border-color:var(--ink);}
+    .price-pill{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--warm);border:1px solid var(--sand);border-radius:9px;}
+    .price-pill.insufficient{background:rgba(212,43,43,.05);border-color:rgba(212,43,43,.2);}
+    .btn-confirm{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-confirm:hover{background:#176040;}
+    .btn-confirm:disabled{background:var(--sand);cursor:not-allowed;}
+    .btn-cancel{width:100%;padding:11px;background:none;color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;margin-top:8px;transition:all .15s;}
+    .btn-cancel:hover{border-color:var(--red);color:var(--red);}
 
-    /* Answered */
-    .rc-answered{padding:12px;background:rgba(30,123,75,.05);border-radius:8px;border-left:3px solid var(--green);font-size:13px;color:var(--ink);line-height:1.6;}
-    .rc-answered-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
+    /* REPORT */
+    .btn-report-expert{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:none;border:1.5px solid rgba(212,43,43,.2);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .btn-report-expert:hover{border-color:var(--red);color:var(--red);background:rgba(212,43,43,.04);}
+    .report-modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(26,18,8,.55);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .report-modal-overlay.open{display:flex;}
+    .report-modal-box{background:var(--white);border-radius:18px;max-width:440px;width:92%;padding:28px;animation:popIn .25s ease;}
+    .report-select,.report-textarea{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;margin-bottom:10px;}
+    .report-select:focus,.report-textarea:focus{border-color:var(--ink);}
+    .report-textarea{resize:vertical;min-height:80px;line-height:1.6;}
+    .no-reviews-icon{font-size:32px;margin-bottom:8px;}
+    .no-reviews-text{font-size:13px;color:var(--muted);}
 
-    /* Expert assign dropdown */
-    .assign-select{padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;}
+    /* ERROR */
+    .error-state{text-align:center;padding:80px 20px;}
+    .error-icon{font-size:48px;margin-bottom:16px;}
+    .error-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+    .error-sub{font-size:14px;color:var(--muted);}
 
-    /* Empty state */
-    .empty{text-align:center;padding:60px 20px;}
-    .empty-icon{font-size:48px;margin-bottom:16px;}
-    .empty-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;}
-    .empty-sub{font-size:14px;color:var(--muted);}
+    @media(max-width:640px){
+      .hero{flex-direction:column;gap:20px;padding:20px;}
+      .stats-row{grid-template-columns:1fr 1fr;}
+      .stats-row .stat-card:last-child{grid-column:1/-1;}
+      .hero-name{font-size:22px;}
+    }
 
-    /* Expert management */
-    .expert-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;}
-    .ec-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
-    .ec-name{font-size:14px;font-weight:600;color:var(--ink);}
-    .ec-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-    .ec-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-    .ec-cat{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(27,58,140,.08);color:var(--navy);font-weight:500;}
-    .ec-actions{margin-left:auto;display:flex;gap:6px;}
-    .ec-btn{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;border:1.5px solid var(--sand);background:var(--warm);color:var(--muted);transition:all .15s;}
-    .ec-btn:hover{border-color:var(--navy);color:var(--navy);}
-    .ec-btn.danger:hover{border-color:var(--red);color:var(--red);}
-
-    /* Rating display */
-    .rc-rating-display{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:9px;flex-wrap:wrap;}
-    .rc-rating-stars{font-size:16px;line-height:1;}
-    .rc-rating-score{font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;}
-    .rc-rating-comment{font-size:12px;color:var(--muted);font-style:italic;border-left:1px solid var(--sand);padding-left:8px;}
-    .rc-no-rating{font-size:11px;color:var(--sand);margin-top:8px;font-style:italic;}
-
-    /* Pro-bono */
-    .review-card.probono{border-color:#1E7B4B;}
-    .probono-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(30,123,75,.12);color:#1E7B4B;border:1px solid rgba(30,123,75,.2);flex-shrink:0;}
-    .probono-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--warm);margin-top:8px;}
-    .pt-label{font-size:12px;font-weight:600;color:var(--ink);}
-    .pt-sub{font-size:10px;color:var(--muted);margin-top:1px;}
-    .pt-switch{width:36px;height:20px;border-radius:10px;background:var(--sand);position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0;}
-    .pt-switch.on{background:var(--green);}
-    .pt-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;}
-    .pt-switch.on::after{transform:translateX(16px);}
-    .pt-slots{font-size:11px;color:var(--muted);margin-top:6px;}
-    @media(max-width:900px){.page{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.sidebar{position:static;}}
-    @media (max-width: 900px) { }
-
-    /* Expert overview table */
-    .experts-table-wrap{background:var(--white);border:1px solid var(--sand);border-radius:16px;overflow:hidden;overflow-x:auto;}
-    .experts-table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
-    .experts-table th{text-align:left;padding:12px 16px;background:var(--warm);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
-    .experts-table td{padding:12px 16px;border-top:1px solid var(--warm);vertical-align:middle;}
-    .experts-table tr:hover td{background:rgba(27,58,140,.02);}
-    .et-name-cell{display:flex;align-items:center;gap:10px;}
-    .et-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-    .et-name{font-weight:600;color:var(--ink);white-space:nowrap;}
-    .et-title{font-size:11px;color:var(--muted);}
-    .et-avail{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
-    .et-avail.on{background:rgba(30,123,75,.1);color:var(--green);}
-    .et-avail.off{background:rgba(212,43,43,.08);color:var(--red);}
-    .et-cats{display:flex;flex-wrap:wrap;gap:4px;max-width:220px;}
-    .et-cat{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(27,58,140,.08);color:var(--navy);font-weight:500;white-space:nowrap;}
-    .et-rating{font-weight:700;color:var(--gold);white-space:nowrap;}
+    /* OWNER PANEL — private, visible only to the logged-in expert viewing their own profile */
+    .owner-panel{margin-top:32px;border:1.5px dashed var(--navy);border-radius:20px;padding:24px;background:rgba(27,58,140,.03);}
+    .owner-panel-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+    .owner-panel-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);}
+    .owner-panel-note{font-size:12px;color:var(--muted);margin-bottom:16px;}
+    .owner-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+    .owner-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--white);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+    .owner-tab.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+    .owner-card{background:var(--white);border:1px solid var(--sand);border-radius:14px;padding:16px 18px;margin-bottom:10px;}
+    .owner-card.urgent{border-color:var(--red);}
+    .owner-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .owner-card-user{font-size:13px;font-weight:600;color:var(--ink);flex:1;}
+    .owner-card-status{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;}
+    .owner-status-pending{background:rgba(201,168,76,.15);color:#854F0B;}
+    .owner-status-assigned{background:rgba(27,58,140,.1);color:var(--navy);}
+    .owner-status-answered{background:rgba(30,123,75,.1);color:var(--green);}
+    .owner-card-time{font-size:11px;color:var(--muted);flex-shrink:0;}
+    .owner-question{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:12px;background:var(--cream);border-radius:8px;border-left:3px solid var(--navy);}
+    .owner-abibot-answer{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;padding:14px 16px;background:#FFF9EC;border:1.5px solid #E8D9A8;border-left:4px solid var(--gold);border-radius:8px;}
+    .owner-abibot-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8A6D1F;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .owner-abibot-toggle{font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;margin-top:6px;display:inline-block;}
+    .owner-abibot-body.collapsed{max-height:90px;overflow:hidden;position:relative;mask-image:linear-gradient(to bottom, black 50%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 50%, transparent 100%);}
+    .owner-response-ta{width:100%;padding:11px 13px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:8px;}
+    .owner-response-ta:focus{border-color:var(--navy);}
+    .owner-submit-btn{padding:9px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+    .owner-submit-btn:disabled{background:var(--sand);cursor:not-allowed;}
+    .owner-answered-box{padding:12px;background:rgba(30,123,75,.05);border-radius:8px;border-left:3px solid var(--green);font-size:13px;color:var(--ink);line-height:1.6;}
+    .owner-unclaimed-note{padding:11px 13px;background:var(--warm);border-radius:8px;border-left:3px solid var(--sand);font-size:12px;color:var(--muted);}
+    .owner-empty{text-align:center;padding:24px;font-size:13px;color:var(--muted);}
   </style>
+  <script type="module">
+    import { createClient } from '/supabase.js';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb=_authSb;
+    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+  </script>
+  <!-- Loaded here, not at the end of <body>: this page calls
+       mhTranslateMenuHtml() as soon as its fetch resolves, which can
+       beat a bottom-of-page script and throw before anything renders. -->
+  <script src="translate-widget.js"></script>
   <link rel="stylesheet" href="brand.css">
 </head>
 <body>
 
 <nav>
-  <div class="nav-left">
-    <a href="index.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
-    <div class="nav-divider"></div>
-    <span class="nav-title">👨‍⚖️ <span>Uzman Paneli</span></span>
-  </div>
+  <a href="index.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
   <div class="nav-right">
-    <a href="admin.html" style="font-size:12px;color:var(--muted);text-decoration:none;margin-right:8px;">Admin →</a>
-    <a href="mahallem.html" style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--red,#D42B2B);text-decoration:none;margin-right:12px;white-space:nowrap;">🏠 Mahallem</a>
-    <div class="nav-avatar" onclick="window.location='profile.html'">AY</div>
+    <a href="uzmanlar.html" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;background:var(--navy,#003399);border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:700;color:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;box-shadow:0 2px 8px rgba(27,58,140,.3);">← Tüm Uzmanlar</a>
+    <a href="abibot.html" class="btn-primary" style="font-size:12px;padding:8px 16px;">🤖 AbiBOT</a>
+    <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;">—</div>
+    <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
+      <a href="profile.html" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;">👤 Profilim</a>
+      <hr style="border:none;border-top:1px solid #F0EAE0;margin:4px 0;">
+      <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
+    </div>
   </div>
 </nav>
+<script>
+  function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
+  document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
+  async function doLogout() { const { createClient } = await import('/supabase.js'); const sb = createClient('https://wxjudojlwksivhzjnmim.supabase.co', 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303'); await sb.auth.signOut(); Object.keys(localStorage).forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.replace('/login.html'); }
+  // NOTE: window._authReady is created inside a deferred module script, which
+  // browsers DEFER until after all regular scripts run. Checking for it directly
+  // here would always find it undefined and silently skip. Poll for the session
+  // instead, so this doesn't depend on script execution order.
+  (function initNavAvatar() {
+    let waited = 0;
+    const timer = setInterval(async () => {
+      waited += 100;
+      const session = window._currentSession;
+      if (!session) {
+        if (waited >= 5000) clearInterval(timer);
+        return;
+      }
+      clearInterval(timer);
+      const navAvatar = document.getElementById('nav-avatar');
+      if (!navAvatar) return;
+      try {
+        const r = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&select=first_name,last_name,avatar_url`, {
+          headers: { apikey: 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303', Authorization: `Bearer ${session.access_token}` }
+        });
+        const rows = await r.json();
+        const p = rows[0] || {};
+        // Use ONLY the BizdenBize profile record — deliberately NOT the auth
+        // provider's metadata (e.g. a Google account picture/name), which can
+        // differ from the member's actual BizdenBize identity.
+        if (p.avatar_url) {
+          navAvatar.innerHTML = `<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+          const initials = ((p.first_name?.[0]||'') + (p.last_name?.[0]||'')).toUpperCase() || '?';
+          const colors = ['#D42B2B','#185FA5','#1E7B4B','#C9A84C','#534AB7'];
+          navAvatar.textContent = initials;
+          navAvatar.style.background = colors[initials.charCodeAt(0) % colors.length];
+        }
+      } catch(e) { console.error('Nav avatar load error:', e); }
+    }, 100);
+  })();
+  function bbGoBack(fallbackUrl) {
+    if (document.referrer && document.referrer.indexOf(window.location.hostname) !== -1 && history.length > 1) {
+      history.back();
+    } else {
+      window.location.href = fallbackUrl;
+    }
+  }
+</script>
 
-<div class="page">
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat urgent">
-      <div class="stat-val" id="stat-pending">0</div>
-      <div class="stat-label">⏳ Bekleyen İstek</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-inreview">0</div>
-      <div class="stat-label">🔍 İncelemede</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-answered">0</div>
-      <div class="stat-label">✅ Yanıtlanan</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-experts">0</div>
-      <div class="stat-label">👨‍⚖️ Aktif Uzman</div>
-    </div>
-    <div class="stat" style="border-color:rgba(30,123,75,.3);background:rgba(30,123,75,.03);">
-      <div class="stat-val" id="stat-probono" style="color:#1E7B4B;">0</div>
-      <div class="stat-label">🤝 Pro-Bono Bekleyen</div>
-    </div>
-    <div class="stat" style="border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);">
-      <div class="stat-val" id="stat-avg-rating" style="color:var(--gold);font-size:24px;">—</div>
-      <div class="stat-label">⭐ Ortalama Puan</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-rated">0</div>
-      <div class="stat-label">📊 Değerlendirilen</div>
-    </div>
+<div class="page" id="page-content">
+  <div class="loading">
+    <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+    <div>Uzman profili yükleniyor...</div>
   </div>
-
-  <!-- Pending claim approvals -->
-  <div id="pending-claims-section" style="grid-column:1/-1;display:none;margin-bottom:24px;">
-    <div style="background:rgba(201,168,76,.06);border:1.5px solid rgba(201,168,76,.35);border-radius:16px;padding:18px 20px;">
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;">🙋 Onay Bekleyen Talepler</div>
-      <div id="pending-claims-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-  </div>
-
-  <!-- Expert overview table -->
-  <div style="grid-column:1/-1;margin-bottom:24px;">
-    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;">👨‍⚖️ Uzman Genel Bakış</div>
-    <div class="experts-table-wrap">
-      <table class="experts-table">
-        <thead>
-          <tr>
-            <th>Uzman</th>
-            <th>Müsaitlik</th>
-            <th>Konu Alanları</th>
-            <th>Şehir</th>
-            <th>Puan</th>
-            <th>Bu Ay Yanıtlanan</th>
-            <th>İletişim</th>
-          </tr>
-        </thead>
-        <tbody id="experts-table-body">
-          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Yükleniyor...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="filter-card">
-      <div class="fc-title">Filtre</div>
-      <button class="filter-btn active" onclick="setFilter('all',this)">
-        Tüm İstekler <span class="filter-count" id="count-all">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('pending',this)">
-        ⏳ Bekleyen <span class="filter-count" id="count-pending">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('assigned',this)">
-        🔍 Atandı <span class="filter-count" id="count-assigned">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('answered',this)">
-        ✅ Yanıtlandı <span class="filter-count" id="count-answered">0</span>
-      </button>
-      <button class="filter-btn" onclick="setFilter('probono',this)">
-        🤝 Pro-Bono <span class="filter-count" id="count-probono">0</span>
-      </button>
-    </div>
-
-    <div class="filter-card">
-      <div class="fc-title">Kategoriler</div>
-      <button class="filter-btn" onclick="setCatFilter('legal',this)">⚖️ Hukuki</button>
-      <button class="filter-btn" onclick="setCatFilter('visa',this)">🛂 Vize</button>
-      <button class="filter-btn" onclick="setCatFilter('medical',this)">🏥 Tıbbi</button>
-      <button class="filter-btn" onclick="setCatFilter('tax',this)">💶 Vergi</button>
-      <button class="filter-btn" onclick="setCatFilter('housing',this)">🏠 Konut</button>
-      <button class="filter-btn" onclick="setCatFilter('employment',this)">💼 İş</button>
-    </div>
-
-    <div class="filter-card">
-      <div class="fc-title">Uzmanlar</div>
-      <div id="expert-list-sidebar" style="display:flex;flex-direction:column;gap:6px;">
-        <div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Yükleniyor...</div>
-      </div>
-      <button onclick="showAddExpert()" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;border:1.5px dashed var(--sand);background:none;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">+ Uzman Ekle</button>
-    </div>
-  </div>
-
-  <!-- Main -->
-  <div class="main" id="reviews-main">
-    <div class="empty">
-      <div class="empty-icon">⏳</div>
-      <div class="empty-title">Yükleniyor...</div>
-    </div>
-  </div>
-
 </div>
 
-<!-- Add Expert Modal -->
-<div id="add-expert-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-  <div style="background:var(--white);border-radius:20px;padding:32px;max-width:480px;width:90%;animation:popIn .3s ease;">
-    <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:20px;">Uzman Ekle</h3>
-    <div style="display:flex;flex-direction:column;gap:12px;">
+<footer style="background:var(--deep, #002266);color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;padding:56px 24px 32px;margin-top:auto;">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Top row -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08);">
+
+      <!-- Brand -->
       <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kullanıcı E-postası</label>
-        <input id="expert-email" type="email" placeholder="uzman@email.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Unvan</label>
-        <input id="expert-title" type="text" placeholder="Rechtsanwalt / Steuerberater / Doktor..." style="width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">Kategoriler</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="cat-checkboxes">
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="legal"> Hukuki</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="visa"> Vize</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="medical"> Tıbbi</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="tax"> Vergi</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="housing"> Konut</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="employment"> İş</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="school"> Okul</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="insurance"> Sigorta</label>
+        <div class="bb-logo bb-logo--plain">Bizden<span>Bize</span></div>
+        <p style="font-size:13px;line-height:1.7;max-width:280px;margin-bottom:16px;">Avrupa'daki Türk topluluğu için güvenilir dijital platform. Mahallenle bağlan, bilgine ulaş, işini bul.</p>
+        <!-- Social -->
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <a href="https://instagram.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Instagram">📸</a>
+          <a href="https://tiktok.com/@bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="TikTok">🎵</a>
+          <a href="https://facebook.com/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="Facebook">👤</a>
+          <a href="https://wa.me/bizdenbize" target="_blank" rel="noopener" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'" title="WhatsApp">💬</a>
         </div>
       </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;">
-      <button onclick="addExpert()" style="flex:1;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Uzman Ekle</button>
-      <button onclick="document.getElementById('add-expert-modal').style.display='none'" style="padding:12px 20px;background:var(--warm);color:var(--muted);border:1.5px solid var(--sand);border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
-    </div>
-  </div>
-</div>
 
-<style>
-@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-</style>
+      <!-- Platform -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Platform</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="mahallem.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏘️ Mahallem</a>
+          <a href="classifieds.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🛍️ İlanlar</a>
+          <a href="events.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎉 Etkinlikler</a>
+          <a href="business.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🏢 İşletmeler</a>
+          <a href="is-guc.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">💼 İş Ver & Bul</a>
+          <a href="ogrenim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🎓 Öğrenim</a>
+          <a href="library.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">📚 Bilgi & Belge</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT</a>
+        </div>
+      </div>
+
+      <!-- Destek -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Destek</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="hakkimizda.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Hakkımızda</a>
+          <a href="sss.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">SSS</a>
+          <a href="iletisim.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İletişim</a>
+          <a href="mailto:support@bizdenbize.com" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">support@bizdenbize.com</a>
+          <a href="abibot.html" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">🤖 AbiBOT'a Sor</a>
+        </div>
+      </div>
+
+      <!-- Yasal -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:14px;">Yasal</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="legal.html#privacy" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Gizlilik Politikası</a>
+          <a href="legal.html#terms" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Kullanım Koşulları</a>
+          <a href="legal.html#cookies" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Çerez Politikası</a>
+          <a href="legal.html#impressum" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Impressum</a>
+          <a href="legal.html#section-listings" style="font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">İlan Kuralları</a>
+        </div>
+      </div>
+
+    </div>
+
+    
+
+    <!-- Bottom bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2025 BizdenBize. Tüm hakları saklıdır.</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);">BizdenBize bu platformdaki üçüncü taraf içerik ve ilanlardan sorumlu değildir.</div>
+    </div>
+
+  </div>
+
+  <style>
+    @media (max-width: 768px) {
+      footer > div > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+      footer > div > div:first-child > div:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      footer > div > div:first-child { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</footer>
+
 
 <script type="module">
   import { createClient } from '/supabase.js';
@@ -327,454 +303,605 @@
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  // Auth check — uses session from login.html
-  let currentUser = null;
-  let profile = null;
-  let authorized = true;
-  let isAdmin = false;
-  let myExpertId = null;
+  const CAT_ICONS = window.BB_CONFIG.categoryIcons;
+  const CAT_NAMES = window.BB_CONFIG.categoryLabels;
+  const LANG_FLAGS = { tr:'🇹🇷', de:'🇩🇪', en:'🇬🇧', fr:'🇫🇷', nl:'🇳🇱' };
+  const AVATAR_COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5','#7B4B8C'];
 
-  try {
+  // Get expert_id from URL
+  const params = new URLSearchParams(window.location.search);
+  const expertId = params.get('id');
+
+  if (!expertId) {
+    showError('Uzman bulunamadı', 'Geçerli bir uzman ID\'si belirtilmedi.');
+  } else {
+    loadProfile(expertId);
+  }
+
+  async function requireLogin() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      // No session → redirect to login
-      authorized = false;
-      window.location.replace('login.html');
-    } else {
-      currentUser = session.user;
-      const { data: p } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-      profile = p;
-      isAdmin = !!profile?.is_admin;
+      window.location.replace('login.html?redirect=' + encodeURIComponent(location.pathname + location.search));
+      return false;
+    }
+    return true;
+  }
 
-      // This page is admin-only. Experts now answer their own questions from
-      // their own expert-profile.html (private panel, visible only to themselves).
-      if (!isAdmin) {
-        authorized = false;
-        const { data: expert } = await supabase.from('experts').select('id').eq('profile_id', currentUser.id).single();
-        document.body.innerHTML = '<p style="padding:60px;text-align:center;font-family:sans-serif;color:#6B5E4E;">Yönlendiriliyor...</p>';
-        if (expert) {
-          myExpertId = expert.id;
-          window.location.replace('expert-profile.html?id=' + expert.id);
-        } else {
-          window.location.replace('mahallem.html');
-        }
+  async function loadProfile(id) {
+    if (!(await requireLogin())) return;
+    try {
+      // Fetch expert summary from view + recent rated reviews
+      const [summaryRes, reviewsRes] = await Promise.all([
+        supabase.from('expert_rating_summary').select('*').eq('expert_id', id).single(),
+        supabase.from('expert_reviews')
+          .select('category, rating, rating_comment, rated_at')
+          .eq('expert_id', id)
+          .eq('status', 'answered')
+          .not('rating', 'is', null)
+          .order('rated_at', { ascending: false })
+          .limit(10)
+      ]);
+
+      if (summaryRes.error || !summaryRes.data) {
+        showError('Uzman bulunamadı', 'Bu profile ait bir uzman bulunamadı.');
+        return;
+      }
+
+      renderProfile(summaryRes.data, reviewsRes.data || []);
+      renderOwnerPanelIfApplicable(summaryRes.data.expert_id);
+    } catch(e) {
+      console.error(e);
+      showError('Bir hata oluştu', 'Profil yüklenirken sorun oluştu. Lütfen tekrar deneyin.');
+    }
+  }
+
+  // ===== OWNER PANEL (private — only the logged-in expert viewing their own profile) =====
+  let myExpertId = null;
+  let myExpertName = 'Bir uzman';
+  let myExpertPhone = '';
+  let myPhoneVerified = false;
+  let myWhatsappNumber = '';
+  let myWhatsappEnabled = false;
+  let mySession = null;
+  let myReviews = [];
+  let myFilter = 'all';
+
+  const OWNER_CAT_ICONS = CAT_ICONS;
+  const OWNER_STATUS_LABELS = { pending:'Bekliyor', assigned:'Atandı', in_review:'İncelemede', answered:'Yanıtlandı', closed:'Kapatıldı' };
+
+  async function renderOwnerPanelIfApplicable(expertRowId) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: expertRow } = await supabase.from('experts').select('id, profile_id, phone, phone_verified, whatsapp_number, whatsapp_enabled').eq('id', expertRowId).single();
+      if (!expertRow || expertRow.profile_id !== session.user.id) return; // not the owner — public view stays as-is
+
+      // Viewing your own profile: "Doğrudan Soru Sor" and "Şikayet Et" are
+      // addressed to visitors and make no sense here — offering to let
+      // someone report themselves is worse than useless.
+      const ctaRow = document.getElementById('hero-cta-row');
+      if (ctaRow) {
+        ctaRow.innerHTML = `
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:rgba(30,123,75,.1);border:1px solid rgba(30,123,75,.3);color:#1E7B4B;border-radius:9px;font-size:13px;font-weight:700;">✅ Bu sizin uzman profiliniz</span>
+          <button onclick="document.getElementById('owner-panel')?.scrollIntoView({behavior:'smooth'})" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">⚙️ Uzman Panelim</button>
+          <a href="uzmanlar.html" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;">← Tüm Uzmanlar</a>`;
+      }
+
+      mySession = session;
+      myExpertId = expertRow.id;
+      myExpertPhone = expertRow.phone || '';
+      myPhoneVerified = !!expertRow.phone_verified;
+      myWhatsappNumber = expertRow.whatsapp_number || '';
+      myWhatsappEnabled = !!expertRow.whatsapp_enabled;
+
+      const { data: myProfile } = await supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).single();
+      myExpertName = myProfile ? `${myProfile.first_name || ''} ${myProfile.last_name || ''}`.trim() : 'Bir uzman';
+
+      const { data: reviews } = await supabase.from('expert_reviews')
+        .select('*, profiles:user_id(first_name, last_name, city)')
+        .or(`expert_id.eq.${expertRow.id},expert_id.is.null`)
+        .order('created_at', { ascending: false });
+
+      myReviews = reviews || [];
+      injectOwnerPanel();
+      window.renderOwnerExpertise();
+    } catch(e) {
+      console.error('Owner panel check failed:', e);
+    }
+  }
+
+  function myTimeAgo(date) {
+    const diff = Date.now() - new Date(date).getTime();
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(diff / 86400000);
+    if (h < 1) return 'Az önce';
+    if (h < 24) return `${h} saat önce`;
+    return `${d} gün önce`;
+  }
+
+  function myMdToHtml(text) {
+    if (!text) return '';
+    return text.replace(/\n/g, '<br>');
+  }
+
+  // AbiBOT's stored answers contain real markdown (headers, bold, bullet lists) —
+  // this renders it properly instead of showing raw # / ** / - characters to the expert.
+  function renderAbibotMarkdown(text) {
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+
+      const inlineBold = (s) => s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      if (/^###\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:13px;font-weight:700;color:var(--ink);margin:12px 0 4px;">${inlineBold(line.replace(/^###\s+/, ''))}</div>`;
+      } else if (/^##\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:14px;font-weight:700;color:var(--ink);margin:14px 0 6px;">${inlineBold(line.replace(/^##\s+/, ''))}</div>`;
+      } else if (/^#\s+/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="font-size:15px;font-weight:700;color:var(--ink);margin:14px 0 6px;">${inlineBold(line.replace(/^#\s+/, ''))}</div>`;
+      } else if (/^-\s+/.test(line)) {
+        if (!inList) { html += '<ul style="margin:4px 0 8px;padding-left:20px;">'; inList = true; }
+        html += `<li style="margin-bottom:3px;">${inlineBold(line.replace(/^-\s+/, ''))}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div style="margin-bottom:6px;">${inlineBold(line)}</div>`;
       }
     }
-  } catch(e) {
-    console.error('Auth error:', e);
-    authorized = false;
-    document.body.innerHTML = '<p style="padding:60px;text-align:center;font-family:sans-serif;color:#6B5E4E;">Yönlendiriliyor...</p>';
-    window.location.replace('login.html');
+    if (inList) html += '</ul>';
+    return html;
   }
 
-  // Hard stop: prevents ANY further script execution for unauthorized users —
-  // including the auto-refresh interval below. Without this, a redirect
-  // could be delayed (e.g. by a blocking alert or slow navigation) long
-  // enough for later code to still run and load/render real data.
-  if (!authorized) {
-    throw new Error('Unauthorized — halting expert-panel.html execution.');
-  }
-
-  // Update avatar with real initials
-  const firstName = profile?.first_name || currentUser?.email?.split('@')[0] || 'U';
-  const lastName = profile?.last_name || '';
-  document.querySelector('.nav-avatar').textContent =
-    ((firstName[0] || '') + (lastName[0] || '')).toUpperCase() || 'AY';
-
-  let allReviews = [];
-  let allExperts = [];
-  let allRatings = [];
-  let currentFilter = 'all';
-  let currentCatFilter = null;
-
-  const CAT_ICONS = {
-    legal:'⚖️', visa:'🛂', medical:'🏥', tax:'💶',
-    housing:'🏠', employment:'💼', school:'🎓', insurance:'🚗'
-  };
-  const CAT_COLORS = {
-    legal:'#EEF2FF', visa:'#FFF7ED', medical:'#F0FDF4',
-    tax:'#FFFBEB', housing:'#FDF4FF', employment:'#EFF6FF',
-    school:'#FEF9C3', insurance:'#FFF1F2'
-  };
-  const STATUS_LABELS = {
-    pending:'Bekliyor', assigned:'Atandı', in_review:'İncelemede',
-    answered:'Yanıtlandı', closed:'Kapatıldı'
+  window.renderOwnerExpertise = function renderOwnerExpertise() {
+    const box = document.getElementById('owner-expertise');
+    if (!box) return;
+    const cats  = window._expertCategories || [];
+    const cfg   = window.BB_CONFIG || {};
+    const names = cfg.categoryLabels || {};
+    const icons = cfg.categoryIcons || {};
+    const e     = window._expertRecord || {};
+    const rows = [['Unvan', e.title || e.expert_title || '—'],
+                  ['Tanıtım', e.expert_bio || e.bio || '—']];
+    box.innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+        ${cats.length
+          ? cats.map(c => `<span style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(27,58,140,.07);border:1px solid rgba(27,58,140,.2);border-radius:20px;font-size:12.5px;font-weight:600;color:var(--navy,#003399);">${icons[c] || '•'} ${names[c] || c}</span>`).join('')
+          : '<span style="font-size:12.5px;color:var(--muted);">Henüz uzmanlık alanı tanımlanmamış.</span>'}
+      </div>
+      ${rows.map(([k, v]) => `<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;"><strong style="color:var(--ink);">${k}:</strong> ${v}</div>`).join('')}
+      <button onclick="openExpertiseEdit()" style="margin-top:12px;padding:8px 16px;background:var(--navy,#003399);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">✏️ Düzenle</button>`;
   };
 
-  // Load everything
-  async function loadAll() {
-    const [reviewsRes, expertsRes, ratingsRes] = await Promise.all([
-      supabase.from('expert_reviews').select('*, profiles:user_id(first_name, last_name, city, country)').order('created_at', { ascending: false }),
-      supabase.from('experts').select('*, profiles:profile_id(first_name, last_name, avatar_url, city, email)'),
-      supabase.from('expert_rating_summary').select('*')
-    ]);
-
-    allReviews = reviewsRes.data || [];
-    allExperts = expertsRes.data || [];
-    allRatings = ratingsRes.data || [];
-
-    updateStats();
-    renderExpertSidebar();
-    renderReviews();
-    renderPendingClaims();
-    renderExpertsTable();
-  }
-
-  function renderPendingClaims() {
-    const section = document.getElementById('pending-claims-section');
-    const list = document.getElementById('pending-claims-list');
-    const pending = allReviews.filter(r => r.claim_status === 'pending');
-
-    if (!pending.length) {
-      section.style.display = 'none';
-      return;
-    }
-    section.style.display = 'block';
-    list.innerHTML = pending.map(r => {
-      const expert = allExperts.find(e => e.id === r.expert_id);
-      const expertName = expert ? `${expert.profiles?.first_name || ''} ${expert.profiles?.last_name || ''}`.trim() : 'Bilinmeyen uzman';
-      const snippet = (r.question || '').slice(0, 90) + (r.question?.length > 90 ? '…' : '');
-      return `
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--white);border:1px solid var(--sand);border-radius:10px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:200px;">
-            <div style="font-size:13px;font-weight:600;color:var(--ink);">${expertName} <span style="font-weight:400;color:var(--muted)">· ${CAT_ICONS[r.category] || ''} ${r.category}</span></div>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px;">${snippet}</div>
-          </div>
-          <button class="assign-btn" style="background:var(--green);" onclick="approveClaim('${r.id}')">✓ Onayla</button>
-          <button class="assign-btn" style="background:var(--red);" onclick="rejectClaim('${r.id}')">✕ Reddet</button>
-        </div>`;
-    }).join('');
-  }
-
-  function updateStats() {
-    const pending  = allReviews.filter(r => r.status === 'pending' && !r.is_probono).length;
-    const inreview = allReviews.filter(r => r.status === 'assigned' || r.status === 'in_review').length;
-    const answered = allReviews.filter(r => r.status === 'answered').length;
-    const probono  = allReviews.filter(r => r.is_probono && r.status === 'pending').length;
-
-    document.getElementById('stat-pending').textContent   = pending;
-    document.getElementById('stat-inreview').textContent  = inreview;
-    document.getElementById('stat-answered').textContent  = answered;
-    document.getElementById('stat-experts').textContent   = allExperts.filter(e => e.is_active).length;
-    document.getElementById('stat-probono').textContent   = probono;
-
-    document.getElementById('count-all').textContent      = allReviews.length;
-    document.getElementById('count-pending').textContent  = pending;
-    document.getElementById('count-assigned').textContent = inreview;
-    document.getElementById('count-answered').textContent = answered;
-    document.getElementById('count-probono').textContent  = probono;
-
-    const rated = allReviews.filter(r => r.rating != null);
-    const avgRating = rated.length
-      ? (rated.reduce((s, r) => s + (r.rating || 0), 0) / rated.length).toFixed(1)
-      : null;
-    document.getElementById('stat-avg-rating').textContent = avgRating ? avgRating + ' ★' : '—';
-    document.getElementById('stat-rated').textContent = rated.length;
-  }
-
-  function renderExpertSidebar() {
-    const container = document.getElementById('expert-list-sidebar');
-    const active = allExperts.filter(e => e.is_active);
-    if (!active.length) {
-      container.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">Henüz uzman yok</div>';
-      return;
-    }
-    container.innerHTML = active.map(e => `
-      <div style="padding:8px 0;border-bottom:1px solid var(--warm);">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
-            ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
-            <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
-          </div>
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
-        </div>
-        <a href="expert-profile.html?id=${e.id}" target="_blank"
-           style="display:block;margin-top:6px;text-align:center;font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;padding:4px 8px;border:1px solid rgba(27,58,140,.2);border-radius:6px;background:rgba(27,58,140,.04);transition:all .15s;"
-           onmouseover="this.style.background='rgba(27,58,140,.1)'" onmouseout="this.style.background='rgba(27,58,140,.04)'">
-          👤 Profili Gör →
-        </a>
-        <div class="probono-toggle">
-          <div>
-            <div class="pt-label">🤝 Pro-Bono</div>
-            <div class="pt-sub">${e.probono_slots_used||0}/${e.probono_slots_total||5} yuva kullanıldı</div>
-          </div>
-          <button class="pt-switch ${e.offers_probono ? 'on' : ''}" onclick="toggleProbono('${e.id}', this)"></button>
+  // ---- editing your own expertise ------------------------------------
+  // Writes to the `experts` table (title / bio / categories / languages).
+  // The public view reads from expert_rating_summary, so the page reloads
+  // afterwards rather than guessing how the view will present the change.
+  window.openExpertiseEdit = function openExpertiseEdit() {
+    const box = document.getElementById('owner-expertise');
+    if (!box) return;
+    const cfg   = window.BB_CONFIG || {};
+    const cats  = cfg.categories || [];
+    const langs = cfg.languages || [];
+    const e     = window._expertRecord || {};
+    const mine     = window._expertCategories || [];
+    const myLangs  = e.languages || [];
+    const cb = (id, label, checked, group) =>
+      `<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--sand);border-radius:20px;font-size:12.5px;cursor:pointer;background:#fff;">
+         <input type="checkbox" class="${group}" value="${id}" ${checked ? 'checked' : ''}> ${label}
+       </label>`;
+    box.innerHTML = `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Uzmanlık Alanları</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${cats.map(c => cb(c.id, `${c.icon || ''} ${c.label}`, mine.includes(c.id), 'exp-cat')).join('')}
         </div>
       </div>
-    `).join('');
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Diller</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${langs.map(l => cb(l.id, l.label, myLangs.includes(l.id), 'exp-lang')).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Unvan</div>
+        <input id="exp-title" type="text" value="${(e.title || '').replace(/"/g, '&quot;')}" maxlength="80" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Tanıtım</div>
+        <textarea id="exp-bio" rows="4" maxlength="600" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;">${(e.bio || e.expert_bio || '')}</textarea>
+      </div>
+      <div id="exp-msg" style="display:none;font-size:12px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;">
+        <button id="exp-save" onclick="saveExpertise()" style="padding:9px 18px;background:var(--navy,#003399);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        <button onclick="renderOwnerExpertise()" style="padding:9px 18px;background:none;border:1.5px solid var(--sand);color:var(--muted);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
+      </div>`;
+  };
+
+  window.saveExpertise = async function saveExpertise() {
+    const msg = document.getElementById('exp-msg');
+    const btn = document.getElementById('exp-save');
+    const show = (text, ok) => {
+      if (!msg) return;
+      msg.textContent = text;
+      msg.style.color = ok ? 'var(--green, #1E7B4B)' : '#D42B2B';
+      msg.style.display = 'block';
+    };
+    const picked = g => Array.from(document.querySelectorAll('.' + g + ':checked')).map(el => el.value);
+    const categories = picked('exp-cat');
+    const languages  = picked('exp-lang');
+    const title = (document.getElementById('exp-title')?.value || '').trim();
+    const bio   = (document.getElementById('exp-bio')?.value || '').trim();
+
+    // Routing depends on categories, so an empty set would quietly remove
+    // this expert from every question queue.
+    if (!categories.length) { show('En az bir uzmanlık alanı seçmelisiniz.', false); return; }
+    if (!title) { show('Unvan boş bırakılamaz.', false); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
+    try {
+      const { error } = await supabase.from('experts')
+        .update({ categories, languages, title, bio })
+        .eq('id', myExpertId);
+      if (error) throw error;
+      show('Kaydedildi. Sayfa yenileniyor...', true);
+      setTimeout(() => window.location.reload(), 900);
+    } catch (err) {
+      console.error('Expertise save error:', err);
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+      show('Kaydedilemedi: ' + (err.message || 'bilinmeyen hata'), false);
+    }
+  };
+
+  function injectOwnerPanel() {
+    if (document.getElementById('owner-panel')) return; // already injected
+    injectPhonePanel();
+    injectWhatsappPanel();
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'owner-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">🎓 Uzmanlık Alanlarım</div>
+      </div>
+      <div class="owner-panel-note">Profilinizde görünen uzmanlık alanlarınız. Sorular size bu alanlara göre yönlendirilir.</div>
+      <div id="owner-expertise" style="margin-bottom:22px;"></div>
+
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">🔒 Sorularım</div>
+      </div>
+      <div class="owner-panel-note">Bu bölümü yalnızca siz görebilirsiniz — size atanan sorular ve ekip havuzundaki atanmamış sorular burada listelenir.</div>
+      <div class="owner-tabs" id="owner-tabs">
+        <button class="owner-tab active" onclick="setMyFilter('all', this)">Tümü</button>
+        <button class="owner-tab" onclick="setMyFilter('assigned', this)">Bana Atanan</button>
+        <button class="owner-tab" onclick="setMyFilter('pool', this)">Ekip Havuzu</button>
+        <button class="owner-tab" onclick="setMyFilter('answered', this)">Yanıtladıklarım</button>
+      </div>
+      <div id="owner-reviews-list"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderMyReviews();
   }
 
-
-  function mdToHtml(text) {
-    if (!text) return '';
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/##\s*(.*?)\n/g, '<strong style="display:block;margin:8px 0 4px">$1</strong>')
-      .replace(/\n/g, '<br>');
+  function injectPhonePanel() {
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'phone-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">📱 Telefon Doğrulama</div>
+      </div>
+      <div class="owner-panel-note">Bu bilgi yalnızca siz ve ekibimiz tarafından görülür.</div>
+      <div id="phone-panel-body"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderPhonePanel();
   }
 
-  function renderReviews() {
-    let reviews = allReviews;
-    if (currentFilter === 'probono') {
-      reviews = reviews.filter(r => r.is_probono && r.status === 'pending');
-    } else if (currentFilter !== 'all') {
-      reviews = reviews.filter(r => {
-        if (currentFilter === 'assigned') return r.status === 'assigned' || r.status === 'in_review';
-        return r.status === currentFilter;
-      });
+  function renderPhonePanel() {
+    const body = document.getElementById('phone-panel-body');
+    if (myPhoneVerified && myExpertPhone) {
+      body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;background:rgba(30,123,75,.06);border:1px solid rgba(30,123,75,.2);border-radius:9px;">
+          <div style="font-size:13px;font-weight:600;color:var(--green);">✅ Doğrulandı: ${myExpertPhone}</div>
+          <button onclick="window._startPhoneChange()" style="padding:7px 14px;background:none;border:1.5px solid var(--sand);border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">Numarayı Değiştir</button>
+        </div>`;
+    } else {
+      body.innerHTML = `
+        <div style="padding:10px 14px;background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:12px;">
+          ⚠️ Telefon numaranız henüz doğrulanmadı. Doğrulama, uzman profilinizin güvenilirliği için gereklidir.
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="tel" class="cat-select" id="phone-panel-input" placeholder="+49 151 234 5678" style="flex:1;" value="${myExpertPhone || ''}">
+          <button onclick="window._sendExpertPhoneOtp()" id="phone-panel-send-btn" style="flex-shrink:0;padding:0 18px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Doğrula</button>
+        </div>
+        <div id="phone-panel-otp-box" style="display:none;margin-top:10px;padding:14px;background:var(--warm);border:1.5px solid var(--sand);border-radius:9px;">
+          <label class="field-label">Doğrulama Kodu</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="cat-select" id="phone-panel-otp" placeholder="6 haneli kod" maxlength="6" style="flex:1;">
+            <button onclick="window._verifyExpertPhoneOtp()" style="flex-shrink:0;padding:0 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Onayla</button>
+          </div>
+          <div id="phone-panel-otp-msg" style="font-size:12px;margin-top:8px;color:var(--muted);"></div>
+        </div>`;
     }
-    if (currentCatFilter) {
-      reviews = reviews.filter(r => r.category === currentCatFilter);
-    }
+  }
 
-    const container = document.getElementById('reviews-main');
-    if (!reviews.length) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Bu filtrede istek yok</div><div class="empty-sub">Harika! Tüm istekler yanıtlanmış.</div></div>`;
+  function injectWhatsappPanel() {
+    const wrap = document.createElement('div');
+    wrap.className = 'owner-panel';
+    wrap.id = 'whatsapp-panel';
+    wrap.innerHTML = `
+      <div class="owner-panel-head">
+        <div class="owner-panel-title">💬 WhatsApp İletişimi (opsiyonel)</div>
+      </div>
+      <div class="owner-panel-note">İsterseniz profilinizde bir WhatsApp numarası gösterebilirsiniz. Bu tamamen isteğe bağlıdır.</div>
+      <div id="whatsapp-panel-body"></div>
+    `;
+    document.getElementById('page-content').appendChild(wrap);
+    renderWhatsappPanel();
+  }
+
+  function renderWhatsappPanel() {
+    const body = document.getElementById('whatsapp-panel-body');
+    body.innerHTML = `
+      <div style="padding:12px 14px;background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.15);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+        ⚠️ <strong>Önemli:</strong> WhatsApp görüşmeleri platform dışında gerçekleşir. Bu nedenle şikayet ve engelleme özelliklerimiz WhatsApp üzerinden yapılan görüşmeler için geçerli değildir. Önemli konularda kullanıcılara platform içi mesajlaşmayı önermenizi tavsiye ederiz.
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:${myWhatsappEnabled ? '14px' : '0'};">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;">
+          <input type="checkbox" id="whatsapp-panel-toggle" ${myWhatsappEnabled ? 'checked' : ''} onchange="window._toggleWhatsappFields()" style="width:18px;height:18px;cursor:pointer;">
+          Profilimde WhatsApp numarası göster
+        </label>
+      </div>
+      <div id="whatsapp-panel-fields" style="display:${myWhatsappEnabled ? 'block' : 'none'};">
+        <label class="field-label">WhatsApp Numarası</label>
+        <div style="display:flex;gap:8px;">
+          <input type="tel" class="cat-select" id="whatsapp-panel-input" placeholder="+49 151 234 5678" style="flex:1;" value="${myWhatsappNumber || myExpertPhone || ''}">
+          <button onclick="window._saveWhatsappSettings()" id="whatsapp-panel-save-btn" style="flex-shrink:0;padding:0 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kaydet</button>
+        </div>
+        <div id="whatsapp-panel-msg" style="font-size:12px;margin-top:8px;color:var(--muted);"></div>
+      </div>
+    `;
+  }
+
+  window._toggleWhatsappFields = function() {
+    const checked = document.getElementById('whatsapp-panel-toggle').checked;
+    document.getElementById('whatsapp-panel-fields').style.display = checked ? 'block' : 'none';
+    if (!checked) {
+      // Turning the toggle off saves immediately — no reason to make the
+      // expert click "Kaydet" separately just to hide their number again.
+      window._saveWhatsappSettings(false);
+    }
+  };
+
+  window._saveWhatsappSettings = async function(showFieldMsg = true) {
+    const enabled = document.getElementById('whatsapp-panel-toggle').checked;
+    const numberInput = document.getElementById('whatsapp-panel-input');
+    const number = numberInput ? numberInput.value.trim() : myWhatsappNumber;
+    const msg = document.getElementById('whatsapp-panel-msg');
+
+    if (enabled && (!number || number.length < 8)) {
+      if (msg) { msg.textContent = 'Lütfen geçerli bir numara girin.'; msg.style.color = 'var(--red)'; }
       return;
     }
 
-    container.innerHTML = reviews.map(r => {
-      const user = r.profiles;
-      const userName = user ? `${user.first_name} ${user.last_name}` : 'Kullanıcı';
-      const timeAgo = getTimeAgo(r.created_at);
-      const statusClass = `status-${r.status === 'in_review' ? 'assigned' : r.status}`;
-      const isAnswered = r.status === 'answered' || r.status === 'closed';
+    const btn = document.getElementById('whatsapp-panel-save-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
 
-      const assignedExpert = r.expert_id ? allExperts.find(e => e.id === r.expert_id) : null;
-      const expertName = assignedExpert
-        ? `${assignedExpert.profiles?.first_name || ''} ${assignedExpert.profiles?.last_name || ''}`.trim()
-        : null;
-      const expertLabel = expertName
-        ? `<span style="font-size:11px;font-weight:600;color:var(--navy);background:rgba(27,58,140,.08);padding:2px 9px;border-radius:20px;flex-shrink:0;">👨‍⚖️ ${expertName}</span>`
-        : '';
+    try {
+      const { error } = await supabase.from('experts')
+        .update({ whatsapp_enabled: enabled, whatsapp_number: enabled ? number : myWhatsappNumber })
+        .eq('id', myExpertId);
+      if (error) throw error;
+
+      myWhatsappEnabled = enabled;
+      if (enabled) myWhatsappNumber = number;
+
+      if (showFieldMsg && msg) { msg.textContent = 'Kaydedildi.'; msg.style.color = 'var(--green)'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+    } catch(e) {
+      console.error('WhatsApp settings save error:', e);
+      if (msg) { msg.textContent = 'Kaydedilemedi: ' + (e.message || 'Lütfen tekrar deneyin.'); msg.style.color = 'var(--red)'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Kaydet'; }
+      // Revert the toggle visually if the save failed, so the UI doesn't
+      // claim a state the database doesn't actually have.
+      const toggle = document.getElementById('whatsapp-panel-toggle');
+      if (toggle) toggle.checked = myWhatsappEnabled;
+      document.getElementById('whatsapp-panel-fields').style.display = myWhatsappEnabled ? 'block' : 'none';
+    }
+  };
+
+  window._startPhoneChange = function() {
+    myPhoneVerified = false;
+    renderPhonePanel();
+  };
+
+  window._sendExpertPhoneOtp = async function() {
+    const phone = document.getElementById('phone-panel-input').value.trim();
+    if (!phone || phone.length < 8) { alert('Lütfen geçerli bir telefon numarası girin.'); return; }
+    const btn = document.getElementById('phone-panel-send-btn');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+    try {
+      const { error } = await supabase.auth.updateUser({ phone });
+      if (error) throw error;
+      document.getElementById('phone-panel-otp-box').style.display = 'block';
+      document.getElementById('phone-panel-otp-msg').textContent = 'Kod gönderildi.';
+      btn.textContent = 'Tekrar Gönder';
+    } catch(e) {
+      console.error('Expert phone OTP send error:', e);
+      alert('Kod gönderilemedi: ' + (e.message || 'Lütfen tekrar deneyin.'));
+      btn.textContent = 'Doğrula';
+    }
+    btn.disabled = false;
+  };
+
+  window._verifyExpertPhoneOtp = async function() {
+    const phone = document.getElementById('phone-panel-input').value.trim();
+    const code = document.getElementById('phone-panel-otp').value.trim();
+    const msg = document.getElementById('phone-panel-otp-msg');
+    if (!code) { msg.textContent = 'Lütfen kodu girin.'; msg.style.color = 'var(--red)'; return; }
+    try {
+      const { error: otpErr } = await supabase.auth.verifyOtp({ phone, token: code, type: 'phone_change' });
+      if (otpErr) throw otpErr;
+
+      const { error: updateErr } = await supabase.from('experts')
+        .update({ phone, phone_verified: true, phone_verified_at: new Date().toISOString() })
+        .eq('id', myExpertId);
+      if (updateErr) throw updateErr;
+
+      myExpertPhone = phone;
+      myPhoneVerified = true;
+      renderPhonePanel();
+    } catch(e) {
+      console.error('Expert phone OTP verify error:', e);
+      msg.textContent = 'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.';
+      msg.style.color = 'var(--red)';
+    }
+  };
+
+  window.setMyFilter = function(filter, btn) {
+    myFilter = filter;
+    document.querySelectorAll('#owner-tabs .owner-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMyReviews();
+  };
+
+  function renderMyReviews() {
+    let list = myReviews;
+    if (myFilter === 'assigned') {
+      list = list.filter(r => r.expert_id === myExpertId && r.status !== 'answered' && r.status !== 'closed');
+    } else if (myFilter === 'pool') {
+      list = list.filter(r => r.expert_id === null && r.status !== 'answered' && r.status !== 'closed');
+    } else if (myFilter === 'answered') {
+      list = list.filter(r => r.status === 'answered' || r.status === 'closed');
+    }
+
+    const container = document.getElementById('owner-reviews-list');
+    if (!list.length) {
+      container.innerHTML = `<div class="owner-empty">Bu filtrede soru yok.</div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(r => {
+      const user = r.profiles;
+      const userName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Kullanıcı';
+      const isMine = r.expert_id === myExpertId;
+      const isAnswered = r.status === 'answered' || r.status === 'closed';
+      const statusClass = `owner-status-${r.status === 'in_review' ? 'assigned' : r.status}`;
+
+      let actionHtml;
+      if (isAnswered) {
+        actionHtml = `<div class="owner-answered-box">${myMdToHtml(r.expert_response || '')}</div>`;
+      } else if (isMine && (r.claim_status === 'approved' || r.claim_status == null)) {
+        // claim_status is null for questions assigned directly (e.g. paid
+        // "Doğrudan Soru Sor" submissions) — these skip the claim/approval
+        // workflow entirely, so they're ready to answer immediately, same
+        // as an approved claim.
+        actionHtml = `
+          <textarea class="owner-response-ta" id="owner-resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
+          <button class="owner-submit-btn" onclick="submitMyResponse('${r.id}')">✓ Yanıtı Gönder</button>
+        `;
+      } else if (isMine && r.claim_status === 'pending') {
+        actionHtml = `<div class="owner-unclaimed-note">⏳ Talebiniz admin onayı bekliyor — onaylandığında burada yanıt yazabileceksiniz.</div>`;
+      } else if (isMine && r.claim_status === 'rejected') {
+        actionHtml = `<div class="owner-unclaimed-note" style="border-left-color:var(--red);">❌ Bu talep reddedildi.</div>`;
+      } else {
+        actionHtml = `
+          <div class="owner-unclaimed-note" style="margin-bottom:8px;">🕓 Ekip havuzunda bekliyor — henüz size atanmadı.</div>
+          <button class="owner-submit-btn" style="background:var(--navy);" onclick="claimReview('${r.id}')">🙋 Bu Soruyu Üstlen</button>
+        `;
+      }
 
       return `
-        <div class="review-card ${r.status === 'pending' ? 'urgent' : ''} ${r.is_probono ? 'probono' : ''}" id="card-${r.id}">
-          <div class="rc-header" onclick="toggleCard('${r.id}')">
-            <div class="rc-cat" style="background:${CAT_COLORS[r.category] || '#f5f5f5'}">${CAT_ICONS[r.category] || '❓'}</div>
-            <div class="rc-info">
-              <div class="rc-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${user?.city || ''}</span></div>
-              <div class="rc-meta">
-                <span>${r.category}</span>
-                <span>·</span>
-                <span>${r.language?.toUpperCase()}</span>
-              </div>
-            </div>
-            ${r.is_probono ? '<span class="probono-badge">🤝 Pro-Bono</span>' : ''}
-            ${expertLabel}
-            <span class="rc-status ${statusClass}">${STATUS_LABELS[r.status] || r.status}</span>
-            <span class="rc-time">${timeAgo}</span>
+        <div class="owner-card ${r.status === 'pending' ? 'urgent' : ''}" id="owner-card-${r.id}">
+          <div class="owner-card-top">
+            <div class="owner-card-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${OWNER_CAT_ICONS[r.category] || ''} ${r.category}</span></div>
+            <span class="owner-card-status ${statusClass}">${OWNER_STATUS_LABELS[r.status] || r.status}</span>
+            <span class="owner-card-time">${myTimeAgo(r.created_at)}</span>
           </div>
-          <div class="rc-body" id="body-${r.id}" style="display:none;">
-            <div class="rc-section-label">Kullanıcının Sorusu</div>
-            <div class="rc-question">${mdToHtml(r.question)}</div>
-
-            ${r.abibot_answer ? `
-              <div class="rc-section-label">AbiBOT Yanıtı</div>
-              <div class="rc-abibot">${mdToHtml(r.abibot_answer)}</div>
-            ` : ''}
-
-            ${isAnswered ? `
-              <div class="rc-answered-label">Uzman Yanıtı</div>
-              <div class="rc-answered">${mdToHtml(r.expert_response || '')}</div>
-              ${r.rating != null ? `
-                <div class="rc-rating-display">
-                  <span class="rc-rating-stars">${'⭐'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-                  <span class="rc-rating-score">${r.rating}/5</span>
-                  ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
-                </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
-              }
-            ` : `
-              <div class="rc-response-area">
-                <div class="rc-section-label">Uzman Yanıtı</div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;">
-                  <select class="assign-select" id="assign-${r.id}">
-                    <option value="">Uzmana Ata...</option>
-                    ${allExperts.filter(e => e.is_active && (!e.categories?.length || e.categories.includes(r.category))).map(e =>
-                      `<option value="${e.id}" ${e.id === r.expert_id ? 'selected' : ''}>${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
-                    ).join('')}
-                  </select>
-                  <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
-                </div>
-                <textarea class="response-textarea" id="resp-${r.id}" placeholder="Yanıtınızı buraya yazın..."></textarea>
-                <div class="rc-actions">
-                  <button class="submit-btn" onclick="submitResponse('${r.id}')">✓ Yanıtı Gönder</button>
-                  <button class="close-btn" onclick="toggleCard('${r.id}')">Kapat</button>
-                </div>
-              </div>
-            `}
-          </div>
+          <div class="owner-question">${myMdToHtml(r.question)}</div>
+          ${r.abibot_answer ? `
+          <div class="owner-abibot-answer">
+            <div class="owner-abibot-label">🤖 AbiBOT'un Önceki Yanıtı — Doğrulayın veya Düzeltin</div>
+            <div class="owner-abibot-body collapsed" id="abibot-body-${r.id}">${renderAbibotMarkdown(r.abibot_answer)}</div>
+            <span class="owner-abibot-toggle" onclick="toggleAbibotAnswer('${r.id}', this)">Tümünü Gör ↓</span>
+          </div>` : ''}
+          ${actionHtml}
         </div>`;
     }).join('');
   }
 
-  function renderExpertsTable() {
-    const tbody = document.getElementById('experts-table-body');
-    if (!allExperts.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Henüz uzman yok</td></tr>';
-      return;
-    }
-
-    const now = new Date();
-    const curMonth = now.getMonth();
-    const curYear = now.getFullYear();
-
-    tbody.innerHTML = allExperts.map(e => {
-      const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim() || 'İsimsiz';
-      const initials = ((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase();
-      const rating = allRatings.find(r => r.expert_id === e.id);
-      const avgRating = rating?.avg_rating ? parseFloat(rating.avg_rating).toFixed(1) : null;
-
-      const monthlyCount = allReviews.filter(r => {
-        if (r.expert_id !== e.id || r.status !== 'answered' || !r.answered_at) return false;
-        const d = new Date(r.answered_at);
-        return d.getMonth() === curMonth && d.getFullYear() === curYear;
-      }).length;
-
-      const cats = (e.categories || []).map(c => `<span class="et-cat">${CAT_ICONS[c] || ''} ${c}</span>`).join('') || '<span style="font-size:11px;color:var(--sand);">—</span>';
-      const city = e.profiles?.city || '—';
-
-      const emailHtml = e.profiles?.email
-        ? `<a href="mailto:${e.profiles.email}" title="${e.profiles.email}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(27,58,140,.08);color:var(--navy);text-decoration:none;font-size:13px;">✉️</a>`
-        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;">✉️</span>`;
-
-      const messageHtml = `<a href="messages.html?with=${e.profile_id}" target="_blank" title="Uygulama içi mesaj gönder" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(201,168,76,.12);color:#854F0B;text-decoration:none;font-size:13px;">🗨️</a>`;
-
-      const canWhatsapp = e.whatsapp_consent && e.phone;
-      const waNumber = canWhatsapp ? e.phone.replace(/[^\d]/g, '') : null;
-      const whatsappHtml = canWhatsapp
-        ? `<a href="https://wa.me/${waNumber}" target="_blank" title="WhatsApp: ${e.phone}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(30,123,75,.1);color:var(--green);text-decoration:none;font-size:13px;">💬</a>`
-        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;" title="${e.phone ? 'WhatsApp izni yok' : 'Telefon yok'}">💬</span>`;
-
-      return `
-        <tr>
-          <td>
-            <div class="et-name-cell">
-              <div class="et-avatar">${initials}</div>
-              <div>
-                <div class="et-name">${name}</div>
-                <div class="et-title">${e.title || ''}</div>
-              </div>
-            </div>
-          </td>
-          <td><span class="et-avail ${e.is_active ? 'on' : 'off'}">${e.is_active ? '🟢 Müsait' : '⚪ Müsait Değil'}</span></td>
-          <td><div class="et-cats">${cats}</div></td>
-          <td>${city}</td>
-          <td class="et-rating">${avgRating ? avgRating + ' ★' : '—'}</td>
-          <td>${monthlyCount}</td>
-          <td><div style="display:flex;gap:6px;">${emailHtml}${messageHtml}${whatsappHtml}</div></td>
-        </tr>`;
-    }).join('');
-  }
-
-  window.toggleCard = function(id) {
-    const body = document.getElementById('body-' + id);
-    body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  window.toggleAbibotAnswer = function(reviewId, toggleEl) {
+    const body = document.getElementById(`abibot-body-${reviewId}`);
+    const collapsed = body.classList.toggle('collapsed');
+    toggleEl.textContent = collapsed ? 'Tümünü Gör ↓' : 'Daralt ↑';
   };
 
-  window.setFilter = function(filter, btn) {
-    currentFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderReviews();
-  };
+  const ADMIN_PROFILE_ID = '3e96d976-5c3a-4270-af88-6172f1751f9a';
 
-  window.setCatFilter = function(cat, btn) {
-    if (currentCatFilter === cat) {
-      currentCatFilter = null;
-      btn.classList.remove('active');
+  window.claimReview = async function(reviewId) {
+    const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Üstleniliyor...'; }
+
+    const reviewBefore = myReviews.find(r => r.id === reviewId);
+
+    // Guard against a race with another expert claiming the same question:
+    // only succeeds if expert_id is still null at the moment of update.
+    const { data, error } = await supabase.from('expert_reviews')
+      .update({ expert_id: myExpertId, claim_status: 'pending' })
+      .eq('id', reviewId)
+      .is('expert_id', null)
+      .select();
+
+    if (error || !data || !data.length) {
+      alert('Bu soru az önce başka bir uzman tarafından üstlenildi.');
     } else {
-      currentCatFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      await supabase.from('notifications').insert({
+        user_id: ADMIN_PROFILE_ID,
+        type: 'admin_notification',
+        title: '🙋 Onay bekleyen talep',
+        body: `${myExpertName}, "${reviewBefore?.category || ''}" kategorisindeki bir soruyu üstlenmek istiyor. Onayınız bekleniyor.`,
+        link: '/expert-panel.html'
+      });
     }
-    renderReviews();
+
+    const { data: reviews } = await supabase.from('expert_reviews')
+      .select('*, profiles:user_id(first_name, last_name, city)')
+      .or(`expert_id.eq.${myExpertId},expert_id.is.null`)
+      .order('created_at', { ascending: false });
+    myReviews = reviews || [];
+    renderMyReviews();
   };
 
-  window.assignExpert = async function(reviewId) {
-    const expertId = document.getElementById('assign-' + reviewId).value;
-    if (!expertId) return;
-    await supabase.from('expert_reviews').update({
-      expert_id: expertId, status: 'assigned', claim_status: 'approved', assigned_at: new Date().toISOString()
-    }).eq('id', reviewId);
-    await loadAll();
-  };
-
-  window.approveClaim = async function(reviewId) {
-    const review = allReviews.find(r => r.id === reviewId);
-    await supabase.from('expert_reviews').update({
-      claim_status: 'approved', status: 'assigned'
-    }).eq('id', reviewId);
-
-    if (review?.expert_id) {
-      const expert = allExperts.find(e => e.id === review.expert_id);
-      if (expert?.profile_id) {
-        await supabase.from('notifications').insert({
-          user_id: expert.profile_id,
-          type: 'claim_approved',
-          title: '✅ Talebiniz onaylandı',
-          body: `"${review.category}" kategorisindeki soruyu yanıtlayabilirsiniz.`,
-          link: '/expert-profile.html?id=' + review.expert_id
-        });
-      }
-    }
-    await loadAll();
-  };
-
-  window.rejectClaim = async function(reviewId) {
-    const review = allReviews.find(r => r.id === reviewId);
-    const rejectedExpertId = review?.expert_id;
-    await supabase.from('expert_reviews').update({
-      expert_id: null, claim_status: null
-    }).eq('id', reviewId);
-
-    if (rejectedExpertId) {
-      const expert = allExperts.find(e => e.id === rejectedExpertId);
-      if (expert?.profile_id) {
-        await supabase.from('notifications').insert({
-          user_id: expert.profile_id,
-          type: 'claim_rejected',
-          title: '❌ Talebiniz reddedildi',
-          body: `"${review?.category || ''}" kategorisindeki soru talebi onaylanmadı ve ekip havuzuna geri döndü.`,
-          link: '/expert-profile.html?id=' + rejectedExpertId
-        });
-      }
-    }
-    await loadAll();
-  };
-
-  window.submitResponse = async function(reviewId) {
-    const response = document.getElementById('resp-' + reviewId).value.trim();
+  window.submitMyResponse = async function(reviewId) {
+    const ta = document.getElementById(`owner-resp-${reviewId}`);
+    const response = ta.value.trim();
     if (!response) return;
 
-    const btn = document.querySelector(`#card-${reviewId} .submit-btn`);
+    const btn = document.querySelector(`#owner-card-${reviewId} .owner-submit-btn`);
     btn.disabled = true; btn.textContent = 'Gönderiliyor...';
 
-    // Update review — include expert_id from assign dropdown (if set)
-    const assignedExpertId = document.getElementById('assign-' + reviewId)?.value || null;
-    const updatePayload = {
+    const { error: updateErr } = await supabase.from('expert_reviews').update({
       expert_response: response,
       status: 'answered',
       answered_at: new Date().toISOString()
-    };
-    if (assignedExpertId) updatePayload.expert_id = assignedExpertId;
-    const { error: updateErr } = await supabase.from('expert_reviews').update(updatePayload).eq('id', reviewId);
+    }).eq('id', reviewId);
 
     if (updateErr) {
       console.error('Failed to save answer:', updateErr);
-      alert('Yanıt kaydedilemedi: ' + (updateErr.message || 'Bilinmeyen hata'));
+      alert('Yanıt kaydedilemedi: ' + (updateErr.message || 'Bilinmeyen hata') + '\n\nLütfen tekrar deneyin veya destek ile iletişime geçin.');
       btn.disabled = false; btn.textContent = '✓ Yanıtı Gönder';
       return;
     }
 
-    // Get user_id to notify
-    const review = allReviews.find(r => r.id === reviewId);
+    const review = myReviews.find(r => r.id === reviewId);
     if (review) {
-      // Create in-app notification for user
       await supabase.from('notifications').insert({
         user_id: review.user_id,
         type: 'expert_answered',
@@ -783,18 +910,14 @@
         link: '/abibot.html?review=' + reviewId
       });
 
-      // If pro-bono, increment the expert's used slot count
-      if (review.is_probono && review.expert_id) {
-        const expert = allExperts.find(e => e.id === review.expert_id);
-        if (expert) {
-          const newUsed = (expert.probono_slots_used || 0) + 1;
-          await supabase.from('experts')
-            .update({ probono_slots_used: newUsed })
-            .eq('id', expert.id);
-        }
-      }
+      await supabase.from('notifications').insert({
+        user_id: ADMIN_PROFILE_ID,
+        type: 'admin_notification',
+        title: '✅ Soru yanıtlandı',
+        body: `${myExpertName}, "${review.category || ''}" kategorisindeki soruyu yanıtladı.`,
+        link: '/expert-panel.html'
+      });
 
-      // Send email notification via edge function
       try {
         await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
           method: 'POST',
@@ -810,55 +933,511 @@
             expert_response: response,
           })
         });
-      } catch (emailErr) {
+      } catch(emailErr) {
         console.warn('Email notification failed (non-critical):', emailErr);
       }
     }
 
-    await loadAll();
+    // Refresh just this section rather than the whole page
+    const { data: reviews } = await supabase.from('expert_reviews')
+      .select('*, profiles:user_id(first_name, last_name, city)')
+      .or(`expert_id.eq.${myExpertId},expert_id.is.null`)
+      .order('created_at', { ascending: false });
+    myReviews = reviews || [];
+    renderMyReviews();
   };
 
-  window.showAddExpert = function() {
-    document.getElementById('add-expert-modal').style.display = 'flex';
-  };
+  function renderProfile(expert, reviews) {
+    const name = `${expert.first_name || ''} ${expert.last_name || ''}`.trim() || 'Uzman';
+    const initials = ((expert.first_name?.[0] || '') + (expert.last_name?.[0] || '')).toUpperCase() || 'U';
+    const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
+    const avatarColor = AVATAR_COLORS[colorIdx];
 
-  window.addExpert = async function() {
-    const email = document.getElementById('expert-email').value.trim();
-    const title = document.getElementById('expert-title').value.trim();
-    const cats = [...document.querySelectorAll('#cat-checkboxes input:checked')].map(c => c.value);
+    const avgRating = expert.avg_rating ? parseFloat(expert.avg_rating) : null;
+    const starDisplay = avgRating
+      ? '⭐'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating))
+      : '☆☆☆☆☆';
 
-    if (!email) return;
+    const categories = (expert.categories || []).map(c =>
+      `<span class="badge badge-cat">${CAT_ICONS[c] || ''} ${CAT_NAMES[c] || c}</span>`
+    ).join('');
 
-    // Find user by email
-    const { data: users } = await supabase.from('profiles').select('id').eq('id',
-      (await supabase.auth.admin?.listUsers())?.data?.users?.find(u => u.email === email)?.id
-    );
+    const languages = (expert.languages || []).map(l =>
+      `<span class="badge badge-lang">${LANG_FLAGS[l] || ''} ${l.toUpperCase()}</span>`
+    ).join('');
 
-    alert(`Uzman daveti gönderildi: ${email}\n\nKategoriler: ${cats.join(', ')}\nUnvan: ${title}\n\nNot: Kullanıcı platforma kaydolduktan sonra Supabase SQL Editor'dan manuel olarak experts tablosuna ekleyebilirsiniz.`);
-    document.getElementById('add-expert-modal').style.display = 'none';
-  };
+    const verifiedBadge = expert.is_verified
+      ? `<span class="badge badge-verified">✓ Doğrulandı</span>` : '';
 
-  function getTimeAgo(date) {
-    const diff = Date.now() - new Date(date).getTime();
-    const h = Math.floor(diff / 3600000);
-    const d = Math.floor(diff / 86400000);
-    if (h < 1) return 'Az önce';
-    if (h < 24) return `${h} saat önce`;
-    return `${d} gün önce`;
+    const avgResponseText = expert.avg_response_hours
+      ? `${expert.avg_response_hours} saat`
+      : '24-48 saat';
+
+    const reviewsHtml = reviews.length ? reviews.map(r => {
+      const ratedDate = r.rated_at
+        ? new Date(r.rated_at).toLocaleDateString('tr-TR', { day:'2-digit', month:'long', year:'numeric' })
+        : '';
+      const filled = '⭐'.repeat(r.rating);
+      const empty = '☆'.repeat(5 - r.rating);
+      return `
+        <div class="review-item">
+          <div class="review-cat">${CAT_ICONS[r.category] || ''} ${CAT_NAMES[r.category] || r.category}</div>
+          <div class="review-stars">${filled}${empty}</div>
+          ${r.rating_comment
+            ? `<div class="review-comment">"${r.rating_comment}"</div><div style="margin-top:4px;">${mhTranslateMenuHtml('.review-comment')}</div>`
+            : `<div class="review-comment" style="color:var(--sand);">Yorum yapılmadı.</div>`}
+          <div class="review-meta">${ratedDate}</div>
+        </div>`;
+    }).join('') : `
+      <div class="no-reviews">
+        <div class="no-reviews-icon">⭐</div>
+        <div class="no-reviews-text">Henüz değerlendirme yok. İlk değerlendirmeyi siz yapın!</div>
+      </div>`;
+
+    document.getElementById('page-content').innerHTML = `
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-avatar" style="background:${avatarColor};">${initials}</div>
+        <div class="hero-info">
+          <div class="hero-name">${name}</div>
+          <div class="hero-title">${expert.title || 'Uzman'}</div>
+          <div class="hero-badges">
+            ${verifiedBadge}
+            ${categories}
+            ${languages}
+          </div>
+          ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
+          <div class="hero-cta" id="hero-cta-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
+            <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
+              ✉️ Doğrudan Soru Sor
+            </button>
+            ${expert.whatsapp_enabled && expert.whatsapp_number ? `
+            <a href="https://wa.me/${expert.whatsapp_number.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#25D366;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Instrument Sans',sans-serif;">
+              💬 WhatsApp'tan Yaz
+            </a>` : ''}
+            <button class="btn-report-expert" onclick="openExpertReportModal('${expert.expert_id}')">🚩 Şikayet Et</button>
+          </div>
+          ${expert.whatsapp_enabled && expert.whatsapp_number ? `
+          <div style="font-size:12px;color:var(--muted);margin-top:8px;max-width:480px;line-height:1.4;">
+            ⚠️ WhatsApp görüşmeleri platform dışında gerçekleşir; şikayet ve engelleme özelliklerimiz bu görüşmeler için geçerli değildir. Önemli konularda platform içi mesajlaşmayı tercih etmenizi öneririz.
+          </div>` : ''}
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-stars">${starDisplay}</div>
+          <div class="stat-val" style="color:var(--gold);font-size:24px;">${avgRating ? avgRating.toFixed(1) + ' / 5' : '—'}</div>
+          <div class="stat-label">Ortalama Puan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">${expert.total_responses || 0}</div>
+          <div class="stat-label">✅ Yanıtlanan Soru</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:20px;">${avgResponseText}</div>
+          <div class="stat-label">⚡ Ortalama Yanıt Süresi</div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="section-title">
+        ⭐ Kullanıcı Değerlendirmeleri
+        <span style="font-size:13px;font-weight:400;color:var(--muted);font-family:'Instrument Sans',sans-serif;">${expert.total_rated || 0} değerlendirme</span>
+      </div>
+      <div class="review-list">${reviewsHtml}</div>
+    `;
+
+    // Update page title and modal expert name
+    document.title = `BizdenBize — ${name}`;
+    window._expertName = name;
+    window._expertCategories = expert.categories || [];
+    window._expertRecord = expert;
+    const modalName = document.getElementById('modal-expert-name');
+    if (modalName) modalName.textContent = `${name} · ${expert.title || 'Uzman'}`;
   }
 
-  window.toggleProbono = async function(expertId, btn) {
-    const isOn = btn.classList.contains('on');
-    btn.classList.toggle('on');
-    await supabase.from('experts').update({ offers_probono: !isOn }).eq('id', expertId);
-    await loadAll();
+  function showError(title, sub) {
+    document.getElementById('page-content').innerHTML = `
+      <div class="error-state">
+        <div class="error-icon">🔍</div>
+        <div class="error-title">${title}</div>
+        <div class="error-sub">${sub}</div>
+        <a href="uzmanlar.html" class="btn-primary" style="display:inline-flex;margin-top:20px;">← Tüm Uzmanlara Dön</a>
+      </div>`;
+  }
+</script>
+<!-- DIRECT ASK MODAL -->
+<div class="modal-overlay" id="ask-modal" onclick="if(event.target===this)closeAskModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);">Doğrudan Soru Sor</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="modal-expert-name">Uzmana soru gönder</div>
+        </div>
+        <button onclick="closeAskModal()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0;line-height:1;">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <!-- Category -->
+      <div>
+        <label class="field-label">Kategori</label>
+        <select class="cat-select" id="ask-category" onchange="updatePrice()">
+          <option value="">Kategori seçin...</option>
+        </select>
+        <div id="ask-category-empty" style="display:none;font-size:12px;color:var(--muted);margin-top:6px;">
+          Bu uzman henüz herhangi bir kategori için onaylanmamış.
+        </div>
+      </div>
+      <!-- Question -->
+      <div>
+        <label class="field-label">Sorunuz</label>
+        <textarea class="question-ta" id="ask-question" maxlength="1000" placeholder="Sorunuzu detaylı yazın. Uzman en kısa sürede yanıtlayacak..." oninput="updateSubmitBtn()"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;" id="question-char-count">0 / 1000</div>
+      </div>
+      <!-- Price display -->
+      <div class="price-pill" id="price-pill">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);" id="price-label">Kategori seçin</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="balance-label">Bakiyeniz yükleniyor...</div>
+        </div>
+        <div style="font-size:20px;font-weight:900;font-family:'Playfair Display',serif;color:var(--ink);" id="price-val">—</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-confirm" id="ask-confirm-btn" onclick="submitDirectQuestion()" disabled>
+        Soruyu Gönder →
+      </button>
+      <button class="btn-cancel" onclick="closeAskModal()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from '/supabase.js';
+
+  const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const DIRECT_PRICES = {
+    legal:10, visa:10, medical:10,
+    tax:8, employment:8, migration:8,
+    housing:5, insurance:5, school:5
   };
 
-  // (Reaching this point means authorized === true; unauthorized sessions
-  // were already halted above via the thrown error.)
-  loadAll();
-  setInterval(loadAll, 30000);
+  const CAT_NAMES = window.BB_CONFIG.categoryLabels;
+
+  // Read expert_id and ?ask=1 from URL
+  const params = new URLSearchParams(window.location.search);
+  window._expertId = params.get('id');
+  window._expertName = '';
+  window._userCredits = 0;
+  window._session = null;
+
+  // Load session + credits
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    window._session = session;
+    if (session) {
+      const { data: p } = await supabase.from('profiles')
+        .select('expert_credits, first_name, last_name')
+        .eq('id', session.user.id).single();
+      window._userCredits = p?.expert_credits || 0;
+      window._userName = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
+    }
+    // Auto-open modal if ?ask=1
+    if (params.get('ask') === '1') {
+      openAskModal();
+    }
+    updateBalanceLabel();
+  })();
+
+  window.openAskModal = async function() {
+    if (!window._session) {
+      const go = confirm('Soru sormak için giriş yapmanız gerekiyor. Giriş sayfasına gitmek ister misiniz?');
+      if (go) window.location.href = 'login.html';
+      return;
+    }
+    // Populate the category dropdown from this expert's own registered
+    // categories only, not the full platform list — asking outside an
+    // expert's specialty defeats the quality-assurance point of picking
+    // a specific expert in the first place.
+    const catSelect = document.getElementById('ask-category');
+    const catEmptyMsg = document.getElementById('ask-category-empty');
+    const expertCats = window._expertCategories || [];
+    const icons = (window.BB_CONFIG && window.BB_CONFIG.categoryIcons) || {};
+    catSelect.innerHTML = '<option value="">Kategori seçin...</option>' +
+      expertCats.map(c => `<option value="${c}">${icons[c] || ''} ${CAT_NAMES[c] || c}</option>`).join('');
+    const hasCats = expertCats.length > 0;
+    catSelect.style.display = hasCats ? '' : 'none';
+    catEmptyMsg.style.display = hasCats ? 'none' : 'block';
+    updatePrice();
+
+    document.getElementById('ask-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // Re-fetch the real balance fresh on every open — the page-load fetch
+    // may not have resolved yet (race condition, was showing 0 or a stale
+    // value), and credits could also have changed since page load (e.g.
+    // another tab/session). Show a neutral state while this resolves.
+    document.getElementById('balance-label').textContent = 'Bakiyeniz kontrol ediliyor...';
+    const { data: p } = await supabase.from('profiles')
+      .select('expert_credits').eq('id', window._session.user.id).single();
+    window._userCredits = p?.expert_credits || 0;
+
+    updateBalanceLabel();
+    updatePrice();
+  };
+
+  window.closeAskModal = function() {
+    document.getElementById('ask-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.updatePrice = function() {
+    const cat = document.getElementById('ask-category').value;
+    const price = DIRECT_PRICES[cat] || null;
+    const priceVal = document.getElementById('price-val');
+    const priceLabel = document.getElementById('price-label');
+    const pill = document.getElementById('price-pill');
+
+    if (!price) {
+      priceVal.textContent = '—';
+      priceLabel.textContent = 'Kategori seçin';
+      pill.classList.remove('insufficient');
+    } else {
+      priceVal.textContent = price + ' Kredi';
+      priceLabel.textContent = CAT_NAMES[cat] + ' sorusu';
+      const insufficient = window._userCredits < price;
+      pill.classList.toggle('insufficient', insufficient);
+      priceLabel.style.color = insufficient ? 'var(--red)' : 'var(--ink)';
+    }
+    updateSubmitBtn();
+  };
+
+  function updateBalanceLabel() {
+    document.getElementById('balance-label').textContent =
+      window._session
+        ? `Bakiyeniz: ${window._userCredits} kredi`
+        : 'Giriş yapılmamış';
+  }
+
+  window.updateSubmitBtn = function() {
+    const cat = document.getElementById('ask-category').value;
+    const qRaw = document.getElementById('ask-question').value;
+    const q = qRaw.trim();
+    const price = DIRECT_PRICES[cat] || 0;
+    const btn = document.getElementById('ask-confirm-btn');
+    const canAfford = window._userCredits >= price;
+    const tooShort = q.length > 0 && q.length < 20;
+
+    const counter = document.getElementById('question-char-count');
+    if (counter) {
+      counter.textContent = `${qRaw.length} / 1000`;
+      counter.style.color = qRaw.length >= 1000 ? 'var(--red)' : 'var(--muted)';
+    }
+
+    btn.disabled = !cat || !q || !canAfford || q.length < 20;
+
+    // "Kredi Yükle" CTA kaldirildi: platform su anda tamamen ucretsiz ve
+    // satin alinabilir bir sey yok (Stripe entegre degil).
+
+    if (cat && !canAfford) {
+      btn.textContent = `Yetersiz kredi (${price} gerekli, ${window._userCredits} mevcut)`;
+    } else if (cat && tooShort) {
+      btn.textContent = `En az 20 karakter yazın (${q.length}/20)`;
+    } else {
+      btn.textContent = 'Soruyu Gönder →';
+    }
+  };
+
+  window.submitDirectQuestion = async function() {
+    const cat = document.getElementById('ask-category').value;
+    const question = document.getElementById('ask-question').value.trim();
+    const price = DIRECT_PRICES[cat];
+    if (!cat || !question || !price) return;
+
+    const btn = document.getElementById('ask-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Gönderiliyor...';
+
+    try {
+      // Insert expert_review with source='direct'
+      const { error: insertErr } = await supabase.from('expert_reviews').insert({
+        user_id: window._session.user.id,
+        expert_id: window._expertId,
+        category: cat,
+        language: 'tr',
+        question: question,
+        status: 'pending',
+        source: 'direct',
+        direct_price: price,
+        credits_charged: price
+      });
+      if (insertErr) throw insertErr;
+
+      // Deduct credits
+      const { error: deductErr } = await supabase.from('profiles')
+        .update({ expert_credits: window._userCredits - price })
+        .eq('id', window._session.user.id);
+      if (deductErr) throw deductErr;
+
+      // In-app notification
+      await supabase.from('notifications').insert({
+        user_id: window._session.user.id,
+        type: 'expert_assigned',
+        title: 'Sorunuz uzman ekibimize iletildi ✅',
+        body: '24-48 saat içinde yanıt alacaksınız.',
+        link: '/abibot.html'
+      });
+
+      // Email notification — confirms submission to the ASKER (this
+      // template's subject/body are written to the person who just asked,
+      // e.g. "Sorunuz uzmana iletildi").
+      try {
+        await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON}` },
+          body: JSON.stringify({
+            type: 'direct_question',
+            user_id: window._session.user.id,
+            data: {
+              expert_name: window._expertName || 'Uzmanımız',
+              category: cat,
+              category_name: CAT_NAMES[cat] || cat
+            }
+          })
+        });
+      } catch(emailErr) { console.warn('Asker email notification failed:', emailErr); }
+
+      // Email notification — separately notifies the EXPERT that a new
+      // direct question is waiting for them. window._expertId is the
+      // experts.id from the URL, not a user id, so we look up profile_id
+      // to know who to actually email. See Backlog #22.
+      try {
+        const { data: expertRow } = await supabase.from('experts')
+          .select('profile_id').eq('id', window._expertId).single();
+
+        if (expertRow?.profile_id) {
+          await fetch('https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON}` },
+            body: JSON.stringify({
+              type: 'direct_question_expert',
+              user_id: expertRow.profile_id,
+              data: {
+                asker_name: window._userName || 'Bir üye',
+                category: cat,
+                category_name: CAT_NAMES[cat] || cat,
+                expert_row_id: window._expertId
+              }
+            })
+          });
+        } else {
+          console.warn('Could not resolve expert profile_id — expert email not sent.');
+        }
+      } catch(emailErr) { console.warn('Expert email notification failed:', emailErr); }
+
+      // Success state
+      document.querySelector('.modal-body').innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">✅</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px;">Sorunuz gönderildi!</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;">24-48 saat içinde uzman yanıtınız <strong>abibot.html</strong> sayfasında görünecek.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--muted);padding:10px 14px;background:var(--warm);border-radius:8px;">
+            ${price} kredi kullanıldı · Kalan: ${window._userCredits - price} kredi
+          </div>
+        </div>`;
+      document.querySelector('.modal-foot').innerHTML = `
+        <button onclick="closeAskModal();window.location.href='abibot.html'" class="btn-confirm">AbiBOT'ta Görüntüle →</button>
+        <button class="btn-cancel" onclick="closeAskModal()">Kapat</button>`;
+
+      window._userCredits -= price;
+
+    } catch(err) {
+      console.error('Direct question error:', err);
+      btn.disabled = false;
+      btn.textContent = 'Tekrar Dene';
+    }
+  };
 </script>
-  <script src="legal-footer.js" defer></script>
+<!-- EXPERT REPORT MODAL -->
+<div class="report-modal-overlay" id="expert-report-modal" onclick="if(event.target===this)closeExpertReportModal()">
+  <div class="report-modal-box" id="expert-report-box">
+    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">🚩 Uzmanı Şikayet Et</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;">Topluluk kurallarını ihlal eden durumları bildirin. Ekibimiz en kısa sürede inceleyecek.</div>
+    <select class="report-select" id="expert-report-reason">
+      <option value="">Şikayet nedeni seçin...</option>
+      <option value="spam">📢 Spam / Reklam</option>
+      <option value="harassment">😡 Taciz / Uygunsuz Davranış</option>
+      <option value="fake">🎭 Sahte Uzman</option>
+      <option value="inappropriate">🚫 Yanlış / Zararlı Bilgi</option>
+      <option value="scam">💸 Dolandırıcılık</option>
+      <option value="other">📝 Diğer</option>
+    </select>
+    <textarea class="report-textarea" id="expert-report-details" placeholder="Ek açıklama (isteğe bağlı)..."></textarea>
+    <button id="expert-report-submit" onclick="submitExpertReport()" style="width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-bottom:8px;">Şikayeti Gönder</button>
+    <button onclick="closeExpertReportModal()" style="width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">İptal</button>
+  </div>
+</div>
+
+<script>
+  const _SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
+  const _SB_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
+  let _reportExpertId = null;
+
+  window.openExpertReportModal = function(expertId) {
+    _reportExpertId = expertId;
+    document.getElementById('expert-report-reason').value = '';
+    document.getElementById('expert-report-details').value = '';
+    document.getElementById('expert-report-box').innerHTML = document.getElementById('expert-report-box').innerHTML; // reset
+    document.getElementById('expert-report-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeExpertReportModal = function() {
+    document.getElementById('expert-report-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.submitExpertReport = async function() {
+    const reason = document.getElementById('expert-report-reason').value;
+    const details = document.getElementById('expert-report-details').value.trim();
+    if (!reason) { document.getElementById('expert-report-reason').style.borderColor = 'var(--red)'; return; }
+
+    const session = window._session;
+    if (!session) {
+      const go = confirm('Şikayet göndermek için giriş yapmalısınız. Giriş sayfasına gitmek ister misiniz?');
+      if (go) window.location.href = 'login.html';
+      return;
+    }
+
+    const btn = document.getElementById('expert-report-submit');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+    try {
+      const res = await fetch(`${_SB_URL}/rest/v1/reports`, {
+        method: 'POST',
+        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ reporter_id: session.user.id, reported_expert_id: _reportExpertId, type: 'expert', reason, details: details || null })
+      });
+      if (!res.ok) throw new Error(await res.text());
+
+      document.getElementById('expert-report-box').innerHTML = `
+        <div style="text-align:center;padding:16px 0;">
+          <div style="font-size:40px;margin-bottom:12px;">✅</div>
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;">Şikayet alındı</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Ekibimiz en kısa sürede inceleyecek. Desteğiniz için teşekkürler.</div>
+          <button onclick="closeExpertReportModal()" style="padding:10px 28px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
+        </div>`;
+    } catch(e) {
+      btn.disabled = false; btn.textContent = 'Şikayeti Gönder';
+      alert('Hata: ' + e.message);
+    }
+  };
+</script>
+  <script src="site-footer.js" defer></script>
 </body>
 </html>
