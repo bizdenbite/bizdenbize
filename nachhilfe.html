@@ -455,14 +455,15 @@
       </div>
       <div class="field-row">
         <div><label class="field-label">Şehir</label><input class="field-input" id="tm-city" type="text" placeholder="Berlin"></div>
-        <div><label class="field-label">Ücret</label>
-          <select class="field-input" id="tm-price-type" onchange="togglePriceInput(this.value)">
+        <div><label class="field-label">Saatlik Ücret</label>
+          <select class="field-input" id="tm-price-type">
             <option value="free">✓ Ücretsiz</option>
-            <option value="paid">€ Ücretli</option>
+            <option value="10-15">€10-15/saat</option>
+            <option value="15-25">€15-25/saat</option>
+            <option value="25plus">€25+/saat</option>
           </select>
         </div>
       </div>
-      <div id="tm-price-input-wrap" style="display:none;"><label class="field-label">Saatlik Ücret (€) *</label><input class="field-input" id="tm-price" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="25"><div class="hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Sadece sayı yaz — listede "25 €/saat" şeklinde görünür.</div></div>
       <div><label class="field-label">Kendinizi Tanıtın *</label><textarea class="field-input" id="tm-desc" rows="3" placeholder="Deneyim, eğitim geçmişi..."></textarea></div>
       <div><label class="field-label">İletişim *</label><input class="field-input" id="tm-contact" type="text" placeholder="email@example.com veya +49 ..."></div>
       <div id="tm-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
@@ -710,10 +711,9 @@ function closeTutorModal() {
   const err = document.getElementById('tm-error'); if (err) err.style.display='none';
 }
 
-function togglePriceInput(v) { 
-  const wrap = document.getElementById('tm-price-input-wrap');
-  if (wrap) wrap.style.display = v === 'paid' ? 'block' : 'none'; 
-}
+// togglePriceInput entfällt: das Ücret-Feld ist jetzt eine Auswahlliste
+// mit denselben Stufen wie das Budget der Suchenden, es gibt kein
+// separates Zahlenfeld mehr ein- oder auszublenden.
 
   // ── ŞEHİR ADI: Türkçe yazılışı Almanca karşılığına çevirir ──
   // Google'ın listesinde "Münih" gibi Türkçe adlar da çıkıyor ama bu
@@ -750,20 +750,15 @@ async function submitTutor() {
     if (err) { err.textContent = 'Lütfen zorunlu alanları (*) doldurun.'; err.style.display = 'block'; }
     return; 
   }
-  // ÜCRET: ya "Ücretsiz" ya da saatlik ücret — sayı olarak.
-  // Eskiden burası serbest metindi ve listede yalnızca "5" yazıyordu:
-  // beş euro mu, beş ders mi, saatlik mi, belli değildi. Artık ya
-  // ücretsiz, ya da net bir saatlik ücret.
-  const ucretli = document.getElementById('tm-price-type').value === 'paid';
-  const ucretRaw = (document.getElementById('tm-price').value || '').replace(',', '.').trim();
-  const ucret = Number(ucretRaw);
-  if (ucretli && (!ucretRaw || !isFinite(ucret) || ucret <= 0)) {
-    if (err) { err.textContent = 'Saatlik ücreti sayı olarak yaz (örn. 25) ya da "Ücretsiz" seç.'; err.style.display = 'block'; }
-    const inp = document.getElementById('tm-price'); if (inp) inp.focus();
-    return;
-  }
+  // ÜCRET: öğretmen tarafı artık ARAYAN tarafıyla AYNI basamakları
+  // kullanıyor. Eskiden burada serbest bir metin vardı ve listede
+  // yalnızca "5" yazıyordu — beş euro mu, beş ders mi, belli değildi.
+  // Aynı basamaklar sayesinde arayanın bütçesi ile öğretmenin ücreti
+  // doğrudan karşılaştırılabiliyor.
+  const ucretSecim = document.getElementById('tm-price-type');
+  const ucretli = ucretSecim.value !== 'free';
   const ucretEtiketi = ucretli
-    ? (Number.isInteger(ucret) ? ucret : ucret.toFixed(2)) + ' €/saat'
+    ? ucretSecim.options[ucretSecim.selectedIndex].text.trim()
     : 'Ücretsiz';
 
   if (err) err.style.display = 'none';
