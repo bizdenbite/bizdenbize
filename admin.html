@@ -1277,8 +1277,8 @@
             ${x.url ? `<a href="${escH(x.url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--indigo,#4338CA);word-break:break-all;">${escH(x.url)}</a>` : ''}
             ${x.description ? `<div style="font-size:11px;color:var(--muted);margin-top:3px;">${escH(x.description)}</div>` : ''}
           </td>
-          <td style="font-size:12px;">${escH(x.page || '—')}</td>
-          <td style="font-size:12px;">${escH(x.topic || x.cat || '—')}</td>
+          <td style="font-size:12px;">${escH(x.source_page || '—')}</td>
+          <td style="font-size:12px;">${escH(x.category || '—')}${x.resource_type ? ` · ${escH(x.resource_type)}` : ''}</td>
           <td>${done ? '<span class="badge badge-green">✓ İşlendi</span>' : '<span class="badge badge-gold">⏳ Yeni</span>'}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(x.created_at)}</td>
           <td>

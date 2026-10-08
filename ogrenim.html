@@ -754,13 +754,16 @@ render();
     }
     err.style.display = 'none';
 
+    // Feldnamen = Spaltennamen in public.suggestions. Vorher stand hier
+    // topic / page, die Tabelle hat aber category / source_page.
+    // PostgREST wies den Datensatz ab; kein Vorschlag kam an.
     const suggestion = {
       title,
       url,
       description: desc,
       country:     document.getElementById('sug-country').value || null,
-      topic:       document.getElementById('sug-topic').value || null,
-      page:        'ogrenim',
+      category:    document.getElementById('sug-topic').value || null,
+      source_page: 'ogrenim',
     };
 
     try {

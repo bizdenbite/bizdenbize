@@ -948,14 +948,19 @@
     }
     err.style.display = 'none';
 
+    // Die Feldnamen MÜSSEN den Spalten in public.suggestions
+    // entsprechen. Vorher hiessen sie hier cat / type / page, in der
+    // Tabelle aber category / resource_type / source_page. PostgREST
+    // lehnte den Datensatz deshalb ab (PGRST204) — kein einziger
+    // Vorschlag ist je angekommen.
     const suggestion = {
       title,
       url,
-      description: desc,
-      cat:         document.getElementById('sug-cat').value || null,
-      country:     document.getElementById('sug-country').value || null,
-      type:        selectedSugType || null,
-      page:        'library',
+      description:   desc,
+      category:      document.getElementById('sug-cat').value || null,
+      country:       document.getElementById('sug-country').value || null,
+      resource_type: selectedSugType || null,
+      source_page:   'library',
     };
 
     try {
