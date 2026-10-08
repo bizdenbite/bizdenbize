@@ -533,9 +533,11 @@
       }
       if (pass.length < 8) { document.getElementById('reg-password').classList.add('error'); valid = false; }
       document.getElementById('reg-join-err').style.display = 'none';
-      // Bu üç alan artık isteğe bağlı: onay kuyruğu kaldırıldığı için
-      // vetting amacı kalmadı, yalnızca analiz için soruluyorlar.
-      if (!rulesOk || !challenges || !reason || !source) {
+      // Bu üç alan GERÇEKTEN isteğe bağlı. Etiketlerinde "(isteğe bağlı)"
+      // yazıyor; kontrol de artık öyle davranıyor. Eskiden üçü de zorunluydu,
+      // yani ekran bir şey söylüyor, form başka bir şey yapıyordu.
+      // Zorunlu olan tek şey: topluluk kurallarını kabul etmek.
+      if (!rulesOk) {
         document.getElementById('reg-join-err').style.display = 'block'; valid = false;
       }
       if (!valid) return;
@@ -1065,7 +1067,7 @@
           <a href="legal.html#terms" target="_blank" style="color:var(--navy,#003399);font-weight:600;">Topluluk kurallarını</a> okudum ve kabul ediyorum. *
         </label>
       </div>
-      <div class="field-error" id="reg-join-err" style="display:none;">Lütfen tüm alanları doldur ve kuralları kabul et.</div>
+      <div class="field-error" id="reg-join-err" style="display:none;">Devam edebilmek için topluluk kurallarını kabul etmen gerekiyor.</div>
 
       <button class="submit-btn" id="register-btn" onclick="doRegister()">
         Kayıt Ol
