@@ -935,6 +935,21 @@
     if (!r.ok) throw new Error('DB insert error ' + r.status + ': ' + await r.text());
   }
 
+  // Wer hat den Vorschlag geschickt? Ohne diese Kennung kann niemand
+  // benachrichtigt werden, wenn sein Vorschlag in der Bibliothek landet.
+  //
+  // window._authReady entsteht in einem deferred Modul-Skript. Beim Klick
+  // auf "Ekibe Gönder" ist es laengst da, aber hier wird trotzdem kurz
+  // gewartet statt sich auf die Reihenfolge zu verlassen — genau daran ist
+  // die Nav-Anzeige schon einmal gescheitert.
+  async function aktuelleBenutzerId() {
+    try { if (window._authReady) await window._authReady; } catch (e) {}
+    for (let i = 0; i < 20 && !window._currentSession; i++) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return (window._currentSession && window._currentSession.user && window._currentSession.user.id) || null;
+  }
+
   async function submitSuggestion() {
     const title = document.getElementById('sug-title').value.trim();
     const url   = document.getElementById('sug-url').value.trim();
@@ -961,6 +976,7 @@
       country:       document.getElementById('sug-country').value || null,
       resource_type: selectedSugType || null,
       source_page:   'library',
+      submitted_by:  await aktuelleBenutzerId(),
     };
 
     try {

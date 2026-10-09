@@ -508,6 +508,43 @@
             <tbody id="suggestions-tbody"><tr class="loading-row"><td colspan="6">Yükleniyor...</td></tr></tbody>
           </table>
         </div>
+
+        <!-- Öneriyi düzenleyip kütüphaneye aktarma penceresi.
+             Kütüphane iki alan daha ister: kaynak kurum ve diller.
+             Öneri formu bunları sormuyor, bu yüzden tek tıkla kopyalama
+             mümkün değil — burada tamamlıyorsun. -->
+        <div id="sg-editor-backdrop" style="display:none;position:fixed;inset:0;background:rgba(26,18,8,.45);z-index:900;"></div>
+        <div id="sg-editor" style="display:none;position:fixed;z-index:901;top:50%;left:50%;transform:translate(-50%,-50%);width:min(620px,92vw);max-height:88vh;overflow:auto;background:#fff;border:1px solid #e0d8cc;border-radius:14px;padding:22px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px;">
+            <h3 style="font-family:'Playfair Display',serif;font-size:18px;">Öneriyi Kütüphaneye Aktar</h3>
+            <button onclick="closeSuggestionEditor()" style="background:none;border:none;font-size:22px;line-height:1;color:var(--muted);cursor:pointer;">×</button>
+          </div>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:14px;" id="sg-origin">—</p>
+
+          <div style="display:grid;gap:10px;">
+            <input id="sg-title" placeholder="Başlık *" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+            <input id="sg-source" placeholder="Kaynak kurum * — örn. Bundesamt für Migration" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+            <input id="sg-url" placeholder="Bağlantı * — https://…" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+            <textarea id="sg-desc" placeholder="Türkçe açıklama *" rows="3" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+            <textarea id="sg-caution" placeholder="Uyarı notu (isteğe bağlı)" rows="2" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <select id="sg-cat" style="flex:1;min-width:150px;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;"></select>
+              <select id="sg-type" style="flex:1;min-width:120px;padding:10px 12px;border:1px solid #e0d8cc;border-radius:8px;font-family:inherit;font-size:14px;">
+                <option value="link">Bağlantı</option><option value="guide">Rehber</option><option value="doc">Belge / PDF</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sg-tr"> Türkçe var</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sg-de" checked> Almanca</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sg-en"> İngilizce</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="sg-official" checked> Resmî kurum</label>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" id="sg-verified" checked> Bağlantıyı şimdi açıp kontrol ettim</label>
+            <div id="sg-notify-note" style="font-size:12px;color:var(--muted);line-height:1.5;">—</div>
+            <div id="sg-error" style="display:none;font-size:13px;color:var(--red);line-height:1.5;"></div>
+            <button id="sg-save" onclick="saveSuggestionToLibrary()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">📚 Kütüphaneye Ekle</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1265,6 +1302,7 @@
         sugRow.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--red);">Liste okunamadı: ${escH(suggestions.__error)}<br><span style="font-size:11px;">admin_oneriler_arayanlar.sql çalıştırıldı mı?</span></td></tr>`;
       } else {
         const sg = Array.isArray(suggestions) ? suggestions : [];
+        SUGS = sg;   // das Bearbeitungsfenster liest die Zeile von hier
         const open = sg.filter(x => x.status !== 'done').length;
         const badge = document.getElementById('nav-badge-suggestions');
         if (badge) { badge.textContent = open; badge.style.display = open ? '' : 'none'; }
@@ -1283,6 +1321,7 @@
           <td style="font-size:11px;color:var(--muted);">${fmtDate(x.created_at)}</td>
           <td>
             <div class="actions">
+              ${done ? '' : `<button class="btn btn-sm btn-green" onclick="openSuggestionEditor('${x.id}')">✎ Düzenle &amp; Ekle</button>`}
               <button class="btn btn-sm btn-muted" onclick="markSuggestion('${x.id}', ${done ? 'false' : 'true'})">${done ? '↩︎ Geri al' : '✓ İşlendi'}</button>
               <button class="btn btn-sm btn-red" onclick="deleteContent('suggestions','${x.id}')">🗑 Sil</button>
             </div>
@@ -1337,6 +1376,151 @@
       toast(done ? 'Öneri işlendi olarak işaretlendi ✓' : 'Yeniden "yeni" olarak işaretlendi.');
       loadContent();
     } catch(e) { toast('Hata: ' + e.message, false); }
+  };
+
+  // ── ÖNERİ → KÜTÜPHANE ───────────────────────────────────────────────
+  // Die Vorschlagsformulare und die Bibliothek benutzen verschiedene
+  // Kategorien. Hier wird vorbelegt, nicht festgelegt — im Fenster laesst
+  // sich jede Zuordnung aendern. Unbekanntes bleibt leer, statt still in
+  // einer falschen Rubrik zu landen.
+  let SUGS = [];
+  let SG_CURRENT = null;
+
+  const SUG_CAT_MAP = {
+    legal:'rights', rights:'rights', medical:'medical', insurance:'medical',
+    tax:'tax', visa:'visa', housing:'housing', employment:'employment',
+    ausbildung:'employment', school:'family', family:'family',
+    language:'language', university:'recognition', diploma:'recognition'
+  };
+  // Die Bibliothek kennt kein "video" — solche Vorschlaege landen als
+  // Bağlantı und koennen im Fenster umgestellt werden.
+  const SUG_TYPE_MAP = { doc:'doc', guide:'guide', link:'link', video:'link' };
+
+  window.openSuggestionEditor = function(id) {
+    const s = SUGS.find(x => String(x.id) === String(id));
+    if (!s) return toast('Öneri bulunamadı, listeyi yenile.', false);
+    SG_CURRENT = s;
+
+    const sel = document.getElementById('sg-cat');
+    sel.innerHTML = '<option value="">— kategori seç —</option>' +
+      Object.entries(LIB_CATS).map(([v, l]) => `<option value="${v}">${escH(l)}</option>`).join('');
+
+    document.getElementById('sg-title').value   = s.title || '';
+    document.getElementById('sg-source').value  = '';
+    document.getElementById('sg-url').value     = s.url || '';
+    document.getElementById('sg-desc').value    = s.description || '';
+    document.getElementById('sg-caution').value = '';
+    sel.value = SUG_CAT_MAP[s.category] || '';
+    document.getElementById('sg-type').value = SUG_TYPE_MAP[s.resource_type] || 'link';
+    document.getElementById('sg-tr').checked = false;
+    document.getElementById('sg-de').checked = true;
+    document.getElementById('sg-en').checked = false;
+    document.getElementById('sg-official').checked = true;
+    document.getElementById('sg-verified').checked = true;
+    document.getElementById('sg-error').style.display = 'none';
+
+    document.getElementById('sg-origin').textContent =
+      `Öneren sayfa: ${s.source_page || '—'} · Önerilen konu: ${s.category || '—'}` +
+      (s.resource_type ? ` · ${s.resource_type}` : '');
+
+    // Ehrlich sagen, ob jemand benachrichtigt werden kann. Vorschlaege von
+    // vor dem 8.10. haben keinen Absender gespeichert.
+    document.getElementById('sg-notify-note').textContent = s.submitted_by
+      ? 'Eklendikten sonra öneren üyeye bildirim gönderilecek.'
+      : 'Bu öneride gönderen kaydedilmemiş — bildirim gönderilemez.';
+
+    document.getElementById('sg-editor-backdrop').style.display = 'block';
+    document.getElementById('sg-editor').style.display = 'block';
+  };
+
+  window.closeSuggestionEditor = function() {
+    document.getElementById('sg-editor-backdrop').style.display = 'none';
+    document.getElementById('sg-editor').style.display = 'none';
+    SG_CURRENT = null;
+  };
+
+  window.saveSuggestionToLibrary = async function() {
+    if (!SG_CURRENT) return;
+    const v = id => document.getElementById(id).value.trim();
+    const err = document.getElementById('sg-error');
+    const btn = document.getElementById('sg-save');
+    const zeige = m => { err.textContent = m; err.style.display = 'block'; };
+    err.style.display = 'none';
+
+    const title = v('sg-title'), source = v('sg-source'), url = v('sg-url'), desc = v('sg-desc');
+    if (!title || !source || !url || !desc) return zeige('Başlık, kurum, bağlantı ve açıklama zorunlu.');
+    if (!/^https:\/\//i.test(url))          return zeige('Bağlantı https:// ile başlamalı.');
+    if (!document.getElementById('sg-cat').value) return zeige('Kategori seç.');
+
+    const lang = [];
+    if (document.getElementById('sg-tr').checked) lang.push('TR');
+    if (document.getElementById('sg-de').checked) lang.push('DE');
+    if (document.getElementById('sg-en').checked) lang.push('EN');
+    if (!lang.length) return zeige('En az bir dil seç.');
+
+    const checked = document.getElementById('sg-verified').checked;
+    const caution = v('sg-caution');
+
+    btn.disabled = true; btn.textContent = 'Ekleniyor…';
+    try {
+      // 1) In die Bibliothek eintragen. Schlaegt das fehl, bleibt der
+      //    Vorschlag offen — lieber zweimal ansehen als still verlieren.
+      const neu = await sb('resources', {
+        method: 'POST',
+        body: JSON.stringify({
+          title, source, url, description: desc,
+          category: document.getElementById('sg-cat').value,
+          type: document.getElementById('sg-type').value,
+          lang,
+          is_official: document.getElementById('sg-official').checked,
+          last_verified: checked ? new Date().toISOString().slice(0, 10) : null,
+          caution: caution || (checked ? null : UNTESTED_NOTE)
+        })
+      });
+      if (!Array.isArray(neu) || !neu.length) {
+        throw new Error('Kaynak eklenmedi (yetki ya da kural engeli). Öneri açık bırakıldı.');
+      }
+
+      // 2) Erst jetzt den Vorschlag abhaken.
+      await sb(`suggestions?id=eq.${SG_CURRENT.id}`, {
+        method: 'PATCH', body: JSON.stringify({ status: 'done' })
+      });
+
+      // 3) Und dem Absender Bescheid geben. Schlaegt nur das fehl, ist die
+      //    Quelle trotzdem drin — deshalb eigener Hinweis statt Abbruch.
+      //    Den Absender hier festhalten: closeSuggestionEditor() setzt
+      //    SG_CURRENT auf null, und die Meldung unten braucht ihn noch.
+      const absender = SG_CURRENT.submitted_by || null;
+      let gemeldet = false;
+      if (absender) {
+        try {
+          await sb('notifications', {
+            method: 'POST',
+            body: JSON.stringify({
+              user_id: absender,
+              type: 'suggestion_published',
+              title: '💡 Önerin kütüphaneye eklendi',
+              body: `"${title}" artık Kütüphane'de. Paylaştığın için teşekkürler!`,
+              link: '/library.html'
+            })
+          });
+          gemeldet = true;
+        } catch (e) { console.error('Bildirim gönderilemedi:', e); }
+      }
+
+      closeSuggestionEditor();
+      toast(gemeldet
+        ? '📚 Kaynak eklendi, öneren üyeye haber verildi ✓'
+        : (absender
+            ? '📚 Kaynak eklendi — ama bildirim gönderilemedi.'
+            : '📚 Kaynak eklendi. (Bu öneride gönderen kayıtlı değil.)'));
+      loadContent();
+      if (typeof loadLibrary === 'function') loadLibrary();
+    } catch (e) {
+      zeige(e.message || 'Eklenemedi.');
+    } finally {
+      btn.disabled = false; btn.textContent = '📚 Kütüphaneye Ekle';
+    }
   };
 
   window.approveSwap = async function(id) {
