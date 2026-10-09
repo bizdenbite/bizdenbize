@@ -1402,11 +1402,23 @@ window.toggleNotifPanel = function(e) {
 // zu; hier wird es ein zweites Mal geprueft, denn aeltere Zeilen koennen
 // noch alles enthalten.
 //
-// Erlaubt ist nur ein Pfad auf dieser Seite: beginnt mit "/", aber nicht mit
-// "//" — denn "//fremde-seite.de" ist fuer den Browser eine fremde Adresse.
+// Gefragt wird NICHT "beginnt mit /". Die Benachrichtigungen der
+// Nachrichtenfunktion heissen "messages.html?with=…" — ohne Schraegstrich und
+// trotzdem voellig in Ordnung. Eine Regel, die auf dem Schraegstrich besteht,
+// haette genau die verworfen; 23 solche Zeilen liegen in der Tabelle.
+//
+// Gefragt wird, ob der Link AUS DER SEITE HERAUSFUEHRT. Abgelehnt wird:
+//   • alles mit Schema          http: https: javascript: data: mailto:
+//   • alles, das mit // oder \\ beginnt — "//fremde-seite.de" ist fuer den
+//     Browser eine fremde Adresse, auch ohne http davor; "\\" und "/\"
+//     werden genauso behandelt
+//   • alles mit Steuerzeichen, damit "java<TAB>script:" nicht durchrutscht
 function istInternerPfad(link) {
-  const s = String(link || '').trim();
-  return s.startsWith('/') && !s.startsWith('//');
+  const s = String(link || '').replace(/[\u0000-\u001F\u007F]/g, '').trim();
+  if (!s) return false;
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(s)) return false;
+  if (/^[/\\]{2}/.test(s)) return false;
+  return true;
 }
 
 window.openNotification = async function(id, link) {
