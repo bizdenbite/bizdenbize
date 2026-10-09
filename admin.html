@@ -1605,7 +1605,10 @@
           lang,
           is_official: document.getElementById('sg-official').checked,
           last_verified: checked ? new Date().toISOString().slice(0, 10) : null,
-          caution: caution || (checked ? null : UNTESTED_NOTE)
+          caution: caution || (checked ? null : UNTESTED_NOTE),
+          // Siehe addResource(): ohne is_published steht die Quelle in der
+          // Tabelle, aber auf keiner Seite.
+          is_published: true
         })
       });
       if (!Array.isArray(neu) || !neu.length) {
@@ -1795,7 +1798,11 @@
       const stamp = ok
         ? `<span style="color:#1E7B4B;font-size:12px;white-space:nowrap;">✓ ${fmtDate(r.last_verified)}</span>`
         : `<span style="color:#B8860B;font-size:12px;white-space:nowrap;">⚠️ Kontrol edilmedi</span>`;
-      const off = r.is_published === false
+      // NICHT "=== false" pruefen. library.html holt .eq('is_published', true),
+      // also ist auch NULL unsichtbar — und genau dabei schwieg dieses Feld
+      // frueher. Alles, was nicht ausdruecklich true ist, wird jetzt als
+      // "nicht veroeffentlicht" angezeigt.
+      const off = r.is_published !== true
         ? '<span style="background:rgba(212,43,43,.1);color:var(--red);font-size:11px;padding:2px 7px;border-radius:5px;">Yayında değil</span>' : '';
       return `<div style="background:#fff;border:1px solid #e0d8cc;border-left:3px solid ${ok ? '#1E7B4B' : '#B8860B'};border-radius:10px;padding:12px 14px;margin-bottom:8px;">
         <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
@@ -1933,10 +1940,17 @@
           lang,
           is_official: document.getElementById('res-official').checked,
           last_verified: checked ? new Date().toISOString().slice(0, 10) : null,
-          caution: caution || (checked ? null : UNTESTED_NOTE)
+          caution: caution || (checked ? null : UNTESTED_NOTE),
+          // OHNE DIES BLEIBT DIE QUELLE UNSICHTBAR. library.html holt nur
+          // Zeilen mit is_published = true. Das Feld wurde hier nie gesetzt,
+          // also landete jede ueber "Yeni Kaynak Ekle" eingetragene Quelle
+          // in der Tabelle und auf keiner Seite. Gemerkt hat es niemand,
+          // weil das Panel "Yayında değil" nur bei ausdruecklich false
+          // anzeigt — bei NULL schweigt es.
+          is_published: true
         })
       });
-      toast('📚 Kaynak eklendi.');
+      toast('📚 Kaynak eklendi ve yayına alındı.');
       ['res-title','res-source','res-url','res-desc','res-caution'].forEach(i => document.getElementById(i).value = '');
       loadLibrary();
     } catch (e) { toast('Eklenemedi: ' + e.message, false); }
