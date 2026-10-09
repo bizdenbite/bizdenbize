@@ -1396,6 +1396,77 @@
   // Bağlantı und koennen im Fenster umgestellt werden.
   const SUG_TYPE_MAP = { doc:'doc', guide:'guide', link:'link', video:'link' };
 
+  // ── KAYNAK KURUM AUS DER ADRESSE ────────────────────────────────────
+  // Die Bibliothek verlangt zwei Angaben, die das Vorschlagsformular nicht
+  // abfragt: Einrichtung und Sprachen. Deshalb war jede Uebernahme
+  // Tipparbeit. Diese Zuordnung stammt aus den Eintraegen, die am 9.10.
+  // schon in resources standen — also aus Naz' eigener Schreibweise, nicht
+  // aus meiner. Wo eine Adresse mehrfach vorkam, steht hier die haeufigere
+  // Fassung; die andere ist im Fenster mit zwei Klicks gesetzt.
+  //
+  // Es bleibt eine VORBELEGUNG. Die Bibliothek verspricht "tek tek kontrol
+  // edilmiş" — das Bestaetigen ist diese Kontrolle und faellt nicht weg.
+  const KURUM_MAP = {
+    'bamf.de':                         'Bundesamt für Migration und Flüchtlinge (BAMF)',
+    'anerkennung-in-deutschland.de':   'Anerkennung in Deutschland (BIBB)',
+    'arbeitsagentur.de':               'Bundesagentur für Arbeit',
+    'bmas.de':                         'Bundesministerium für Arbeit und Soziales (BMAS)',
+    'deutsche-rentenversicherung.de':  'Deutsche Rentenversicherung',
+    'familienportal.de':               'Familienportal (BMBFSFJ)',
+    'mieterbund.de':                   'Deutscher Mieterbund',
+    'nvi.gov.tr':                      'T.C. Nüfus ve Vatandaşlık İşleri Genel Müdürlüğü (NVİ)',
+    'antidiskriminierungsstelle.de':   'Antidiskriminierungsstelle des Bundes',
+    'bundesgesundheitsministerium.de': 'Bundesgesundheitsministerium',
+    'elster.de':                       'Finanzverwaltung (ELSTER)',
+    'gkv-spitzenverband.de':           'GKV-Spitzenverband',
+    'hilfetelefon.de':                 'Hilfetelefon "Gewalt gegen Frauen" (BMBFSFJ)',
+    'justiz.nrw':                      'Justiz (eyalet adalet bakanlıkları)',
+    'konsolosluk.gov.tr':              'T.C. Dışişleri Bakanlığı',
+    'meineschufa.de':                  'SCHUFA (Art. 15 GDPR hakkı)',
+    'msb.gov.tr':                      'T.C. Millî Savunma Bakanlığı (MSB)',
+    'rundfunkbeitrag.de':              'Rundfunkbeitrag (ARD/ZDF/Deutschlandradio)',
+    'verwaltung.bund.de':              'Bund.de — Verwaltungsportal'
+  };
+
+  // Dreizehn Konsulatsadressen (munih-bk, koln-bk, berlin-be …) gehoeren
+  // alle zu derselben Stelle. Eine Endungsregel deckt sie ab — auch die,
+  // die noch dazukommen.
+  const KURUM_ENDUNGEN = [
+    ['.mfa.gov.tr', 'T.C. Dışişleri Bakanlığı']
+  ];
+
+  function hostAus(url) {
+    const s = String(url || '').trim();
+    if (!s) return '';
+    try {
+      return new URL(s).hostname.toLowerCase().replace(/^www\./, '');
+    } catch (e) {
+      // Ohne https:// davor wirft URL() — dann von Hand schneiden.
+      return s.split('://').pop().split('/')[0].toLowerCase().replace(/^www\./, '');
+    }
+  }
+
+  function kurumAus(url) {
+    const h = hostAus(url);
+    if (!h) return '';
+    if (KURUM_MAP[h]) return KURUM_MAP[h];
+    for (const [endung, name] of KURUM_ENDUNGEN) {
+      if (h === endung.slice(1) || h.endsWith(endung)) return name;
+    }
+    return '';
+  }
+
+  // Türkçe nur anhaken, wenn die Adresse wirklich auf eine tuerkische
+  // Fassung zeigt — eine .tr-Adresse oder ein /tr/-Pfad. Raten waere hier
+  // schaedlich: ein falsch gesetztes "Türkçe var" schickt jemanden auf eine
+  // Seite, die er nicht lesen kann.
+  function hatTuerkischeFassung(url) {
+    const s = String(url || '').toLowerCase();
+    const h = hostAus(s);
+    if (h.endsWith('.tr')) return true;
+    return /(\/tr\/|\/tr$|[?&](lang|sprache|dil)=tr\b|turkce|türkçe|tuerkisch|turkisch)/.test(s);
+  }
+
   window.openSuggestionEditor = function(id) {
     const s = SUGS.find(x => String(x.id) === String(id));
     if (!s) return toast('Öneri bulunamadı, listeyi yenile.', false);
@@ -1405,23 +1476,29 @@
     sel.innerHTML = '<option value="">— kategori seç —</option>' +
       Object.entries(LIB_CATS).map(([v, l]) => `<option value="${v}">${escH(l)}</option>`).join('');
 
+    const kurum = kurumAus(s.url);
+
     document.getElementById('sg-title').value   = s.title || '';
-    document.getElementById('sg-source').value  = '';
+    document.getElementById('sg-source').value  = kurum;
     document.getElementById('sg-url').value     = s.url || '';
     document.getElementById('sg-desc').value    = s.description || '';
     document.getElementById('sg-caution').value = '';
     sel.value = SUG_CAT_MAP[s.category] || '';
     document.getElementById('sg-type').value = SUG_TYPE_MAP[s.resource_type] || 'link';
-    document.getElementById('sg-tr').checked = false;
+    document.getElementById('sg-tr').checked = hatTuerkischeFassung(s.url);
     document.getElementById('sg-de').checked = true;
     document.getElementById('sg-en').checked = false;
     document.getElementById('sg-official').checked = true;
     document.getElementById('sg-verified').checked = true;
     document.getElementById('sg-error').style.display = 'none';
 
+    // Dass die Einrichtung geraten wurde, muss sichtbar sein. Ein still
+    // vorausgefuelltes Feld wird uebersehen, und ein falscher Name steht
+    // danach dauerhaft in der Bibliothek.
     document.getElementById('sg-origin').textContent =
       `Öneren sayfa: ${s.source_page || '—'} · Önerilen konu: ${s.category || '—'}` +
-      (s.resource_type ? ` · ${s.resource_type}` : '');
+      (s.resource_type ? ` · ${s.resource_type}` : '') +
+      (kurum ? `  ·  Kurum bağlantıdan dolduruldu (${hostAus(s.url)}) — kontrol et.` : '');
 
     // Ehrlich sagen, ob jemand benachrichtigt werden kann. Vorschlaege von
     // vor dem 8.10. haben keinen Absender gespeichert.
