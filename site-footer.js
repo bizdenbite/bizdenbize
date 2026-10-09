@@ -48,7 +48,7 @@
     ['is-guc.html',      '💼 İş Ver & Bul'],
     ['ev-takasi.html',   '🏡 Tatil Takası'],
     ['ogrenim.html',     '🎓 Öğrenim'],
-    ['library.html',     '📚 Bilgi & Belge'],
+    ['library.html',     '📚 Kütüphane'],
     ['blog.html',        '✍️ Görüşler'],
     ['abibot.html',      '🤖 AbiBOT']
   ];

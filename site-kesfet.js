@@ -39,7 +39,7 @@
     ['saglik.html',     '🏥', 'Sağlık'],
     ['emlak.html',      '🏠', 'Konut & Emlak'],
     ['ev-takasi.html',  '🔄', 'Tatil Takası'],
-    ['library.html',    '📚', 'Bilgi & Belge'],
+    ['library.html',    '📚', 'Kütüphane'],
     ['blog.html',       '✍️', 'Görüşler'],
     ['events.html',     '🎉', 'Etkinlikler'],
     ['messages.html',   '💬', 'Mesajlar']
