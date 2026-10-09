@@ -1244,7 +1244,7 @@
         <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${r.comment||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
 
       document.getElementById('doctors-tbody').innerHTML = doctors.length ? doctors.map(d => `
-        <tr><td style="font-weight:600;">${d.name||'—'}${d.active === false ? ' <span class="badge badge-gold">⏳ Onay bekliyor</span>' : ' <span class="badge badge-green">✓ Yayında</span>'}</td><td>${d.specialty||'—'}</td><td>${d.city||'—'}</td><td>${(d.languages||[]).join(', ')||'—'}</td><td>${d.active === false
+        <tr><td style="font-weight:600;">${escH(d.name||'—')}${d.active === false ? ' <span class="badge badge-gold">⏳ Onay bekliyor</span>' : ' <span class="badge badge-green">✓ Yayında</span>'}</td><td>${escH(d.specialty||'—')}</td><td>${escH(d.city||'—')}</td><td>${escH((d.languages||[]).join(', ')||'—')}</td><td>${d.active === false
             ? `<button class="btn btn-sm btn-green" onclick="toggleDoctor('${d.id}', true)">✅ Onayla</button>`
             : `<button class="btn btn-sm btn-muted" onclick="toggleDoctor('${d.id}', false)">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('doctors','${d.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
@@ -1698,8 +1698,8 @@
       if (!messages.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">📬</div><div class="empty-text">Henüz mesaj yok.</div></div>`; return; }
       el.innerHTML = messages.map(m => `
         <div class="msg-card">
-          <div class="msg-head"><div><div class="msg-from">${m.name||'—'}</div><div class="msg-email">${m.email||'—'}</div></div><span class="badge badge-navy">${m.subject||'Genel'}</span></div>
-          <div class="msg-body-text">${m.message||'—'}</div><div class="msg-date">${fmtDate(m.created_at)}</div>
+          <div class="msg-head"><div><div class="msg-from">${escH(m.name||'—')}</div><div class="msg-email">${escH(m.email||'—')}</div></div><span class="badge badge-navy">${escH(m.subject||'Genel')}</span></div>
+          <div class="msg-body-text">${escH(m.message||'—')}</div><div class="msg-date">${fmtDate(m.created_at)}</div>
         </div>`).join('');
     } catch(e) { console.error(e); }
   }
