@@ -262,7 +262,7 @@
       🎥 Webinarlar <span class="nav-badge" id="badge-webinars">—</span>
     </button>
     <button class="nav-item" onclick="showSection('content', this)">
-      📋 İçerik
+      📋 İçerik <span class="nav-badge" id="nav-badge-suggestions" style="background:var(--red);display:none;"></span>
     </button>
     <button class="nav-item" onclick="showSection('messages', this)">
       📬 Mesajlar <span class="nav-badge" id="badge-messages" style="background:var(--green);">—</span>
@@ -502,6 +502,13 @@
         </div>
       </div>
       <div class="tab-pane" id="tab-suggestions">
+        <!-- Erledigte bleiben als Beleg erhalten, decken aber die neuen
+             nicht mehr zu. Voreinstellung: nur die offenen. -->
+        <div class="tab-bar" id="sug-filter-bar" style="margin-bottom:14px;">
+          <button class="tab-btn active" onclick="sugFilter('new',this)">⏳ Yeni<span id="sug-count-new"></span></button>
+          <button class="tab-btn" onclick="sugFilter('done',this)">✓ İşlenmiş<span id="sug-count-done"></span></button>
+          <button class="tab-btn" onclick="sugFilter('all',this)">Tümü<span id="sug-count-all"></span></button>
+        </div>
         <div class="card">
           <table>
             <thead><tr><th>Başlık / Link</th><th>Sayfa</th><th>Konu</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
@@ -1303,10 +1310,53 @@
       } else {
         const sg = Array.isArray(suggestions) ? suggestions : [];
         SUGS = sg;   // das Bearbeitungsfenster liest die Zeile von hier
-        const open = sg.filter(x => x.status !== 'done').length;
-        const badge = document.getElementById('nav-badge-suggestions');
-        if (badge) { badge.textContent = open; badge.style.display = open ? '' : 'none'; }
-        sugRow.innerHTML = sg.length ? sg.map(x => {
+        renderSuggestions();
+      }
+
+    } catch(e) { console.error('Content load error:', e); }
+  }
+
+  // Erledigte Vorschlaege bleiben als Beleg stehen — man soll spaeter noch
+  // sehen koennen, was vorgeschlagen wurde und von wem. Sie sollen aber
+  // nicht die neuen zudecken. Deshalb dieselbe Aufteilung wie bei
+  // Etkinlikler: standardmaessig nur die offenen.
+  let SUG_FILTER = 'new';
+
+  window.sugFilter = function(f, btn) {
+    SUG_FILTER = f;
+    document.querySelectorAll('#sug-filter-bar .tab-btn')
+            .forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderSuggestions();
+  };
+
+  function renderSuggestions() {
+    const sugRow = document.getElementById('suggestions-tbody');
+    if (!sugRow) return;
+    const sg = Array.isArray(SUGS) ? SUGS : [];
+
+    const offen    = sg.filter(x => x.status !== 'done').length;
+    const erledigt = sg.length - offen;
+
+    const badge = document.getElementById('nav-badge-suggestions');
+    if (badge) { badge.textContent = offen; badge.style.display = offen ? '' : 'none'; }
+
+    const cNeu = document.getElementById('sug-count-new');
+    const cAlt = document.getElementById('sug-count-done');
+    const cAll = document.getElementById('sug-count-all');
+    if (cNeu) cNeu.textContent = offen    ? ` (${offen})`    : '';
+    if (cAlt) cAlt.textContent = erledigt ? ` (${erledigt})` : '';
+    if (cAll) cAll.textContent = sg.length ? ` (${sg.length})` : '';
+
+    const liste = SUG_FILTER === 'all'  ? sg
+                : SUG_FILTER === 'done' ? sg.filter(x => x.status === 'done')
+                :                         sg.filter(x => x.status !== 'done');
+
+    const leerText = SUG_FILTER === 'done' ? 'Henüz işlenmiş öneri yok.'
+                   : SUG_FILTER === 'all'  ? 'Henüz öneri yok.'
+                   :                         'Bekleyen öneri yok. 🎉';
+
+    sugRow.innerHTML = liste.length ? liste.map(x => {
           const done = x.status === 'done';
           return `
         <tr${done ? ' style="opacity:.55;"' : ''}>
@@ -1327,10 +1377,7 @@
             </div>
           </td>
         </tr>`;
-        }).join('') : `<tr class="loading-row"><td colspan="6">Henüz öneri yok.</td></tr>`;
-      }
-
-    } catch(e) { console.error('Content load error:', e); }
+    }).join('') : `<tr class="loading-row"><td colspan="6">${leerText}</td></tr>`;
   }
 
   async function deleteContent(table, id) {
