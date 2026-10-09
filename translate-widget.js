@@ -59,6 +59,10 @@
       .msg-translation-lang { font-size: 10.5px; font-weight: 700; color: var(--muted); }
       .msg-translation-close { background: none; border: none; cursor: pointer; font-size: 13px; color: inherit; opacity: .6; padding: 0 2px; }
       .msg-translation-close:hover { opacity: 1; }
+      .msg-translation-note {
+        margin-top: 6px; padding-top: 5px; border-top: 1px solid rgba(26,18,8,.08);
+        font-size: 10.5px; line-height: 1.4; color: var(--muted);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -66,7 +70,7 @@
   // Reusable HTML-generator: button + language dropdown.
   window.mhTranslateMenuHtml = function (contentSelector) {
     return `<span class="msg-translate-wrap">
-      <button class="msg-translate-btn" onclick="event.stopPropagation();toggleMsgTranslateMenu(this)" title="Çevir">🌐</button>
+      <button class="msg-translate-btn" onclick="event.stopPropagation();toggleMsgTranslateMenu(this)" title="Yapay zeka ile çevir" aria-label="Yapay zeka ile çevir">🌐</button>
       <div class="msg-translate-dropdown">
         <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'tr','${contentSelector}')">🇹🇷 Türkçe</button>
         <button class="msg-translate-opt" onclick="event.stopPropagation();translateMhContent(this,'de','${contentSelector}')">🇩🇪 Almanca</button>
@@ -143,6 +147,13 @@
 
     const existing = textEl.parentElement.querySelector(':scope > .msg-translation-box');
     if (existing) existing.remove();
+    // KI-OFFENLEGUNG — gehoert zur Ausgabe, nicht in die Rechtstexte.
+    // Diese Uebersetzung entsteht maschinell (abibot-chat, mode:'translate').
+    // Das BB-AIMS fuehrt Translate als eigenes KI-System und verlangt in
+    // A-01 Offenlegung an JEDEM KI-Einstiegspunkt; hier fehlte sie, waehrend
+    // AbiBOT selbst sie an drei Stellen traegt. Der Hinweis steht bewusst
+    // UNTER dem Text und von Anfang an da — auch waehrend "Çeviriliyor…" und
+    // im Fehlerfall arbeitet die Maschine.
     const box = document.createElement('div');
     box.className = 'msg-translation-box';
     box.innerHTML = `
@@ -150,7 +161,8 @@
         <span class="msg-translation-lang">${mhLangNames[lang]}</span>
         <button class="msg-translation-close" onclick="this.closest('.msg-translation-box').remove()">✕</button>
       </div>
-      <div class="msg-translation-text">⏳ Çeviriliyor...</div>`;
+      <div class="msg-translation-text">⏳ Çeviriliyor...</div>
+      <div class="msg-translation-note">🤖 Bu çeviri yapay zeka ile yapıldı; hatalı olabilir. Resmî işlerde aslına bak.</div>`;
     textEl.insertAdjacentElement('afterend', box);
 
     try {
