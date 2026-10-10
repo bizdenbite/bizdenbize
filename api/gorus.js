@@ -124,11 +124,38 @@ async function getPost(slug) {
   return rows && rows[0] ? rows[0] : null;
 }
 
+// Welche Adresse das Geruest liefern darf. Feste Liste, kein
+// Vertrauen in den Aufrufer.
+const SHELL_HOSTS = [
+  'bizdenbize.com', 'www.bizdenbize.com',
+  'abibot.eu',      'www.abibot.eu'
+];
+
+// WARUM DIESE FUNKTION EXISTIERT
+// Der Host-Kopf einer Anfrage kommt vom Aufrufer, nicht von Vercel.
+// Vorher stand er direkt in der fetch-Adresse. Wer ihn auf einen
+// eigenen Server setzt, bringt diese Funktion dazu, FREMDES HTML zu
+// holen — und die Antwort wird unter bizdenbize.com ausgeliefert.
+// Damit laeuft fremder Code auf unserer Adresse und kann die
+// Anmeldedaten aus dem Browserspeicher lesen.
+// Ob Vercel einen gefaelschten Host durchlaesst, wurde nicht
+// geprueft. Die Zeile haelt so oder so nicht, und eine feste Liste
+// kostet nichts.
+function shellOrigin(hostRaw) {
+  const host = String(hostRaw || '').trim().toLowerCase();
+  if (/^(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(host)) return 'http://' + host;
+  if (SHELL_HOSTS.includes(host)) return 'https://' + host;
+  // Vorschauadressen (*.vercel.app) und alles Unbekannte holen das
+  // Geruest von der eigenen Domain. Absichtlich: eine Vorschau mit
+  // dem Live-Geruest ist richtig, eine Vorschau mit fremdem Geruest
+  // waere die Luecke.
+  return SITE;
+}
+
 async function getShell(host) {
   // Kendi sitemizden statik kabuğu çekiyoruz. /blog-post.html
   // bu fonksiyona yönlendirilmiş DEĞİL, dolayısıyla döngü yok.
-  const proto = /^localhost|127\.0\.0\.1/.test(host) ? 'http' : 'https';
-  const r = await fetch(proto + '://' + host + '/blog-post.html', {
+  const r = await fetch(shellOrigin(host) + '/blog-post.html', {
     headers: { 'user-agent': 'bizdenbize-og' },
     signal: AbortSignal.timeout(4000)
   });
@@ -193,6 +220,7 @@ module.exports = async (req, res) => {
   }
 };
 
+module.exports.shellOrigin = shellOrigin;
 module.exports.buildMeta = buildMeta;
 module.exports.injectMeta = injectMeta;
 module.exports.clip = clip;
