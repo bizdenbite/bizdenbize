@@ -199,6 +199,9 @@
     .featured-upsell-title { font-size: 13px; font-weight: 600; color: var(--ink); }
     .featured-upsell-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
     .featured-price { font-size: 14px; font-weight: 700; color: var(--gold); }
+    /* Yakinda: bezahlpflichtige Buendel sichtbar, aber gesperrt. */
+    #bundle-1-wrap, #bundle-3-wrap, #bundle-10-wrap { opacity: .5; cursor: not-allowed; }
+    #payment-step input[disabled] { background: var(--warm); color: var(--muted); cursor: not-allowed; }
 
     .submit-btn { width: 100%; padding: 13px; background: var(--red); color: var(--white); border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; }
     .submit-btn:hover { background: var(--red2); }
@@ -728,9 +731,18 @@
         </div>
       </div>
       <div id="individual-contact-note" style="font-size:12px;color:var(--muted);line-height:1.5;">🔒 Bireysel ilanlarda iletişim, güvenlik için yalnızca uygulama içi mesajla sağlanır.</div>
-      <!-- Featured upsell -->
-      <div id="featured-section" style="display:none">
-        <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— isteğe bağlı</span></label>
+      <!-- Featured upsell — YAKINDA.
+           Stand 10.10.2026: es gibt keinen Zahlungsdienstleister. Die
+           bezahlpflichtigen Optionen sind deshalb sichtbar, aber nicht
+           auswaehlbar (disabled), und das Kartenformular weiter unten
+           ist eine Vorschau mit gesperrten Feldern. Sobald das Bezahlen
+           echt ist, fallen die disabled-Attribute und der Yakinda-Hinweis
+           weg — sonst nichts. -->
+      <div id="featured-section">
+        <label class="field-label">⭐ Öne Çıkan İlan <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">— yakında</span></label>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px;padding:8px 12px;background:rgba(201,168,76,.08);border-radius:8px;border-left:2px solid var(--gold);">
+          ⏳ Öne çıkarma henüz açılmadı. Şu anda <strong>hiçbir ödeme alınmıyor</strong>; ilanın ücretsiz yayınlanır. Hazır olduğunda buradan seçebileceksin.
+        </div>
         <div style="display:flex;flex-direction:column;gap:6px;" id="bundle-options">
           <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-none-wrap">
             <input type="radio" name="bundle" value="none" checked onchange="selectBundle('none')" style="accent-color:var(--red);">
@@ -738,18 +750,18 @@
             <div style="font-size:13px;font-weight:700;color:var(--muted);">Ücretsiz</div>
           </label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-1-wrap">
-            <input type="radio" name="bundle" value="1" onchange="selectBundle('1')" style="accent-color:var(--gold);">
+            <input type="radio" name="bundle" value="1" onchange="selectBundle('1')" style="accent-color:var(--gold);" disabled>
             <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐ 1 Öne Çıkan İlan</div><div style="font-size:11px;color:var(--muted);">Liste başında · Altın çerçeve · 60 gün aktif</div></div>
             <div style="font-size:13px;font-weight:700;color:var(--gold);">€4,99</div>
           </label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;position:relative;" id="bundle-3-wrap">
             <span style="position:absolute;top:-1px;right:10px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:0 0 6px 6px;letter-spacing:.05em;">EN POPÜLER</span>
-            <input type="radio" name="bundle" value="3" onchange="selectBundle('3')" style="accent-color:var(--gold);">
+            <input type="radio" name="bundle" value="3" onchange="selectBundle('3')" style="accent-color:var(--gold);" disabled>
             <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐ 3 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">3 farklı ilan için kullan · Devredilmez</div></div>
             <div style="font-size:13px;font-weight:700;color:var(--gold);">€12 <span style="font-size:10px;color:var(--muted);font-weight:400;">€4/ilan</span></div>
           </label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--sand);border-radius:9px;cursor:pointer;transition:border-color .15s;" id="bundle-10-wrap">
-            <input type="radio" name="bundle" value="10" onchange="selectBundle('10')" style="accent-color:var(--gold);">
+            <input type="radio" name="bundle" value="10" onchange="selectBundle('10')" style="accent-color:var(--gold);" disabled>
             <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">⭐⭐⭐ 10 Öne Çıkan Hak</div><div style="font-size:11px;color:var(--muted);">Ajanslar ve düzenli işverenler için · 1 yıl geçerli</div></div>
             <div style="font-size:13px;font-weight:700;color:var(--gold);">€35 <span style="font-size:10px;color:var(--muted);font-weight:400;">€3,50/ilan</span></div>
           </label>
@@ -775,33 +787,38 @@
           </div>
           <div style="font-size:11px;color:var(--muted);" id="order-sub">60 gün aktif · Liste başında görünüm</div>
         </div>
-        <!-- Card form -->
+        <!-- Vorschau, YAKINDA. Die Felder sind gesperrt (disabled) und
+             autocomplete="off": ein beschreibbares Kartenfeld zieht die
+             Autovervollstaendigung des Browsers an, und es gibt keinen
+             Zahlungsdienstleister, der die Nummer entgegennehmen koennte.
+             Gesperrte Felder werden ausserdem nicht mit abgeschickt. -->
+        <div style="font-size:12px;color:var(--ink);line-height:1.5;padding:10px 12px;background:rgba(201,168,76,.1);border-radius:8px;border-left:2px solid var(--gold);">
+          ⏳ <strong>Yakında.</strong> Ödeme altyapısı henüz bağlı değil — bu ekran yalnızca ön izlemedir. Şu anda kart bilgisi girilemez ve <strong>hiçbir ödeme alınmıyor</strong>.
+        </div>
+        <!-- Card form (ön izleme) -->
         <div>
           <label class="field-label">Kart Numarası</label>
-          <input class="field-input" id="pay-card" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+          <input class="field-input" id="pay-card" type="text" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="off" disabled>
         </div>
         <div class="field-row">
           <div>
             <label class="field-label">Son Kullanma</label>
-            <input class="field-input" id="pay-exp" type="text" placeholder="AA/YY" maxlength="5" oninput="formatExp(this)">
+            <input class="field-input" id="pay-exp" type="text" placeholder="AA/YY" maxlength="5" autocomplete="off" disabled>
           </div>
           <div>
             <label class="field-label">CVV</label>
-            <input class="field-input" id="pay-cvv" type="text" placeholder="123" maxlength="3">
+            <input class="field-input" id="pay-cvv" type="text" placeholder="123" maxlength="3" autocomplete="off" disabled>
           </div>
         </div>
         <div>
           <label class="field-label">Kart Üzerindeki İsim</label>
-          <input class="field-input" id="pay-name" type="text" placeholder="Ayşe Yılmaz">
-        </div>
-        <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--warm);border-radius:8px;">
-          🔒 Ödeme bilgileriniz şifrelenerek işlenir. BizdenBize kart bilgilerinizi saklamaz.
+          <input class="field-input" id="pay-name" type="text" placeholder="Ayşe Yılmaz" autocomplete="off" disabled>
         </div>
         <div id="pay-error" style="display:none;font-size:12px;color:var(--red);padding:8px 12px;background:rgba(212,43,43,.06);border-radius:8px;border-left:2px solid var(--red);"></div>
       </div>
       <div style="padding:14px 24px 20px;border-top:1px solid var(--warm);display:flex;gap:8px;">
         <button onclick="goBackToForm()" style="padding:13px 16px;background:var(--warm);color:var(--ink);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">← Geri</button>
-        <button onclick="processPayment()" style="flex:1;padding:13px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'" id="pay-btn">Ödemeyi Tamamla →</button>
+        <button onclick="processPayment()" style="flex:1;padding:13px;background:var(--warm);color:var(--muted);border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:not-allowed;font-family:inherit;" id="pay-btn" disabled>Yakında</button>
       </div>
     </div>
 
@@ -1251,8 +1268,13 @@
     if (note) note.style.display = (type === 'job') ? 'none' : '';
   }
 
-  // Pending post stored between form → payment steps
-  let _pendingPost = null;
+  // Hier stand `let _pendingPost = null;`, ein Zwischenspeicher fuer den
+  // Weg Formular → Bezahlung. Gefuellt wurde er nie: in der ganzen Datei
+  // gab es keine einzige Zuweisung. Die Zeile, die ihn als hervorgehobene
+  // Anzeige in die Tabelle `listings` schrieb, konnte deshalb nie laufen —
+  // und war der einzige Schreibzugriff auf diese Tabelle. Entfernt am
+  // 10.10.2026, damit die sperrweit offene Schreibregel auf `listings`
+  // geschlossen werden kann.
 
   async function submitPost() {
     const session = window._currentSession;
@@ -1303,32 +1325,20 @@
     document.getElementById('post-modal').querySelector('.modal-header h3').textContent = '💼 İlan Ver';
   }
 
+  // YAKINDA. Vorher stand hier eine Strecke, die Kartennummer, Ablaufdatum
+  // und Pruefziffer einlas, 1,5 Sekunden wartete und dann "Erfolg" zeigte.
+  // Abgebucht wurde nichts, und hervorgehoben wurde auch nichts, weil
+  // _pendingPost nie gefuellt war. Sichtbar war die Strecke ebenfalls nie.
+  // Jetzt sagt sie, was wahr ist, statt etwas zu versprechen. Wenn das
+  // Bezahlen kommt, kommt es ueber einen echten Zahlungsdienstleister:
+  // die Kartendaten gehen dann direkt zu dessen Formular und beruehren
+  // diese Seite nicht.
   function processPayment() {
-    const card = document.getElementById('pay-card').value.replace(/\s/g,'');
-    const exp  = document.getElementById('pay-exp').value;
-    const cvv  = document.getElementById('pay-cvv').value;
-    const name = document.getElementById('pay-name').value.trim();
-    const err  = document.getElementById('pay-error');
-
-    if (card.length < 16 || !exp || cvv.length < 3 || !name) {
-      err.textContent = 'Lütfen tüm kart bilgilerini eksiksiz girin.';
-      err.style.display = 'block'; return;
+    const err = document.getElementById('pay-error');
+    if (err) {
+      err.textContent = 'Öne çıkarma henüz açılmadı. İlanın ücretsiz yayınlanıyor.';
+      err.style.display = 'block';
     }
-    err.style.display = 'none';
-
-    const btn = document.getElementById('pay-btn');
-    btn.textContent = 'İşleniyor...';
-    btn.disabled = true;
-
-    setTimeout(async () => {
-      if (_pendingPost) {
-        _pendingPost.featured = true;
-        try { await sbPost('listings', _pendingPost); } catch(e) { console.error('Featured listing insert error:', e); }
-      }
-      document.getElementById('payment-step').style.display = 'none';
-      showSuccess(true);
-      setTimeout(() => fetchListings(), 3600);
-    }, 1500);
   }
 
   function showSuccess(featured) {
