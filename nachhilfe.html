@@ -513,6 +513,15 @@
 </div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
   // Das Zugangstoken der angemeldeten Person MUSS mitgeschickt werden.
@@ -621,8 +630,8 @@ function filterAndRender() {
           <div class="tutor-avatar" style="background:${avatarColors[i % avatarColors.length]}">${initials}</div>
           <div style="flex:1;min-width:0;">
             <div class="tutor-name">${tutorName}</div>
-            <div class="tutor-subject">${t.subject || ''}</div>
-            <div class="tutor-loc">📍 ${t.city || '—'}</div>
+            <div class="tutor-subject">${escBB(t.subject || '')}</div>
+            <div class="tutor-loc">📍 ${escBB(t.city || '—')}</div>
           </div>
           ${isFree(t) ? '<div style="font-size:11px;font-weight:700;color:var(--green);background:rgba(30,123,75,.08);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;">Ücretsiz</div>' : ''}
         </div>
@@ -632,10 +641,10 @@ function filterAndRender() {
           ${t.format === 'online' || t.format === 'both' ? '<span class="ctag ctag-online">🌍 Online</span>' : ''}
           ${t.format === 'inperson' || t.format === 'both' ? '<span class="ctag ctag-inperson">📍 Yüz yüze</span>' : ''}
         </div>
-        <div class="card-desc">${t.description || ''}</div>
+        <div class="card-desc">${escBB(t.description || '')}</div>
         <div class="card-rating">⭐ ${t.rating || '—'} <span style="color:var(--sand);">(${t.review_count || 0} değerlendirme)</span></div>
         <div class="card-footer">
-          <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${t.price_label || ''}</span>
+          <span class="card-price ${isFree(t) ? 'free' : 'paid'}">${escBB(t.price_label || '')}</span>
           <button class="card-contact-btn ${isFree(t) ? 'free' : 'paid'}" onclick="event.stopPropagation();openDetail(${t.id})">İletişim →</button>
         </div>
       </div>`;
@@ -657,13 +666,13 @@ function openDetail(id) {
   document.getElementById('dm-subject').textContent = (t.subject || '') + ' · ' + (t.city || '');
   document.getElementById('dm-desc').textContent = t.description || '';
   document.getElementById('dm-info').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${t.price_label || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Ücret</div><div class="info-box-val">${escBB(t.price_label || '—')}</div></div>
     <div class="info-box"><div class="info-box-label">Format</div><div class="info-box-val">${t.format === 'both' ? '🌍 Online & 📍 Yüz yüze' : t.format === 'online' ? '🌍 Online' : t.format === 'inperson' ? '📍 Yüz yüze' : t.format || '—'}</div></div>
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${t.rating || '—'} (${t.review_count || 0})</div></div>
     <div class="info-box"><div class="info-box-label">Seviyeler</div><div class="info-box-val" style="font-size:11px;">${tutorLevels.map(l => LEVEL_LABELS[l] || l).join(', ')}</div></div>`;
   document.getElementById('dm-tags').innerHTML = `
     ${t.turkish ? '<span class="ctag ctag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe ders</span>' : ''}
-    <span class="ctag ctag-level" style="font-size:11px;padding:3px 10px;">${t.subject || ''}</span>`;
+    <span class="ctag ctag-level" style="font-size:11px;padding:3px 10px;">${escBB(t.subject || '')}</span>`;
   
   const contactStr = t.contact || '';
   const isEmail = contactStr.includes('@');
@@ -846,19 +855,19 @@ async function renderSeekers() {
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
         <div>
           <div class="seeker-name">👨‍👩‍👧 ${r.parent_name || 'Ebeveyn'}</div>
-          <div class="seeker-subject">${r.subject || ''}${r.level ? ' · ' + r.level : ''}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${r.city || 'Belirtilmemiş'}</div>
+          <div class="seeker-subject">${escBB(r.subject || '')}${r.level ? ' · ' + r.level : ''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${escBB(r.city || 'Belirtilmemiş')}</div>
         </div>
         ${r.budget ? `<div style="font-size:12px;font-weight:700;color:var(--indigo);white-space:nowrap;">${r.budget}</div>` : ''}
       </div>
-      ${r.description ? `<div class="seeker-desc">${r.description}</div>` : ''}
+      ${r.description ? `<div class="seeker-desc">${escBB(r.description)}</div>` : ''}
       <div style="display:flex;gap:5px;flex-wrap:wrap;">
-        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(67,56,202,.07);color:var(--indigo);">${r.subject || ''}</span>
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(67,56,202,.07);color:var(--indigo);">${escBB(r.subject || '')}</span>
         ${r.level ? `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--warm);color:var(--muted);">${r.level}</span>` : ''}
       </div>
       <div class="seeker-footer">
         <span style="font-size:11px;color:var(--sand);">${new Date(r.created_at || Date.now()).toLocaleDateString('tr-TR')}</span>
-        <button class="contact-seeker-btn" data-contact="${r.contact || ''}" data-subject="${r.subject || ''}" onclick="contactSeekerRequest(this)">İletişim →</button>
+        <button class="contact-seeker-btn" data-contact="${escBB(r.contact || '')}" data-subject="${escBB(r.subject || '')}" onclick="contactSeekerRequest(this)">İletişim →</button>
       </div>
     </div>`).join('');
 }

@@ -624,6 +624,15 @@
 </div>
 
 <script type="module">
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   import { createClient } from '/supabase.js';
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SUPABASE_ANON = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
@@ -1314,11 +1323,11 @@
         return;
       }
       container.innerHTML = results.map(u => {
-        const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+        const name = `${escBB(u.first_name || '')} ${escBB(u.last_name || '')}`.trim();
         return `
           <div class="user-result" onclick="window.startConv('${u.id}')">
-            <div class="ur-avatar" style="background:${colorFor(u.id)}">${initialsFor(u.first_name, u.last_name)}</div>
-            <div><div class="ur-name">${name}</div><div class="ur-city">📍 ${u.city || 'Konum belirtilmedi'}</div></div>
+            <div class="ur-avatar" style="background:${colorFor(u.id)}">${escBB(initialsFor(u.first_name, u.last_name))}</div>
+            <div><div class="ur-name">${escBB(name)}</div><div class="ur-city">📍 ${escBB(u.city || 'Konum belirtilmedi')}</div></div>
           </div>`;
       }).join('');
     }, 300);

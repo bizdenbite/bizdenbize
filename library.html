@@ -610,6 +610,15 @@
 </div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   // ── RESOURCE DATA ──
   // Admin-managed. Add new resources to this array.
   let resources = [];
@@ -701,11 +710,11 @@
           <div class="card-top">
             <div class="card-type-icon ${r.type}">${t.icon}</div>
             <div class="card-meta">
-              <div class="card-title">${r.title}</div>
+              <div class="card-title">${escBB(r.title)}</div>
               <div class="card-source">${r.source}</div>
             </div>
           </div>
-          <div class="card-desc">${r.desc}</div>
+          <div class="card-desc">${escBB(r.desc)}</div>
           <div class="card-tags">
             <span class="card-tag cat">${getCatName(r.cat)}</span>
             ${r.lastVerified

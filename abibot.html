@@ -1000,6 +1000,15 @@
 </div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   // Global state variables
   var lastQuestion = '';
   var lastAnswer = '';
@@ -1174,7 +1183,7 @@
           <div class="msg" style="margin:0;" data-review-id="${review.id}" id="review-${review.id}">
             <div class="msg-body" style="max-width:100%">
               <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#1E7B4B;margin-bottom:6px;">
-                ${cat.icon} ${cat.name} · Uzman Yanıtı · ${date}
+                ${cat.icon} ${escBB(cat.name)} · Uzman Yanıtı · ${date}
               </div>
               <div style="background:rgba(30,123,75,.05);border:1px solid rgba(30,123,75,.25);border-left:3px solid #1E7B4B;border-radius:4px 14px 14px 14px;padding:14px 16px;font-size:14px;line-height:1.65;color:var(--ink);">
                 <div style="font-size:12px;color:var(--muted);border-bottom:1px solid rgba(30,123,75,.15);padding-bottom:10px;margin-bottom:12px;">

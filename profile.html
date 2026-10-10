@@ -310,6 +310,15 @@
 <div id="toast"></div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
   const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
@@ -438,7 +447,7 @@
     const av = document.getElementById('avatar-display');
     if (av) {
       if (profile.avatar_url) {
-        av.innerHTML = `<img src="${profile.avatar_url}" alt="${name}">`;
+        av.innerHTML = `<img src="${profile.avatar_url}" alt="${escBB(name)}">`;
       } else {
         av.textContent = ini;
         av.style.background = color;
@@ -614,7 +623,7 @@
                 <span style="font-size:11px;font-weight:700;color:var(--navy);">${item.typeLabel}</span>
                 ${badgeHtml}
               </div>
-              <div style="font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+              <div style="font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escBB(item.title)}</div>
               <div style="font-size:11px;color:var(--muted);margin-top:2px;">Tarih: ${formattedDate}</div>
             </div>
             <button onclick="deleteMyListing('${item.table}', '${item.id}', this)" style="padding:6px 12px;background:none;border:1px solid rgba(212,43,43,.3);border-radius:7px;font-size:11px;color:var(--red);cursor:pointer;font-weight:600;flex-shrink:0;">Sil</button>

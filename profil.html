@@ -114,6 +114,15 @@
 </div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
   const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
@@ -245,8 +254,8 @@
       swapRating ? `<span class="badge badge-verified">🏠 ${swapRating.avg_rating} (${swapRating.review_count})</span>` : ''
     ].filter(Boolean).join('');
 
-    const langTags = (p.languages||[]).map(l => `<span class="tag">${LANG_NAMES[l]||l}</span>`).join('');
-    const intTags  = (p.interests ||[]).map(i => `<span class="tag">${INT_NAMES[i] ||i}</span>`).join('');
+    const langTags = (p.languages||[]).map(l => `<span class="tag">${escBB(LANG_NAMES[l]||l)}</span>`).join('');
+    const intTags  = (p.interests ||[]).map(i => `<span class="tag">${escBB(INT_NAMES[i] ||i)}</span>`).join('');
 
     const listingHtml = listings.length ? listings.map(l => `
       <div class="listing-item">
@@ -289,10 +298,10 @@
           <div class="hero-top">
             <div class="hero-avatar" style="background:${color};">${avatarHtml}</div>
             <div class="hero-info">
-              <div class="hero-name">${name}</div>
-              <div class="hero-username">@${p.username||'—'}</div>
+              <div class="hero-name">${escBB(name)}</div>
+              <div class="hero-username">@${escBB(p.username||'—')}</div>
               <div class="hero-badges">${badges || '<span style="font-size:12px;color:rgba(255,255,255,.3);">Rozet yok</span>'}</div>
-              <div class="hero-city">📍 ${p.city||''}${p.country ? ', '+p.country : ''}</div>
+              <div class="hero-city">📍 ${escBB(p.city||'')}${p.country ? ', '+p.country : ''}</div>
             </div>
           </div>
         </div>
@@ -327,7 +336,7 @@
           ${p.bio ? `
           <div class="card">
             <div class="card-title">👤 Hakkında</div>
-            <div class="bio-text">${p.bio}</div>
+            <div class="bio-text">${escBB(p.bio)}</div>
           </div>` : ''}
 
           ${langTags ? `
@@ -362,7 +371,7 @@
             <div class="card-title">📅 Üye Bilgisi</div>
             <div style="font-size:13px;color:var(--muted);line-height:2;">
               <div>📅 Katılım: <strong style="color:var(--ink);">${since}</strong></div>
-              <div>🌍 Konum: <strong style="color:var(--ink);">${p.city||'—'}</strong></div>
+              <div>🌍 Konum: <strong style="color:var(--ink);">${escBB(p.city||'—')}</strong></div>
               <div>💬 Dil: <strong style="color:var(--ink);">${(p.languages||[]).length} dil</strong></div>
             </div>
           </div>
@@ -374,7 +383,7 @@
     document.getElementById('page-content').innerHTML = `
       <div class="error-state">
         <div style="font-size:48px;margin-bottom:16px;">🔍</div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;">${title}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;">${escBB(title)}</div>
         <div style="font-size:14px;color:var(--muted);">${sub}</div>
         <a href="mahallem.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--deep, #002266);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">← Mahallem'e Dön</a>
       </div>`;

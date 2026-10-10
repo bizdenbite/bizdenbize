@@ -297,6 +297,15 @@
 
 
 <script type="module">
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   import { createClient } from '/supabase.js';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
@@ -420,9 +429,18 @@
     return `${d} gün önce`;
   }
 
+  // Maskiert HTML-Sonderzeichen. Muss VOR jeder Umwandlung in HTML laufen.
+  function escUz(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ZUERST maskieren, DANN Zeilenumbrueche. Vorher ging der Fragetext eines
+  // Mitglieds unveraendert als HTML in die Seite des Uzman.
   function myMdToHtml(text) {
     if (!text) return '';
-    return text.replace(/\n/g, '<br>');
+    return escUz(text).replace(/\n/g, '<br>');
   }
 
   // AbiBOT's stored answers contain real markdown (headers, bold, bullet lists) —
@@ -511,11 +529,11 @@
       </div>
       <div style="margin-bottom:10px;">
         <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Unvan</div>
-        <input id="exp-title" type="text" value="${(e.title || '').replace(/"/g, '&quot;')}" maxlength="80" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;">
+        <input id="exp-title" type="text" value="${escUz(e.title || '')}" maxlength="80" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;">
       </div>
       <div style="margin-bottom:12px;">
         <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Tanıtım</div>
-        <textarea id="exp-bio" rows="4" maxlength="600" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;">${(e.bio || e.expert_bio || '')}</textarea>
+        <textarea id="exp-bio" rows="4" maxlength="600" style="width:100%;padding:9px 12px;border:1.5px solid var(--sand);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;">${escUz(e.bio || e.expert_bio || '')}</textarea>
       </div>
       <div id="exp-msg" style="display:none;font-size:12px;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;">
@@ -790,7 +808,7 @@
 
     container.innerHTML = list.map(r => {
       const user = r.profiles;
-      const userName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'Kullanıcı';
+      const userName = user ? `${escBB(user.first_name || '')} ${escBB(user.last_name || '')}`.trim() : 'Kullanıcı';
       const isMine = r.expert_id === myExpertId;
       const isAnswered = r.status === 'answered' || r.status === 'closed';
       const statusClass = `owner-status-${r.status === 'in_review' ? 'assigned' : r.status}`;
@@ -821,7 +839,7 @@
       return `
         <div class="owner-card ${r.status === 'pending' ? 'urgent' : ''}" id="owner-card-${r.id}">
           <div class="owner-card-top">
-            <div class="owner-card-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${OWNER_CAT_ICONS[r.category] || ''} ${r.category}</span></div>
+            <div class="owner-card-user">${escBB(userName)} <span style="font-weight:400;color:var(--muted)">· ${OWNER_CAT_ICONS[r.category] || ''} ${r.category}</span></div>
             <span class="owner-card-status ${statusClass}">${OWNER_STATUS_LABELS[r.status] || r.status}</span>
             <span class="owner-card-time">${myTimeAgo(r.created_at)}</span>
           </div>
@@ -963,7 +981,7 @@
     ).join('');
 
     const languages = (expert.languages || []).map(l =>
-      `<span class="badge badge-lang">${LANG_FLAGS[l] || ''} ${l.toUpperCase()}</span>`
+      `<span class="badge badge-lang">${LANG_FLAGS[l] || ''} ${escUz(String(l).toUpperCase())}</span>`
     ).join('');
 
     const verifiedBadge = expert.is_verified
@@ -999,14 +1017,14 @@
       <div class="hero">
         <div class="hero-avatar" style="background:${avatarColor};">${initials}</div>
         <div class="hero-info">
-          <div class="hero-name">${name}</div>
-          <div class="hero-title">${expert.title || 'Uzman'}</div>
+          <div class="hero-name">${escUz(name)}</div>
+          <div class="hero-title">${escBB(expert.title || 'Uzman')}</div>
           <div class="hero-badges">
             ${verifiedBadge}
             ${categories}
             ${languages}
           </div>
-          ${expert.expert_bio ? `<div class="hero-bio">${expert.expert_bio}</div>` : ''}
+          ${expert.expert_bio ? `<div class="hero-bio">${escBB(expert.expert_bio)}</div>` : ''}
           <div class="hero-cta" id="hero-cta-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
             <a href="abibot.html" class="btn-primary">🤖 AbiBOT'ta Soru Sor →</a>
             <button onclick="openAskModal()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--deep, #002266);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;" onmouseover="this.style.background='var(--navy)'" onmouseout="this.style.background='var(--ink)'">
@@ -1063,7 +1081,7 @@
     document.getElementById('page-content').innerHTML = `
       <div class="error-state">
         <div class="error-icon">🔍</div>
-        <div class="error-title">${title}</div>
+        <div class="error-title">${escUz(title)}</div>
         <div class="error-sub">${sub}</div>
         <a href="uzmanlar.html" class="btn-primary" style="display:inline-flex;margin-top:20px;">← Tüm Uzmanlara Dön</a>
       </div>`;

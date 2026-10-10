@@ -407,6 +407,15 @@
 </div>
 
 <script type="module">
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   import { createClient } from '/supabase.js';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
@@ -496,14 +505,14 @@
       grid.innerHTML = `
         <div class="empty">
           <div class="empty-icon">🔍</div>
-          <div class="empty-title">${q ? `"${q}" için uzman bulunamadı` : 'Bu kategoride uzman yok'}</div>
+          <div class="empty-title">${q ? `"${escBB(q)}" için uzman bulunamadı` : 'Bu kategoride uzman yok'}</div>
           <div class="empty-sub">${q ? 'Farklı bir arama deneyin.' : 'Başka bir kategori deneyin.'}</div>
         </div>`;
       return;
     }
 
     grid.innerHTML = experts.map(e => {
-      const name = `${e.first_name || ''} ${e.last_name || ''}`.trim() || 'Uzman';
+      const name = `${escBB(e.first_name || '')} ${escBB(e.last_name || '')}`.trim() || 'Uzman';
       const initials = ((e.first_name?.[0] || '') + (e.last_name?.[0] || '')).toUpperCase() || 'U';
       const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
       const avatarColor = AVATAR_COLORS[colorIdx];
@@ -529,14 +538,14 @@
               <div class="ec-avatar" style="background:${avatarColor};">${initials}</div>
               <div>
                 <div class="ec-name">${name}</div>
-                <div class="ec-title">${e.title || 'Uzman'}</div>
+                <div class="ec-title">${escBB(e.title || 'Uzman')}</div>
               </div>
             </div>
             <div class="ec-badges">
               ${verifiedBadge}
               ${categories}
             </div>
-            ${e.expert_bio ? `<div class="ec-bio">${e.expert_bio}</div>` : ''}
+            ${e.expert_bio ? `<div class="ec-bio">${escBB(e.expert_bio)}</div>` : ''}
           </div>
           <div class="ec-bottom">
             <div class="ec-stats">

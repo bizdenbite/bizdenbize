@@ -491,6 +491,15 @@
 </div>
 
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
@@ -719,12 +728,12 @@ function render() {
     const t = tips[activeSection];
     body.innerHTML = `
       <div class="section-header"><div class="section-title">${titles[activeSection]}</div><div class="section-sub">${subs[activeSection]}</div></div>
-      <div class="tip-box ${t.type}"><div class="tip-icon">${t.icon}</div><div><div class="tip-title">${t.title}</div><div class="tip-text">${t.text}</div></div></div>
+      <div class="tip-box ${t.type}"><div class="tip-icon">${t.icon}</div><div><div class="tip-title">${escBB(t.title)}</div><div class="tip-text">${escBB(t.text)}</div></div></div>
       <div class="guides-grid">${data.map(g => `
         <a class="guide-card" href="${g.url}">
           <div class="guide-icon">${g.emoji}</div>
-          <div class="guide-title">${g.title}</div>
-          <div class="guide-desc">${g.desc}</div>
+          <div class="guide-title">${escBB(g.title)}</div>
+          <div class="guide-desc">${escBB(g.desc)}</div>
           <div class="guide-footer">
             <span class="guide-tag">${g.tag}</span>
             <span style="font-size:13px;color:var(--sand);">→</span>
@@ -785,9 +794,9 @@ async function renderDoctors() {
       <div class="doctor-top">
         <div class="doctor-avatar">👨‍⚕️</div>
         <div class="doctor-info">
-          <div class="doctor-name">${d.name}</div>
-          <div class="doctor-spec">${d.spec||d.specialty||''}</div>
-          <div class="doctor-location">📍 ${d.city}</div>
+          <div class="doctor-name">${escBB(d.name)}</div>
+          <div class="doctor-spec">${escBB(d.spec||d.specialty||'')}</div>
+          <div class="doctor-location">📍 ${escBB(d.city)}</div>
         </div>
       </div>
       <div class="doctor-tags">
@@ -799,7 +808,7 @@ async function renderDoctors() {
         ? `<div class="doctor-rating">⭐ ${d.rating || '—'} <span style="color:var(--sand);">(${d.reviews||d.review_count} değerlendirme)</span></div>`
         : `<div class="doctor-rating" style="color:var(--muted);font-size:12px;">Henüz topluluk değerlendirmesi yok</div>`}
       <div class="doctor-footer">
-        <span style="font-size:12px;color:var(--muted);">📍 ${d.city}</span>
+        <span style="font-size:12px;color:var(--muted);">📍 ${escBB(d.city)}</span>
         <button class="doctor-contact-btn" onclick="event.stopPropagation();openDoctorById(${d.id})">İletişim →</button>
       </div>
       <div class="disclaimer">⚠️ BizdenBize tıbbi tavsiye vermez. Tanı ve tedavi için doktorunuza başvurun.</div>
@@ -817,9 +826,9 @@ function openDoctorById(id) {
   document.getElementById('dm-spec').textContent = d.spec || d.specialty || '';
   document.getElementById('dm-desc').textContent = d.desc || d.description || '';
   document.getElementById('dm-info').innerHTML = `
-    <div class="info-box"><div class="info-box-label">Şehir</div><div class="info-box-val">📍 ${d.city}</div></div>
+    <div class="info-box"><div class="info-box-label">Şehir</div><div class="info-box-val">📍 ${escBB(d.city)}</div></div>
     <div class="info-box"><div class="info-box-label">Sigorta</div><div class="info-box-val">${d.insurance || '—'}</div></div>
-    <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${d.lang || (d.languages||[]).join(' / ') || '—'}</div></div>
+    <div class="info-box"><div class="info-box-label">Dil</div><div class="info-box-val">🌐 ${escBB(d.lang || (d.languages||[]).join(' / ') || '—')}</div></div>
     <div class="info-box"><div class="info-box-label">Puan</div><div class="info-box-val">⭐ ${d.rating || '—'} (${d.reviews||d.review_count||0})</div></div>`;
   document.getElementById('dm-tags').innerHTML = `<span class="doctor-tag tag-turkish" style="font-size:11px;padding:3px 10px;">🇹🇷 Türkçe</span>${d.verified ? '<span class="doctor-tag tag-verified" style="font-size:11px;padding:3px 10px;">✅ Doğrulandı</span>' : ''}`;
   // Bewusst KEINE gespeicherte Website oder Adresse: eine Praxis zieht um

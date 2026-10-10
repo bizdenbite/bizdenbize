@@ -822,7 +822,7 @@
   function avatar(first, last, size = 30) {
     const ini = ((first?.[0]||'')+(last?.[0]||'')).toUpperCase() || '?';
     const col = COLORS[ini.charCodeAt(0) % COLORS.length];
-    return `<div class="mini-avatar" style="width:${size}px;height:${size}px;background:${col};font-size:${size*0.38}px;">${ini}</div>`;
+    return `<div class="mini-avatar" style="width:${size}px;height:${size}px;background:${col};font-size:${size*0.38}px;">${escH(ini)}</div>`;
   }
 
   function fmtDate(d) {
@@ -949,9 +949,9 @@
       document.getElementById('recent-users-tbody').innerHTML = recent.map(u => `
         <tr>
           <td><div class="user-cell">${avatar(u.first_name, u.last_name)}
-            <div><div style="font-weight:600;">${u.first_name||''} ${u.last_name||''}</div></div>
+            <div><div style="font-weight:600;">${escH(u.first_name||'')} ${escH(u.last_name||'')}</div></div>
           </div></td>
-          <td>${u.city || '—'}</td>
+          <td>${escH(u.city || '—')}</td>
           <td>${fmtDate(u.created_at)}</td>
           <td>
             ${u.is_admin ? '<span class="badge badge-red">Admin</span>' : ''}
@@ -978,7 +978,7 @@
         allUsers = Array.isArray(users) ? users.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
         allUsersLoaded = true;
       } catch(e) {
-        document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="7">Yüklenemedi: ${e.message}</td></tr>`;
+        document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="7">Yüklenemedi: ${escH(e.message)}</td></tr>`;
         return;
       }
     }
@@ -986,7 +986,7 @@
   }
 
   function filterUsers(q) {
-    const filtered = q ? allUsers.filter(u => `${u.first_name||''} ${u.last_name||''} ${u.city||''} ${u.username||''} ${u.email||''}`.toLowerCase().includes(q.toLowerCase())) : allUsers;
+    const filtered = q ? allUsers.filter(u => `${escH(u.first_name||'')} ${escH(u.last_name||'')} ${u.city||''} ${u.username||''} ${escH(u.email||'')}`.toLowerCase().includes(q.toLowerCase())) : allUsers;
     renderUsers(filtered);
   }
 
@@ -997,12 +997,12 @@
       <tr>
         <td><div class="user-cell">${avatar(u.first_name, u.last_name)}
           <div>
-            <div style="font-weight:600;">${u.first_name||''} ${u.last_name||''}</div>
-            <div style="font-size:11px;color:var(--muted);">@${u.username||'—'}</div>
+            <div style="font-weight:600;">${escH(u.first_name||'')} ${escH(u.last_name||'')}</div>
+            <div style="font-size:11px;color:var(--muted);">@${escH(u.username||'—')}</div>
           </div>
         </div></td>
-        <td>${u.email||'—'} <button onclick="copyText('${u.email||''}')" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--muted);" title="Kopyala">📋</button></td>
-        <td style="font-size:12px;color:var(--muted);">${u.city||'—'}</td>
+        <td>${escH(u.email||'—')} <button onclick="copyText('${escH(u.email||'')}')" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--muted);" title="Kopyala">📋</button></td>
+        <td style="font-size:12px;color:var(--muted);">${escH(u.city||'—')}</td>
         <td style="font-weight:600;">${u.abibot_credits||0}</td>
         <td>
           ${u.status === 'approved'  ? '<span class="badge badge-green">✓ Onaylı</span> '
@@ -1028,7 +1028,7 @@
             ${(u.status === 'approved' || u.status === 'pending')
                 ? `<button class="btn btn-sm btn-red" onclick="banMember('${u.id}')">🚫 Engelle</button>` : ''}
             <button class="btn btn-sm ${u.is_premium ? 'btn-muted' : 'btn-gold'}" onclick="togglePremium('${u.id}', ${u.is_premium})">${u.is_premium ? 'Premium Kaldır' : '⭐ Premium'}</button>
-            <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}', '${(`${u.first_name||''} ${u.last_name||''}`).trim()}')">🗑️ Sil</button>
+            <button class="btn btn-sm btn-red" onclick="confirmDirectDelete('${u.id}')">🗑️ Sil</button>
           </div>
         </td>
       </tr>`).join('') : `<tr class="loading-row"><td colspan="7">Kullanıcı bulunamadı.</td></tr>`;
@@ -1108,8 +1108,17 @@
     ['other',        'Diğer']
   ];
 
-  function confirmDirectDelete(id, name) {
+  // Der Name stand frueher als zweites Argument IM onclick-Attribut:
+  //   onclick="confirmDirectDelete('…', 'Vorname Nachname')"
+  // Ein selbst gewaehlter Name mit einem Apostroph darin haette die
+  // JS-Zeichenkette beendet und eigenen Code angehaengt. Maskieren haette
+  // NICHT geholfen: Der Browser loest HTML-Maskierung im Attribut auf,
+  // BEVOR der JS-Parser es sieht — aus &#39; wird wieder '. Deshalb geht
+  // nur die Kennung in den Knopf, und der Name wird hier nachgeschlagen.
+  function confirmDirectDelete(id) {
     if (id === currentUserId) { toast('Kendi hesabınızı silemezsiniz.', false); return; }
+    const u = (Array.isArray(allUsers) ? allUsers : []).find(x => String(x.id) === String(id));
+    const name = u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—' : '—';
 
     const menu = DELETE_REASONS.map((r, i) => `${i + 1}. ${r[1]}`).join('\n');
     const pick = prompt(`"${name}" siliniyor.\n\nSilme nedeni (numara girin):\n${menu}`);
@@ -1161,8 +1170,8 @@
       const experts = await sb('expert_rating_summary?select=*');
       document.getElementById('experts-tbody').innerHTML = experts.length ? experts.map(e => `
         <tr>
-          <td><div class="user-cell">${avatar(e.first_name, e.last_name)}<div><div style="font-weight:600;">${e.first_name||''} ${e.last_name||''}</div><div style="font-size:11px;color:var(--muted);">${e.title||''}</div></div></div></td>
-          <td style="font-size:12px;color:var(--muted);">${(e.categories||[]).slice(0,2).join(', ')||'—'}</td>
+          <td><div class="user-cell">${avatar(e.first_name, e.last_name)}<div><div style="font-weight:600;">${escH(e.first_name||'')} ${escH(e.last_name||'')}</div><div style="font-size:11px;color:var(--muted);">${escH(e.title||'')}</div></div></div></td>
+          <td style="font-size:12px;color:var(--muted);">${escH((e.categories||[]).slice(0,2).join(', ')||'—')}</td>
           <td style="color:var(--gold);font-weight:700;">${e.avg_rating ? parseFloat(e.avg_rating).toFixed(1) + ' ★' : '—'}</td>
           <td>${e.total_responses||0}</td>
           <td>${e.is_active ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-red">Pasif</span>'}</td>
@@ -1182,10 +1191,10 @@
       document.getElementById('badge-expert-apps').textContent = apps.length || '0';
       document.getElementById('expert-apps-tbody').innerHTML = apps.length ? apps.map(a => `
         <tr>
-          <td><div class="user-cell">${avatar(a.profiles?.first_name, a.profiles?.last_name)}<div style="font-weight:600;">${a.profiles?.first_name||''} ${a.profiles?.last_name||''}</div></div></td>
-          <td>${a.title||'—'}</td>
-          <td style="font-size:12px;color:var(--muted);">${(a.categories||[]).join(', ')||'—'}</td>
-          <td style="font-size:12px;color:var(--muted);">${a.bio ? a.bio.substring(0,60)+'…' : '—'}</td>
+          <td><div class="user-cell">${avatar(a.profiles?.first_name, a.profiles?.last_name)}<div style="font-weight:600;">${escH(a.profiles?.first_name||'')} ${escH(a.profiles?.last_name||'')}</div></div></td>
+          <td>${escH(a.title||'—')}</td>
+          <td style="font-size:12px;color:var(--muted);">${escH((a.categories||[]).join(', ')||'—')}</td>
+          <td style="font-size:12px;color:var(--muted);">${escH(a.bio ? a.bio.substring(0,60)+'…' : '—')}</td>
           <td style="font-size:12px;color:var(--muted);">${fmtDate(a.created_at)}</td>
           <td>
             <button class="btn btn-sm btn-green" onclick="reviewExpertApplication('${a.id}', '${a.profile_id}', 'approved')">✓ Onayla</button>
@@ -1227,9 +1236,9 @@
         ? `<tr class="loading-row"><td colspan="5" style="color:var(--red);">İlanlar okunamadı: ${String(listings.__error).replace(/</g,'&lt;')}</td></tr>`
         : (listings.length ? listings.map(l => `
         <tr>
-          <td style="font-weight:600;">${l.title||'—'}${l.active === false ? ' <span class="badge badge-muted">🙈 Gizli</span>' : ''}</td>
-          <td><span class="badge badge-navy">${l.category||'—'}</span></td>
-          <td>${l.city || l.location || '—'}${l.price != null ? ` · <strong>${l.price} €</strong>` : ''}</td>
+          <td style="font-weight:600;">${escH(l.title||'—')}${l.active === false ? ' <span class="badge badge-muted">🙈 Gizli</span>' : ''}</td>
+          <td><span class="badge badge-navy">${escH(l.category||'—')}</span></td>
+          <td>${escH(l.city || l.location || '—')}${l.price != null ? ` · <strong>${escH(l.price)} €</strong>` : ''}</td>
           <td style="font-size:11px;color:var(--muted);">${fmtDate(l.created_at)}</td>
           <td>${l.active === false
                 ? `<button class="btn btn-sm btn-green" onclick="toggleListing('${l.id}', true)">↩︎ Geri getir</button>`
@@ -1238,10 +1247,10 @@
         </tr>`).join('') : `<tr class="loading-row"><td colspan="5">İlan bulunamadı.</td></tr>`);
 
       document.getElementById('swaps-tbody').innerHTML = swaps.length ? swaps.map(s => `
-        <tr><td>${s.city||'—'} → ${s.destination||'—'}</td><td>${s.status === 'approved' ? '<span class="badge badge-green">✓ Yayında</span>' : s.status === 'rejected' ? '<span class="badge badge-red">✕ Reddedildi</span>' : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>'}${s.active === false ? ' <span class="badge badge-muted">🙈 Sahibi gizledi</span>' : ''}</td><td>${s.rooms||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td>${s.status !== 'approved' ? `<button class="btn btn-sm btn-green" onclick="approveSwap('${s.id}')">✅ Onayla</button>` : `<button class="btn btn-sm btn-muted" onclick="unapproveSwap('${s.id}')">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
+        <tr><td>${escH(s.city||'—')} → ${escH(s.destination||'—')}</td><td>${s.status === 'approved' ? '<span class="badge badge-green">✓ Yayında</span>' : s.status === 'rejected' ? '<span class="badge badge-red">✕ Reddedildi</span>' : '<span class="badge badge-gold">⏳ Onay Bekliyor</span>'}${s.active === false ? ' <span class="badge badge-muted">🙈 Sahibi gizledi</span>' : ''}</td><td>${escH(s.rooms||'—')}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(s.created_at)}</td><td>${s.status !== 'approved' ? `<button class="btn btn-sm btn-green" onclick="approveSwap('${s.id}')">✅ Onayla</button>` : `<button class="btn btn-sm btn-muted" onclick="unapproveSwap('${s.id}')">🙈 Gizle</button>`} <button class="btn btn-sm btn-red" onclick="deleteContent('swap_offers','${s.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Kayıt bulunamadı.</td></tr>`;
 
       document.getElementById('reviews-tbody').innerHTML = reviews.length ? reviews.map(r => `
-        <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${r.comment||'—'}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
+        <tr><td>${r.reviewer_id ? r.reviewer_id.slice(0,8)+'…' : '—'}</td><td>${r.reviewee_id ? r.reviewee_id.slice(0,8)+'…' : '—'}</td><td style="color:var(--gold);">${'★'.repeat(r.rating)}</td><td>${escH(r.comment||'—')}</td><td style="font-size:11px;color:var(--muted);">${fmtDate(r.created_at)}</td><td><button class="btn btn-sm btn-red" onclick="deleteContent('swap_reviews','${r.id}')">🗑 Sil</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="6">Değerlendirme bulunamadı.</td></tr>`;
 
       document.getElementById('doctors-tbody').innerHTML = doctors.length ? doctors.map(d => `
         <tr><td style="font-weight:600;">${escH(d.name||'—')}${d.active === false ? ' <span class="badge badge-gold">⏳ Onay bekliyor</span>' : ' <span class="badge badge-green">✓ Yayında</span>'}</td><td>${escH(d.specialty||'—')}</td><td>${escH(d.city||'—')}</td><td>${escH((d.languages||[]).join(', ')||'—')}</td><td>${d.active === false
@@ -1257,12 +1266,12 @@
         return `
         <tr>
           <td>
-            <div style="font-weight:600;">${t.name||'—'}</div>
-            <div style="font-size:11px;color:var(--muted);">${t.contact||''}</div>
+            <div style="font-weight:600;">${escH(t.name||'—')}</div>
+            <div style="font-size:11px;color:var(--muted);">${escH(t.contact||'')}</div>
           </td>
-          <td style="font-size:12px;">${t.subject||'—'}</td>
-          <td>${t.city||'—'}</td>
-          <td>${t.price_label||'—'}</td>
+          <td style="font-size:12px;">${escH(t.subject||'—')}</td>
+          <td>${escH(t.city||'—')}</td>
+          <td>${escH(t.price_label||'—')}</td>
           <td>${statusBadge}</td>
           <td>
             <div class="actions">
@@ -1736,7 +1745,7 @@
       const notifs = await sb('notifications?select=*&type=eq.admin&order=created_at.desc&limit=8');
       const el = document.getElementById('notif-history');
       if (!notifs.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><div class="empty-text">Henüz bildirim gönderilmedi.</div></div>`; return; }
-      el.innerHTML = notifs.map(n => `<div style="padding:12px 0;border-bottom:1px solid var(--warm);"><div style="font-size:13px;font-weight:600;color:var(--ink);">${n.title}</div><div style="font-size:12px;color:var(--muted);">${n.body}</div><div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div></div>`).join('');
+      el.innerHTML = notifs.map(n => `<div style="padding:12px 0;border-bottom:1px solid var(--warm);"><div style="font-size:13px;font-weight:600;color:var(--ink);">${escH(n.title)}</div><div style="font-size:12px;color:var(--muted);">${escH(n.body)}</div><div style="font-size:11px;color:var(--sand);">${fmtDate(n.created_at)}</div></div>`).join('');
     } catch(e) {}
   }
 
@@ -1998,7 +2007,7 @@
     try {
       const rows = await sb('businesses?status=eq.'+(bizAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
       if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">İşletme yok.</p>'; return; }
-      list.innerHTML = rows.map(b => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${b.name}</div><div style="font-size:12px;color:var(--muted);">${b.city||''}</div><button class="btn btn-sm btn-green" onclick="bizApprove('${b.id}')">✅ Onayla</button></div>`).join('');
+      list.innerHTML = rows.map(b => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${escH(b.name)}</div><div style="font-size:12px;color:var(--muted);">${escH(b.city||'')}</div><button class="btn btn-sm btn-green" onclick="bizApprove('${b.id}')">✅ Onayla</button></div>`).join('');
     } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
   async function bizApprove(id){ await sb('businesses?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('Onaylandı ✓'); loadBusinesses(); }
@@ -2011,7 +2020,7 @@
     try {
       const rows = await sb('jobs?status=eq.'+(jobsAdminFilter==='approved'?'approved':'pending')+'&select=*&order=created_at.desc');
       if(!rows.length){ list.innerHTML='<p style="color:var(--muted);padding:20px;">İlan yok.</p>'; return; }
-      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${r.title}</div><button class="btn btn-sm btn-green" onclick="jobApprove('${r.id}')">✅ Onayla</button></div>`).join('');
+      list.innerHTML = rows.map(r => `<div class="card" style="margin-bottom:10px;padding:12px;"><div style="font-weight:700;">${escH(r.title)}</div><button class="btn btn-sm btn-green" onclick="jobApprove('${r.id}')">✅ Onayla</button></div>`).join('');
     } catch(e) { list.innerHTML = '<p style="color:var(--red);padding:20px;">Yüklenemedi.</p>'; }
   }
   async function jobApprove(id){ await sb('jobs?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status:'approved'})}); toast('İlan onaylandı ✓'); loadJobs(); }
@@ -2059,7 +2068,7 @@
   }
   function filterReports(filter) {
     _reportFilter = filter; const filtered = filter === 'all' ? allReports : allReports.filter(r => r.status === filter);
-    document.getElementById('reports-tbody').innerHTML = filtered.length ? filtered.map(r => `<tr><td>${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td><td>${r.type}</td><td>${r.reason}</td><td>${r.details||'—'}</td><td>${fmtDate(r.created_at)}</td><td>${r.status}</td><td><button class="btn btn-sm btn-green" onclick="updateReport('${r.id}','reviewed')">✓ İncele</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="7">Şikayet bulunamadı.</td></tr>`;
+    document.getElementById('reports-tbody').innerHTML = filtered.length ? filtered.map(r => `<tr><td>${r.reporter_id ? r.reporter_id.slice(0,8)+'…' : '—'}</td><td>${escH(r.type)}</td><td>${escH(r.reason)}</td><td>${escH(r.details||'—')}</td><td>${fmtDate(r.created_at)}</td><td>${escH(r.status)}</td><td><button class="btn btn-sm btn-green" onclick="updateReport('${r.id}','reviewed')">✓ İncele</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="7">Şikayet bulunamadı.</td></tr>`;
   }
   async function updateReport(id, status) {
     try { await sb(`reports?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status, reviewed_at: new Date().toISOString() }) }); loadReports(); toast('İncelendi.'); }
@@ -2070,7 +2079,7 @@
   async function loadDeletions() {
     try {
       const data = await sb('deletion_requests?select=*&order=created_at.desc'); allDeletions = data;
-      document.getElementById('deletions-tbody').innerHTML = data.length ? data.map(d => `<tr><td>${d.user_id?.slice(0,8)+'…'}</td><td>${d.reason||'—'}</td><td>${fmtDate(d.created_at)}</td><td>${d.status}</td><td><button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Talep bulunamadı.</td></tr>`;
+      document.getElementById('deletions-tbody').innerHTML = data.length ? data.map(d => `<tr><td>${escH(d.user_id?.slice(0,8)+'…')}</td><td>${escH(d.reason||'—')}</td><td>${fmtDate(d.created_at)}</td><td>${escH(d.status)}</td><td><button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Talep bulunamadı.</td></tr>`;
     } catch(e) {}
   }
   async function rejectDeletion(id) {

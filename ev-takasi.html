@@ -769,6 +769,15 @@
   </div>
 </div>
 <script>
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
 
 
 
@@ -931,7 +940,7 @@ function filterAndRenderSwaps() {
     const et = kindEmptyText();
     grid.innerHTML = anyInTab
       ? `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">Sonuç bulunamadı</div><p style="font-size:13px">Farklı filtreler deneyin.</p></div>`
-      : `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🏠</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">${et.title}</div><p style="font-size:13px;margin-bottom:16px">${et.body}</p><button onclick="openPostModal()" style="padding:11px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
+      : `<div style="text-align:center;padding:64px 24px;color:var(--muted);grid-column:1/-1"><div style="font-size:40px;margin-bottom:12px">🏠</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:8px">${escBB(et.title)}</div><p style="font-size:13px;margin-bottom:16px">${escBB(et.body)}</p><button onclick="openPostModal()" style="padding:11px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">+ İlan Ver</button></div>`;
     return;
   }
 
@@ -946,14 +955,14 @@ function filterAndRenderSwaps() {
       <div class="card-body">
         <div class="card-location">
           ${s.country ? `<span class="card-flag"><img src="https://flagcdn.com/20x15/${s.country.toLowerCase()}.png" alt="${s.country.toUpperCase()}" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;"></span>` : ''}
-          <span class="card-city">${s.city}</span>
+          <span class="card-city">${escBB(s.city)}</span>
           <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Google Haritalar'da aç" style="font-size:12px;text-decoration:none;margin-left:2px;">🗺️</a>
         </div>
         ${s.listing_kind === 'seeking' ? `<div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:2px;">🔎 KONAKLAMA ARIYOR</div>` : ''}
         <div class="card-wants">
           <span>${s.destination ? (s.listing_kind === 'seeking' ? 'Gitmek istediği yer:' : 'Gitmek istiyor:') : ''}</span>
           <span class="card-wants-arrow">${s.destination ? '→' : ''}</span>
-          <span class="card-wants-dest">${destText(s)}</span>
+          <span class="card-wants-dest">${escBB(destText(s))}</span>
         </div>
         <div class="card-details">
           <span class="card-detail-tag">${HOME_TYPE_LABELS[s.home_type] || s.home_type}</span>
@@ -962,7 +971,7 @@ function filterAndRenderSwaps() {
           <span class="card-detail-tag">${s.availability_type === 'anytime' ? '🗓️ Yıl boyu — tarih talebe göre' : '📅 ' + formatDate(s.available_from)}</span>
           ${s.suggested_duration ? `<span class="card-detail-tag">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</span>` : ''}
         </div>
-        ${s.description ? `<div class="card-desc">${s.description}</div><div onclick="event.stopPropagation()" style="margin:2px 0 4px;">${mhTranslateMenuHtml('.card-desc')}</div>` : ""}
+        ${s.description ? `<div class="card-desc">${escBB(s.description)}</div><div onclick="event.stopPropagation()" style="margin:2px 0 4px;">${mhTranslateMenuHtml('.card-desc')}</div>` : ""}
         <div class="card-footer">
           <div class="card-user">
             <div class="card-avatar">${s.user_name ? s.user_name.split(" ").map(n=>n[0]).join("").slice(0,2) : "??"}</div>
@@ -1000,7 +1009,7 @@ function openDetail(id) {
   document.getElementById('d-img').innerHTML = `<div style="font-size:72px">${"🏠"}</div>${s.verified ? '<div class="detail-verified">✅ Doğrulanmış Üye</div>' : ''}<button class="detail-close" onclick="closeDetailModal()">×</button>`;
   document.getElementById('d-city').innerHTML =
     (s.country ? `<img src="https://flagcdn.com/20x15/${s.country.toLowerCase()}.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:6px;">` : '')
-    + `${s.city} <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;font-weight:600;color:var(--teal);text-decoration:none;margin-left:8px;white-space:nowrap;">🗺️ Haritada gör</a>`;
+    + `${escBB(s.city)} <a href="${swapMapsUrl(s)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;font-weight:600;color:var(--teal);text-decoration:none;margin-left:8px;white-space:nowrap;">🗺️ Haritada gör</a>`;
   document.getElementById('d-dest-label').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest-arrow').style.display = s.destination ? 'inline' : 'none';
   document.getElementById('d-dest').textContent = destText(s);
@@ -1016,7 +1025,7 @@ function openDetail(id) {
     <div class="info-box"><div class="info-box-label">Aile</div><div class="info-box-val">👨‍👩‍👧 ${s.family_size}</div></div>
     ${s.suggested_duration ? `<div class="info-box"><div class="info-box-label">Önerilen Süre</div><div class="info-box-val">⏱️ ${DURATION_LABELS[s.suggested_duration] || s.suggested_duration}</div></div>` : ''}
     <div class="info-box"><div class="info-box-label">İlan Sahibi</div><div class="info-box-val">${s.user_name}${rating ? ` · ⭐ ${rating.avg_rating} (${rating.review_count})` : ''}</div></div>
-    <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + s.destination : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
+    <div class="info-box"><div class="info-box-label">${s.destination ? 'Gitmek İstiyor' : 'Takas Türü'}</div><div class="info-box-val">${s.destination ? '→ ' + escBB(s.destination) : '🪙 Sadece Ev Sahipliği (Puan)'}</div></div>`;
   const msgBtn = document.getElementById('d-msg-btn');
   const waBtn = document.getElementById('d-wa-btn');
   const waMessage = s.destination
@@ -1499,7 +1508,7 @@ async function openRequestModal(offer) {
   if (gate.pending.length) {
     showReviewToast(`📝 ${gate.pending.length} geçmiş takas deneyiminizi henüz değerlendirmediniz. Taleplerim'den değerlendirebilirsiniz.`);
   }
-  document.getElementById('rq-host-info').innerHTML = `<strong>${offer.user_name}</strong>'in ${offer.city} şehrindeki evi için talep gönderiyorsunuz.`;
+  document.getElementById('rq-host-info').innerHTML = `<strong>${escBB(offer.user_name)}</strong>'in ${escBB(offer.city)} şehrindeki evi için talep gönderiyorsunuz.`;
   document.getElementById('rq-checkin').value = '';
   document.getElementById('rq-checkout').value = '';
   const anytime = offer.availability_type === 'anytime' || !offer.available_from || !offer.available_to;
@@ -1554,7 +1563,7 @@ async function messageHostAboutRequest(offer, checkIn, checkOut, nights, note) {
   if (!convId) throw new Error('Konuşma oluşturulamadı');
   const lines = [
     '📅 Konaklama talebi gönderdim.',
-    `Ev: ${offer.city}`,
+    `Ev: ${escBB(offer.city)}`,
     `Tarihler: ${formatDate(checkIn)} – ${formatDate(checkOut)} (${nights} gece)`,
     `Puan: ${nights}`,
     note ? `Notum: ${note}` : null,

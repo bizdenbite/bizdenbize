@@ -321,6 +321,15 @@
 </style>
 
 <script type="module">
+  // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
+  // Mitgliedertexte (Namen, Titel, Beschreibungen) gingen vorher unveraendert
+  // in die Seite und konnten dort eigenes HTML/JS mitbringen.
+  function escBB(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   import { createClient } from '/supabase.js';
 
   const SUPABASE_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
@@ -432,7 +441,7 @@
     section.style.display = 'block';
     list.innerHTML = pending.map(r => {
       const expert = allExperts.find(e => e.id === r.expert_id);
-      const expertName = expert ? `${expert.profiles?.first_name || ''} ${expert.profiles?.last_name || ''}`.trim() : 'Bilinmeyen uzman';
+      const expertName = expert ? `${escBB(expert.profiles?.first_name || '')} ${escBB(expert.profiles?.last_name || '')}`.trim() : 'Bilinmeyen uzman';
       const snippet = (r.question || '').slice(0, 90) + (r.question?.length > 90 ? '…' : '');
       return `
         <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--white);border:1px solid var(--sand);border-radius:10px;flex-wrap:wrap;">
@@ -483,11 +492,11 @@
       <div style="padding:8px 0;border-bottom:1px solid var(--warm);">
         <div style="display:flex;align-items:center;gap:8px;">
           <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
-            ${((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase()}
+            ${escUz(((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase())}
           </div>
           <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.profiles?.first_name} ${e.profiles?.last_name}</div>
-            <div style="font-size:10px;color:var(--muted);">${e.title || ''}</div>
+            <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escBB(e.profiles?.first_name)} ${escBB(e.profiles?.last_name)}</div>
+            <div style="font-size:10px;color:var(--muted);">${escBB(e.title || '')}</div>
           </div>
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
         </div>
@@ -508,9 +517,20 @@
   }
 
 
+  // Maskiert HTML-Sonderzeichen. Muss VOR jeder Markdown-Umwandlung laufen.
+  function escUz(v) {
+    return String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ZUERST maskieren, DANN Markdown. Vorher lief der Rohtext direkt durch die
+  // Ersetzungen: Wer "<img src=x onerror=…>" in seine Frage schrieb, bekam das
+  // im Uzman-Panel ausgefuehrt — mit der Sitzung des Uzman.
+  // blog-post.html macht es richtig: esc(raw) als allererster Schritt.
   function mdToHtml(text) {
     if (!text) return '';
-    return text
+    return escUz(text)
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/##\s*(.*?)\n/g, '<strong style="display:block;margin:8px 0 4px">$1</strong>')
@@ -539,14 +559,14 @@
 
     container.innerHTML = reviews.map(r => {
       const user = r.profiles;
-      const userName = user ? `${user.first_name} ${user.last_name}` : 'Kullanıcı';
+      const userName = user ? `${escBB(user.first_name)} ${escBB(user.last_name)}` : 'Kullanıcı';
       const timeAgo = getTimeAgo(r.created_at);
       const statusClass = `status-${r.status === 'in_review' ? 'assigned' : r.status}`;
       const isAnswered = r.status === 'answered' || r.status === 'closed';
 
       const assignedExpert = r.expert_id ? allExperts.find(e => e.id === r.expert_id) : null;
       const expertName = assignedExpert
-        ? `${assignedExpert.profiles?.first_name || ''} ${assignedExpert.profiles?.last_name || ''}`.trim()
+        ? `${escBB(assignedExpert.profiles?.first_name || '')} ${escBB(assignedExpert.profiles?.last_name || '')}`.trim()
         : null;
       const expertLabel = expertName
         ? `<span style="font-size:11px;font-weight:600;color:var(--navy);background:rgba(27,58,140,.08);padding:2px 9px;border-radius:20px;flex-shrink:0;">👨‍⚖️ ${expertName}</span>`
@@ -557,7 +577,7 @@
           <div class="rc-header" onclick="toggleCard('${r.id}')">
             <div class="rc-cat" style="background:${CAT_COLORS[r.category] || '#f5f5f5'}">${CAT_ICONS[r.category] || '❓'}</div>
             <div class="rc-info">
-              <div class="rc-user">${userName} <span style="font-weight:400;color:var(--muted)">· ${user?.city || ''}</span></div>
+              <div class="rc-user">${escBB(userName)} <span style="font-weight:400;color:var(--muted)">· ${escBB(user?.city || '')}</span></div>
               <div class="rc-meta">
                 <span>${r.category}</span>
                 <span>·</span>
@@ -585,7 +605,7 @@
                 <div class="rc-rating-display">
                   <span class="rc-rating-stars">${'⭐'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
                   <span class="rc-rating-score">${r.rating}/5</span>
-                  ${r.rating_comment ? `<span class="rc-rating-comment">"${r.rating_comment}"</span>` : ''}
+                  ${r.rating_comment ? `<span class="rc-rating-comment">"${escUz(r.rating_comment)}"</span>` : ''}
                 </div>` : `<div class="rc-no-rating">Henüz değerlendirilmedi</div>`
               }
             ` : `
@@ -595,7 +615,7 @@
                   <select class="assign-select" id="assign-${r.id}">
                     <option value="">Uzmana Ata...</option>
                     ${allExperts.filter(e => e.is_active && (!e.categories?.length || e.categories.includes(r.category))).map(e =>
-                      `<option value="${e.id}" ${e.id === r.expert_id ? 'selected' : ''}>${e.profiles?.first_name} ${e.profiles?.last_name} (${e.title || 'Uzman'})</option>`
+                      `<option value="${e.id}" ${e.id === r.expert_id ? 'selected' : ''}>${escBB(e.profiles?.first_name)} ${escBB(e.profiles?.last_name)} (${escBB(e.title || 'Uzman')})</option>`
                     ).join('')}
                   </select>
                   <button class="assign-btn" onclick="assignExpert('${r.id}')">Ata</button>
@@ -624,7 +644,7 @@
     const curYear = now.getFullYear();
 
     tbody.innerHTML = allExperts.map(e => {
-      const name = `${e.profiles?.first_name || ''} ${e.profiles?.last_name || ''}`.trim() || 'İsimsiz';
+      const name = `${escUz(e.profiles?.first_name || '')} ${escUz(e.profiles?.last_name || '')}`.trim() || 'İsimsiz';
       const initials = ((e.profiles?.first_name?.[0]||'')+(e.profiles?.last_name?.[0]||'')).toUpperCase();
       const rating = allRatings.find(r => r.expert_id === e.id);
       const avgRating = rating?.avg_rating ? parseFloat(rating.avg_rating).toFixed(1) : null;
@@ -639,7 +659,7 @@
       const city = e.profiles?.city || '—';
 
       const emailHtml = e.profiles?.email
-        ? `<a href="mailto:${e.profiles.email}" title="${e.profiles.email}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(27,58,140,.08);color:var(--navy);text-decoration:none;font-size:13px;">✉️</a>`
+        ? `<a href="mailto:${escBB(e.profiles.email)}" title="${escBB(e.profiles.email)}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(27,58,140,.08);color:var(--navy);text-decoration:none;font-size:13px;">✉️</a>`
         : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:var(--warm);color:var(--sand);font-size:13px;">✉️</span>`;
 
       const messageHtml = `<a href="messages.html?with=${e.profile_id}" target="_blank" title="Uygulama içi mesaj gönder" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:rgba(201,168,76,.12);color:#854F0B;text-decoration:none;font-size:13px;">🗨️</a>`;
@@ -656,14 +676,14 @@
             <div class="et-name-cell">
               <div class="et-avatar">${initials}</div>
               <div>
-                <div class="et-name">${name}</div>
-                <div class="et-title">${e.title || ''}</div>
+                <div class="et-name">${escUz(name)}</div>
+                <div class="et-title">${escBB(e.title || '')}</div>
               </div>
             </div>
           </td>
           <td><span class="et-avail ${e.is_active ? 'on' : 'off'}">${e.is_active ? '🟢 Müsait' : '⚪ Müsait Değil'}</span></td>
           <td><div class="et-cats">${cats}</div></td>
-          <td>${city}</td>
+          <td>${escBB(city)}</td>
           <td class="et-rating">${avgRating ? avgRating + ' ★' : '—'}</td>
           <td>${monthlyCount}</td>
           <td><div style="display:flex;gap:6px;">${emailHtml}${messageHtml}${whatsappHtml}</div></td>
