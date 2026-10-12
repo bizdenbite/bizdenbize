@@ -309,20 +309,26 @@
       if (error) throw error;
 
       // Notify admin (non-blocking)
+      // Hier stand type: 'admin_notification'. Dieser Typ liegt in der Edge
+      // Function hinter einem Geheimnis (x-notify-secret), das diese Seite
+      // nicht mitschicken kann — es stuende im Quelltext und waere damit
+      // keins mehr. Der Aufruf bekam also 403 und es ging keine Mail hinaus.
+      // Gemerkt hat das niemand, weil die Antwort nicht geprueft wurde.
+      // Jetzt: eigener Typ 'expert_application' mit fest eingebautem
+      // Empfaenger, und die Antwort wird wenigstens in der Konsole vermerkt.
       try {
-        await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
+        const r = await fetch(SUPABASE_URL + '/functions/v1/notify-user', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
           body: JSON.stringify({
-            type: 'admin_notification',
-            user_id: '3e96d976-5c3a-4270-af88-6172f1751f9a',
+            type: 'expert_application',
             data: {
-              title: 'Yeni uzman başvurusu',
-              body: `${session.user.email} uzman olarak başvurdu (${title}).`,
-              link: '/admin.html'
+              applicant_email: session.user.email,
+              expert_title: title
             }
           })
         });
+        if (!r.ok) console.warn('Admin notification not sent:', r.status, await r.text());
       } catch(e) { console.warn('Admin notification failed:', e); }
 
       if(__ubDraft) __ubDraft.clear();
