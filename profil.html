@@ -4,114 +4,323 @@
   <script src="auth-gate.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BizdenBize — Profil</title>
+  <title>BizdenBize — Profilim</title>
 <style>
     :root{--red:#D42B2B;--cream:#FAF7F2;--warm:#F0EAE0;--sand:#D4C5A9;--ink:#1A1208;--deep:#002266; --deep:#002266;--muted:#6B5E4E;--gold:#C9A84C;--green:#1E7B4B;--navy:#003399;--white:#FFFFFF;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
     /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);}
-    .nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--ink);text-decoration:none;}
-    .nav-logo span{color:var(--red);}
-    .nav-right{display:flex;align-items:center;gap:10px;}
-    .btn-edit{padding:7px 16px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'Instrument Sans',sans-serif;transition:background .15s;display:none;}
-    .btn-edit:hover{background:var(--red);}
-    .btn-back{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;transition:all .15s;}
-    .btn-back:hover{background:var(--warm);color:var(--ink);}
+    nav{position:sticky;top:0;z-index:200;background:rgba(250,247,242,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;}
+    .nav-logo-link{display:flex;align-items:center;flex-shrink:0;margin-right:12px;}
+    .nav-primary{display:flex;align-items:center;gap:2px;margin-left:10px;}
+    .nav-primary a,.nav-kesfet-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .nav-primary a:hover,.nav-kesfet-btn:hover{background:var(--warm);}
+    .nav-primary a.active{background:var(--warm);color:var(--red);}
 
-    /* HERO BANNER */
-    .hero{background:var(--deep, #002266);padding:78px 0 0;margin-top:58px;position:relative;overflow:hidden;}
-    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%, rgba(212,43,43,.15) 0%, transparent 60%),radial-gradient(ellipse at 70% 20%, rgba(27,58,140,.1) 0%, transparent 50%);pointer-events:none;}
-    .hero-inner{max-width:860px;margin:0 auto;padding:40px 24px 0;position:relative;}
-    .hero-top{display:flex;align-items:flex-end;gap:24px;margin-bottom:0;}
-    .hero-avatar{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;flex-shrink:0;border:4px solid rgba(255,255,255,.15);overflow:hidden;}
-    .hero-avatar img{width:100%;height:100%;object-fit:cover;}
-    .hero-info{flex:1;padding-bottom:20px;}
-    .hero-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:4px;}
-    .hero-username{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:10px;}
-    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+    .kesfet-panel{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--sand);border-radius:14px;box-shadow:0 12px 32px rgba(26,18,8,.14);padding:18px;width:560px;z-index:250;}
+    .kesfet-panel.open{display:block;}
+    .kesfet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .kesfet-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;text-align:center;background:var(--cream);}
+    .kesfet-tile:hover{background:var(--warm);}
+    .kesfet-tile .e{font-size:22px;}
+
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;}
+    .nav-msg{position:relative;background:none;border:none;font-size:19px;cursor:pointer;padding:8px;border-radius:8px;text-decoration:none;display:inline-flex;color:var(--ink);}
+    .nav-msg:hover{background:var(--warm);}
+
+    .bottom-tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:300;background:#fff;border-top:1px solid var(--sand);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+    .bt-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 0;background:none;border:none;font-family:inherit;cursor:pointer;}
+    .bt-item.active{color:var(--red);}
+    .bt-icon{font-size:20px;}
+
+    .kesfet-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.35);z-index:350;}
+    .kesfet-sheet-overlay.open{display:block;}
+    .kesfet-sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));z-index:351;max-height:75vh;overflow-y:auto;}
+    .kesfet-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .kesfet-sheet-title{font-size:15px;font-weight:700;color:var(--ink);}
+    .kesfet-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+
+    /* LAYOUT */
+    .page{padding:24px 24px 60px;max-width:920px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
+
+    /* LEFT COLUMN */
+    .profile-card{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:28px;text-align:center;position:sticky;top:82px;}
+    .avatar-wrap{position:relative;display:inline-block;margin-bottom:16px;}
+    .avatar{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;margin:0 auto;overflow:hidden;background:#D42B2B;}
+    .avatar img{width:100%;height:100%;object-fit:cover;}
+    .avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;background:var(--deep, #002266);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white);transition:background .15s;}
+    .avatar-edit:hover{background:var(--red);}
+    .avatar-edit svg{width:13px;height:13px;stroke:#fff;stroke-width:2;}
+    #avatar-input{display:none;}
+    .profile-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .profile-username{font-size:13px;color:var(--muted);margin-bottom:12px;}
+    .profile-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
     .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
-    .badge-premium{background:rgba(201,168,76,.2);color:var(--gold);}
-    .badge-verified{background:rgba(30,123,75,.2);color:#4ADE80;}
-    .badge-admin{background:rgba(212,43,43,.2);color:#FC8181;}
-    .hero-city{font-size:13px;color:rgba(255,255,255,.45);}
+    .badge-premium{background:rgba(201,168,76,.15);color:#8B6914;border:1px solid rgba(201,168,76,.3);}
+    .badge-verified{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .badge-admin{background:rgba(212,43,43,.1);color:var(--red);border:1px solid rgba(212,43,43,.2);}
+    .badge-gold{background:rgba(201,168,76,.18);color:#8A6D00;border:1px solid rgba(201,168,76,.4);}
+    .badge-green{background:rgba(30,123,75,.1);color:var(--green);border:1px solid rgba(30,123,75,.2);}
+    .profile-city{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+    .ps-item{background:var(--cream);border-radius:10px;padding:12px 8px;text-align:center;}
+    .ps-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--ink);}
+    .ps-label{font-size:10px;color:var(--muted);margin-top:2px;}
+    .credit-box{background:var(--deep, #002266);border-radius:12px;padding:14px;margin-bottom:16px;}
+    .credit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+    .credit-row:last-child{margin-bottom:0;}
+    .credit-label{font-size:11px;color:rgba(255,255,255,.5);}
+    .credit-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--white);}
+    .credit-sub{font-size:10px;color:var(--gold);}
+    .btn-public{width:100%;padding:10px;background:var(--cream);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;text-decoration:none;display:block;text-align:center;transition:all .15s;}
+    .btn-public:hover{background:var(--warm);border-color:var(--ink);}
 
-    /* STATS BAR */
-    .stats-bar{background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08);margin-top:20px;}
-    .stats-bar-inner{max-width:860px;margin:0 auto;padding:0 24px;display:flex;}
-    .stat-tab{padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.06);}
-    .stat-tab:last-child{border-right:none;}
-    .stat-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--white);}
-    .stat-lab{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+    /* RIGHT COLUMN */
+    .edit-section{background:var(--white);border:1px solid var(--sand);border-radius:20px;padding:28px;margin-bottom:20px;}
+    .section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--warm);display:flex;align-items:center;gap:8px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+    .form-input{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s;}
+    .form-input:focus{border-color:var(--ink);}
+    .form-textarea{resize:vertical;min-height:90px;line-height:1.6;}
+    .tag-group{display:flex;flex-wrap:wrap;gap:6px;}
+    .tag-pill{padding:6px 14px;border-radius:20px;border:1.5px solid var(--sand);background:var(--cream);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
+    .tag-pill:hover{border-color:var(--ink);color:var(--ink);}
+    .tag-pill.selected{background:var(--deep, #002266);border-color:var(--ink);color:var(--white);}
+    .btn-save{padding:11px 28px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;}
+    .btn-save:hover{background:#176040;}
+    .btn-save:disabled{background:var(--sand);cursor:not-allowed;}
 
-    /* CONTENT */
-    .content{max-width:860px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+    .activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--warm);}
+    .activity-item:last-child{border-bottom:none;}
+    .activity-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .activity-text{font-size:13px;color:var(--ink);line-height:1.5;}
+    .activity-time{font-size:11px;color:var(--muted);margin-top:2px;}
 
-    /* BIO CARD */
-    .card{background:var(--white);border:1px solid var(--sand);border-radius:16px;padding:22px;margin-bottom:16px;}
-    .card-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-    .bio-text{font-size:14px;color:var(--muted);line-height:1.75;}
-    .tag-list{display:flex;flex-wrap:wrap;gap:6px;}
-    .tag{font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;background:var(--warm);color:var(--muted);border:1px solid var(--sand);}
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--deep, #002266);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+    #toast.show{opacity:1;transform:translateY(0);}
+    #toast.error{background:var(--red);}
 
-    /* LISTINGS */
-    .listing-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--warm);}
-    .listing-item:last-child{border-bottom:none;}
-    .listing-icon{width:36px;height:36px;border-radius:10px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-    .listing-title{font-size:13px;font-weight:600;color:var(--ink);}
-    .listing-meta{font-size:11px;color:var(--muted);margin-top:2px;}
-
-    /* EMPTY */
-    .empty{text-align:center;padding:28px;color:var(--muted);font-size:13px;}
-
-    /* CONNECT BTN */
-    .btn-connect{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-bottom:10px;}
-    .btn-connect:hover{background:#E8393A;}
-    .btn-msg{width:100%;padding:10px;background:var(--cream);border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
-    .btn-msg:hover{border-color:var(--ink);background:var(--warm);}
-
-    /* REPORT */
-    .btn-report{width:100%;padding:9px;background:none;border:1.5px solid rgba(212,43,43,.2);border-radius:9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;margin-top:6px;}
-    .btn-report:hover{border-color:var(--red);color:var(--red);background:rgba(212,43,43,.04);}
-    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(26,18,8,.55);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-    .modal-overlay.open{display:flex;}
-    .modal-box{background:var(--white);border-radius:18px;max-width:440px;width:92%;padding:28px;animation:popIn .25s ease;}
-    @keyframes popIn{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
-    .modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;}
-    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
-    .report-select,.report-textarea{width:100%;padding:10px 14px;border:1.5px solid var(--sand);border-radius:9px;font-family:'Instrument Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:border-color .2s;margin-bottom:10px;}
-    .report-select:focus,.report-textarea:focus{border-color:var(--ink);}
-    .report-textarea{resize:vertical;min-height:80px;line-height:1.6;}
-    .btn-submit-report{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:background .15s;margin-bottom:8px;}
-    .btn-submit-report:hover{background:#E8393A;}
-    .btn-submit-report:disabled{background:var(--sand);cursor:not-allowed;}
-    .btn-cancel-report{width:100%;padding:9px;background:none;border:1.5px solid var(--sand);border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
-    .btn-cancel-report:hover{border-color:var(--ink);color:var(--ink);}
-
-    @media(max-width:700px){
-      .content{grid-template-columns:1fr;}
-      .hero-top{flex-direction:column;align-items:center;text-align:center;}
-      .hero-badges{justify-content:center;}
-      .stats-bar-inner{justify-content:center;}
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr;}
+      .profile-card{position:static;}
+      .form-row{grid-template-columns:1fr;}
     }
   </style>
+  <script type="module">
+    import { createClient } from '/supabase.js';
+    const _authSb = createClient('https://wxjudojlwksivhzjnmim.supabase.co','sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303');
+    window._authSb=_authSb;
+    window._authReady=_authSb.auth.getSession().then(({data:{session}})=>{window._currentSession=session||null;});
+  </script>
   <link rel="stylesheet" href="brand.css">
 </head>
 <body>
 
-<nav>
+<nav style="position:sticky;top:0;z-index:200;background:rgba(250,247,242,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,197,169,0.4);height:58px;display:flex;align-items:center;padding:0 16px 0 12px;gap:4px;">
   <a href="mahallem.html" class="nav-logo-link"><span class="bb-logo">Bizden<span>Bize</span></span></a>
+  <div class="nav-primary">
+    <a href="mahallem.html" id="np-mahallem">🏘️ Mahallem</a>
+    <a href="abibot.html" id="np-abibot">🤖 AbiBOT</a>
+    <a href="classifieds.html" id="np-ilanlar">🛍️ İlanlar</a>
+    <button class="nav-kesfet-btn" onclick="toggleKesfet(event)" id="np-kesfet">🔍 Keşfet</button>
+  </div>
+  <div class="kesfet-panel" id="kesfet-panel">
+    <div class="kesfet-grid">
+      <a class="kesfet-tile" href="is-guc.html"><span class="e">💼</span>İş İlanları</a>
+      <a class="kesfet-tile" href="business.html"><span class="e">🏢</span>İşletmeler</a>
+      <a class="kesfet-tile" href="uzmanlar.html"><span class="e">👨‍⚖️</span>Uzmanlar</a>
+      <a class="kesfet-tile" href="ogrenim.html"><span class="e">🎓</span>Öğrenim</a>
+      <a class="kesfet-tile" href="nachhilfe.html"><span class="e">✏️</span>Nachhilfe</a>
+      <a class="kesfet-tile" href="webinar.html"><span class="e">🎥</span>Webinarlar</a>
+      <a class="kesfet-tile" href="saglik.html"><span class="e">🏥</span>Sağlık</a>
+      <a class="kesfet-tile" href="emlak.html"><span class="e">🏠</span>Konut & Emlak</a>
+      <a class="kesfet-tile" href="ev-takasi.html"><span class="e">🔄</span>Tatil Takası</a>
+      <a class="kesfet-tile" href="library.html"><span class="e">📚</span>Kütüphane</a>
+      <a class="kesfet-tile" href="videolar.html"><span class="e">🎬</span>Videothek</a>
+      <a class="kesfet-tile" href="events.html"><span class="e">🎉</span>Etkinlikler</a>
+    </div>
+  </div>
+  <div style="flex:1;"></div>
   <div class="nav-right">
-    <a href="mahallem.html" class="btn-back">← Mahallem</a>
-    <a href="profile.html" class="btn-edit" id="edit-btn">✏️ Profili Düzenle</a>
-    <button id="logout-btn" onclick="doLogout()" style="display:none;padding:7px 14px;background:none;border:1.5px solid rgba(212,43,43,.3);border-radius:8px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;" onmouseover="this.style.background='rgba(212,43,43,.06)'" onmouseout="this.style.background='none'">Çıkış Yap</button>
+    <a class="nav-msg" href="messages.html" title="Mesajlar">💬</a>
+    <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarMenu()" title="Profilim" style="position:relative;">—</div>
+    <div id="avatar-menu" style="display:none;position:absolute;top:54px;right:16px;background:#fff;border:1px solid rgba(212,197,169,.5);border-radius:12px;padding:8px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:300;">
+      <a href="profile.html" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#1A1208;text-decoration:none;">👤 Profilim</a>
+      <hr style="border:none;border-top:1px solid #F0EAE0;margin:4px 0;">
+      <button onclick="doLogout()" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#D42B2B;background:none;border:none;cursor:pointer;width:100%;font-family:inherit;">Çıkış Yap</button>
+    </div>
   </div>
 </nav>
 
-<div id="page-content">
-  <div class="loading">⏳ Profil yükleniyor...</div>
+<div class="page" id="page">
+  <!-- LEFT -->
+  <div>
+    <div class="profile-card">
+      <div class="avatar-wrap">
+        <div class="avatar" id="avatar-display">?</div>
+        <label class="avatar-edit" for="avatar-input" title="Fotoğraf değiştir">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </label>
+        <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarUpload(this)">
+      </div>
+      <div class="profile-name" id="disp-name">—</div>
+      <div class="profile-username" id="disp-username">@—</div>
+      <div class="profile-badges" id="disp-badges"></div>
+      <div class="profile-city" id="disp-city">📍 —</div>
+      <div class="profile-stats">
+        <div class="ps-item">
+          <div class="ps-val" id="stat-since">—</div>
+          <div class="ps-label">Üye Tarihi</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-listings">0</div>
+          <div class="ps-label">İlanım</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-questions">0</div>
+          <div class="ps-label">Sorum</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-reviews">0</div>
+          <div class="ps-label">Uzman Yanıtı</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-val" id="stat-followers">0</div>
+          <div class="ps-label">Takipçilerim</div>
+        </div>
+      </div>
+      <div class="credit-box">
+        <div class="credit-row">
+          <div>
+            <div class="credit-label">AbiBOT Kredisi</div>
+            <div class="credit-sub">Soru sormak için</div>
+          </div>
+          <div class="credit-val" id="disp-abibot-credits">0</div>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,.08);margin:10px 0;"></div>
+        <div class="credit-row">
+          <div>
+            <div class="credit-label">Uzman Kredisi</div>
+            <div class="credit-sub">Doğrudan soru için</div>
+          </div>
+          <div class="credit-val" id="disp-expert-credits">0</div>
+        </div>
+      </div>
+      <!-- Only rendered for members who actually have an experts row -->
+      <div id="expert-box" style="display:none;margin-top:10px;"></div>
+      <a href="#" class="btn-public" id="view-public-btn">👁 Herkese Açık Profilim →</a>
+      <button onclick="doLogout()" style="width:100%;margin-top:10px;padding:9px;background:none;border:1px solid var(--sand);border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;">Çıkış Yap</button>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+    <!-- My Listings & Activity Section -->
+    <div class="edit-section">
+      <div class="section-title">📌 İlanlarım & Gönderilerim</div>
+      <div id="my-listings-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">İlanlar yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="edit-section">
+      <div class="section-title">👤 Kişisel Bilgiler</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Ad</label>
+          <input class="form-input" type="text" id="inp-first-name" placeholder="Adınız">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Soyad</label>
+          <input class="form-input" type="text" id="inp-last-name" placeholder="Soyadınız">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Kullanıcı Adı</label>
+          <input class="form-input" type="text" id="inp-username" placeholder="@kullaniciadi">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Şehir</label>
+          <input class="form-input" type="text" id="inp-city" placeholder="Şehir yaz ve listeden seç" autocomplete="new-password">
+          <div id="city-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">Listeden seçersen ülke otomatik dolar.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ülke</label>
+        <input class="form-input" type="text" id="inp-country" placeholder="Almanya" readonly style="background:var(--warm,#F0EAE0);cursor:not-allowed;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hakkımda</label>
+        <textarea class="form-input form-textarea" id="inp-bio" placeholder="Kendinizden biraz bahsedin..."></textarea>
+      </div>
+      <button class="btn-save" onclick="saveProfile()">Değişiklikleri Kaydet</button>
+    </div>
+
+    <!-- Languages -->
+    <div class="edit-section">
+      <div class="section-title">🌍 Konuştuğum Diller</div>
+      <div class="tag-group" id="lang-tags">
+        <span class="tag-pill" data-val="tr" onclick="toggleTag(this,'languages')">🇹🇷 Türkçe</span>
+        <span class="tag-pill" data-val="de" onclick="toggleTag(this,'languages')">🇩🇪 Almanca</span>
+        <span class="tag-pill" data-val="en" onclick="toggleTag(this,'languages')">🇬🇧 İngilizce</span>
+        <span class="tag-pill" data-val="fr" onclick="toggleTag(this,'languages')">🇫🇷 Fransızca</span>
+        <span class="tag-pill" data-val="nl" onclick="toggleTag(this,'languages')">🇳🇱 Hollandaca</span>
+        <span class="tag-pill" data-val="ar" onclick="toggleTag(this,'languages')">🇸🇦 Arapça</span>
+      </div>
+    </div>
+
+    <!-- Interests -->
+    <div class="edit-section">
+      <div class="section-title">✨ İlgi Alanlarım</div>
+      <div class="tag-group" id="interest-tags">
+        <span class="tag-pill" data-val="legal" onclick="toggleTag(this,'interests')">⚖️ Hukuki</span>
+        <span class="tag-pill" data-val="housing" onclick="toggleTag(this,'interests')">🏠 Konut</span>
+        <span class="tag-pill" data-val="employment" onclick="toggleTag(this,'interests')">💼 İş</span>
+        <span class="tag-pill" data-val="tax" onclick="toggleTag(this,'interests')">💶 Vergi</span>
+        <span class="tag-pill" data-val="education" onclick="toggleTag(this,'interests')">🎓 Eğitim</span>
+        <span class="tag-pill" data-val="health" onclick="toggleTag(this,'interests')">🏥 Sağlık</span>
+        <span class="tag-pill" data-val="business" onclick="toggleTag(this,'interests')">🏢 İşletme</span>
+        <span class="tag-pill" data-val="family" onclick="toggleTag(this,'interests')">👨‍👩‍👧 Aile</span>
+        <span class="tag-pill" data-val="culture" onclick="toggleTag(this,'interests')">🎭 Kültür</span>
+        <span class="tag-pill" data-val="sport" onclick="toggleTag(this,'interests')">⚽ Spor</span>
+        <span class="tag-pill" data-val="tech" onclick="toggleTag(this,'interests')">💻 Teknoloji</span>
+        <span class="tag-pill" data-val="food" onclick="toggleTag(this,'interests')">🍽️ Yemek</span>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn-save" onclick="saveTags()">Tercihleri Kaydet</button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="edit-section">
+      <div class="section-title">📋 Son Sorularım</div>
+      <div id="activity-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- HESAP SILME — Antrag, nicht Selbstloeschung.
+         Entscheidung vom 30.10.2026: das Mitglied stellt den Antrag,
+         Naz sichert die Daten und fuehrt aus. Diese Seite schreibt
+         deshalb nur eine Zeile in deletion_requests; sie fasst kein
+         Konto an. Der Inhalt wird in JS gerendert, weil es drei
+         Zustaende gibt (kein Antrag / offen / abgelehnt). -->
+    <div class="edit-section" id="deletion-section" style="border:1px solid rgba(212,43,43,.22);">
+      <div class="section-title" style="color:#B02020;">🗑️ Hesabımı Sil</div>
+      <div id="deletion-box">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div id="toast"></div>
 
 <script>
   // Maskiert HTML-Sonderzeichen. Eingefuegt beim Sicherheits-Audit 10.10.2026:
@@ -126,353 +335,769 @@
   const SB_URL  = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
   const COLORS = ['#D42B2B','#003399','#1E7B4B','#C9A84C','#185FA5'];
-  const LANG_NAMES = {tr:'🇹🇷 Türkçe',de:'🇩🇪 Almanca',en:'🇬🇧 İngilizce',fr:'🇫🇷 Fransızca',nl:'🇳🇱 Hollandaca',ar:'🇸🇦 Arapça'};
-  const INT_NAMES  = {legal:'⚖️ Hukuki',housing:'🏠 Konut',employment:'💼 İş',tax:'💶 Vergi',education:'🎓 Eğitim',health:'🏥 Sağlık',business:'🏢 İşletme',family:'👨‍👩‍👧 Aile',culture:'🎭 Kültür',sport:'⚽ Spor',tech:'💻 Teknoloji',food:'🍽️ Yemek'};
 
-  const params   = new URLSearchParams(window.location.search);
-  const targetId = params.get('id');
+  let token = null;
+  let currentUser = null;
+  let profile = null;
+  let selectedLangs = [];
+  let selectedInterests = [];
 
-  async function doLogout() {
-    try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      await supabase.auth.signOut();
-    } catch(e) {}
+  function doLogout() {
     localStorage.removeItem('bb_auth_token');
     localStorage.removeItem('bb_user');
-    // Clear Supabase SDK session (stored separately by the SDK)
     Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
     window.location.href = 'login.html';
   }
 
-  async function sb(path) {
-    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}` } });
-    const t = await r.text(); return t ? JSON.parse(t) : [];
+  function hdrs() {
+    return { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
   }
 
-  async function getAuthToken() {
+  // An approved expert had no way in here to reach their own expert
+  // dashboard — the page only showed them as a BUYER of expert answers
+  // (Uzman Kredisi / Uzman Yanıtı), never as an expert themselves.
+  async function loadExpertStatus() {
+    const box = document.getElementById('expert-box');
+    if (!box || !currentUser) return;
+    let row = null;
     try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token || null;
-    } catch(e) { return null; }
+      const rows = await sb(`experts?select=status&profile_id=eq.${currentUser.id}&limit=1`);
+      row = (rows || [])[0] || null;
+    } catch(e) { console.error('Expert status error:', e); return; }
+    if (!row) return;   // not an expert and never applied — show nothing
+
+    const map = {
+      approved: { bg:'rgba(30,123,75,.08)', bd:'rgba(30,123,75,.3)', c:'#1E7B4B', t:'✅ Onaylı Uzman',
+                  sub:'Sorularınızı ve profilinizi yönetin.', href:'expert-panel.html', cta:'Uzman Paneli →' },
+      pending:  { bg:'rgba(201,168,76,.08)', bd:'rgba(201,168,76,.35)', c:'#8a6d1f', t:'⏳ Uzman Başvurunuz İnceleniyor',
+                  sub:'Onaylandığında size bildirim göndereceğiz.', href:'uzman-basvuru.html', cta:'Başvurumu Gör →' },
+      rejected: { bg:'rgba(212,43,43,.06)', bd:'rgba(212,43,43,.25)', c:'#D42B2B', t:'Uzman başvurunuz onaylanmadı',
+                  sub:'Detaylar için başvuru sayfasına bakın.', href:'uzman-basvuru.html', cta:'Detaylar →' }
+    };
+    const v = map[row.status];
+    if (!v) return;
+    box.style.display = 'block';
+    box.innerHTML = `<div style="background:${v.bg};border:1px solid ${v.bd};border-radius:12px;padding:12px 14px;">
+      <div style="font-size:12.5px;font-weight:700;color:${v.c};margin-bottom:3px;">${v.t}</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:9px;">${v.sub}</div>
+      <a href="${v.href}" style="display:block;text-align:center;padding:8px;background:${v.c};color:#fff;border-radius:8px;font-size:12.5px;font-weight:700;text-decoration:none;">${v.cta}</a>
+    </div>`;
   }
 
-  async function sbAuthWrite(method, path, body) {
-    const token = await getAuthToken();
-    if (!token) throw new Error('Not authenticated');
-    const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
-      method,
-      headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(body)
-    });
-    if (!r.ok) throw new Error(await r.text());
+  async function sb(path, opts = {}) {
+    // Vorher gab diese Funktion bei JEDEM Fehler ein leeres Array zurueck:
+    // bei 403, bei 500, bei Netzwerkausfall. Der Aufrufer konnte gar nicht
+    // merken, dass etwas schiefging — saveProfile() zeigte danach immer
+    // "Profil kaydedildi", auch wenn nichts gespeichert wurde.
+    const res = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: hdrs(), ...opts });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : [];
+
+    // SESSIZ BASARISIZLIK KORUMASI
+    // Blockiert RLS eine Zeile, antwortet PostgREST mit 200 und einem
+    // LEEREN ARRAY — kein Fehler, nichts geaendert. hdrs() sendet
+    // Prefer: return=representation, ein erfolgreiches Schreiben gibt
+    // also immer mindestens eine Zeile zurueck. Leeres Array heisst:
+    // es wurde nichts geschrieben.
+    const method = (opts.method || 'GET').toUpperCase();
+    if ((method === 'PATCH' || method === 'DELETE') && Array.isArray(data) && data.length === 0) {
+      throw new Error('Veritabanında hiçbir kayıt değişmedi (yetki yok ya da kayıt bulunamadı). DEĞİŞİKLİK KAYDEDİLMEDİ.');
+    }
+    return data;
   }
 
-  async function sbAuthGet(path) {
-    const token = await getAuthToken();
-    if (!token) return [];
-    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}` } });
-    const t = await r.text(); return t ? JSON.parse(t) : [];
-  }
-
-  async function sendConnectionRequest(targetId) {
-    try {
-      await sbAuthWrite('POST', 'connections', { requester_id: window._currentUserId, addressee_id: targetId, status: 'pending' });
-      location.reload();
-    } catch(e) { console.error('Connection request error:', e); alert('Bağlantı isteği gönderilemedi.'); }
-  }
-
-  async function respondConnection(connId, status) {
-    try {
-      await sbAuthWrite('PATCH', `connections?id=eq.${connId}`, { status, responded_at: new Date().toISOString() });
-      location.reload();
-    } catch(e) { console.error('Connection response error:', e); alert('İşlem başarısız.'); }
+  function toast(msg, ok = true) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = ok ? 'show' : 'show error';
+    setTimeout(() => t.className = '', 3000);
   }
 
   async function init() {
-    if (!targetId) { showError('Profil bulunamadı', 'Geçerli bir kullanıcı ID\'si belirtilmedi.'); return; }
-
-    // Check if viewing own profile (graceful — user may not be logged in)
-    let currentUserId = null;
     try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) currentUserId = user.id;
-    } catch(e) { /* not logged in — fine */ }
+      // Poll briefly for window._authReady / window._currentSession set up by top head script
+      for (let i = 0; i < 150 && !window._authReady; i++) {
+        await new Promise(r => setTimeout(r, 20));
+      }
+      await (window._authReady || Promise.resolve());
 
-    const isOwnProfile = currentUserId === targetId;
-    window._currentUserId = currentUserId;
-    if (isOwnProfile) {
-      document.getElementById('edit-btn').style.display = 'flex';
-      document.getElementById('logout-btn').style.display = 'block';
+      const session = window._currentSession;
+      if (!session || !session.user) {
+        window.location.replace('login.html');
+        return;
+      }
+
+      token = session.access_token;
+      currentUser = session.user;
+
+      const data = await sb(`profiles?id=eq.${currentUser.id}`);
+      profile = data?.[0];
+      if (!profile) {
+        window.location.replace('login.html');
+        return;
+      }
+
+      renderProfile();
+      loadStats();
+      loadActivity();
+      loadMyListings();
+      loadDeletionRequest();
+    } catch (e) {
+      console.error('Init error:', e);
     }
-
-    // Load profile — exclude admin flag (RLS restricted for anon)
-    const profiles = await sb(`profiles?id=eq.${targetId}&select=id,first_name,last_name,username,bio,city,country,avatar_url,languages,interests,is_verified,is_premium,created_at`);
-    const profile = profiles?.[0];
-    if (!profile) { showError('Kullanıcı bulunamadı', 'Bu profil mevcut değil veya gizlenmiş.'); return; }
-
-    // Load listings
-    const listings = await sb(`listings?select=title,category,location,created_at&order=created_at.desc&limit=5`);
-
-    // Load expert reviews count
-    const reviews = await sb(`expert_reviews?select=id&user_id=eq.${targetId}&status=eq.answered`);
-
-    // Load Tatil Takası rating (aggregate, covers both hosting and staying as a guest)
-    let swapRating = null;
-    try {
-      const ratings = await sb(`swap_user_ratings?user_id=eq.${targetId}`);
-      swapRating = ratings?.[0] || null;
-    } catch(e) { console.error('Swap rating fetch error:', e); }
-
-    // Load connection status between the viewer and this profile
-    let connection = null;
-    if (currentUserId && !isOwnProfile) {
-      try {
-        const rows = await sbAuthGet(`connections?select=*&or=(and(requester_id.eq.${currentUserId},addressee_id.eq.${targetId}),and(requester_id.eq.${targetId},addressee_id.eq.${currentUserId}))`);
-        connection = rows?.[0] || null;
-      } catch(e) { console.error('Connection fetch error:', e); }
-    }
-
-    renderProfile(profile, listings, reviews.length, isOwnProfile, swapRating, connection);
-    document.title = `BizdenBize — ${profile.first_name || ''} ${profile.last_name || ''}`.trim();
   }
 
-  function renderProfile(p, listings, reviewCount, isOwn, swapRating, connection) {
-    const name  = `${p.first_name||''} ${p.last_name||''}`.trim() || p.username || 'Kullanıcı';
-    const ini   = ((p.first_name?.[0]||'')+(p.last_name?.[0]||'')).toUpperCase() || '?';
+  function renderProfile() {
+    if (!profile || !currentUser) return;
+    const first = profile.first_name || '';
+    const last  = profile.last_name  || '';
+    const name  = `${first} ${last}`.trim() || (currentUser.email ? currentUser.email.split('@')[0] : 'Kullanıcı');
+    const ini   = ((first[0]||'')+(last[0]||'')).toUpperCase() || name[0]?.toUpperCase() || '?';
     const color = COLORS[ini.charCodeAt(0) % COLORS.length];
-    const since = p.created_at ? new Date(p.created_at).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}) : '—';
 
-    const avatarHtml = p.avatar_url
-      ? `<img src="${p.avatar_url}" alt="${name}">`
-      : ini;
-
-    const badges = [
-      p.is_premium ? '<span class="badge badge-premium">⭐ Premium</span>' : '',
-      p.is_verified ? '<span class="badge badge-verified">✓ Doğrulandı</span>' : '',
-      swapRating ? `<span class="badge badge-verified">🏠 ${swapRating.avg_rating} (${swapRating.review_count})</span>` : ''
-    ].filter(Boolean).join('');
-
-    const langTags = (p.languages||[]).map(l => `<span class="tag">${escBB(LANG_NAMES[l]||l)}</span>`).join('');
-    const intTags  = (p.interests ||[]).map(i => `<span class="tag">${escBB(INT_NAMES[i] ||i)}</span>`).join('');
-
-    const listingHtml = listings.length ? listings.map(l => `
-      <div class="listing-item">
-        <div class="listing-icon">📋</div>
-        <div>
-          <div class="listing-title">${l.title||'—'}</div>
-          <div class="listing-meta">${l.category||''} ${l.location ? '· '+l.location : ''}</div>
-        </div>
-      </div>`).join('') : `<div class="empty">Henüz ilan yok.</div>`;
-
-    let connectBtnHtml;
-    if (!connection) {
-      connectBtnHtml = `<button class="btn-connect" onclick="sendConnectionRequest('${p.id}')">🤝 Bağlantı Kur</button>`;
-    } else if (connection.status === 'accepted') {
-      connectBtnHtml = `<button class="btn-connect" disabled style="opacity:.6;cursor:default;">✓ Bağlısınız</button>`;
-    } else if (connection.status === 'pending' && connection.requester_id === window._currentUserId) {
-      connectBtnHtml = `<button class="btn-connect" disabled style="opacity:.6;cursor:default;">⏳ İstek Gönderildi</button>`;
-    } else if (connection.status === 'pending') {
-      connectBtnHtml = `<button class="btn-connect" onclick="respondConnection('${connection.id}','accepted')">✓ İsteği Kabul Et</button>`;
-    } else {
-      connectBtnHtml = `<button class="btn-connect" onclick="sendConnectionRequest('${p.id}')">🤝 Bağlantı Kur</button>`;
+    const av = document.getElementById('avatar-display');
+    if (av) {
+      if (profile.avatar_url) {
+        av.innerHTML = `<img src="${profile.avatar_url}" alt="${escBB(name)}">`;
+      } else {
+        av.textContent = ini;
+        av.style.background = color;
+      }
     }
 
-    const connectSection = isOwn ? `
-      <div class="card">
-        <div class="card-title">⚙️ Profil Ayarları</div>
-        <a href="profile.html" style="display:block;width:100%;padding:11px;background:var(--deep, #002266);color:#fff;border-radius:9px;font-size:14px;font-weight:700;text-align:center;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='var(--red)'" onmouseout="this.style.background='var(--ink)'">
-          ✏️ Profili Düzenle
-        </a>
-      </div>` : `
-      <div class="card">
-        ${connectBtnHtml}
-        <button class="btn-msg" onclick="window.location.href='messages.html?with=${p.id}'">💬 Mesaj Gönder</button>
-        <button class="btn-report" onclick="openReportModal('${p.id}','user')">🚩 Şikayet Et</button>
-      </div>`;
+    const navAv = document.getElementById('nav-avatar');
+    if (navAv) {
+      if (profile.avatar_url) {
+        navAv.innerHTML = `<img src="${profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      } else {
+        navAv.textContent = ini;
+        navAv.style.background = color;
+      }
+    }
 
-    document.getElementById('page-content').innerHTML = `
-      <div class="hero">
-        <div class="hero-inner">
-          <div class="hero-top">
-            <div class="hero-avatar" style="background:${color};">${avatarHtml}</div>
-            <div class="hero-info">
-              <div class="hero-name">${escBB(name)}</div>
-              <div class="hero-username">@${escBB(p.username||'—')}</div>
-              <div class="hero-badges">${badges || '<span style="font-size:12px;color:rgba(255,255,255,.3);">Rozet yok</span>'}</div>
-              <div class="hero-city">📍 ${escBB(p.city||'')}${p.country ? ', '+p.country : ''}</div>
+    const nameEl = document.getElementById('disp-name'); if (nameEl) nameEl.textContent = name;
+    const userEl = document.getElementById('disp-username'); if (userEl) userEl.textContent = `@${profile.username || '—'}`;
+    const cityEl = document.getElementById('disp-city'); if (cityEl) cityEl.textContent = profile.city ? `📍 ${profile.city}${profile.country ? ', ' + profile.country : ''}` : '📍 —';
+
+    const badges = [];
+    if (profile.is_premium) badges.push('<span class="badge badge-premium">⭐ Premium</span>');
+    if (profile.is_verified) badges.push('<span class="badge badge-verified">✓ Doğrulandı</span>');
+    if (profile.is_admin) badges.push('<span class="badge badge-admin">🛡️ Admin</span>');
+    const badgesEl = document.getElementById('disp-badges'); if (badgesEl) badgesEl.innerHTML = badges.join('');
+
+    const abiCredEl = document.getElementById('disp-abibot-credits'); if (abiCredEl) abiCredEl.textContent = profile.abibot_credits || 0;
+    const expCredEl = document.getElementById('disp-expert-credits'); if (expCredEl) expCredEl.textContent = profile.expert_credits || 0;
+    loadExpertStatus();
+
+    const since = profile.created_at ? new Date(profile.created_at).getFullYear() : '—';
+    const sinceEl = document.getElementById('stat-since'); if (sinceEl) sinceEl.textContent = since;
+
+    const fNameInp = document.getElementById('inp-first-name'); if (fNameInp) fNameInp.value = profile.first_name || '';
+    const lNameInp = document.getElementById('inp-last-name'); if (lNameInp) lNameInp.value  = profile.last_name  || '';
+    const uNameInp = document.getElementById('inp-username'); if (uNameInp) uNameInp.value   = profile.username   || '';
+    const cityInp = document.getElementById('inp-city'); if (cityInp) cityInp.value       = profile.city       || '';
+    const countryInp = document.getElementById('inp-country'); if (countryInp) countryInp.value = profile.country || '';
+    const bioInp = document.getElementById('inp-bio'); if (bioInp) bioInp.value           = profile.bio        || '';
+
+    selectedLangs = profile.languages || [];
+    document.querySelectorAll('#lang-tags .tag-pill').forEach(p => p.classList.toggle('selected', selectedLangs.includes(p.dataset.val)));
+
+    selectedInterests = profile.interests || [];
+    document.querySelectorAll('#interest-tags .tag-pill').forEach(p => p.classList.toggle('selected', selectedInterests.includes(p.dataset.val)));
+
+    const pubBtn = document.getElementById('view-public-btn'); if (pubBtn) pubBtn.href = `profil.html?id=${currentUser.id}`;
+  }
+
+  async function loadStats() {
+    try {
+      const [questions, reviews, followers] = await Promise.all([
+        sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}`).catch(() => []),
+        sb(`expert_reviews?select=id&user_id=eq.${currentUser.id}&status=eq.answered`).catch(() => []),
+        sb(`follows?select=id&following_id=eq.${currentUser.id}`).catch(() => [])
+      ]);
+      const qEl = document.getElementById('stat-questions'); if (qEl) qEl.textContent = questions.length || 0;
+      const rEl = document.getElementById('stat-reviews'); if (rEl) rEl.textContent = reviews.length || 0;
+      const fEl = document.getElementById('stat-followers'); if (fEl) fEl.textContent = followers.length || 0;
+    } catch(e) {}
+  }
+
+  // ── LOAD USER'S SUBMITTED LISTINGS ──
+  async function loadMyListings() {
+    const container = document.getElementById('my-listings-list');
+    if (!container) return;
+
+    try {
+      const userEmail = currentUser.email || '';
+      const username = profile.username || '';
+
+      const [tutors, listings, jobs, swaps, webinars] = await Promise.all([
+        sb(`tutors?select=*&order=created_at.desc`).catch(() => []),
+        sb(`listings?select=*&order=created_at.desc`).catch(() => []),
+        sb(`jobs?select=*&author_id=eq.${currentUser.id}`).catch(() => []),
+        sb(`swap_offers?select=*&user_id=eq.${currentUser.id}`).catch(() => []),
+        sb(`webinars?select=*&created_by=eq.${currentUser.id}`).catch(() => [])
+      ]);
+
+      const myTutors = (tutors || []).filter(t => {
+        if (t.user_id && t.user_id === currentUser.id) return true;
+        if (userEmail && t.contact && t.contact.toLowerCase().includes(userEmail.toLowerCase())) return true;
+        if (profile.first_name && t.name && t.name.toLowerCase().includes(profile.first_name.toLowerCase())) return true;
+        return false;
+      });
+
+      const myListings = (listings || []).filter(l => {
+        if (l.created_by && l.created_by === currentUser.id) return true;
+        if (username && l.author === username) return true;
+        if (l.author === currentUser.id) return true;
+        return false;
+      });
+
+      const allItems = [];
+
+      myTutors.forEach(t => allItems.push({
+        id: t.id,
+        title: `${t.name} — ${t.subject}`,
+        typeLabel: '✏️ Nachhilfe',
+        status: t.active === true || t.status === 'approved' ? 'approved' : 'pending',
+        date: t.created_at || new Date().toISOString(),
+        table: 'tutors'
+      }));
+
+      myListings.forEach(l => allItems.push({
+        id: l.id,
+        title: l.title || 'İlan',
+        typeLabel: '🛍️ İlan',
+        status: l.status || 'approved',
+        date: l.created_at || new Date().toISOString(),
+        table: 'listings'
+      }));
+
+      (jobs || []).forEach(j => allItems.push({
+        id: j.id,
+        title: j.title || 'İş İlanı',
+        typeLabel: '💼 İş İlanı',
+        status: j.status === 'approved' ? 'approved' : 'pending',
+        date: j.created_at || new Date().toISOString(),
+        table: 'jobs'
+      }));
+
+      (swaps || []).forEach(s => allItems.push({
+        id: s.id,
+        title: `${s.city || ''} → ${s.destination || ''}`,
+        typeLabel: '🏠 Tatil Takası',
+        status: 'approved',
+        date: s.created_at || new Date().toISOString(),
+        table: 'swap_offers'
+      }));
+
+      (webinars || []).forEach(w => allItems.push({
+        id: w.id,
+        title: w.title || 'Webinar',
+        typeLabel: '🎥 Webinar',
+        status: w.status === 'approved' ? 'approved' : 'pending',
+        date: w.created_at || new Date().toISOString(),
+        table: 'webinars'
+      }));
+
+      // Deduplicate items
+      const uniqueItems = [];
+      const seen = new Set();
+      allItems.forEach(item => {
+        const key = `${item.table}_${item.id}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueItems.push(item);
+        }
+      });
+
+      uniqueItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      const statEl = document.getElementById('stat-listings');
+      if (statEl) statEl.textContent = uniqueItems.length;
+
+      if (!uniqueItems.length) {
+        container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Henüz yayınlanmış veya bekleyen ilanınız bulunmuyor.</div>`;
+        return;
+      }
+
+      container.innerHTML = uniqueItems.map(item => {
+        const isApproved = item.status === 'approved';
+        const badgeHtml = isApproved 
+          ? '<span class="badge badge-green">✓ Yayında</span>' 
+          : '<span class="badge badge-gold">⏳ Yönetici Onayı Bekliyor</span>';
+        const formattedDate = new Date(item.date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--cream);border:1px solid var(--warm);border-radius:12px;margin-bottom:10px;gap:12px;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                <span style="font-size:11px;font-weight:700;color:var(--navy);">${item.typeLabel}</span>
+                ${badgeHtml}
+              </div>
+              <div style="font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escBB(item.title)}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">Tarih: ${formattedDate}</div>
             </div>
+            <button onclick="deleteMyListing('${item.table}', '${item.id}', this)" style="padding:6px 12px;background:none;border:1px solid rgba(212,43,43,.3);border-radius:7px;font-size:11px;color:var(--red);cursor:pointer;font-weight:600;flex-shrink:0;">Sil</button>
+          </div>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('loadMyListings error:', e);
+      container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">İlanlar yüklenirken bir hata oluştu.</div>`;
+    }
+  }
+
+  window.deleteMyListing = async function(table, id, btn) {
+    if (!confirm('Bu ilanınızı silmek istediğinizden emin misiniz?')) return;
+    try {
+      await sb(`${table}?id=eq.${id}`, { method: 'DELETE' });
+      btn.closest('div').remove();
+      toast('✅ İlanınız silindi');
+    } catch (e) {
+      console.error('Silme hatası:', e);
+      toast('Silinemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
+  };
+
+  async function loadActivity() {
+    const reviews = await sb(`expert_reviews?select=category,status,created_at,rating&user_id=eq.${currentUser.id}&order=created_at.desc&limit=6`).catch(() => []);
+    const CAT_ICONS = {legal:'⚖️',visa:'🛂',medical:'🏥',tax:'💶',housing:'🏠',employment:'💼',school:'🎓',insurance:'🚗',migration:'✈️'};
+    const el = document.getElementById('activity-list');
+    if (!el) return;
+    if (!reviews.length) {
+      el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Henüz aktivite yok.</div>`;
+      return;
+    }
+    el.innerHTML = reviews.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('tr-TR', {day:'2-digit',month:'short',year:'numeric'});
+      const statusLabel = r.status === 'answered' ? '✅ Yanıtlandı' : r.status === 'pending' ? '⏳ Bekliyor' : '🔍 İnceleniyor';
+      return `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:var(--warm);">${CAT_ICONS[r.category]||'❓'}</div>
+          <div>
+            <div class="activity-text">${statusLabel} — ${r.category} sorusu</div>
+            <div class="activity-time">${date}</div>
           </div>
-        </div>
-        <div class="stats-bar">
-          <div class="stats-bar-inner">
-            <div class="stat-tab">
-              <div class="stat-num">${since.split(' ')[1]||'—'}</div>
-              <div class="stat-lab">Üye Tarihi</div>
-            </div>
-            <div class="stat-tab">
-              <div class="stat-num">${listings.length}</div>
-              <div class="stat-lab">İlan</div>
-            </div>
-            <div class="stat-tab">
-              <div class="stat-num">${reviewCount}</div>
-              <div class="stat-lab">Uzman Yanıtı</div>
-            </div>
-            <div class="stat-tab">
-              <div class="stat-num">${(p.languages||[]).length}</div>
-              <div class="stat-lab">Dil</div>
-            </div>
-            <div class="stat-tab">
-              <div class="stat-num">${swapRating ? '⭐ '+swapRating.avg_rating : '—'}</div>
-              <div class="stat-lab">Tatil Takası Puanı</div>
-            </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleTag(el, field) {
+    el.classList.toggle('selected');
+    if (field === 'languages') {
+      selectedLangs = [...document.querySelectorAll('#lang-tags .tag-pill.selected')].map(p => p.dataset.val);
+    } else {
+      selectedInterests = [...document.querySelectorAll('#interest-tags .tag-pill.selected')].map(p => p.dataset.val);
+    }
+  }
+
+  async function saveProfile() {
+    // Von Hand getippte Staedte werden nicht gespeichert — genau so sind
+    // "Münih" und "Munich" entstanden. Den vorhandenen Wert unveraendert
+    // zu lassen ist erlaubt; nur neuer, unbestaetigter Text nicht.
+    const cityInp    = document.getElementById('inp-city');
+    const getippt    = (cityInp?.value || '').trim();
+    const gespeichert = (profile?.city || '').trim();
+    if (getippt && getippt !== gespeichert && getippt !== cityBestaetigt) {
+      const hint = document.getElementById('city-hint');
+      if (hint) {
+        hint.textContent = 'Lütfen şehri listeden seç — elle yazılan şehirler kaydedilmiyor.';
+        hint.style.color = 'var(--red,#D42B2B)';
+      }
+      cityInp.focus();
+      return;
+    }
+
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+    try {
+      const payload = {
+        first_name: document.getElementById('inp-first-name').value.trim(),
+        last_name:  document.getElementById('inp-last-name').value.trim(),
+        username:   document.getElementById('inp-username').value.trim().replace('@',''),
+        city:       document.getElementById('inp-city').value.trim(),
+        country:    document.getElementById('inp-country').value.trim(),
+        bio:        document.getElementById('inp-bio').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+      await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify(payload) });
+      Object.assign(profile, payload);
+      renderProfile();
+      toast('✅ Profil kaydedildi!');
+    } catch(e) {
+      console.error('Profil kaydetme hatası:', e);
+      toast('Kaydedilemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
+    btn.disabled = false; btn.textContent = 'Değişiklikleri Kaydet';
+  }
+
+  async function saveTags() {
+    try {
+      await sb(`profiles?id=eq.${currentUser.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ languages: selectedLangs, interests: selectedInterests, updated_at: new Date().toISOString() })
+      });
+      profile.languages = selectedLangs;
+      profile.interests = selectedInterests;
+      toast('✅ Tercihler kaydedildi!');
+    } catch(e) {
+      console.error('Tercih kaydetme hatası:', e);
+      toast('Kaydedilemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
+  }
+
+  async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast('Dosya 2MB\'dan küçük olmalı.', false); return; }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      const avDisplay = document.getElementById('avatar-display');
+      if (avDisplay) avDisplay.innerHTML = `<img src="${dataUrl}" alt="Avatar">`;
+
+      try {
+        const ext = file.name.split('.').pop();
+        const path = `avatars/${currentUser.id}.${ext}`;
+        const uploadRes = await fetch(`${SB_URL}/storage/v1/object/avatars/${path}`, {
+          method: 'POST',
+          headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': file.type, 'x-upsert': 'true' },
+          body: file
+        });
+        if (uploadRes.ok) {
+          const publicUrl = `${SB_URL}/storage/v1/object/public/avatars/${path}`;
+          await sb(`profiles?id=eq.${currentUser.id}`, { method:'PATCH', body: JSON.stringify({ avatar_url: publicUrl }) });
+          profile.avatar_url = publicUrl;
+          toast('✅ Fotoğraf güncellendi!');
+        } else {
+          toast('Fotoğraf yüklenemedi.', false);
+        }
+      } catch(e) {
+        console.error('Avatar hatası:', e);
+        toast('Yüklenemedi: ' + (e.message || 'bilinmeyen hata'), false);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ═══ HESAP SİLME ═══════════════════════════════════════════
+  // Das Mitglied loescht nicht selbst, es BEANTRAGT. Eine Loeschung
+  // ist unumkehrbar und greift in Dinge ein, an denen andere haengen
+  // (Antworten, Nachrichten, Bewertungen) — deshalb geht sie ueber
+  // einen Menschen.
+  //
+  // Die Frist im Text ist bewusst 14 Tage, nicht 48 Stunden:
+  // gesetzlich ist ein Monat erlaubt, und 48 Stunden waeren ein
+  // Versprechen, das an einem Urlaubstag bricht. Willst du es
+  // trotzdem knapper, aendere die naechste Zeile — sie ist die
+  // EINZIGE Stelle, an der die Frist steht.
+  const DELETION_SLA = 'en geç 14 gün içinde';
+
+  function deletionDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  // Zustand holen. Faellt das aus, bleibt der Mail-Weg uebrig —
+  // besser ein ehrlicher Hinweis als ein Knopf, von dem ich nicht
+  // weiss, ob er einen zweiten Antrag anlegt.
+  async function loadDeletionRequest() {
+    const box = document.getElementById('deletion-box');
+    if (!box || !currentUser) return;
+    try {
+      const rows = await sb(`deletion_requests?select=id,status,created_at&user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`);
+      renderDeletionBox((rows || [])[0] || null);
+    } catch (e) {
+      console.error('Silme talebi okunamadı:', e);
+      box.innerHTML = `<div style="font-size:13px;color:var(--muted);line-height:1.6;">
+        Silme talebi durumu şu anda okunamıyor. Hesabını sildirmek istiyorsan
+        <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebi" style="color:#B02020;font-weight:600;">support@bizdenbize.com</a>
+        adresine &laquo;Hesap Silme Talebi&raquo; konusuyla yaz.</div>`;
+    }
+  }
+
+  function renderDeletionBox(req) {
+    const box = document.getElementById('deletion-box');
+    if (!box) return;
+
+    // Offener Antrag: kein zweiter Knopf. Zurueckziehen geht nur
+    // ueber eine Mail — das Mitglied darf die Zeile nicht aendern.
+    if (req && req.status === 'pending') {
+      box.innerHTML = `
+        <div style="background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.35);border-radius:11px;padding:13px 15px;">
+          <div style="font-size:13.5px;font-weight:700;color:#8a6d1f;margin-bottom:5px;">⏳ Silme talebin alındı</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.65;">
+            Talep tarihi: <strong>${escBB(deletionDate(req.created_at))}</strong><br>
+            Verilerin yedeklendikten sonra hesabın kalıcı olarak silinecek —
+            ${DELETION_SLA}. İşlem bittiğinde e-posta ile haber vereceğiz.
           </div>
-        </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:9px;padding-top:9px;border-top:1px solid rgba(201,168,76,.25);">
+            Vazgeçtin mi?
+            <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebimi%20İptal%20Ediyorum" style="color:#8a6d1f;font-weight:600;">support@bizdenbize.com</a>
+            adresine yaz, talebini iptal edelim.
+          </div>
+        </div>`;
+      return;
+    }
+
+    // Abgelehnt: der Weg bleibt offen, aber ehrlich beschriftet.
+    const abgelehnt = req && req.status === 'rejected'
+      ? `<div style="background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12.5px;color:var(--muted);line-height:1.6;">
+           ${escBB(deletionDate(req.created_at))} tarihli talebin işleme alınmadı.
+           Nedenini öğrenmek için
+           <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebi" style="color:#B02020;font-weight:600;">support@bizdenbize.com</a>
+           adresine yazabilir ya da aşağıdan yeniden talep edebilirsin.
+         </div>`
+      : '';
+
+    box.innerHTML = abgelehnt + `
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+        Hesabını kendin silemezsin — talebini alır, verilerini yedekler ve biz sileriz.
+        Böylece başkalarının da bağlı olduğu içerikler (yanıtlar, mesajlar) düzgün temizlenir.
       </div>
 
-      <div class="content">
-        <div>
-          ${p.bio ? `
-          <div class="card">
-            <div class="card-title">👤 Hakkında</div>
-            <div class="bio-text">${escBB(p.bio)}</div>
-          </div>` : ''}
+      <div style="background:var(--warm,#F7F3EC);border-radius:11px;padding:13px 15px;margin-bottom:14px;">
+        <div style="font-size:12.5px;font-weight:700;color:#1A1208;margin-bottom:8px;">Ne olacak?</div>
+        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.8;">
+          <li>Hesabın, profilin, ilanların, gönderilerin ve mesajların kalıcı olarak silinir.</li>
+          <li>Bu işlem <strong>geri alınamaz.</strong></li>
+          <li>Talebin ${DELETION_SLA} işleme alınır; bittiğinde e-posta ile bilgilendirilirsin.</li>
+          <li>Hakkında şikayet varsa, yasal zorunluluk gereği şikayetin özeti (adın olmadan) 24 ay saklanır.</li>
+        </ul>
+      </div>
 
-          ${langTags ? `
-          <div class="card">
-            <div class="card-title">🌍 Diller</div>
-            <div class="tag-list">${langTags}</div>
-          </div>` : ''}
+      <div class="form-group">
+        <label class="form-label" for="deletion-reason">Ayrılma sebebin (isteğe bağlı)</label>
+        <textarea class="form-input form-textarea" id="deletion-reason" maxlength="500"
+                  placeholder="Bize yardımcı olur, ama zorunlu değil."></textarea>
+      </div>
 
-          ${intTags ? `
-          <div class="card">
-            <div class="card-title">✨ İlgi Alanları</div>
-            <div class="tag-list">${intTags}</div>
-          </div>` : ''}
+      <label style="display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.55;cursor:pointer;margin-bottom:14px;">
+        <input type="checkbox" id="deletion-confirm" onchange="toggleDeletionButton()" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer;">
+        <span>Hesabımın ve içeriklerimin kalıcı olarak silineceğini, bunun geri alınamayacağını anladım.</span>
+      </label>
 
-          <div class="card">
-            <div class="card-title">🏠 Tatil Takası Değerlendirmesi</div>
-            ${swapRating
-              ? `<div style="font-size:22px;color:var(--gold);margin-bottom:4px;">${'★'.repeat(Math.round(swapRating.avg_rating))}${'☆'.repeat(5-Math.round(swapRating.avg_rating))} <span style="font-size:15px;color:var(--ink);font-weight:700;">${swapRating.avg_rating}</span></div>
-                 <div style="font-size:12px;color:var(--muted);">${swapRating.review_count} değerlendirme (ev sahibi ve misafir olarak birlikte)</div>`
-              : `<div class="empty">Henüz ev takası değerlendirmesi yok.</div>`}
-          </div>
-
-          <div class="card">
-            <div class="card-title">📋 İlanlar</div>
-            ${listingHtml}
-          </div>
-        </div>
-
-        <div>
-          ${connectSection}
-          <div class="card">
-            <div class="card-title">📅 Üye Bilgisi</div>
-            <div style="font-size:13px;color:var(--muted);line-height:2;">
-              <div>📅 Katılım: <strong style="color:var(--ink);">${since}</strong></div>
-              <div>🌍 Konum: <strong style="color:var(--ink);">${escBB(p.city||'—')}</strong></div>
-              <div>💬 Dil: <strong style="color:var(--ink);">${(p.languages||[]).length} dil</strong></div>
-            </div>
-          </div>
-        </div>
-      </div>`;
+      <button class="btn-save" id="deletion-submit" onclick="requestDeletion()" disabled
+              style="background:#B02020;opacity:.45;cursor:not-allowed;">
+        Hesabımı silmeyi talep et
+      </button>`;
   }
 
-  function showError(title, sub) {
-    document.getElementById('page-content').innerHTML = `
-      <div class="error-state">
-        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;">${escBB(title)}</div>
-        <div style="font-size:14px;color:var(--muted);">${sub}</div>
-        <a href="mahallem.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:var(--deep, #002266);color:#fff;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">← Mahallem'e Dön</a>
-      </div>`;
+  function toggleDeletionButton() {
+    const cb  = document.getElementById('deletion-confirm');
+    const btn = document.getElementById('deletion-submit');
+    if (!cb || !btn) return;
+    btn.disabled = !cb.checked;
+    btn.style.opacity = cb.checked ? '1' : '.45';
+    btn.style.cursor  = cb.checked ? 'pointer' : 'not-allowed';
+  }
+
+  async function requestDeletion() {
+    const cb = document.getElementById('deletion-confirm');
+    if (!cb || !cb.checked) { toast('Önce onay kutusunu işaretle.', false); return; }
+    if (!currentUser) { toast('Oturum bulunamadı, sayfayı yenile.', false); return; }
+    if (!confirm('Hesabını silme talebin gönderilecek.\n\nOnayladığında hesabın ve tüm içeriklerin kalıcı olarak silinecek. Bu işlem geri alınamaz.\n\nDevam edilsin mi?')) return;
+
+    const btn = document.getElementById('deletion-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+    const raw = (document.getElementById('deletion-reason') || {}).value || '';
+    const reason = raw.trim().slice(0, 500);
+
+    try {
+      // Nur eine Zeile — kein Konto wird hier angefasst.
+      const rows = await sb('deletion_requests', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: currentUser.id, reason: reason || null, status: 'pending' })
+      });
+      // POST ohne zurueckgegebene Zeile heisst: nichts geschrieben.
+      // sb() faengt das nur fuer PATCH/DELETE ab, hier also selbst.
+      if (!Array.isArray(rows) || rows.length === 0) {
+        throw new Error('Talep kaydedilmedi (veritabanı boş yanıt döndü).');
+      }
+      toast('Silme talebin alındı. E-posta ile haber vereceğiz.');
+      renderDeletionBox(rows[0]);
+    } catch (e) {
+      console.error('Silme talebi gönderilemedi:', e);
+      const m = String(e && e.message || '');
+      if (/409|duplicate|unique/i.test(m)) {
+        // Der Teil-Index aus Skript 42 hat gegriffen. Mit await, sonst
+        // bleibt der Knopf auf "Gönderiliyor..." stehen, bis das
+        // Neuladen irgendwann durch ist.
+        toast('Zaten bekleyen bir silme talebin var.', false);
+        await loadDeletionRequest();
+        return;
+      }
+      toast('Talep gönderilemedi: ' + (m || 'bilinmeyen hata'), false);
+      if (btn) { btn.disabled = false; btn.textContent = 'Hesabımı silmeyi talep et'; }
+    }
   }
 
   init();
-
 </script>
-
-<!-- REPORT MODAL -->
-<div class="modal-overlay" id="report-modal" onclick="if(event.target===this)closeReportModal()">
-  <div class="modal-box">
-    <div class="modal-title">🚩 Kullanıcıyı Şikayet Et</div>
-    <div class="modal-sub">Topluluk kurallarını ihlal eden içerikleri bildirin. Ekibimiz en kısa sürede inceleyecek.</div>
-    <select class="report-select" id="report-reason">
-      <option value="">Şikayet nedeni seçin...</option>
-      <option value="spam">📢 Spam / Reklam</option>
-      <option value="harassment">😡 Taciz / Küfür</option>
-      <option value="fake">🎭 Sahte Hesap</option>
-      <option value="inappropriate">🚫 Uygunsuz İçerik</option>
-      <option value="scam">💸 Dolandırıcılık</option>
-      <option value="other">📝 Diğer</option>
-    </select>
-    <textarea class="report-textarea" id="report-details" placeholder="Ek açıklama (isteğe bağlı)..."></textarea>
-    <button class="btn-submit-report" id="report-submit-btn" onclick="submitReport()">Şikayeti Gönder</button>
-    <button class="btn-cancel-report" onclick="closeReportModal()">İptal</button>
-  </div>
-</div>
-
+<script type="module" src="nav-msg-badge.js"></script>
 <script>
-  const SB_URL_R  = 'https://wxjudojlwksivhzjnmim.supabase.co';
-  const SB_ANON_R = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4anVkb2psd2tzaXZoempubWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzM1MDUsImV4cCI6MjA5Mzk0OTUwNX0.sRvZXS389i9MwCtLoDgfqJKyRsZLMXLNAJbsMZN9wOY';
-  let _reportTargetId = null, _reportType = null;
+// --- nav avatar menu + logout (was missing on this page) ---
+    function toggleAvatarMenu() { const menu = document.getElementById('avatar-menu'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none'; }
+    document.addEventListener('click', function(e) { if (!e.target.closest('#nav-avatar') && !e.target.closest('#avatar-menu')) { const menu = document.getElementById('avatar-menu'); if (menu) menu.style.display = 'none'; } });
 
-  function openReportModal(targetId, type) {
-    _reportTargetId = targetId; _reportType = type;
-    document.getElementById('report-reason').value = '';
-    document.getElementById('report-details').value = '';
-    document.getElementById('report-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+  // ── ORTSSUCHE ──────────────────────────────────────────────────────
+  // Dieselbe Google-Ortssuche wie im Onboarding, mit language=de.
+  //
+  // Vorher war die Stadt hier ein freies Textfeld. Was das Onboarding
+  // sauber gesetzt hatte, konnte hier jeder ueberschreiben — und weil
+  // der Stadtfilter exakt vergleicht, fanden sich Nachbarn dann nicht
+  // mehr. Jetzt gibt es nur noch einen Weg, eine Stadt einzutragen.
+  //
+  // Unterschied zum Onboarding: dort ist das Feld leer und wird beim
+  // Tippen geleert. Hier steht schon ein Wert drin, und wer nur seine
+  // Bio aendert, soll nicht seine Stadt verlieren. Deshalb wird nichts
+  // geleert — stattdessen wird beim Speichern geprueft.
+
+  let cityBestaetigt = null;   // zuletzt aus der Liste gewaehlter Name
+
+  window.initProfilePlaces = function () {
+    const input = document.getElementById('inp-city');
+    if (!input || !window.google || !google.maps || !google.maps.places) return;
+
+    // Chrome ignoriert autocomplete="off"; der readonly-Trick verhindert,
+    // dass der Browser seine eigene Vorschlagsliste darueberlegt.
+    input.setAttribute('readonly', true);
+    setTimeout(() => input.removeAttribute('readonly'), 500);
+
+  // ── ÜLKE ADI: her yerde Türkçe ──
+  // Google'dan şehir adlarını doğru yazımla almak için dili Almancaya
+  // sabitledik (language=de). Yan etkisi: ülke adı da Almanca geliyor —
+  // "Deutschland". Platform baştan sona Türkçe olduğu için ülkeyi
+  // kaydetmeden önce Türkçeye çeviriyoruz. Tanımadığımız bir ülke
+  // gelirse Google'ın verdiği ad olduğu gibi kalır; uydurmuyoruz.
+  function ulkeAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'deutschland': 'Almanya', 'germany': 'Almanya', 'almanya': 'Almanya',
+      'österreich': 'Avusturya', 'osterreich': 'Avusturya', 'austria': 'Avusturya',
+      'schweiz': 'İsviçre', 'switzerland': 'İsviçre', 'suisse': 'İsviçre',
+      'niederlande': 'Hollanda', 'netherlands': 'Hollanda', 'holland': 'Hollanda',
+      'belgien': 'Belçika', 'belgium': 'Belçika', 'belgique': 'Belçika',
+      'frankreich': 'Fransa', 'france': 'Fransa',
+      'türkei': 'Türkiye', 'turkei': 'Türkiye', 'turkey': 'Türkiye',
+      'türkiye': 'Türkiye', 'turkiye': 'Türkiye',
+      'vereinigtes königreich': 'Birleşik Krallık', 'united kingdom': 'Birleşik Krallık',
+      'england': 'Birleşik Krallık',
+      'italien': 'İtalya', 'italy': 'İtalya', 'italia': 'İtalya',
+      'spanien': 'İspanya', 'spain': 'İspanya', 'españa': 'İspanya',
+      'schweden': 'İsveç', 'sweden': 'İsveç',
+      'dänemark': 'Danimarka', 'danemark': 'Danimarka', 'denmark': 'Danimarka',
+      'norwegen': 'Norveç', 'norway': 'Norveç',
+      'polen': 'Polonya', 'poland': 'Polonya',
+      'tschechien': 'Çekya', 'czechia': 'Çekya', 'czech republic': 'Çekya',
+      'luxemburg': 'Lüksemburg', 'luxembourg': 'Lüksemburg',
+      'griechenland': 'Yunanistan', 'greece': 'Yunanistan',
+      'portugal': 'Portekiz',
+      'ungarn': 'Macaristan', 'hungary': 'Macaristan',
+      'rumänien': 'Romanya', 'rumanien': 'Romanya', 'romania': 'Romanya',
+      'bulgarien': 'Bulgaristan', 'bulgaria': 'Bulgaristan',
+      'kanada': 'Kanada', 'canada': 'Kanada',
+      'vereinigte staaten von amerika': 'ABD', 'vereinigte staaten': 'ABD',
+      'united states': 'ABD', 'usa': 'ABD'
+    };
+    return harita[a] || String(ad || '').trim();
   }
-  function closeReportModal() {
-    document.getElementById('report-modal').classList.remove('open');
-    document.body.style.overflow = '';
+
+  // ── ŞEHİR ADI: Türkçe yazılışı Almanca karşılığına çevirir ──
+  // Google'ın listesinde "Münih" gibi Türkçe adlar da çıkıyor ama bu
+  // kayıtlarda çoğu zaman adres bilgisi olmuyor. O yüzden adı kendimiz
+  // karşılıyoruz; böylece "Münih" yazan da "München" yazan da aynı
+  // mahalleye düşer. Tanımadığımız şehir olduğu gibi kalır.
+  function sehirAdiTr(ad) {
+    const a = String(ad || '').trim().toLowerCase();
+    const harita = {
+      'münih': 'München', 'munih': 'München', 'munich': 'München',
+      'kolonya': 'Köln', 'cologne': 'Köln', 'koln': 'Köln',
+      'nürnberg': 'Nürnberg', 'nurnberg': 'Nürnberg', 'nuremberg': 'Nürnberg',
+      'münster': 'Münster', 'munster': 'Münster',
+      'düsseldorf': 'Düsseldorf', 'dusseldorf': 'Düsseldorf',
+      'frankfurt': 'Frankfurt am Main',
+      'hanover': 'Hannover',
+      'viyana': 'Wien', 'vienna': 'Wien',
+      'zürih': 'Zürich', 'zurih': 'Zürich', 'zurich': 'Zürich',
+      'cenevre': 'Genf', 'geneva': 'Genf',
+      'brüksel': 'Brüssel', 'bruksel': 'Brüssel', 'brussels': 'Brüssel',
+      'lahey': 'Den Haag', 'the hague': 'Den Haag',
+      'amsterdam': 'Amsterdam'
+    };
+    return harita[a] || String(ad || '').trim();
   }
 
-  async function submitReport() {
-    const reason = document.getElementById('report-reason').value;
-    const details = document.getElementById('report-details').value.trim();
-    if (!reason) { document.getElementById('report-reason').style.borderColor = 'var(--red)'; return; }
+    const ac = new google.maps.places.Autocomplete(input, {
+      types: ['(cities)'],
+      fields: ['address_components', 'name'],
+    });
 
-    const btn = document.getElementById('report-submit-btn');
-    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+    // Kullanıcı yazmaya devam ederse önceki onay YEŞİL KALMAMALI.
+    // Eskiden "✓ München, Almanya" yazısı öylece duruyordu; kişi
+    // "Augsburg" yazarken ekranda hâlâ Münih onayı görünüyordu.
+    input.addEventListener('input', function () {
+      const hint = document.getElementById('city-hint');
+      if (!hint) return;
+      if (input.value.trim() === (cityBestaetigt || '')) return;
+      hint.textContent = 'Listeden bir şehir seç — ülke kendiliğinden dolar.';
+      hint.style.color = 'var(--muted)';
+    });
 
-    try {
-      const { supabase } = await import('./bizdenbize-client.js');
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      if (!token) { alert('Şikayet göndermek için giriş yapmalısınız.'); btn.disabled = false; btn.textContent = 'Şikayeti Gönder'; return; }
-      const { data: { user } } = await supabase.auth.getUser();
+    google.maps.event.addListener(ac, 'place_changed', function () {
+      const place = ac.getPlace();
 
-      const payload = {
-        reporter_id: user.id,
-        type: _reportType,
-        reason,
-        details: details || null
-      };
-      if (_reportType === 'user') payload.reported_user_id = _reportTargetId;
+      // Google bazen SADECE adı döndürür, adres bilgisi olmadan — Türkçe
+      // yazılan "Münih" böyle geliyor. Eskiden burada sessizce çıkıyorduk:
+      // hiçbir şey olmuyor, hiçbir uyarı çıkmıyordu ve kişi şehri
+      // kaydedemiyordu. Artık elimizdeki adı kullanıyoruz.
+      if (!place || !place.address_components) {
+        const sadeAd = sehirAdiTr(place && place.name ? place.name : input.value);
+        const hint0 = document.getElementById('city-hint');
+        if (sadeAd) {
+          input.value = sadeAd;
+          cityBestaetigt = sadeAd;
+          if (hint0) {
+            hint0.textContent = '✓ ' + sadeAd;
+            hint0.style.color = 'var(--green,#1E7B4B)';
+          }
+        } else if (hint0) {
+          hint0.textContent = 'Şehir alınamadı — listeden bir şehir seç.';
+          hint0.style.color = 'var(--red)';
+        }
+        return;
+      }
 
-      const res = await fetch(`${SB_URL_R}/rest/v1/reports`, {
-        method: 'POST',
-        headers: { 'apikey': SB_ANON_R, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify(payload)
+      let city = '', country = '';
+      place.address_components.forEach(c => {
+        if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city) city = c.long_name;
+        if (c.types.includes('administrative_area_level_1') && !city) city = c.long_name;
+        if (c.types.includes('country')) country = c.long_name;
       });
-      if (!res.ok) throw new Error(await res.text());
+      country = ulkeAdiTr(country);
+      const name = sehirAdiTr(city || place.name || '');
+      input.value = name;
+      cityBestaetigt = name;
+      const cEl = document.getElementById('inp-country');
+      if (cEl && country) cEl.value = country;
+      const hint = document.getElementById('city-hint');
+      if (hint) {
+        hint.textContent = '✓ ' + name + (country ? ', ' + country : '');
+        hint.style.color = 'var(--green,#1E7B4B)';
+      }
+    });
 
-      document.querySelector('#report-modal .modal-box').innerHTML = `
-        <div style="text-align:center;padding:16px 0;">
-          <div style="font-size:40px;margin-bottom:12px;">✅</div>
-          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;">Şikayet alındı</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;">Ekibimiz en kısa sürede inceleyecek. Desteğiniz için teşekkürler.</div>
-          <button onclick="closeReportModal()" style="padding:10px 28px;background:var(--deep, #002266);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;">Kapat</button>
-        </div>`;
-    } catch(e) {
-      btn.disabled = false; btn.textContent = 'Şikayeti Gönder';
-      alert('Hata oluştu: ' + e.message);
-    }
-  }
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  };
 </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&language=de&region=DE&callback=initProfilePlaces" async defer></script>
   <script src="legal-footer.js" defer></script>
   <script src="site-footer.js" defer></script>
 </body>
