@@ -724,7 +724,13 @@
       </div>
       <!-- İşveren iletişim (yalnızca İş İlanı türünde) -->
       <div id="employer-contact" style="display:none;">
-        <label class="field-label">İletişim <span style="font-weight:400;color:var(--muted);font-size:11px;">(yalnızca işveren ilanlarında herkese açık gösterilir)</span></label>
+        <!-- Hier stand "herkese açık gösterilir" — fuer alle sichtbar. Das war
+             bis zum 30.10.2026 auch wahr: die Datenbankregel liess jeden ohne
+             Konto die freigegebenen Anzeigen samt Kontakt lesen. Seit der
+             Verengung auf Mitglieder stimmt es nicht mehr, also aendert sich
+             auch der Satz. Ein Versprechen, das weiter geht als die Sache
+             dahinter, ist genau das, was wir hier ueberall abgebaut haben. -->
+        <label class="field-label">İletişim <span style="font-weight:400;color:var(--muted);font-size:11px;">(yalnızca işveren ilanlarında, tüm üyelere görünür)</span></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input class="field-input" id="p-email" type="email" placeholder="E-posta" style="flex:1;min-width:140px;">
           <input class="field-input" id="p-whatsapp" type="tel" placeholder="WhatsApp (+49...)" style="flex:1;min-width:140px;">
