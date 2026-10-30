@@ -846,6 +846,39 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ── Auf die Sitzung warten, nicht auf das Versprechen. 30.10.2026 ──
+  // window._authReady entsteht oben in einem Modul-Skript (type=module).
+  // Module laufen IMMER verzoegert, erst nach allen gewoehnlichen Skripten.
+  // Dieser Block ist ein gewoehnliches Skript und laeuft frueher — zu dem
+  // Zeitpunkt ist _authReady noch undefined. Die alte Zeile
+  //     await (window._authReady || Promise.resolve());
+  // wartete deshalb auf nichts: _currentSession blieb leer, und der Abruf
+  // ging mit dem oeffentlichen Schluessel hinaus statt mit der Sitzung.
+  //
+  // Solange die Leseregel auf `jobs` bedingungslos war, fiel das nie auf —
+  // der oeffentliche Schluessel durfte die freigegebenen Anzeigen lesen.
+  // Seit der Verengung auf Mitglieder am 30.10. blieb die Liste leer,
+  // obwohl zwei Anzeigen da waren. Der Fehler war vorher schon da, nur
+  // unsichtbar.
+  //
+  // initNavAvatar weiter oben loest dasselbe Problem bereits so: nicht auf
+  // die Reihenfolge der Skripte vertrauen, sondern nachsehen, bis die
+  // Sitzung steht.
+  async function warteAufSitzung(maxMs = 5000) {
+    const start = Date.now();
+    while (Date.now() - start < maxMs) {
+      if (window._currentSession) return window._currentSession;
+      if (window._authReady) {
+        try { await window._authReady; } catch (_) { /* egal */ }
+        return window._currentSession || null;
+      }
+      await new Promise(r => setTimeout(r, 50));
+    }
+    // Nach fuenf Sekunden aufgeben statt die Seite haengen zu lassen. Wer
+    // abgemeldet ist, wird ohnehin von auth-gate.js zur Anmeldung geschickt.
+    return window._currentSession || null;
+  }
+
   // ── Supabase Integration ──
   const _SB_URL = 'https://wxjudojlwksivhzjnmim.supabase.co';
   const _SB_KEY = 'sb_publishable_52tr_hEnnQ3kllZexTue0Q_ByF71303';
@@ -1112,7 +1145,7 @@
   }
 
   async function openSeekerPostModal() {
-    await window._authReady;
+    await warteAufSitzung();   // 30.10.: dieselbe Falle, siehe oben
     const session = window._currentSession;
     if (!session) {
       alert('İlan vermek için önce giriş yapmalısın.');
@@ -1395,7 +1428,7 @@
     const container = document.getElementById('listings');
     if (container) container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);">⏳ Yükleniyor...</div>';
     try {
-      await (window._authReady || Promise.resolve());
+      await warteAufSitzung();   // 30.10.: siehe Hinweis bei warteAufSitzung()
       const rows = await sbGetAuth('jobs', 'status=eq.approved&order=is_featured.desc,created_at.desc');
       let nameMap = {};
       const ids = [...new Set((rows||[]).map(r => r.author_id).filter(Boolean))];
