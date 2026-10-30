@@ -747,8 +747,15 @@
       <div class="card">
         <div class="card-head">
           <div class="card-title">🗑️ Hesap Silme Talepleri</div>
-          <div style="font-size:12px;color:var(--muted);">Talepleri inceleyip onaylayın veya reddedin. Onay verdiğinizde hesap kalıcı olarak silinir.</div>
+          <div style="font-size:12px;color:var(--muted);">Talepleri inceleyip uygulayın veya reddedin. Uyguladığınızda hesap ve içerikleri kalıcı olarak silinir; talep satırı da onunla birlikte kaybolur.</div>
         </div>
+
+        <!-- Nach dem Löschen gibt es die E-Mail-Adresse nicht mehr.
+             Sie wird vorher geholt und bleibt HIER stehen, bis Naz
+             die Benachrichtigung verschickt hat. Ein Toast waere
+             nach dem ersten Klick weg. -->
+        <div id="deletion-notify-box" style="display:none;margin:0 0 14px;"></div>
+
         <table>
           <thead>
             <tr>
@@ -2075,16 +2082,204 @@
     catch(e) { toast('Hata.', false); }
   }
 
+  // ═══ HESAP SİLME TALEPLERİ ═════════════════════════════════
+  // Drei Dinge waren hier kaputt oder fehlten (30.10.2026):
+  //
+  // 1. Die Tabelle hat SECHS Spaltenkoepfe, die Zeilen hatten FUENF
+  //    Zellen. Die E-posta-Spalte war nie gefuellt, alles rechts
+  //    davon stand unter der falschen Ueberschrift.
+  // 2. Es gab nur "Reddet". Die Beschreibung versprach "onaylayın
+  //    veya reddedin" — den Onay-Weg gab es nicht.
+  // 3. catch(e) {} verschluckte jeden Fehler. Schlug die Abfrage
+  //    fehl, blieb "Yükleniyor..." stehen, ohne jeden Hinweis.
+  //
+  // WICHTIG — die Reihenfolge beim Ausfuehren:
+  // deletion_requests.user_id haengt mit ON DELETE CASCADE an
+  // auth.users. Sobald das Konto weg ist, ist die Antragszeile
+  // MIT weg — und die E-Mail-Adresse auch. Deshalb wird alles,
+  // was nachher gebraucht wird, VORHER geholt.
   let allDeletions = [];
-  async function loadDeletions() {
-    try {
-      const data = await sb('deletion_requests?select=*&order=created_at.desc'); allDeletions = data;
-      document.getElementById('deletions-tbody').innerHTML = data.length ? data.map(d => `<tr><td>${escH(d.user_id?.slice(0,8)+'…')}</td><td>${escH(d.reason||'—')}</td><td>${fmtDate(d.created_at)}</td><td>${escH(d.status)}</td><td><button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button></td></tr>`).join('') : `<tr class="loading-row"><td colspan="5">Talep bulunamadı.</td></tr>`;
-    } catch(e) {}
+  let deletionProfiles = {};   // user_id -> { email, first_name, last_name }
+
+  function deletionAge(iso) {
+    if (!iso) return '—';
+    const t = new Date(iso);
+    if (isNaN(t)) return '—';
+    const tage = Math.floor((Date.now() - t.getTime()) / 86400000);
+    if (tage <= 0) return 'bugün';
+    if (tage === 1) return 'dün';
+    return tage + ' gün önce';
   }
+
+  async function loadDeletions() {
+    const tb = document.getElementById('deletions-tbody');
+    if (!tb) return;
+    try {
+      const data = await sb('deletion_requests?select=*&order=created_at.desc');
+      allDeletions = data || [];
+
+      // Namen und Adressen in EINEM Nachschlag. Der Fremdschluessel
+      // zeigt auf auth.users, nicht auf profiles — PostgREST kann das
+      // nicht selbst verbinden, also zwei Abfragen.
+      deletionProfiles = {};
+      const ids = [...new Set(allDeletions.map(d => d.user_id).filter(Boolean))];
+      if (ids.length) {
+        try {
+          const ps = await sb(`profiles?select=id,email,first_name,last_name&id=in.(${ids.join(',')})`);
+          (ps || []).forEach(p => { deletionProfiles[p.id] = p; });
+        } catch (e) { console.error('Silme talepleri: profiller okunamadı', e); }
+      }
+
+      const b = document.getElementById('badge-deletions');
+      if (b) b.textContent = allDeletions.filter(d => d.status === 'pending').length || '0';
+
+      if (!allDeletions.length) {
+        tb.innerHTML = `<tr class="loading-row"><td colspan="6">Talep bulunamadı.</td></tr>`;
+        return;
+      }
+
+      tb.innerHTML = allDeletions.map(d => {
+        const p    = deletionProfiles[d.user_id] || {};
+        const name = `${p.first_name || ''} ${p.last_name || ''}`.trim();
+        const offen = d.status === 'pending';
+        const durum = offen
+          ? '<span class="badge badge-red">Bekliyor</span>'
+          : `<span class="badge">${escH(d.status)}</span>`;
+        // Nur die Kennung geht in den Knopf. Namen und Gruende werden
+        // nachgeschlagen — ein Apostroph im Namen wuerde sonst die
+        // JS-Zeichenkette im Attribut beenden.
+        const knoepfe = offen
+          ? `<button class="btn btn-sm btn-red" onclick="approveDeletion('${d.id}')">🗑️ Uygula</button>
+             <button class="btn btn-sm btn-muted" onclick="rejectDeletion('${d.id}')">✗ Reddet</button>`
+          : '<span style="font-size:12px;color:var(--muted);">—</span>';
+        return `<tr>
+          <td>${name ? escH(name) : `<span style="font-size:12px;color:var(--muted);">${escH((d.user_id || '').slice(0, 8))}…</span>`}</td>
+          <td style="font-size:12px;">${p.email ? escH(p.email) : '<span style="color:var(--muted);">—</span>'}</td>
+          <td style="font-size:12px;color:var(--muted);">${escH(d.reason || '—')}</td>
+          <td style="font-size:12px;">${fmtDate(d.created_at)}<div style="color:var(--muted);font-size:11px;">${escH(deletionAge(d.created_at))}</div></td>
+          <td>${durum}</td>
+          <td>${knoepfe}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      // Vorher: catch(e) {} — "Yükleniyor..." blieb stehen.
+      console.error('Silme talepleri yüklenemedi:', e);
+      tb.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--red);">Talepler yüklenemedi: ${escH(e.message || 'bilinmeyen hata')}</td></tr>`;
+    }
+  }
+
   async function rejectDeletion(id) {
-    try { await sb(`deletion_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'rejected' }) }); loadDeletions(); toast('Reddedildi.'); }
-    catch(e) { toast('Hata.', false); }
+    const d = allDeletions.find(x => String(x.id) === String(id));
+    const p = d ? (deletionProfiles[d.user_id] || {}) : {};
+    const name = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Bu kullanıcı';
+    if (!confirm(`${name} adlı kişinin silme talebi reddedilecek.\n\nHesap silinmeyecek. Kişi profilinde bunu görecek ve yeniden talep edebilecek.\n\nDevam edilsin mi?`)) return;
+    try {
+      await sb(`deletion_requests?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'rejected', reviewed_at: new Date().toISOString() }) });
+      loadDeletions();
+      toast('Talep reddedildi.');
+    } catch (e) {
+      console.error('Reddetme hatası:', e);
+      toast('Reddedilemedi: ' + (e.message || 'bilinmeyen hata'), false);
+    }
+  }
+
+  // Antrag ausfuehren. Erst sichern, dann loeschen, dann
+  // benachrichtigen — und die Adresse vorher festhalten, weil sie
+  // nach dem Loeschen nicht mehr existiert.
+  async function approveDeletion(id) {
+    const d = allDeletions.find(x => String(x.id) === String(id));
+    if (!d) { toast('Talep bulunamadı, listeyi yenileyin.', false); return; }
+    if (d.status !== 'pending') { toast('Bu talep zaten işlenmiş.', false); return; }
+    if (!d.user_id) { toast('Bu talepte kullanıcı kimliği yok, silinemez.', false); return; }
+    if (d.user_id === currentUserId) { toast('Kendi hesabınızı buradan silemezsiniz.', false); return; }
+
+    const p     = deletionProfiles[d.user_id] || {};
+    const name  = `${p.first_name || ''} ${p.last_name || ''}`.trim() || '—';
+    const email = p.email || '';
+
+    if (!email && !confirm('Bu kişinin e-posta adresi bulunamadı.\n\nSilersen ona haber veremezsin. Yine de devam edilsin mi?')) return;
+
+    if (!confirm(
+      `${name} (${email || 'e-posta yok'}) kalıcı olarak silinecek.\n\n` +
+      `Talep tarihi: ${fmtDate(d.created_at)}\n` +
+      `Sebep: ${d.reason || '—'}\n\n` +
+      `Verilerini YEDEKLEDİĞİNDEN emin ol — bu işlem geri alınamaz.\n` +
+      `Şikayet geçmişi özeti saklanacak (24 ay), hesap ve içerikleri silinecek.\n\n` +
+      `Devam edilsin mi?`)) return;
+
+    try {
+      // 1. Schnappschuss. Danach existieren die Meldungen nicht mehr.
+      const rec = await fetch(`${SB_URL}/rest/v1/rpc/record_user_deletion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+        body: JSON.stringify({
+          p_user_id: d.user_id,
+          p_deletion_type: 'user_request',
+          p_reason_code: 'user_request',
+          p_notes: d.reason ? ('Kullanıcı talebi: ' + d.reason) : 'Kullanıcı talebi'
+        })
+      });
+      if (!rec.ok) throw new Error('Silme kaydı oluşturulamadı, silme iptal edildi: ' + await rec.text());
+
+      // 2. Loeschen. Die Antragszeile verschwindet mit (CASCADE).
+      const res = await fetch(`${SB_URL}/rest/v1/rpc/admin_delete_user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+        body: JSON.stringify({ p_user_id: d.user_id })
+      });
+      if (!res.ok) throw new Error(await res.text());
+
+      // 3. ZUERST die Benachrichtigung anzeigen. Das Konto ist ab
+      //    hier weg; die Adresse steht nirgendwo sonst mehr. Alles,
+      //    was danach kommt, ist Kosmetik und darf das nicht
+      //    verhindern — deshalb jede Nacharbeit in eigenem try.
+      showDeletionNotice(name, email);
+      toast('🗑️ Hesap silindi. Şimdi kişiye haber ver.');
+      try {
+        if (Array.isArray(allUsers)) { allUsers = allUsers.filter(u => u.id !== d.user_id); renderUsers(allUsers); }
+      } catch (e2) { console.error('Kullanıcı listesi tazelenemedi:', e2); }
+      try { loadDeletions(); } catch (e2) { console.error('Talep listesi tazelenemedi:', e2); }
+    } catch (e) {
+      console.error('Silme hatası:', e);
+      toast('Silme hatası: ' + (e.message || 'bilinmeyen hata'), false);
+    }
+  }
+
+  // Der Kasten bleibt stehen, bis sie ihn selbst schliesst. Die
+  // Adresse ist nach dem Loeschen nirgendwo sonst mehr zu holen.
+  function showDeletionNotice(name, email) {
+    const box = document.getElementById('deletion-notify-box');
+    if (!box) return;
+    const betreff = 'BizdenBize hesabınız silindi';
+    const text =
+      'Merhaba' + (name && name !== '—' ? ' ' + name : '') + ',\n\n' +
+      'Talebin üzerine BizdenBize hesabın ve içeriklerin kalıcı olarak silindi.\n\n' +
+      'Hakkında bir şikayet kaydı varsa, yasal zorunluluk gereği adın olmadan özeti 24 ay saklanır. Bunun dışında hiçbir verin sistemimizde kalmadı.\n\n' +
+      'Bize zaman ayırdığın için teşekkür ederiz. Dilersen her zaman yeniden katılabilirsin.\n\n' +
+      'BizdenBize\nsupport@bizdenbize.com';
+    const link = email
+      ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(text)}`
+      : '';
+    box.style.display = 'block';
+    box.innerHTML = `
+      <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:11px;padding:13px 15px;">
+        <div style="font-size:13px;font-weight:700;color:#8a6d1f;margin-bottom:6px;">📧 Bu kişiye haber vermen gerekiyor</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:10px;">
+          <strong>${escH(name)}</strong> silindi. E-posta adresi artık veritabanında yok —
+          bu kutuyu kapatırsan adresi kaybedersin.<br>
+          Adres: <strong style="user-select:all;">${email ? escH(email) : 'bulunamadı'}</strong>
+        </div>
+        ${link ? `<a href="${escH(link)}" class="btn btn-sm btn-red" style="text-decoration:none;display:inline-block;">✉️ Bilgilendirme e-postasını aç</a>` : ''}
+        <button class="btn btn-sm btn-muted" onclick="hideDeletionNotice()" style="margin-left:6px;">Haber verdim, kapat</button>
+      </div>`;
+  }
+
+  function hideDeletionNotice() {
+    const box = document.getElementById('deletion-notify-box');
+    if (!box) return;
+    if (!confirm('Kutuyu kapatıyorsun. E-posta adresi bir daha gösterilemez.\n\nKişiye haber verdin mi?')) return;
+    box.style.display = 'none';
+    box.innerHTML = '';
   }
 
   init();
