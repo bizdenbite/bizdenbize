@@ -2130,6 +2130,30 @@
         } catch (e) { console.error('Silme talepleri: profiller okunamadı', e); }
       }
 
+      // profiles.email ist nicht bei jedem gefuellt — im ersten Test
+      // stand in der E-posta-Spalte ein Strich. Die verlaessliche
+      // Adresse steht in auth.users, und dorthin kommt das Panel nur
+      // ueber admin_user_email() (Skript 44). Ohne die Adresse gibt
+      // es nach dem Loeschen keinen Weg mehr, die Person zu
+      // benachrichtigen.
+      // Gibt es die Funktion noch nicht, bleibt der Strich stehen und
+      // die Liste arbeitet weiter — kein Grund, alles anzuhalten.
+      const fehlt = [...new Set(allDeletions
+        .map(d => d.user_id)
+        .filter(uid => uid && !(deletionProfiles[uid] || {}).email))];
+      for (const uid of fehlt) {
+        try {
+          const r = await fetch(`${SB_URL}/rest/v1/rpc/admin_user_email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SB_ANON },
+            body: JSON.stringify({ p_user_id: uid })
+          });
+          if (!r.ok) { console.warn('admin_user_email:', r.status, await r.text()); continue; }
+          const adresse = await r.json();
+          if (adresse) deletionProfiles[uid] = { ...(deletionProfiles[uid] || {}), email: adresse };
+        } catch (e) { console.warn('admin_user_email:', e && e.message); }
+      }
+
       const b = document.getElementById('badge-deletions');
       if (b) b.textContent = allDeletions.filter(d => d.status === 'pending').length || '0';
 
