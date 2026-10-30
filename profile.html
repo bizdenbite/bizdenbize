@@ -304,6 +304,19 @@
         <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
       </div>
     </div>
+
+    <!-- HESAP SILME — Antrag, nicht Selbstloeschung.
+         Entscheidung vom 30.10.2026: das Mitglied stellt den Antrag,
+         Naz sichert die Daten und fuehrt aus. Diese Seite schreibt
+         deshalb nur eine Zeile in deletion_requests; sie fasst kein
+         Konto an. Der Inhalt wird in JS gerendert, weil es drei
+         Zustaende gibt (kein Antrag / offen / abgelehnt). -->
+    <div class="edit-section" id="deletion-section" style="border:1px solid rgba(212,43,43,.22);">
+      <div class="section-title" style="color:#B02020;">🗑️ Hesabımı Sil</div>
+      <div id="deletion-box">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Yükleniyor...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -431,6 +444,7 @@
       loadStats();
       loadActivity();
       loadMyListings();
+      loadDeletionRequest();
     } catch (e) {
       console.error('Init error:', e);
     }
@@ -768,6 +782,161 @@
       }
     };
     reader.readAsDataURL(file);
+  }
+
+  // ═══ HESAP SİLME ═══════════════════════════════════════════
+  // Das Mitglied loescht nicht selbst, es BEANTRAGT. Eine Loeschung
+  // ist unumkehrbar und greift in Dinge ein, an denen andere haengen
+  // (Antworten, Nachrichten, Bewertungen) — deshalb geht sie ueber
+  // einen Menschen.
+  //
+  // Die Frist im Text ist bewusst 14 Tage, nicht 48 Stunden:
+  // gesetzlich ist ein Monat erlaubt, und 48 Stunden waeren ein
+  // Versprechen, das an einem Urlaubstag bricht. Willst du es
+  // trotzdem knapper, aendere die naechste Zeile — sie ist die
+  // EINZIGE Stelle, an der die Frist steht.
+  const DELETION_SLA = 'en geç 14 gün içinde';
+
+  function deletionDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  // Zustand holen. Faellt das aus, bleibt der Mail-Weg uebrig —
+  // besser ein ehrlicher Hinweis als ein Knopf, von dem ich nicht
+  // weiss, ob er einen zweiten Antrag anlegt.
+  async function loadDeletionRequest() {
+    const box = document.getElementById('deletion-box');
+    if (!box || !currentUser) return;
+    try {
+      const rows = await sb(`deletion_requests?select=id,status,created_at&user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`);
+      renderDeletionBox((rows || [])[0] || null);
+    } catch (e) {
+      console.error('Silme talebi okunamadı:', e);
+      box.innerHTML = `<div style="font-size:13px;color:var(--muted);line-height:1.6;">
+        Silme talebi durumu şu anda okunamıyor. Hesabını sildirmek istiyorsan
+        <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebi" style="color:#B02020;font-weight:600;">support@bizdenbize.com</a>
+        adresine &laquo;Hesap Silme Talebi&raquo; konusuyla yaz.</div>`;
+    }
+  }
+
+  function renderDeletionBox(req) {
+    const box = document.getElementById('deletion-box');
+    if (!box) return;
+
+    // Offener Antrag: kein zweiter Knopf. Zurueckziehen geht nur
+    // ueber eine Mail — das Mitglied darf die Zeile nicht aendern.
+    if (req && req.status === 'pending') {
+      box.innerHTML = `
+        <div style="background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.35);border-radius:11px;padding:13px 15px;">
+          <div style="font-size:13.5px;font-weight:700;color:#8a6d1f;margin-bottom:5px;">⏳ Silme talebin alındı</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.65;">
+            Talep tarihi: <strong>${escBB(deletionDate(req.created_at))}</strong><br>
+            Verilerin yedeklendikten sonra hesabın kalıcı olarak silinecek —
+            ${DELETION_SLA}. İşlem bittiğinde e-posta ile haber vereceğiz.
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:9px;padding-top:9px;border-top:1px solid rgba(201,168,76,.25);">
+            Vazgeçtin mi?
+            <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebimi%20İptal%20Ediyorum" style="color:#8a6d1f;font-weight:600;">support@bizdenbize.com</a>
+            adresine yaz, talebini iptal edelim.
+          </div>
+        </div>`;
+      return;
+    }
+
+    // Abgelehnt: der Weg bleibt offen, aber ehrlich beschriftet.
+    const abgelehnt = req && req.status === 'rejected'
+      ? `<div style="background:rgba(212,43,43,.05);border:1px solid rgba(212,43,43,.2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12.5px;color:var(--muted);line-height:1.6;">
+           ${escBB(deletionDate(req.created_at))} tarihli talebin işleme alınmadı.
+           Nedenini öğrenmek için
+           <a href="mailto:support@bizdenbize.com?subject=Hesap%20Silme%20Talebi" style="color:#B02020;font-weight:600;">support@bizdenbize.com</a>
+           adresine yazabilir ya da aşağıdan yeniden talep edebilirsin.
+         </div>`
+      : '';
+
+    box.innerHTML = abgelehnt + `
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+        Hesabını kendin silemezsin — talebini alır, verilerini yedekler ve biz sileriz.
+        Böylece başkalarının da bağlı olduğu içerikler (yanıtlar, mesajlar) düzgün temizlenir.
+      </div>
+
+      <div style="background:var(--warm,#F7F3EC);border-radius:11px;padding:13px 15px;margin-bottom:14px;">
+        <div style="font-size:12.5px;font-weight:700;color:#1A1208;margin-bottom:8px;">Ne olacak?</div>
+        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.8;">
+          <li>Hesabın, profilin, ilanların, gönderilerin ve mesajların kalıcı olarak silinir.</li>
+          <li>Bu işlem <strong>geri alınamaz.</strong></li>
+          <li>Talebin ${DELETION_SLA} işleme alınır; bittiğinde e-posta ile bilgilendirilirsin.</li>
+          <li>Hakkında şikayet varsa, yasal zorunluluk gereği şikayetin özeti (adın olmadan) 24 ay saklanır.</li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="deletion-reason">Ayrılma sebebin (isteğe bağlı)</label>
+        <textarea class="form-input form-textarea" id="deletion-reason" maxlength="500"
+                  placeholder="Bize yardımcı olur, ama zorunlu değil."></textarea>
+      </div>
+
+      <label style="display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.55;cursor:pointer;margin-bottom:14px;">
+        <input type="checkbox" id="deletion-confirm" onchange="toggleDeletionButton()" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer;">
+        <span>Hesabımın ve içeriklerimin kalıcı olarak silineceğini, bunun geri alınamayacağını anladım.</span>
+      </label>
+
+      <button class="btn-save" id="deletion-submit" onclick="requestDeletion()" disabled
+              style="background:#B02020;opacity:.45;cursor:not-allowed;">
+        Hesabımı silmeyi talep et
+      </button>`;
+  }
+
+  function toggleDeletionButton() {
+    const cb  = document.getElementById('deletion-confirm');
+    const btn = document.getElementById('deletion-submit');
+    if (!cb || !btn) return;
+    btn.disabled = !cb.checked;
+    btn.style.opacity = cb.checked ? '1' : '.45';
+    btn.style.cursor  = cb.checked ? 'pointer' : 'not-allowed';
+  }
+
+  async function requestDeletion() {
+    const cb = document.getElementById('deletion-confirm');
+    if (!cb || !cb.checked) { toast('Önce onay kutusunu işaretle.', false); return; }
+    if (!currentUser) { toast('Oturum bulunamadı, sayfayı yenile.', false); return; }
+    if (!confirm('Hesabını silme talebin gönderilecek.\n\nOnayladığında hesabın ve tüm içeriklerin kalıcı olarak silinecek. Bu işlem geri alınamaz.\n\nDevam edilsin mi?')) return;
+
+    const btn = document.getElementById('deletion-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+    const raw = (document.getElementById('deletion-reason') || {}).value || '';
+    const reason = raw.trim().slice(0, 500);
+
+    try {
+      // Nur eine Zeile — kein Konto wird hier angefasst.
+      const rows = await sb('deletion_requests', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: currentUser.id, reason: reason || null, status: 'pending' })
+      });
+      // POST ohne zurueckgegebene Zeile heisst: nichts geschrieben.
+      // sb() faengt das nur fuer PATCH/DELETE ab, hier also selbst.
+      if (!Array.isArray(rows) || rows.length === 0) {
+        throw new Error('Talep kaydedilmedi (veritabanı boş yanıt döndü).');
+      }
+      toast('Silme talebin alındı. E-posta ile haber vereceğiz.');
+      renderDeletionBox(rows[0]);
+    } catch (e) {
+      console.error('Silme talebi gönderilemedi:', e);
+      const m = String(e && e.message || '');
+      if (/409|duplicate|unique/i.test(m)) {
+        // Der Teil-Index aus Skript 42 hat gegriffen. Mit await, sonst
+        // bleibt der Knopf auf "Gönderiliyor..." stehen, bis das
+        // Neuladen irgendwann durch ist.
+        toast('Zaten bekleyen bir silme talebin var.', false);
+        await loadDeletionRequest();
+        return;
+      }
+      toast('Talep gönderilemedi: ' + (m || 'bilinmeyen hata'), false);
+      if (btn) { btn.disabled = false; btn.textContent = 'Hesabımı silmeyi talep et'; }
+    }
   }
 
   init();
