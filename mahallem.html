@@ -1154,8 +1154,19 @@
   // and bell/sidebar link did nothing at all — see Backlog #18)
   if (window.loadNotifications) window.loadNotifications();
 
-  // Load all profiles for counts and new members
-  const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at`, { headers });
+  // Load all profiles for counts and new members.
+  //
+  // status=eq.approved seit 31.10.2026. Vorher stand hier kein Filter,
+  // also wurden auch Konten vorgeschlagen, die gar nicht hereinkommen:
+  // eingefrorene (deactivated), gesperrte (banned) und noch nicht
+  // freigegebene (pending). Heute faellt das nicht auf, weil alle 19
+  // Profile auf approved stehen — die Liste war trotzdem falsch.
+  //
+  // Der Filter gehoert NUR hierher. Wo ein Name zu einer bekannten
+  // Kennung nachgeschlagen wird (Verfasser eines Beitrags, Gegenueber
+  // einer Unterhaltung), darf er NICHT stehen: dort wuerde sonst der
+  // Name fehlen statt die Person versteckt zu werden.
+  const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at&status=eq.approved`, { headers });
   const allProfiles = await allRes.json();
   window._allProfiles = allProfiles;
 

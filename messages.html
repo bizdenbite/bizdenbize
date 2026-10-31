@@ -1313,6 +1313,11 @@
       const { data } = await supabase.from('profiles')
         .select('id, first_name, last_name, city')
         .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`)
+        // Nur aktive Mitglieder vorschlagen (31.10.2026). Wer sein Konto
+        // eingefroren hat, gesperrt oder noch nicht freigegeben ist,
+        // taucht in der Suche nicht mehr auf. Bestehende Unterhaltungen
+        // bleiben davon unberuehrt — die laden ihre Namen woanders.
+        .eq('status', 'approved')
         .neq('id', me.id)
         .limit(10);
 
