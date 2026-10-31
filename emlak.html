@@ -1054,9 +1054,23 @@
       const baseDesc=(document.getElementById('cl-desc').value||'').trim();
       const fullDesc=[extras.join(', '), baseDesc].filter(Boolean).join('\n\n');
 
+      // Den ECHTEN Sitzungs-Token schicken, nicht den Veroeffentlichungs-
+      // schluessel (31.10.2026). _CL_H traegt _CL_KEY als Bearer — der steht
+      // im Quelltext dieser Seite und ist damit oeffentlich. Solange die
+      // Funktion den Aufrufer nicht pruefen kann, kann jeder im Internet
+      // Gemini-Aufrufe auf unsere Rechnung ausloesen.
+      //
+      // Dasselbe Muster wie oben bei _elTok. Der Rueckfall auf _CL_KEY bleibt
+      // drin, damit die Schaetzung nicht bricht, falls die Sitzung noch nicht
+      // da ist — die Seite hat ohnehin eine Anmeldesperre.
+      //
+      // SCHRITT 1 von 2: hier aendert sich noch nichts am Verhalten. Erst
+      // wenn die Edge Function den Token auch PRUEFT (Schritt 2), wirkt es.
+      const _epTok = (window._currentSession && window._currentSession.access_token)
+                       ? window._currentSession.access_token : _CL_KEY;
       const r=await fetch(_CL_URL+'/functions/v1/estimate-price',{
         method:'POST',
-        headers:{ ..._CL_H, 'Content-Type':'application/json' },
+        headers:{ 'apikey':_CL_KEY, 'Authorization':'Bearer '+_epTok, 'Content-Type':'application/json' },
         body: JSON.stringify({
           title,
           description: fullDesc,
