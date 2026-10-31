@@ -1156,17 +1156,20 @@
 
   // Load all profiles for counts and new members.
   //
-  // status=eq.approved seit 31.10.2026. Vorher stand hier kein Filter,
-  // also wurden auch Konten vorgeschlagen, die gar nicht hereinkommen:
-  // eingefrorene (deactivated), gesperrte (banned) und noch nicht
-  // freigegebene (pending). Heute faellt das nicht auf, weil alle 19
-  // Profile auf approved stehen — die Liste war trotzdem falsch.
+  // ACHTUNG — diese EINE Abfrage dient ZWEI Zwecken:
+  //   1. _profileMap (Zeile darunter): die Namenstabelle fuer JEDEN
+  //      Beitrag und JEDEN Kommentar. Hier muss JEDER drin sein.
+  //   2. komsuBaslangic(): die Nachbarschaftsvorschlaege. Dort sollen
+  //      nur aktive Mitglieder auftauchen.
   //
-  // Der Filter gehoert NUR hierher. Wo ein Name zu einer bekannten
-  // Kennung nachgeschlagen wird (Verfasser eines Beitrags, Gegenueber
-  // einer Unterhaltung), darf er NICHT stehen: dort wuerde sonst der
-  // Name fehlen statt die Person versteckt zu werden.
-  const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at&status=eq.approved`, { headers });
+  // Am 31.10.2026 stand hier kurzzeitig "&status=eq.approved". Das war
+  // falsch: es nahm eingefrorenen Konten den Namen unter ihren eigenen
+  // Beitraegen — dort stand dann "Üye" statt des Namens. Gefunden hat
+  // es Naz beim Testen mit zwei Konten.
+  //
+  // Richtig ist: status MITLADEN, aber NICHT filtern. Gefiltert wird
+  // erst beim Vorschlagen, in komsuBaslangic().
+  const allRes = await fetch(`https://wxjudojlwksivhzjnmim.supabase.co/rest/v1/profiles?select=id,first_name,last_name,city,country,avatar_url,created_at,status`, { headers });
   const allProfiles = await allRes.json();
   window._allProfiles = allProfiles;
 
@@ -1465,6 +1468,12 @@
     const alle  = Array.isArray(window._allProfiles) ? window._allProfiles : [];
     const stadt = (city || '').toLowerCase();
     const vorschlaege = alle
+      // Nur aktive Mitglieder vorschlagen (31.10.2026). Eingefrorene,
+      // gesperrte und noch nicht freigegebene Konten koennen gar nicht
+      // herein — sie als Nachbarn anzubieten waere eine Sackgasse.
+      // Der Filter steht HIER und nicht an der Abfrage, weil dieselbe
+      // Antwort auch die Namen fuer alle Beitraege liefert.
+      .filter(p => p.status === 'approved')
       .filter(p => p.id !== user.id)
       .filter(p => !(window._myFollowingIds && window._myFollowingIds.has(p.id)))
       .filter(p => !stadt || (p.city || '').toLowerCase() === stadt)
