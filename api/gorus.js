@@ -126,9 +126,13 @@ async function getPost(slug) {
 
 // Welche Adresse das Geruest liefern darf. Feste Liste, kein
 // Vertrauen in den Aufrufer.
+// abibot.eu am 31.10.2026 ENTFERNT: die Domain wird nicht verlaengert.
+// Sie hier stehen zu lassen waere genau die Luecke, die diese Liste
+// schliessen soll — laeuft sie aus und jemand anders registriert sie,
+// holt diese Funktion das Seitengeruest von einem fremden Server und
+// liefert es unter bizdenbize.com aus.
 const SHELL_HOSTS = [
-  'bizdenbize.com', 'www.bizdenbize.com',
-  'abibot.eu',      'www.abibot.eu'
+  'bizdenbize.com', 'www.bizdenbize.com'
 ];
 
 // WARUM DIESE FUNKTION EXISTIERT
