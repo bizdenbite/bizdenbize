@@ -1,6 +1,12 @@
 // bizdenbize-client.js
-// Include this in every HTML page: <script src="bizdenbize-client.js"></script>
-// Place BEFORE any page scripts
+//
+// Das hier ist ein ES-Modul (import/export). Es laesst sich NICHT als
+// klassisches Skript einbinden — so eingebunden bricht es sofort mit
+// einem Syntaxfehler ab. Der bisherige Hinweis an dieser Stelle riet
+// genau dazu; korrigiert am 31.10.2026.
+//
+// So wird es benutzt (admin.html, messages.html und profil.html tun das):
+//     const { supabase } = await import('./bizdenbize-client.js');
 
 import { createClient } from '/supabase.js';
 
@@ -61,38 +67,18 @@ export async function getCredits() {
   return profile?.abibot_credits ?? 0;
 }
 
-// ── ABIBOT HELPER ────────────────────────────────
-export async function askAbiBOT({ category, language, messages }) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/abibot`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-      'apikey': SUPABASE_ANON,
-    },
-    body: JSON.stringify({ category, language, messages }),
-  });
-
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error || 'AbiBOT error');
-  }
-
-  return response.json();
-}
-
-// ── WAITLIST HELPER ───────────────────────────────
-export async function joinWaitlist(data) {
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/waitlist`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_ANON,
-    },
-    body: JSON.stringify(data),
-  });
-  return response.json();
-}
+// ── ENTFERNT AM 31.10.2026: askAbiBOT() und joinWaitlist() ──
+//
+// Beide riefen Adressen auf, die es nicht gibt:
+//   askAbiBOT   -> /functions/v1/abibot    (die eingesetzte Funktion
+//                                           heisst swift-worker)
+//   joinWaitlist -> /functions/v1/waitlist (gibt es gar nicht)
+//
+// Aufgerufen hat sie niemand, kaputt war also nichts. Stehen geblieben
+// waeren sie eine Falle: wer sie spaeter benutzt, bekommt einen Fehler,
+// den die Datei selbst nicht erklaert.
+//
+// Umgebogen statt entfernt habe ich sie nicht, weil ungetesteter Code,
+// der richtig aussieht, schlimmer ist als keiner. Wird AbiBOT von hier
+// aus gebraucht, kommt der Helfer zurueck — dann mit dem echten Slug
+// und einem Test dazu.
