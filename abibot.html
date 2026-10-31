@@ -840,11 +840,18 @@
       <a href="uzman-basvuru.html" class="eb-btn" style="display:block;text-align:center;text-decoration:none;background:#fff;color:var(--red);font-weight:700;border:none;opacity:1;">Uzman Olarak Kayıt Ol →</a>
     </div>
 
-    <div class="panel-section" style="padding-top:14px;padding-bottom:14px;">
-      <button onclick="window.BB_SSO && window.BB_SSO.crossTo('https://abibot.eu','/')" style="background:none;border:none;cursor:pointer;padding:0;font-size:11.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:5px;font-family:inherit;">
-        🌐 AbiBOT'u abibot.eu'da aç →
-      </button>
-    </div>
+    <!-- ENTFERNT am 31.10.2026: der Knopf "AbiBOT'u abibot.eu'da aç".
+         AbiBOT wird nicht mehr als eigene Plattform angeboten und die
+         Domain abibot.eu wird nicht verlaengert.
+         Der Knopf war nicht nur ueberfluessig, sondern gefaehrlich:
+         BB_SSO.crossTo() holt bei jedem Klick ein frisches
+         Anmelde-Uebergabetoken und haengt es als ?sso=... an die
+         Zieladresse (sso.js, Zeile 29). Haette jemand anders die
+         Domain nach ihrem Ablauf registriert, waere bei jedem Klick
+         ein gueltiges Token an einen fremden Server gegangen — und
+         damit das Konto des Mitglieds.
+         Der Knopf in der Gegenrichtung (zurueck nach bizdenbize.com)
+         bleibt: der zeigt auf unsere eigene Adresse. -->
 
     <!-- Impressumspflicht: legal pages must be reachable from every page.
          In the sidebar rather than a page footer — the chat layout is
