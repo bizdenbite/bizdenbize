@@ -305,6 +305,33 @@
       </div>
     </div>
 
+    <!-- HESAP DONDURMA — die Pause vor dem Loeschen.
+         Die Rueckseite stand schon komplett in login.html: der Kasten,
+         die Meldung und doReactivate(). Nur der Weg hinein fehlte, also
+         konnte der Zustand nie eintreten und die Reaktivierung war
+         toter Code. Dieser Abschnitt ist dieser Weg.
+         Er steht ABSICHTLICH ueber dem Loeschen: wer nur eine Pause
+         will, soll nicht loeschen muessen. -->
+    <div class="edit-section" id="deactivate-section">
+      <div class="section-title">😴 Hesabımı Dondur</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+        Bir süre ara vermek istiyorsan hesabını dondurabilirsin.
+        <strong>Hiçbir verin silinmez</strong> — daha sonra giriş yaparak
+        tek tuşla geri dönersin.
+      </div>
+      <div style="background:var(--warm,#F7F3EC);border-radius:11px;padding:13px 15px;margin-bottom:14px;">
+        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.8;">
+          <li>Hesabın kapalı kaldığı sürece giriş yapamazsın.</li>
+          <li>Profilin, gönderilerin ve mesajların silinmez.</li>
+          <li>Geri dönmek için giriş sayfasından &laquo;Hesabımı Yeniden Aktive Et&raquo; demen yeterli.</li>
+        </ul>
+      </div>
+      <button class="btn-save" id="deactivate-btn" onclick="deactivateAccount()"
+              style="background:var(--deep,#002266);">
+        Hesabımı dondur
+      </button>
+    </div>
+
     <!-- HESAP SILME — Antrag, nicht Selbstloeschung.
          Entscheidung vom 30.10.2026: das Mitglied stellt den Antrag,
          Naz sichert die Daten und fuehrt aus. Diese Seite schreibt
@@ -782,6 +809,39 @@
       }
     };
     reader.readAsDataURL(file);
+  }
+
+  // ═══ HESAP DONDURMA ════════════════════════════════════════
+  // Setzt profiles.status auf 'deactivated' und meldet ab.
+  //
+  // WARUM DAS ABMELDEN NICHT KOSMETIK IST
+  // auth-gate.js sieht nur nach, ob ein Zeichen im Browserspeicher
+  // liegt — den Status prueft es NICHT. Bliebe die Sitzung bestehen,
+  // koennte die Person danach einfach mahallem.html aufrufen und
+  // waere drin, obwohl ihr Konto eingefroren ist. Erst beim naechsten
+  // Anmelden greift die Sperre in login.html.
+  async function deactivateAccount() {
+    if (!currentUser) { toast('Oturum bulunamadı, sayfayı yenile.', false); return; }
+    if (!confirm('Hesabın dondurulacak ve çıkış yapılacak.\n\nVerilerin silinmez. Geri dönmek istediğinde giriş yapıp «Hesabımı Yeniden Aktive Et» demen yeterli.\n\nDevam edilsin mi?')) return;
+
+    const btn = document.getElementById('deactivate-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Donduruluyor...'; }
+
+    try {
+      // sb() wirft bei leerer Antwort auf PATCH — hier ist das richtig:
+      // blockiert die Datenbank die Aenderung, darf die Seite NICHT
+      // abmelden und so tun, als sei etwas geschehen.
+      await sb(`profiles?id=eq.${currentUser.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'deactivated' })
+      });
+      toast('Hesabın donduruldu. Çıkış yapılıyor...');
+      setTimeout(doLogout, 1200);
+    } catch (e) {
+      console.error('Dondurma hatası:', e);
+      toast('Hesap dondurulamadı: ' + (e.message || 'bilinmeyen hata'), false);
+      if (btn) { btn.disabled = false; btn.textContent = 'Hesabımı dondur'; }
+    }
   }
 
   // ═══ HESAP SİLME ═══════════════════════════════════════════
