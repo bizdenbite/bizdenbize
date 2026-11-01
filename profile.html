@@ -855,7 +855,26 @@
   // Versprechen, das an einem Urlaubstag bricht. Willst du es
   // trotzdem knapper, aendere die naechste Zeile — sie ist die
   // EINZIGE Stelle, an der die Frist steht.
-  const DELETION_SLA = 'en geç 14 gün içinde';
+  // 01.11.2026 auf 30 Tage geaendert. Hier standen "14 gün", die ich
+  // geschrieben hatte, ohne nachzusehen: in legal.html#privacy steht
+  // seit Langem "30 gün içinde kalıcı olarak silinir". Das Mitglied
+  // bekam also ein anderes Versprechen als die Erklaerung, der es
+  // zugestimmt hat. Die Erklaerung gilt.
+  //
+  // Diese Zeile ist die EINZIGE Stelle mit der Frist. Wird sie in
+  // legal.html geaendert, muss sie hier mitgeaendert werden.
+  //
+  // Am selben Tag geaendert: der Satz ueber die Aufbewahrung von
+  // Beschwerden. Er behauptete eine gesetzliche Pflicht und eine Dauer
+  // von zwei Jahren. Beides war nicht belegbar — die Dauer stammte aus
+  // dem Admin-Panel und wurde ungeprueft uebernommen. Zulaessig ist die
+  // Aufbewahrung als berechtigtes Interesse (Verteidigung gegen
+  // spaetere Ansprueche), und genau so steht es jetzt da.
+  //
+  // Der Erklaertext steht HIER und nicht im gerenderten Block: dort
+  // landete er im DOM, und die Pruefung fand die zitierten Woerter
+  // wieder, die sie gerade als entfernt bestaetigen sollte.
+  const DELETION_SLA = 'en geç 30 gün içinde';
 
   function deletionDate(iso) {
     if (!iso) return '';
@@ -928,7 +947,7 @@
           <li>Hesabın, profilin, ilanların, gönderilerin ve mesajların kalıcı olarak silinir.</li>
           <li>Bu işlem <strong>geri alınamaz.</strong></li>
           <li>Talebin ${DELETION_SLA} işleme alınır; bittiğinde e-posta ile bilgilendirilirsin.</li>
-          <li>Hakkında şikayet varsa, yasal zorunluluk gereği şikayetin özeti (adın olmadan) 24 ay saklanır.</li>
+          <li>Hakkında bir şikayet varsa, olası hukuki taleplere karşı savunma yapabilmek için şikayetin kısa bir özeti adın olmadan saklanır. Paylaşımların ve mesajların bu kapsamda değildir — onlar silinir.</li>
         </ul>
       </div>
 
