@@ -1074,21 +1074,106 @@
 
   // Blocking, not deleting. Deletion cascades and takes abuse reports with
   // it, so the record of who reported whom disappears along with the member.
+  // ═══ SPERREN MIT BEGRUENDUNG (DSA) ═════════════════════════
+  // Vorher setzte banMember() nur status='banned'. Der Gesperrte las
+  // beim naechsten Anmelden einen festen Satz und erfuhr nicht, was
+  // ihm vorgeworfen wird oder wie er widersprechen kann.
+  //
+  // Der Digital Services Act verlangt drei Dinge: den GRUND, die
+  // GRUNDLAGE (Hausregeln oder Gesetz) und den WIDERSPRUCHSWEG. Die
+  // ersten beiden werden hier erfasst, der dritte steht in login.html.
+  //
+  // Die Begruendung geht in moderation_actions — nicht in profiles.
+  // Dort waere sie ungeschuetzt, und eine Sperre kann mehrfach
+  // vorkommen; zwei Spalten koennten nur die letzte halten.
+  const BAN_REASONS = [
+    ['harassment',      'Taciz / rahatsız etme'],
+    ['spam',            'Spam / toplu mesaj'],
+    ['scam',            'Dolandırıcılık'],
+    ['fake_account',    'Sahte hesap'],
+    ['hate_speech',     'Nefret söylemi'],
+    ['illegal_content', 'Yasa dışı içerik'],
+    ['rules_violation', 'Topluluk kurallarının ihlali'],
+    ['other',           'Diğer']
+  ];
+
+  // Eintrag in die Moderationsakte. Schlaegt das fehl, darf die
+  // Sperre NICHT stattfinden: eine Sperre ohne Begruendung ist
+  // genau das, was behoben werden sollte.
+  async function logModerationAction(userId, action, reasonCode, reasonText, legalBasis, adminNotes) {
+    const rows = await sb('moderation_actions', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: userId,
+        action: action,
+        reason_code: reasonCode,
+        reason_text: reasonText || null,
+        legal_basis: legalBasis || 'terms',
+        admin_notes: adminNotes || null,
+        created_by: currentUserId
+      })
+    });
+    if (!Array.isArray(rows) || rows.length === 0) {
+      throw new Error('Moderasyon kaydı oluşturulamadı.');
+    }
+    return rows[0];
+  }
+
   async function banMember(id) {
     const u = (allUsers || []).find(x => x.id === id);
     const name = ((u && u.first_name || '') + ' ' + (u && u.last_name || '')).trim() || 'Bu üye';
-    if (!confirm(name + ' engellensin mi?\n\nGiriş yapamayacak, ancak içerikleri ve şikayet geçmişi korunacak. Bu işlem geri alınabilir.')) return;
+    if (id === currentUserId) { toast('Kendi hesabınızı engelleyemezsiniz.', false); return; }
+
+    const menu = BAN_REASONS.map((r, i) => `${i + 1}. ${r[1]}`).join('\n');
+    const pick = prompt(name + ' engellenecek.\n\nSebep (numara girin) — bu kişiye GÖSTERİLİR:\n' + menu);
+    if (pick === null) return;
+    const idx = parseInt(pick, 10) - 1;
+    if (!(idx >= 0 && idx < BAN_REASONS.length)) { toast('Geçersiz sebep seçildi.', false); return; }
+    const reasonCode = BAN_REASONS[idx][0];
+
+    const reasonText = (prompt('Kısa açıklama (isteğe bağlı) — bu metin KİŞİYE GÖSTERİLİR.\nOlgusal tutun, üçüncü kişilerin adını yazmayın:') || '').trim();
+
+    // Hausregeln oder Gesetz. Der DSA verlangt die Unterscheidung.
+    const basisPick = prompt('Dayanak:\n1. Topluluk kuralları\n2. Yasal yükümlülük\n\n(Varsayılan: 1)') || '1';
+    const legalBasis = basisPick.trim() === '2' ? 'law' : 'terms';
+
+    const adminNotes = (prompt('İç not (isteğe bağlı) — bu KİŞİYE GÖSTERİLMEZ:') || '').trim();
+
+    if (!confirm(
+      name + ' engellenecek.\n\n' +
+      'Sebep: ' + BAN_REASONS[idx][1] + '\n' +
+      'Dayanak: ' + (legalBasis === 'law' ? 'Yasal yükümlülük' : 'Topluluk kuralları') + '\n' +
+      (reasonText ? 'Açıklama: ' + reasonText + '\n' : '') +
+      '\nGiriş yapamayacak, ancak içerikleri ve şikayet geçmişi korunacak.\n' +
+      'Sebep ve dayanak kendisine gösterilecek. Bu işlem geri alınabilir.\n\nDevam edilsin mi?')) return;
+
     try {
+      // 1. ZUERST die Begruendung. Scheitert sie, wird nicht gesperrt.
+      await logModerationAction(id, 'ban', reasonCode, reasonText, legalBasis, adminNotes);
+      // 2. Dann die Sperre.
       await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'banned' }) });
-      toast('Üye engellendi.');
+      toast('Üye engellendi. Sebep kaydedildi.');
       allUsersLoaded = false; loadUsers();
-    } catch(e) { toast('Hata: ' + e.message, false); }
+    } catch(e) {
+      console.error('Engelleme hatası:', e);
+      toast('Hata: ' + e.message, false);
+    }
   }
 
   async function unbanMember(id) {
-    if (!confirm('Engel kaldırılsın mı?\n\nÜye tekrar giriş yapabilecek.')) return;
+    if (!confirm('Engel kaldırılsın mı?\n\nÜye tekrar giriş yapabilecek. Bu işlem de kayda geçer.')) return;
     try {
+      // Erst die Sperre loesen. Scheitert danach der Eintrag, ist der
+      // Mensch wieder drin — das ist die harmlosere Richtung.
       await sb('profiles?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: 'approved' }) });
+      try {
+        await logModerationAction(id, 'unban', 'other', 'Engel kaldırıldı.', 'terms', null);
+      } catch (e2) {
+        console.error('Aufhebung nicht protokolliert:', e2);
+        toast('Engel kaldırıldı, ancak kayda geçirilemedi.', false);
+        allUsersLoaded = false; loadUsers();
+        return;
+      }
       toast('Engel kaldırıldı ✓');
       allUsersLoaded = false; loadUsers();
     } catch(e) { toast('Hata: ' + e.message, false); }

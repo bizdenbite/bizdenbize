@@ -523,7 +523,13 @@
         // through onboarding.html, not straight to the feed. The e-mail
         // confirmation link lands here, so this is the first-entry path.
         if (gp && gp.status === 'approved') { goAfterLogin(gp.onboarding_completed); }
-        else if (gp && gp.status === 'banned') { document.getElementById('login-banned-msg').style.display='block'; await supabase.auth.signOut(); }
+        else if (gp && gp.status === 'banned') {
+          // Erst den Grund holen (Sitzung lebt noch), dann abmelden.
+          const grund = await holeSperrgrund();
+          await supabase.auth.signOut();
+          document.getElementById('login-banned-msg').style.display='block';
+          zeigeSperrgrund(grund);
+        }
         else if (gp && gp.status === 'deactivated') { document.getElementById('login-deactivated-msg').style.display='block'; }
         else { document.getElementById('login-pending-msg').style.display='block'; }
       }
@@ -735,9 +741,13 @@
         .select('status, welcome_email_sent, onboarding_completed').eq('id', data.user.id).single();
 
       if (profile?.status === 'banned') {
+        // Erst den Grund holen, DANN abmelden — nach signOut() ist
+        // auth.uid() leer und die eigene Akte nicht mehr lesbar.
+        const sperrgrund = await holeSperrgrund();
         await supabase.auth.signOut();
         btn.classList.remove('loading'); btn.textContent = 'Giriş Yap';
         document.getElementById('login-banned-msg').style.display = 'block';
+        zeigeSperrgrund(sperrgrund);
         document.getElementById('login-email').classList.add('error');
         document.getElementById('login-password').classList.add('error');
         return;
@@ -797,6 +807,75 @@
       // straight to the feed. onboarding.html sets the flag when it finishes.
       goAfterLogin(profile.onboarding_completed);
     };
+
+    // ── SPERRGRUND (DSA-Begruendungspflicht) ──────────────────
+    // Der Digital Services Act verlangt, dass die betroffene Person
+    // erfaehrt, WARUM gesperrt wurde, auf welcher GRUNDLAGE (Hausregeln
+    // oder Gesetz) und WIE sie widersprechen kann. Vorher stand hier nur
+    // ein fester Satz, der keines davon nannte.
+    //
+    // WICHTIG — die Reihenfolge:
+    // Bei einer Sperre meldet login.html sofort ab. Danach ist auth.uid()
+    // leer und die Leseregel auf moderation_actions laesst nichts mehr
+    // durch. Deshalb wird der Grund geholt, SOLANGE die Sitzung noch
+    // lebt — die Anmeldung war technisch ja erfolgreich, nur der Zutritt
+    // ist es nicht.
+    const SPERR_GRUENDE = {
+      harassment:      'Taciz veya rahatsız etme',
+      spam:            'Spam veya toplu mesaj',
+      scam:            'Dolandırıcılık şüphesi',
+      fake_account:    'Sahte hesap',
+      hate_speech:     'Nefret söylemi',
+      illegal_content: 'Yasa dışı içerik',
+      rules_violation: 'Topluluk kurallarının ihlali',
+      other:           'Diğer'
+    };
+
+    async function holeSperrgrund() {
+      try {
+        const { data, error } = await supabase
+          .from('my_moderation_actions')
+          .select('action, reason_code, reason_text, legal_basis, created_at')
+          .eq('action', 'ban')
+          .order('created_at', { ascending: false })
+          .limit(1);
+        if (error) { console.warn('Sperrgrund nicht lesbar:', error.message); return null; }
+        return (data || [])[0] || null;
+      } catch (e) {
+        console.warn('Sperrgrund nicht lesbar:', e && e.message);
+        return null;
+      }
+    }
+
+    function zeigeSperrgrund(eintrag) {
+      const el = document.getElementById('login-banned-reason');
+      if (!el) return;
+      if (!eintrag) { el.style.display = 'none'; el.textContent = ''; return; }
+
+      const esc = (s) => String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+      let tarih = '';
+      try {
+        const d = new Date(eintrag.created_at);
+        if (!isNaN(d)) tarih = d.toLocaleDateString('tr-TR',
+          { day: '2-digit', month: 'long', year: 'numeric' });
+      } catch (_e) { /* ohne Datum geht es auch */ }
+
+      const grund = SPERR_GRUENDE[eintrag.reason_code] || SPERR_GRUENDE.other;
+      // Hausregeln oder Gesetz — der DSA verlangt die Unterscheidung.
+      const grundlage = eintrag.legal_basis === 'law'
+        ? 'Yasal yükümlülük'
+        : 'Topluluk kuralları';
+
+      el.innerHTML =
+        '<div><strong>Sebep:</strong> ' + esc(grund) + '</div>' +
+        (eintrag.reason_text ? '<div style="margin-top:4px;">' + esc(eintrag.reason_text) + '</div>' : '') +
+        '<div style="margin-top:4px;"><strong>Dayanak:</strong> ' + esc(grundlage) + '</div>' +
+        (tarih ? '<div style="margin-top:4px;"><strong>Tarih:</strong> ' + esc(tarih) + '</div>' : '');
+      el.style.display = 'block';
+    }
 
     // ── REACTIVATE (from the deactivated-account message) ──
     window.doReactivate = async function() {
@@ -969,7 +1048,12 @@
 
       <div id="login-banned-msg" style="display:none;background:rgba(212,43,43,.07);border:1px solid rgba(212,43,43,.25);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px;">🚫 Hesabınız askıya alındı</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Hesabınız platform kurallarını ihlal ettiği için engellendi. Itiraz için <a href="iletisim.html" style="color:var(--red);font-weight:600;">iletişime geçin</a>.</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Hesabınız platform kurallarını ihlal ettiği için engellendi.</div>
+        <!-- Die Begruendung wird hier eingesetzt, sobald sie geladen ist
+             (zeigeSperrgrund). Der DSA verlangt Grund, Grundlage und
+             Widerspruchsweg — der feste Satz darueber nennt keines davon. -->
+        <div id="login-banned-reason" style="display:none;margin-top:9px;padding-top:9px;border-top:1px solid rgba(212,43,43,.2);font-size:12px;color:var(--muted);line-height:1.6;"></div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:9px;">Bu karara itiraz etmek istersen <a href="iletisim.html" style="color:var(--red);font-weight:600;">bizimle iletişime geç</a>.</div>
       </div>
 
       <div id="login-deactivated-msg" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:9px;padding:12px 14px;margin-bottom:4px;">
