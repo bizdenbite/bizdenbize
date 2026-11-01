@@ -276,6 +276,9 @@
     <button class="nav-item" onclick="showSection('deletions', this)">
       🗑️ Silme Talepleri <span class="nav-badge" id="badge-deletions" style="background:var(--red);">—</span>
     </button>
+    <button class="nav-item" onclick="showSection('modlog', this)">
+      📋 Moderasyon Kayıtları
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -309,6 +312,7 @@
       <option value="notifications">🔔 Bildirimler</option>
       <option value="reports">🚩 Şikayetler</option>
       <option value="deletions">🗑️ Silme Talepleri</option>
+      <option value="modlog">📋 Moderasyon Kayıtları</option>
     </select>
     <div class="topbar-title" id="topbar-title">📊 Dashboard</div>
     <div class="topbar-right">
@@ -774,6 +778,36 @@
       </div>
     </div>
 
+    <!-- MODERASYON KAYITLARI
+         Der DSA verlangt nicht nur, dass die betroffene Person die
+         Begruendung erfaehrt, sondern auch, dass die Entscheidung
+         dokumentiert ist. Geschrieben wurde sie schon seit dem
+         01.11.2026 — nur ansehen konnte man sie hier nicht. -->
+    <div class="section" id="section-modlog">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📋 Moderasyon Kayıtları</div>
+          <div style="font-size:12px;color:var(--muted);">Her engelleme ve kaldırma burada kayıtlıdır. &laquo;Gösterilen&raquo; sütunu, ilgili kişinin giriş ekranında gördüğü metindir; iç not ona gösterilmez.</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Tarih</th>
+              <th>Kullanıcı</th>
+              <th>İşlem</th>
+              <th>Sebep</th>
+              <th>Dayanak</th>
+              <th>Gösterilen açıklama</th>
+              <th>İç not</th>
+            </tr>
+          </thead>
+          <tbody id="modlog-tbody">
+            <tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -841,7 +875,7 @@
     dashboard: '📊 Dashboard', users: '👥 Kullanıcı Yönetimi',
     experts: '🛡️ Uzman Yönetimi', content: '📋 İçerik Yönetimi', events: '📅 Etkinlik Yönetimi',
     messages: '📬 İletişim Mesajları', notifications: '🔔 Bildirim Gönder',
-    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', videos: '🎬 Videothek → Görüşler', resources: '📚 Kütüphane', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
+    reports: '🚩 Şikayet Yönetimi', deletions: '🗑️ Silme Talepleri', modlog: '📋 Moderasyon Kayıtları', videos: '🎬 Videothek → Görüşler', resources: '📚 Kütüphane', businesses: '🏪 İşletme Yönetimi', jobs: '💼 İş İlanları', webinars: '🎥 Webinarlar'
   };
 
   window.toggleAdminSidebar = function() {
@@ -873,6 +907,7 @@
     if (id === 'notifications') loadNotifHistory();
     if (id === 'reports') loadReports();
     if (id === 'deletions') loadDeletions();
+    if (id === 'modlog') loadModLog();
   }
 
   function showTab(id, btn) {
@@ -2183,6 +2218,71 @@
   // auth.users. Sobald das Konto weg ist, ist die Antragszeile
   // MIT weg — und die E-Mail-Adresse auch. Deshalb wird alles,
   // was nachher gebraucht wird, VORHER geholt.
+  // ═══ MODERASYON KAYITLARI ══════════════════════════════════
+  // Liest moderation_actions und stellt daneben, was die Person
+  // auf der Anmeldeseite sieht. Wer eine Sperre begruenden muss,
+  // soll nachlesen koennen, was er gesagt hat.
+  const MODLOG_ACTIONS = {
+    ban:             '🚫 Engelleme',
+    unban:           '↩ Engel kaldırma',
+    warning:         '⚠ Uyarı',
+    content_removed: '🗑 İçerik kaldırma'
+  };
+  const MODLOG_REASONS = {
+    harassment:      'Taciz / rahatsız etme',
+    spam:            'Spam / toplu mesaj',
+    scam:            'Dolandırıcılık',
+    fake_account:    'Sahte hesap',
+    hate_speech:     'Nefret söylemi',
+    illegal_content: 'Yasa dışı içerik',
+    rules_violation: 'Topluluk kurallarının ihlali',
+    other:           'Diğer'
+  };
+
+  async function loadModLog() {
+    const tb = document.getElementById('modlog-tbody');
+    if (!tb) return;
+    try {
+      const rows = await sb('moderation_actions?select=*&order=created_at.desc&limit=200');
+      const liste = rows || [];
+
+      // Namen in EINEM Nachschlag. Wie bei den Loeschantraegen zeigt
+      // der Fremdschluessel auf auth.users, nicht auf profiles —
+      // PostgREST kann das nicht selbst verbinden.
+      const namen = {};
+      const ids = [...new Set(liste.map(r => r.user_id).filter(Boolean))];
+      if (ids.length) {
+        try {
+          const ps = await sb(`profiles?select=id,first_name,last_name&id=in.(${ids.join(',')})`);
+          (ps || []).forEach(p => { namen[p.id] = p; });
+        } catch (e) { console.error('Moderasyon kayıtları: isimler okunamadı', e); }
+      }
+
+      if (!liste.length) {
+        tb.innerHTML = `<tr class="loading-row"><td colspan="7">Henüz kayıt yok.</td></tr>`;
+        return;
+      }
+
+      tb.innerHTML = liste.map(r => {
+        const p = namen[r.user_id] || {};
+        const name = `${p.first_name || ''} ${p.last_name || ''}`.trim();
+        const dayanak = r.legal_basis === 'law' ? 'Yasal yükümlülük' : 'Topluluk kuralları';
+        return `<tr>
+          <td style="font-size:12px;white-space:nowrap;">${fmtDate(r.created_at)}</td>
+          <td>${name ? escH(name) : `<span style="font-size:12px;color:var(--muted);">${escH((r.user_id || '').slice(0, 8))}…</span>`}</td>
+          <td style="font-size:12px;white-space:nowrap;">${escH(MODLOG_ACTIONS[r.action] || r.action || '—')}</td>
+          <td style="font-size:12px;">${escH(MODLOG_REASONS[r.reason_code] || r.reason_code || '—')}</td>
+          <td style="font-size:12px;color:var(--muted);">${escH(dayanak)}</td>
+          <td style="font-size:12px;">${r.reason_text ? escH(r.reason_text) : '<span style="color:var(--muted);">—</span>'}</td>
+          <td style="font-size:12px;color:var(--muted);">${r.admin_notes ? escH(r.admin_notes) : '—'}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      console.error('Moderasyon kayıtları yüklenemedi:', e);
+      tb.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--red);">Kayıtlar yüklenemedi: ${escH(e.message || 'bilinmeyen hata')}</td></tr>`;
+    }
+  }
+
   let allDeletions = [];
   let deletionProfiles = {};   // user_id -> { email, first_name, last_name }
 
