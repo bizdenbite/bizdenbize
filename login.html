@@ -835,7 +835,7 @@
       try {
         const { data, error } = await supabase
           .from('my_moderation_actions')
-          .select('action, reason_code, reason_text, legal_basis, created_at')
+          .select('action, reason_code, reason_text, legal_basis, automated, created_at')
           .eq('action', 'ban')
           .order('created_at', { ascending: false })
           .limit(1);
@@ -869,11 +869,20 @@
         ? 'Yasal yükümlülük'
         : 'Topluluk kuralları';
 
+      // Der DSA verlangt die Angabe, OB automatisierte Mittel benutzt
+      // wurden. Bei uns lautet die Antwort immer "nein" — aber sie muss
+      // DASTEHEN. "Es war ohnehin ein Mensch" ist keine Angabe, solange
+      // es niemand liest.
+      const otomatik = eintrag.automated === true
+        ? 'Bu kararda otomatik araçlar kullanıldı.'
+        : 'Bu karar otomatik olarak değil, bir kişi tarafından verildi.';
+
       el.innerHTML =
         '<div><strong>Sebep:</strong> ' + esc(grund) + '</div>' +
         (eintrag.reason_text ? '<div style="margin-top:4px;">' + esc(eintrag.reason_text) + '</div>' : '') +
         '<div style="margin-top:4px;"><strong>Dayanak:</strong> ' + esc(grundlage) + '</div>' +
-        (tarih ? '<div style="margin-top:4px;"><strong>Tarih:</strong> ' + esc(tarih) + '</div>' : '');
+        (tarih ? '<div style="margin-top:4px;"><strong>Tarih:</strong> ' + esc(tarih) + '</div>' : '') +
+        '<div style="margin-top:4px;">' + esc(otomatik) + '</div>';
       el.style.display = 'block';
     }
 

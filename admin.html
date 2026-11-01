@@ -798,11 +798,12 @@
               <th>Sebep</th>
               <th>Dayanak</th>
               <th>Gösterilen açıklama</th>
+              <th>Otomatik?</th>
               <th>İç not</th>
             </tr>
           </thead>
           <tbody id="modlog-tbody">
-            <tr class="loading-row"><td colspan="7">Yükleniyor...</td></tr>
+            <tr class="loading-row"><td colspan="8">Yükleniyor...</td></tr>
           </tbody>
         </table>
       </div>
@@ -2259,7 +2260,7 @@
       }
 
       if (!liste.length) {
-        tb.innerHTML = `<tr class="loading-row"><td colspan="7">Henüz kayıt yok.</td></tr>`;
+        tb.innerHTML = `<tr class="loading-row"><td colspan="8">Henüz kayıt yok.</td></tr>`;
         return;
       }
 
@@ -2274,12 +2275,13 @@
           <td style="font-size:12px;">${escH(MODLOG_REASONS[r.reason_code] || r.reason_code || '—')}</td>
           <td style="font-size:12px;color:var(--muted);">${escH(dayanak)}</td>
           <td style="font-size:12px;">${r.reason_text ? escH(r.reason_text) : '<span style="color:var(--muted);">—</span>'}</td>
+          <td style="font-size:12px;">${r.automated ? '<span class="badge badge-gold">evet</span>' : '<span style="color:var(--muted);">hayır</span>'}</td>
           <td style="font-size:12px;color:var(--muted);">${r.admin_notes ? escH(r.admin_notes) : '—'}</td>
         </tr>`;
       }).join('');
     } catch (e) {
       console.error('Moderasyon kayıtları yüklenemedi:', e);
-      tb.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--red);">Kayıtlar yüklenemedi: ${escH(e.message || 'bilinmeyen hata')}</td></tr>`;
+      tb.innerHTML = `<tr class="loading-row"><td colspan="8" style="color:var(--red);">Kayıtlar yüklenemedi: ${escH(e.message || 'bilinmeyen hata')}</td></tr>`;
     }
   }
 
