@@ -1104,11 +1104,24 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&language=de`
-          );
-          const data = await res.json();
-          const components = data.results?.[0]?.address_components || [];
+
+          // Der Geocoder aus der Maps-Bibliothek, die diese Seite
+          // ohnehin laedt — nicht mehr die REST-Schnittstelle.
+          //
+          // Vorher stand der Schluessel in der fetch-Adresse. Jetzt
+          // traegt ihn die Bibliothek, und die Anfrage geht mit dem
+          // Referrer der Seite raus: eine Schluesselsperre auf
+          // bizdenbize.com greift damit sicher. Fuer die REST-
+          // Schnittstelle sagt Googles Dokumentation das nicht
+          // eindeutig, und darauf soll es nicht ankommen.
+          if (!(window.google && window.google.maps && window.google.maps.Geocoder)) {
+            throw new Error('Maps-Bibliothek nicht geladen');
+          }
+          const geocoder = new google.maps.Geocoder();
+          const antwort = await geocoder.geocode({
+            location: { lat: latitude, lng: longitude }
+          });
+          const components = antwort?.results?.[0]?.address_components || [];
           let city = '', country = '';
           components.forEach(c => {
             if ((c.types.includes('locality') || c.types.includes('postal_town')) && !city)
