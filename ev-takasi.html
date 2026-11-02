@@ -1825,7 +1825,89 @@ document.addEventListener("DOMContentLoaded", async function() {
        onboarding.html und profile.html ihre Staedte beziehen — und
        eine Stadt zerfaellt wieder in mehrere Schreibweisen, genau das,
        was 04-staedte-vereinheitlichen.sql aufgeraeumt hat. -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt83dqtCrwYSYfqfz86-mYbC6Vn3HoVHc&libraries=places&language=de&region=DE&callback=initSwapPlaces" async defer></script>
+  <!-- Google Maps wird NICHT mehr beim Seitenaufruf geladen.
+
+       Vorher stand hier ein <script src="maps.googleapis.com…">. Das
+       lief beim blossen Oeffnen der Seite los: die IP-Adresse jedes
+       Besuchers ging an Google, und Maps legte Daten im Browser ab,
+       ohne dass jemand etwas angeklickt hatte.
+
+       § 25 TDDG verlangt dafuer eine Einwilligung, solange der
+       Zugriff nicht unbedingt erforderlich ist — und eine
+       Staedte-Autovervollstaendigung ist Komfort, nicht
+       Notwendigkeit.
+
+       Jetzt gilt dasselbe wie bei den Videos in der Videothek:
+       geladen wird, was der Mensch anfordert. Unter dem Feld steht
+       ein Hinweis; beruehrt jemand das Feld, wird nachgeladen. Wer
+       kein Stadtfeld benutzt, sendet nichts an Google. -->
+  <script>
+    (function () {
+      var FELD     = 'p-city';
+      var RUECKRUF = 'initSwapPlaces';
+      var SCHLUESSEL = 'AIzaSyDWaa92cmVyEfJHMkImWe01RBq17HM9PNA';
+      var geladen = false;
+
+      function hinweisFeld() { return document.getElementById('maps-hinweis'); }
+
+      function laden() {
+        if (geladen) return;
+        geladen = true;
+        // Wo es einen Rueckfall auf Handeingabe gibt (Onboarding),
+        // beginnt dessen Frist JETZT — nicht beim Seitenaufruf.
+        if (typeof window._starteRueckfallFrist === 'function') {
+          window._starteRueckfallFrist();
+        }
+        var h = hinweisFeld();
+        if (h) h.textContent = 'Şehir önerileri yükleniyor...';
+        var s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + SCHLUESSEL +
+                '&libraries=places&language=de&region=DE&callback=' + RUECKRUF;
+        s.async = true;
+        s.defer = true;
+        // Faellt das Laden aus, bleibt das Feld ein normales Textfeld.
+        // Niemand darf hier haengenbleiben.
+        s.onerror = function () {
+          var h2 = hinweisFeld();
+          if (h2) h2.textContent = 'Şehir önerileri şu an çalışmıyor — şehrinizi elle yazabilirsiniz.';
+        };
+        s.onload = function () {
+          var h2 = hinweisFeld();
+          if (h2) h2.textContent = 'Öneriler Google Maps\'ten geliyor.';
+        };
+        document.head.appendChild(s);
+      }
+      window._mapsLaden = laden;
+
+      function anhaengen() {
+        var feld = document.getElementById(FELD);
+        if (!feld) return;
+
+        // Der Hinweis steht da, BEVOR etwas geladen wird — sonst
+        // weiss niemand, was beim Antippen geschieht.
+        if (!hinweisFeld()) {
+          var h = document.createElement('div');
+          h.id = 'maps-hinweis';
+          h.style.cssText = 'font-size:11px;color:var(--muted,#6B5E4E);margin-top:4px;line-height:1.4;';
+          h.textContent = 'Yazmaya başladığınızda şehir önerileri Google Maps\'ten yüklenir.';
+          feld.parentNode.insertBefore(h, feld.nextSibling);
+        }
+
+        // focus genuegt: es ist die bewusste Handlung, mit der jemand
+        // die Vervollstaendigung anfordert. pointerdown kommt dazu,
+        // weil ein Antippen auf dem Handy den Fokus manchmal erst
+        // spaeter ausloest.
+        feld.addEventListener('focus', laden, { once: true });
+        feld.addEventListener('pointerdown', laden, { once: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', anhaengen);
+      } else {
+        anhaengen();
+      }
+    })();
+  </script>
   <script src="smart-email.js"></script>
 </body>
 </html>
