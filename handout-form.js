@@ -5,21 +5,20 @@
      <div data-bb-handout data-slug="tasinma-maratonu"></div>
      <script src="handout-form.js" defer></script>
 
-   Akış:
-   1) Ad + e-posta → Edge Function "handout-download" kaydı tutar
-      ve 10 dakika geçerli, imzalı bir indirme bağlantısı verir.
-      PDF'ler özel (private) bir Storage klasöründe durur.
-   2) Bülten kutucuğu ZORUNLUDUR (işaretsiz gelir, işaretlenmeden indirme
-      verilmez). İşaretlenince mevcut "newsletter" fonksiyonu çağrılır;
-      çift onay (Double-Opt-In) orada yürür: onay bağlantısına basılana
-      kadar bülten gönderilmez. Metin, bunun karşılığı olduğunu açıkça söyler.
+   Akış (çift onay / Double-Opt-In, Brevo üzerinden):
+   1) Ad + e-posta + (zorunlu) bülten kutucuğu → "handout-download"
+      fonksiyonu kaydı tutar ve Brevo'dan onay e-postası gönderir.
+   2) Kişi e-postadaki bağlantıya basar → Brevo onu bu sayfaya
+      ?h=<slug>&t=<token> ile geri yönlendirir.
+   3) Bu dosya token'ı fonksiyona gönderir → 10 dakika geçerli,
+      imzalı bir indirme bağlantısı gelir. PDF'ler özel (private) durur.
+   Adres Brevo'da zaten kayıtlıysa onay e-postası gitmez, indirme hemen gelir.
    ============================================================ */
 (function () {
   'use strict';
 
   var BASE = 'https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/';
-  var FN_HANDOUT = BASE + 'handout-download';
-  var FN_NEWS    = BASE + 'newsletter?action=subscribe';
+  var FN = BASE + 'handout-download';
 
   var CSS = [
     '.bbh{background:#fff;border:1px solid var(--sand,#D4C5A9);border-radius:16px;padding:26px 24px;margin:0;}',
@@ -62,7 +61,7 @@
     return '' +
       '<div class="bbh-form">' +
       '<h3>' + (title ? 'Ücretsiz PDF: ' + title : 'Ücretsiz PDF rehberi indir') + '</h3>' +
-      '<p class="bbh-lead">Adını ve e-posta adresini yaz, bültene kayıt ol ve PDF\'i hemen indir.</p>' +
+      '<p class="bbh-lead">Adını ve e-posta adresini yaz. Sana bir onay e-postası göndereceğiz; bağlantıya basınca PDF indirme sayfan açılır.</p>' +
       '<label class="bbh-field"><span>Adın</span>' +
         '<input type="text" id="bbh-name" autocomplete="given-name" maxlength="80"></label>' +
       '<label class="bbh-field"><span>E-posta adresin</span>' +
@@ -71,17 +70,48 @@
         '<input type="text" id="bbh-web" tabindex="-1" autocomplete="off"></label></div>' +
       '<label class="bbh-consent">' +
         '<input type="checkbox" id="bbh-news">' +
-        '<span>PDF\'i indirmek için bültene kayıt olmak ve yeni videolardan ile rehberlerden ' +
-          'e-posta ile haberdar olmak istiyorum. Bunun için bir onay e-postası alacağım; ' +
-          'bağlantıya basmadan bülten gönderilmez. Bu izni istediğim zaman, her e-postanın ' +
-          'altındaki bağlantıyla geri alabilirim.</span>' +
+        '<span>PDF\'i almak için bültene kayıt olmak ve yeni videolardan ile rehberlerden ' +
+          'e-posta ile haberdar olmak istiyorum. Kayıt, onay e-postasındaki bağlantıya ' +
+          'basınca tamamlanır; basmadan bülten gönderilmez. Bu izni istediğim zaman, her ' +
+          'e-postanın altındaki bağlantıyla geri alabilirim.</span>' +
       '</label>' +
-      '<button class="bbh-btn" id="bbh-send" type="button">PDF\'i indir</button>' +
+      '<button class="bbh-btn" id="bbh-send" type="button">Onay e-postası gönder</button>' +
       '<div class="bbh-msg" id="bbh-msg"></div>' +
       '<p class="bbh-note">Adın ve e-posta adresin bu indirme ve bülten kaydı için saklanır. ' +
         'Reklam yok, adresin kimseyle paylaşılmaz. ' +
         '<a href="legal.html" target="_blank" rel="noopener">Gizlilik</a></p>' +
       '</div>';
+  }
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+
+  function showDownload(box, url, intro) {
+    var wrap = el('div', 'bbh-done');
+    wrap.appendChild(el('div', 'bbh-mark', '📄'));
+    wrap.appendChild(el('h3', '', 'PDF hazır'));
+    if (intro) wrap.appendChild(el('p', 'bbh-lead', intro));
+    var a = el('a', 'bbh-btn', 'PDF\'i indir'); a.href = url; a.setAttribute('download', ''); a.rel = 'noopener';
+    wrap.appendChild(a);
+    wrap.appendChild(el('p', 'bbh-lead', 'Bu bağlantı 10 dakika geçerli. Süre dolarsa onay e-postasındaki bağlantıya yeniden basabilirsin.'));
+    box.innerHTML = ''; box.appendChild(wrap);
+  }
+
+  function showConfirm(box, mail) {
+    var wrap = el('div', 'bbh-done');
+    wrap.appendChild(el('div', 'bbh-mark', '📬'));
+    wrap.appendChild(el('h3', '', 'E-postana bak'));
+    wrap.appendChild(el('p', 'bbh-lead', mail + ' adresine bir onay bağlantısı gönderdik. Bağlantıya basınca bülten kaydın tamamlanır ve PDF indirme sayfan açılır. Bağlantıya basmadan PDF gelmez ve sana bülten göndermeyiz.'));
+    wrap.appendChild(el('p', 'bbh-lead', 'Gelmediyse spam klasörüne bakmayı unutma.'));
+    box.innerHTML = ''; box.appendChild(wrap);
+  }
+
+  function post(action, payload) {
+    return fetch(FN + '?action=' + action, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) { var e = new Error('http ' + r.status); e.status = r.status; throw e; }
+      return r.json();
+    });
   }
 
   function attach(box) {
@@ -90,81 +120,68 @@
     var slug = (box.dataset.slug || '').trim();
     var title = box.dataset.title || '';
     box.className = 'bbh';
-    box.innerHTML = markup(title);
 
-    var nameI = box.querySelector('#bbh-name');
-    var email = box.querySelector('#bbh-email');
-    var web   = box.querySelector('#bbh-web');
-    var news  = box.querySelector('#bbh-news');
-    var btn   = box.querySelector('#bbh-send');
-    var msg   = box.querySelector('#bbh-msg');
+    function form(prefillMsg) {
+      box.innerHTML = markup(title);
+      var nameI = box.querySelector('#bbh-name');
+      var email = box.querySelector('#bbh-email');
+      var web   = box.querySelector('#bbh-web');
+      var news  = box.querySelector('#bbh-news');
+      var btn   = box.querySelector('#bbh-send');
+      var msg   = box.querySelector('#bbh-msg');
+      function say(text, kind) { msg.className = 'bbh-msg' + (kind ? ' ' + kind : ''); msg.textContent = text; }
+      function looksLikeEmail(v) { return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v); }
+      if (prefillMsg) say(prefillMsg, 'err');
 
-    function say(text, kind) { msg.className = 'bbh-msg' + (kind ? ' ' + kind : ''); msg.textContent = text; }
-    function looksLikeEmail(v) { return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v); }
+      async function submit() {
+        var n = (nameI.value || '').trim();
+        var v = (email.value || '').trim();
+        say('');
+        if (n.length < 2)        { say('Adını yaz.', 'err'); nameI.focus(); return; }
+        if (!looksLikeEmail(v))  { say('Geçerli bir e-posta adresi yaz.', 'err'); email.focus(); return; }
+        if (!news.checked)       { say('PDF\'i almak için bülten kutucuğunu işaretle.', 'err'); return; }
+        if (!slug)               { say('Rehber seçilmedi.', 'err'); return; }
 
-    function done(url, mailed, newsFailed, mailAddr) {
-      var wrap = document.createElement('div');
-      wrap.className = 'bbh-done';
-      var mark = document.createElement('div'); mark.className = 'bbh-mark'; mark.textContent = '📄';
-      var h = document.createElement('h3'); h.textContent = 'PDF hazır';
-      var a = document.createElement('a'); a.className = 'bbh-btn'; a.href = url; a.textContent = 'PDF\'i indir';
-      a.setAttribute('download', ''); a.rel = 'noopener';
-      var p = document.createElement('p'); p.className = 'bbh-lead';
-      p.textContent = 'Bu bağlantı 10 dakika geçerli. Süre dolarsa formu yeniden doldurabilirsin.';
-      wrap.appendChild(mark); wrap.appendChild(h); wrap.appendChild(a); wrap.appendChild(p);
-      if (mailed) {
-        var n = document.createElement('p'); n.className = 'bbh-lead';
-        n.textContent = mailAddr + ' adresine bir onay bağlantısı gönderdik. Bülten kaydı, bağlantıya basınca tamamlanır. Gelmediyse spam klasörüne bak.';
-        wrap.appendChild(n);
-      } else if (newsFailed) {
-        var f = document.createElement('p'); f.className = 'bbh-lead';
-        f.textContent = 'Bülten kaydı şu an yapılamadı. İstersen daha sonra bizdenbize.com üzerinden tekrar deneyebilirsin.';
-        wrap.appendChild(f);
-      }
-      box.innerHTML = ''; box.appendChild(wrap);
-    }
-
-    async function submit() {
-      var n = (nameI.value || '').trim();
-      var v = (email.value || '').trim();
-      say('');
-      if (n.length < 2)        { say('Adını yaz.', 'err'); nameI.focus(); return; }
-      if (!looksLikeEmail(v))  { say('Geçerli bir e-posta adresi yaz.', 'err'); email.focus(); return; }
-      if (!news.checked)       { say('PDF\'i indirmek için bülten kutucuğunu işaretle.', 'err'); return; }
-      if (!slug)               { say('Rehber seçilmedi.', 'err'); return; }
-
-      btn.disabled = true;
-      var old = btn.textContent; btn.textContent = 'Hazırlanıyor…';
-      try {
-        var r = await fetch(FN_HANDOUT, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: n, email: v, slug: slug, newsletter: true, website: web.value || '' })
-        });
-        if (!r.ok) throw Object.assign(new Error('http ' + r.status), { status: r.status });
-        var data = await r.json();
-        if (!data || !data.url) throw new Error('no url');
-
-        var mailed = false, newsFailed = false;
+        btn.disabled = true;
+        var old = btn.textContent; btn.textContent = 'Gönderiliyor…';
         try {
-          var s = await fetch(FN_NEWS, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
-          if (s.ok) mailed = true; else newsFailed = true;
-        } catch (e2) { newsFailed = true; }
-        done(data.url, mailed, newsFailed, v);
-      } catch (e) {
-        console.error('handout download failed:', e);
-        var t = 'Şu an hazırlanamadı — sorun bizde. Biraz sonra tekrar dener misin?';
-        if (e.status === 400) t = 'Bilgilerini bir kontrol eder misin? Ad ya da e-posta kabul edilmedi.';
-        if (e.status === 404) t = 'Bu rehber henüz hazır değil. Birkaç gün sonra tekrar bak.';
-        if (e.status === 429) t = 'Çok fazla deneme yapıldı. Biraz sonra tekrar dene.';
-        say(t, 'err');
-        btn.disabled = false; btn.textContent = old;
+          var data = await post('request', { name: n, email: v, slug: slug, newsletter: true, website: web.value || '' });
+          if (data && data.status === 'ready' && data.url) showDownload(box, data.url, '');
+          else if (data && data.status === 'confirm') showConfirm(box, v);
+          else throw new Error('unexpected response');
+        } catch (e) {
+          console.error('handout request failed:', e);
+          var t = 'Şu an gönderilemedi — sorun bizde. Biraz sonra tekrar dener misin?';
+          if (e.status === 400) t = 'Bilgilerini bir kontrol eder misin? Ad ya da e-posta kabul edilmedi.';
+          if (e.status === 404) t = 'Bu rehber henüz hazır değil. Birkaç gün sonra tekrar bak.';
+          if (e.status === 429) t = 'Çok fazla deneme yapıldı. Biraz sonra tekrar dene.';
+          say(t, 'err');
+          btn.disabled = false; btn.textContent = old;
+        }
       }
+      btn.addEventListener('click', submit);
+      [nameI, email].forEach(function (i) {
+        i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+      });
     }
 
-    btn.addEventListener('click', submit);
-    [nameI, email].forEach(function (i) {
-      i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
-    });
+    // Brevo, onay bağlantısından sonra buraya ?t=<token> ile döner.
+    var token = new URLSearchParams(location.search).get('t');
+    if (token && slug) {
+      box.innerHTML = '';
+      box.appendChild(el('p', 'bbh-lead', 'E-postan onaylandı, PDF hazırlanıyor…'));
+      post('download', { slug: slug, token: token }).then(function (d) {
+        if (!d || !d.url) throw new Error('no url');
+        showDownload(box, d.url, 'E-postanı onayladığın için teşekkürler! Bülten kaydın tamamlandı.');
+      }).catch(function (e) {
+        console.error('handout token failed:', e);
+        form(e.status === 403 || e.status === 404
+          ? 'Bu bağlantı geçersiz ya da süresi dolmuş. Formu yeniden doldurursan yeni bir onay e-postası göndeririz.'
+          : 'Şu an hazırlanamadı. Biraz sonra bu sayfayı yenile.');
+      });
+      return;
+    }
+    form('');
   }
 
   function init() {
