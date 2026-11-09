@@ -9,9 +9,10 @@
    1) Ad + e-posta → Edge Function "handout-download" kaydı tutar
       ve 10 dakika geçerli, imzalı bir indirme bağlantısı verir.
       PDF'ler özel (private) bir Storage klasöründe durur.
-   2) Bülten kutucuğu İSTEĞE BAĞLI ve işaretsiz gelir. İşaretlenirse
-      mevcut "newsletter" fonksiyonu çağrılır; çift onay (Double-Opt-In)
-      orada yürür. İndirme, bültene bağlı DEĞİLDİR.
+   2) Bülten kutucuğu ZORUNLUDUR (işaretsiz gelir, işaretlenmeden indirme
+      verilmez). İşaretlenince mevcut "newsletter" fonksiyonu çağrılır;
+      çift onay (Double-Opt-In) orada yürür: onay bağlantısına basılana
+      kadar bülten gönderilmez. Metin, bunun karşılığı olduğunu açıkça söyler.
    ============================================================ */
 (function () {
   'use strict';
@@ -61,7 +62,7 @@
     return '' +
       '<div class="bbh-form">' +
       '<h3>' + (title ? 'Ücretsiz PDF: ' + title : 'Ücretsiz PDF rehberi indir') + '</h3>' +
-      '<p class="bbh-lead">Adını ve e-posta adresini yaz, PDF\'i hemen indir.</p>' +
+      '<p class="bbh-lead">Adını ve e-posta adresini yaz, bültene kayıt ol ve PDF\'i hemen indir.</p>' +
       '<label class="bbh-field"><span>Adın</span>' +
         '<input type="text" id="bbh-name" autocomplete="given-name" maxlength="80"></label>' +
       '<label class="bbh-field"><span>E-posta adresin</span>' +
@@ -70,14 +71,15 @@
         '<input type="text" id="bbh-web" tabindex="-1" autocomplete="off"></label></div>' +
       '<label class="bbh-consent">' +
         '<input type="checkbox" id="bbh-news">' +
-        '<span>(İsteğe bağlı) Yeni videolardan ve rehberlerden e-posta ile haberdar olmak ' +
-          'istiyorum. Bu izni istediğim zaman geri alabilirim. Bunun için bir onay e-postası ' +
-          'alacağım.</span>' +
+        '<span>PDF\'i indirmek için bültene kayıt olmak ve yeni videolardan ile rehberlerden ' +
+          'e-posta ile haberdar olmak istiyorum. Bunun için bir onay e-postası alacağım; ' +
+          'bağlantıya basmadan bülten gönderilmez. Bu izni istediğim zaman, her e-postanın ' +
+          'altındaki bağlantıyla geri alabilirim.</span>' +
       '</label>' +
       '<button class="bbh-btn" id="bbh-send" type="button">PDF\'i indir</button>' +
       '<div class="bbh-msg" id="bbh-msg"></div>' +
-      '<p class="bbh-note">Adın ve e-posta adresin yalnızca bu indirme için kaydedilir. ' +
-        'Bülten onayı vermediğin sürece sana e-posta göndermeyiz. ' +
+      '<p class="bbh-note">Adın ve e-posta adresin bu indirme ve bülten kaydı için saklanır. ' +
+        'Reklam yok, adresin kimseyle paylaşılmaz. ' +
         '<a href="legal.html" target="_blank" rel="noopener">Gizlilik</a></p>' +
       '</div>';
   }
@@ -128,6 +130,7 @@
       say('');
       if (n.length < 2)        { say('Adını yaz.', 'err'); nameI.focus(); return; }
       if (!looksLikeEmail(v))  { say('Geçerli bir e-posta adresi yaz.', 'err'); email.focus(); return; }
+      if (!news.checked)       { say('PDF\'i indirmek için bülten kutucuğunu işaretle.', 'err'); return; }
       if (!slug)               { say('Rehber seçilmedi.', 'err'); return; }
 
       btn.disabled = true;
@@ -135,19 +138,17 @@
       try {
         var r = await fetch(FN_HANDOUT, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: n, email: v, slug: slug, newsletter: !!news.checked, website: web.value || '' })
+          body: JSON.stringify({ name: n, email: v, slug: slug, newsletter: true, website: web.value || '' })
         });
         if (!r.ok) throw Object.assign(new Error('http ' + r.status), { status: r.status });
         var data = await r.json();
         if (!data || !data.url) throw new Error('no url');
 
         var mailed = false, newsFailed = false;
-        if (news.checked) {
-          try {
-            var s = await fetch(FN_NEWS, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
-            if (s.ok) mailed = true; else newsFailed = true;
-          } catch (e2) { newsFailed = true; }
-        }
+        try {
+          var s = await fetch(FN_NEWS, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
+          if (s.ok) mailed = true; else newsFailed = true;
+        } catch (e2) { newsFailed = true; }
         done(data.url, mailed, newsFailed, v);
       } catch (e) {
         console.error('handout download failed:', e);
