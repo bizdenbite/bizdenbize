@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ücretsiz PDF Rehberler – Dersimiz Almanya | BizdenBize</title>
+<meta name="description" content="Dersimiz Almanya videolarının PDF rehberleri ve kontrol listeleri. Ücretsiz indir.">
+<meta name="theme-color" content="#003399">
+<style>
+  :root{--ink:#1A1208;--cream:#FAF7F2;--sand:#D4C5A9;--muted:#6B5E4E;--red:#D42B2B;--red2:#E8393A;--blue:#003399;--gold:#FFCC00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;line-height:1.6}
+  /* TODO: Üst çubuk ve alt bilgi yer tutucudur — diğer sayfalardaki ortak gezinti ile değiştir.
+     Logo: bizdenbize-logo.png yerine sitedeki gerçek logo dosyasının yolunu yaz. */
+  header{background:#fff;border-bottom:1px solid var(--sand)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .logo{display:inline-block;line-height:0}
+  .logo img{height:40px;width:auto;display:block}
+  .bar a.nav{color:var(--muted);font-size:14px;text-decoration:none}
+  .hero{padding:44px 0 8px}
+  .kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--red)}
+  h1{font-family:Georgia,'Playfair Display',serif;font-size:clamp(28px,5vw,42px);line-height:1.2;margin:8px 0 12px}
+  .sub{font-size:17px;color:var(--muted);max-width:620px;margin:0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin:30px 0 40px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--sand);border-radius:16px;padding:26px 24px}
+  .card h2{font-family:Georgia,'Playfair Display',serif;font-size:20px;margin:0 0 10px}
+  .card ul{margin:0;padding-left:20px;color:var(--muted);font-size:14.5px}
+  .card li{margin:6px 0}
+  .list h2{font-family:Georgia,'Playfair Display',serif;font-size:22px;margin:10px 0 14px}
+  .items{display:grid;gap:12px;margin:0 0 50px}
+  .item{display:block;background:#fff;border:1px solid var(--sand);border-radius:12px;padding:16px 18px;text-decoration:none;color:var(--ink)}
+  .item:hover{border-color:var(--red)}
+  .item strong{display:block;font-size:16px}
+  .item span{font-size:13.5px;color:var(--muted)}
+  footer{border-top:1px solid var(--sand);background:#fff;padding:20px 0;font-size:13px;color:var(--muted)}
+  footer a{color:var(--muted);margin-right:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a class="logo" href="index.html"><img src="bizdenbize-logo.png" alt="BizdenBize"></a>
+  <a class="nav" href="index.html">Ana sayfa</a>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="kicker">Dersimiz Almanya · Ücretsiz PDF</span>
+    <h1 id="h1">Videolardaki bilgiler, yazdırabileceğin rehberler</h1>
+    <p class="sub" id="sub">Her videonun kontrol listesi ve özeti tek PDF'te. Adını ve e-postanı yaz, hemen indir.</p>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>PDF'in içinde ne var?</h2>
+      <ul>
+        <li>Videonun kısa özeti</li>
+        <li>Adım adım kontrol listesi</li>
+        <li>Önemli Almanca terimler ve resmî kurumlar</li>
+        <li>Yazdırıp not alabileceğin düzen</li>
+      </ul>
+    </div>
+    <div data-bb-handout data-slug="" data-title=""></div>
+  </section>
+
+  <section class="list">
+    <h2>Tüm rehberler</h2>
+    <div class="items" id="items"></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  © 2026 BizdenBize · <a href="legal.html">Impressum</a><a href="legal.html">Gizlilik</a>
+</div></footer>
+
+<script>
+/* Yeni bir PDF yüklediğinde buraya bir satır ekle.
+   slug = Supabase Storage "handouts" klasöründeki dosya adı (slug + ".pdf").
+   Video açıklamasına bağlantı: https://bizdenbize.com/handout.html?h=<slug> */
+var HANDOUTS = [
+  { slug: 'tasinma-maratonu', title: "Almanya'ya Taşınma Kontrol Listesi",
+    desc: 'Kayıt (Anmeldung), yayın ücreti ve sigortalar: ilk haftalarda yapılacaklar.' }
+];
+(function(){
+  var q = new URLSearchParams(location.search).get('h');
+  var cur = HANDOUTS.filter(function(h){return h.slug===q})[0] || HANDOUTS[0];
+  var box = document.querySelector('[data-bb-handout]');
+  box.dataset.slug = cur.slug; box.dataset.title = cur.title;
+  if (q && cur.slug===q) {
+    document.getElementById('h1').textContent = cur.title;
+    document.getElementById('sub').textContent = cur.desc;
+    document.title = cur.title + ' – Dersimiz Almanya | BizdenBize';
+  }
+  var items = document.getElementById('items');
+  HANDOUTS.forEach(function(h){
+    var a = document.createElement('a'); a.className='item'; a.href='handout.html?h='+encodeURIComponent(h.slug);
+    var s = document.createElement('strong'); s.textContent = h.title;
+    var d = document.createElement('span'); d.textContent = h.desc;
+    a.appendChild(s); a.appendChild(d); items.appendChild(a);
+  });
+})();
+</script>
+<script src="handout-form.js" defer></script>
+</body>
+</html>
