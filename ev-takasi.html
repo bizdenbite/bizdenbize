@@ -1221,11 +1221,9 @@ window.initSwapPlaces = function () {
   const input = document.getElementById('p-city');
   if (!input || !window.google) return;
   input.setAttribute('autocomplete', 'new-password');
-  const ac = new google.maps.places.Autocomplete(input, {
-    types: ['(cities)'],
-    fields: ['address_components', 'name']
-  });
-  google.maps.event.addListener(ac, 'place_changed', function () {
+  // Places API (New) ueber bb-places.js; die alte Klasse ist nicht freischaltbar.
+  const ac = BBPlaces.attach(input);
+  ac.onPlaceChanged(function () {
     const place = ac.getPlace();
     if (!place || !place.address_components) return;
     let city = '', code = '';
@@ -1825,6 +1823,7 @@ document.addEventListener("DOMContentLoaded", async function() {
        onboarding.html und profile.html ihre Staedte beziehen — und
        eine Stadt zerfaellt wieder in mehrere Schreibweisen, genau das,
        was 04-staedte-vereinheitlichen.sql aufgeraeumt hat. -->
+  <script src="bb-places.js"></script>
   <!-- Google Maps wird NICHT mehr beim Seitenaufruf geladen.
 
        Vorher stand hier ein <script src="maps.googleapis.com…">. Das
@@ -1873,7 +1872,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         };
         s.onload = function () {
           var h2 = hinweisFeld();
-          if (h2) h2.textContent = 'Öneriler Google Maps\'ten geliyor.';
+          if (h2) h2.textContent = 'Yazmaya başladığınızda öneriler Google Maps\'ten gelir.';
         };
         document.head.appendChild(s);
       }

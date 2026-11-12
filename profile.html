@@ -1114,10 +1114,10 @@
     return harita[a] || String(ad || '').trim();
   }
 
-    const ac = new google.maps.places.Autocomplete(input, {
-      types: ['(cities)'],
-      fields: ['address_components', 'name'],
-    });
+    // Places API (New): die alte Klasse Autocomplete ist in diesem
+    // Projekt nicht freischaltbar (LegacyApiNotActivatedMapError).
+    // bb-places.js liefert dieselbe place-Form wie frueher.
+    const ac = BBPlaces.attach(input);
 
     // Kullanıcı yazmaya devam ederse önceki onay YEŞİL KALMAMALI.
     // Eskiden "✓ München, Almanya" yazısı öylece duruyordu; kişi
@@ -1130,7 +1130,7 @@
       hint.style.color = 'var(--muted)';
     });
 
-    google.maps.event.addListener(ac, 'place_changed', function () {
+    ac.onPlaceChanged(function () {
       const place = ac.getPlace();
 
       // Google bazen SADECE adı döndürür, adres bilgisi olmadan — Türkçe
@@ -1176,6 +1176,7 @@
     input.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
   };
 </script>
+  <script src="bb-places.js"></script>
   <!-- Google Maps wird NICHT mehr beim Seitenaufruf geladen.
 
        Vorher stand hier ein <script src="maps.googleapis.com…">. Das
@@ -1224,7 +1225,7 @@
         };
         s.onload = function () {
           var h2 = hinweisFeld();
-          if (h2) h2.textContent = 'Öneriler Google Maps\'ten geliyor.';
+          if (h2) h2.textContent = 'Yazmaya başladığınızda öneriler Google Maps\'ten gelir.';
         };
         document.head.appendChild(s);
       }
