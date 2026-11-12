@@ -45,9 +45,25 @@
   var REGION = 'de';
   var MIN_ZEICHEN = 2;
   var WARTE_MS = 250;
-  // Gleiche Auswahl wie frueher "(cities)": Orte und Ortsteile mit
-  // eigener Verwaltung. Nur Typen aus Tabelle A/B — maximal fuenf.
-  var TYPEN = ['locality', 'administrative_area_level_3'];
+  // Nur Orte. Mit 'administrative_area_level_3' kamen Landkreise in die
+  // Liste: "Munich" war der Landkreis, hatte keine Orts-Angabe, und die
+  // Seiten machten daraus das Bundesland — im Profil stand "Bayern" als
+  // Stadt. Ein Landkreis ist keine Stadt.
+  var TYPEN = ['locality'];
+
+  // Google nennt manche Staedte mit ihrem englischen Namen ("Munich")
+  // und liefert dazu keinen Ort in den Details. Dann gilt der gewaehlte
+  // Name — auf Deutsch, damit alle vier Seiten dieselbe Schreibweise
+  // speichern und die Nachbarsuche exakt vergleichen kann.
+  var NAME_DE = {
+    'munich': 'München', 'cologne': 'Köln', 'nuremberg': 'Nürnberg',
+    'vienna': 'Wien', 'zurich': 'Zürich', 'geneva': 'Genf',
+    'brussels': 'Brüssel', 'hanover': 'Hannover', 'the hague': 'Den Haag',
+    'frankfurt': 'Frankfurt am Main'
+  };
+  function deutsch(name) {
+    return NAME_DE[String(name || '').trim().toLowerCase()] || name;
+  }
 
   var TXT_AUSGEFALLEN = 'Şehir önerileri şu an çalışmıyor — şehrinizi elle yazabilirsiniz.';
   var TXT_LAEUFT = 'Öneriler Google Maps\'ten geliyor.';
@@ -177,6 +193,22 @@
     // Fokus im Feld halten, wenn jemand die Liste antippt.
     box.addEventListener('mousedown', function (e) { e.preventDefault(); });
 
+    // Die Seiten nehmen die Stadt aus 'locality' oder 'postal_town' und
+    // fallen sonst auf das Bundesland (administrative_area_level_1)
+    // zurueck. Fehlt der Ort, ist das Bundesland keine Stadt: dann
+    // entfaellt es, und die Seiten nehmen den gewaehlten Namen.
+    function hatOrtKomp(komp) {
+      return komp.some(function (c) {
+        return c.types.indexOf('locality') !== -1 || c.types.indexOf('postal_town') !== -1;
+      });
+    }
+    function nurOrtAlsStadt(komp) {
+      if (hatOrtKomp(komp)) return komp;
+      return komp.filter(function (c) {
+        return c.types.indexOf('administrative_area_level_1') === -1;
+      });
+    }
+
     // ── Bibliothek ─────────────────────────────────────────
     function bibliothek() {
       if (lib) return Promise.resolve(lib);
@@ -234,7 +266,7 @@
       var name = textVon(pp.mainText) || textVon(pp.text);
       schliessen();
       anfrageNr++;   // laufende Anfragen verwerfen
-      input.value = name;
+      input.value = deutsch(name);
 
       function fertig(place) {
         api._place = place;
@@ -246,11 +278,14 @@
       try {
         var p = pp.toPlace();
         details = p.fetchFields({ fields: ['addressComponents', 'displayName'] }).then(function () {
+          var komp = (p.addressComponents || []).map(function (c) {
+            return { long_name: c.longText, short_name: c.shortText, types: c.types || [] };
+          });
+          var hatOrt = hatOrtKomp(komp);
+          var nm = p.displayName || name;
           return {
-            name: p.displayName || name,
-            address_components: (p.addressComponents || []).map(function (c) {
-              return { long_name: c.longText, short_name: c.shortText, types: c.types || [] };
-            })
+            name: hatOrt ? nm : deutsch(nm),
+            address_components: nurOrtAlsStadt(komp)
           };
         });
       } catch (e) {
