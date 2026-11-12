@@ -1089,14 +1089,45 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
     btn.style.background = '#1E7B4B';
   }
 
+  // Der GPS-Knopf braucht die Maps-Bibliothek (Geocoder). Die wird
+  // aber erst geladen, wenn jemand das Stadtfeld beruehrt. Wer zuerst
+  // den Knopf drueckt, hatte frueher: Knopf dreht, springt zurueck,
+  // nichts passiert, keine Meldung. Jetzt laedt der Knopf die
+  // Bibliothek selbst — und zwar erst NACHDEM der Browser die
+  // Standortfreigabe erteilt hat, damit bei einer Ablehnung nichts
+  // an Google geht — und jeder Fehlschlag sagt, was los ist.
+  function gpsMeldung(text) {
+    const btn = document.getElementById('gps-btn');
+    btn.textContent = '📍 Konumumu Bul';
+    btn.disabled = false;
+    const st = document.getElementById('p-location-status');
+    if (st) {
+      st.style.display = 'block';
+      st.style.color = 'var(--red)';
+      st.textContent = text;
+    }
+  }
+
+  function mapsGeocoderBereit(msMax) {
+    return new Promise(function (fertig) {
+      const t0 = Date.now();
+      (function warte() {
+        if (window.google && window.google.maps && window.google.maps.Geocoder) return fertig(true);
+        // Ist das Laden schon gescheitert (Werbeblocker, kein Netz),
+        // nicht die vollen acht Sekunden einen drehenden Knopf zeigen.
+        if (window._mapsFehler || Date.now() - t0 > msMax) return fertig(false);
+        setTimeout(warte, 100);
+      })();
+    });
+  }
+
   function detectGPS() {
     const btn = document.getElementById('gps-btn');
     btn.textContent = '⏳ Tespit ediliyor...';
     btn.disabled = true;
 
     if (!navigator.geolocation) {
-      btn.textContent = '📍 Konumumu Bul';
-      btn.disabled = false;
+      gpsMeldung('Tarayıcın konum özelliğini desteklemiyor — şehrini yukarıdaki alana yazabilirsin.');
       return;
     }
 
@@ -1115,7 +1146,10 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
           // Schnittstelle sagt Googles Dokumentation das nicht
           // eindeutig, und darauf soll es nicht ankommen.
           if (!(window.google && window.google.maps && window.google.maps.Geocoder)) {
-            throw new Error('Maps-Bibliothek nicht geladen');
+            if (typeof window._mapsLaden === 'function') window._mapsLaden();
+            if (!(await mapsGeocoderBereit(8000))) {
+              throw new Error('Maps-Bibliothek nicht geladen');
+            }
           }
           const geocoder = new google.maps.Geocoder();
           const antwort = await geocoder.geocode({
@@ -1132,12 +1166,10 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
           if (city && country) {
             setLocation(city, country, 'gps');
           } else {
-            btn.textContent = '📍 Konumumu Bul';
-            btn.disabled = false;
+            gpsMeldung('Konumundan şehir belirlenemedi — şehrini yukarıdaki alana yazabilirsin.');
           }
         } catch(e) {
-          btn.textContent = '📍 Konumumu Bul';
-          btn.disabled = false;
+          gpsMeldung('Konum şu an şehre çevrilemedi — şehrini yukarıdaki alana yazabilirsin.');
         }
       },
       () => {
@@ -1302,6 +1334,7 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
       // Faellt das Laden aus, bleibt das Feld ein normales Textfeld.
       // Niemand darf hier haengenbleiben.
       s.onerror = function () {
+        window._mapsFehler = true;
         var h2 = hinweisFeld();
         if (h2) h2.textContent = 'Şehir önerileri şu an çalışmıyor — şehrinizi elle yazabilirsiniz.';
       };
@@ -1323,7 +1356,7 @@ BizdenBize ailesinin bir parçasısın artık. Birkaç adımda profilini kuralı
         var h = document.createElement('div');
         h.id = 'maps-hinweis';
         h.style.cssText = 'font-size:11px;color:var(--muted,#6B5E4E);margin-top:4px;line-height:1.4;';
-        h.textContent = 'Yazmaya başladığınızda şehir önerileri Google Maps\'ten yüklenir.';
+        h.textContent = 'Şehir alanına dokunduğunuzda şehir önerileri Google Maps\'ten yüklenir.';
         feld.parentNode.insertBefore(h, feld.nextSibling);
       }
 
