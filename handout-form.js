@@ -18,7 +18,7 @@
   'use strict';
 
   var BASE = 'https://wxjudojlwksivhzjnmim.supabase.co/functions/v1/';
-  var FN = BASE + 'rapid-task'; // Supabase-Slug der Funktion "handout-download" (siehe Edge Functions → Settings → Invoke function)
+  var FN = BASE + 'handout-download'; // Supabase Edge Function "handout-download" (Slug = Name)
 
   var CSS = [
     '.bbh{background:#fff;border:1px solid var(--sand,#D4C5A9);border-radius:16px;padding:26px 24px;margin:0;}',
